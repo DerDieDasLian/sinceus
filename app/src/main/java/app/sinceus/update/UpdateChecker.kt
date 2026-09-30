@@ -65,7 +65,8 @@ object UpdateChecker {
         val assets = json.optJSONArray("assets")
         val apk = (0 until (assets?.length() ?: 0))
             .map { assets!!.getJSONObject(it).optString("browser_download_url") }
-            .firstOrNull { UpdateInstaller.isAllowed(it) }
+            // Die F-Droid-APK im selben Release ist nur für F-Droid gedacht (ohne Update-Suche)
+            .firstOrNull { UpdateInstaller.isAllowed(it) && !it.substringAfterLast('/').contains("fdroid") }
         return Release(json.getString("tag_name").removePrefix("v"), json.getString("html_url"), apk)
     }
 

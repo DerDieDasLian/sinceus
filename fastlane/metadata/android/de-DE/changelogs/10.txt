@@ -1,0 +1,1 @@
+Die F-Droid-Version ist jetzt mit demselben Schlüssel signiert wie die GitHub-Version (Reproducible Builds).

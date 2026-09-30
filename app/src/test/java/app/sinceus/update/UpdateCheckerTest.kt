@@ -30,6 +30,7 @@ class UpdateCheckerTest {
             JSONObject(
                 """{"tag_name":"v2.3.0","html_url":"https://github.com/DerDieDasLian/sinceus/releases/tag/v2.3.0",
                 "assets":[{"browser_download_url":"https://github.com/DerDieDasLian/sinceus/releases/download/v2.3.0/notes.txt"},
+                {"browser_download_url":"https://github.com/DerDieDasLian/sinceus/releases/download/v2.3.0/SinceUs-fdroid-v2.3.0.apk"},
                 {"browser_download_url":"$apk"}]}""",
             ),
         )
