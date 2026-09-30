@@ -1,0 +1,1 @@
+Small maintenance release: the website now downloads the newest version directly.
