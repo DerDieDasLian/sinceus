@@ -4,13 +4,13 @@ Categories:
   - Time
 License: GPL-3.0-or-later
 AuthorName: DerDieDasLian
-SourceCode: https://github.com/DerDieDasLian/loveapp
-IssueTracker: https://github.com/DerDieDasLian/loveapp/issues
+SourceCode: https://github.com/DerDieDasLian/sinceus
+IssueTracker: https://github.com/DerDieDasLian/sinceus/issues
 
 AutoName: Since Us
 
 RepoType: git
-Repo: https://github.com/DerDieDasLian/loveapp.git
+Repo: https://github.com/DerDieDasLian/sinceus.git
 
 Builds:
   - versionName: 2.1.0

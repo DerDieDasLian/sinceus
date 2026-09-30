@@ -23,7 +23,7 @@ A privacy-friendly Android app for couples: counts how long you have been togeth
 
 | Where | Updates |
 | --- | --- |
-| [GitHub Releases](https://github.com/DerDieDasLian/loveapp/releases) | The app checks GitHub once a day and notifies you (can be turned off). Also works with [Obtainium](https://github.com/ImranR98/Obtainium). |
+| [GitHub Releases](https://github.com/DerDieDasLian/sinceus/releases) | The app checks GitHub once a day and notifies you (can be turned off). Also works with [Obtainium](https://github.com/ImranR98/Obtainium). |
 | F-Droid | Through F-Droid (planned) |
 | Google Play | Through the Play Store (planned) |
 
@@ -54,7 +54,7 @@ Kotlin, Jetpack Compose (Material 3), Glance widgets, DataStore, Coil. Minimum A
 
 ## Website
 
-https://derdiedaslian.github.io/loveapp/ (privacy policy: [English](docs/privacy-en.html), [Deutsch](docs/privacy-de.html))
+https://derdiedaslian.github.io/sinceus/ (privacy policy: [English](docs/privacy-en.html), [Deutsch](docs/privacy-de.html))
 
 ## How this app was made
 

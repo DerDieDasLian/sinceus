@@ -22,7 +22,7 @@ android {
         versionCode = 6
         versionName = "2.1.0"
         // Repository, in dem die GitHub-Version nach neuen Releases sucht
-        val githubRepo = providers.gradleProperty("githubRepo").getOrElse("DerDieDasLian/loveapp")
+        val githubRepo = providers.gradleProperty("githubRepo").getOrElse("DerDieDasLian/sinceus")
         buildConfigField("String", "GITHUB_REPO", "\"$githubRepo\"")
     }
 
