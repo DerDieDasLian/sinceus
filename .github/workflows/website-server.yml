@@ -13,7 +13,7 @@ jobs:
     if: vars.WEB_DEPLOY_HOST != '' && github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Upload with rsync
         env:
           HOST: ${{ vars.WEB_DEPLOY_HOST }}
