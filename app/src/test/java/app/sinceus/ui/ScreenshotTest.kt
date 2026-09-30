@@ -89,6 +89,14 @@ class ScreenshotTest {
     @Test
     fun editor() = shot("editor") { PhotoEditorScreen(settings, {}, {}, { _, _, _ -> }) }
 
+    @Test
+    fun onboardingPhotoGerman() = shot("onboarding_3", lang = "de") {
+        OnboardingScreen(
+            settings, false, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
+            step = 3, onStep = {},
+        )
+    }
+
     private fun onboarding(step: Int) = shot("onboarding_$step") {
         OnboardingScreen(
             settings, false, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},

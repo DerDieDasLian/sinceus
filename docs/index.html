@@ -3,31 +3,87 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Since Us</title>
-<meta name="description" content="A privacy-friendly Android app for couples: counts how long you have been together and reminds you of every special day.">
+<title>Since Us: your time together, counted</title>
+<meta name="description" content="A privacy-friendly Android app for couples. Counts your days together and reminds you of every special day. Free and open source.">
+<meta name="theme-color" content="#3a0712">
+<meta property="og:title" content="Since Us: your time together, counted">
+<meta property="og:description" content="A privacy-friendly Android app for couples. Counts your days together and reminds you of every special day. Free and open source.">
+<meta property="og:image" content="img/en-1.jpg">
 <link rel="icon" href="img/icon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main>
-<header>
-  <img src="img/icon.png" alt="">
-  <h1>Since Us</h1>
-  <a class="lang" href="index-de.html">Deutsch</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="img/icon.png" alt="">Since Us</a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#download">Download</a>
+      <a class="lang" href="index-de.html">Deutsch</a>
+    </nav>
+  </div>
 </header>
-<p class="lead">A privacy-friendly Android app for couples: counts how long you have been together and reminds you of every special day.</p>
-<div class="shots"><img src="img/en-1.jpg" alt=""><img src="img/en-2.jpg" alt=""><img src="img/en-3.jpg" alt=""></div>
-<div class="buttons">
-  <a class="button" href="https://github.com/DerDieDasLian/sinceus/releases/latest">Download on GitHub</a>
-  <span class="button secondary">F-Droid (coming soon)</span>
-  <span class="button secondary">Google Play (coming soon)</span>
-</div>
-<h2>Features</h2>
-<ul><li>Days, weeks, months and hours together, plus a live counter down to the second</li><li>Your own photo with adjustable framing</li><li>Notifications on anniversaries, every 100 days and fun numbers like 222</li><li>Two home screen widgets</li><li>English and German, light and dark mode</li><li>No account, no ads, no tracking: your data stays on your phone</li></ul>
-<footer>
-  <p><a href="privacy-en.html">Privacy policy</a> · <a href="https://github.com/DerDieDasLian/sinceus">Source code</a></p>
-  <p>Free and open source under the GPL-3.0. Developed with AI assistance.</p>
-</footer>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Free &amp; open source · Android</span>
+      <h1>Every day together, <em>counted.</em></h1>
+      <p class="lead">Since Us shows how long you have been together, with your favorite photo, and reminds you of every anniversary and special day.</p>
+      <div class="cta">
+        <a class="btn btn-light" href="https://github.com/DerDieDasLian/sinceus/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Download APK</a>
+        <a class="btn btn-ghost" href="https://github.com/DerDieDasLian/sinceus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>Source code</a>
+      </div>
+      <p class="soon">F-Droid and Google Play coming soon</p>
+    </div>
+    <div class="phones"><div class="phone p2"><img src="img/en-2.jpg" alt="Live counter" loading="lazy"></div><div class="phone p1"><img src="img/en-1.jpg" alt="Overview with photo and day counter" loading="eager"></div><div class="phone p3"><img src="img/en-3.jpg" alt="Setup: choose your photo" loading="lazy"></div></div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head"><h2>Made for the two of you</h2><p>Everything you need, nothing you don't.</p></div>
+    <div class="grid"><article class="card"><div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg></div><h3>Your time together</h3><p>Days, weeks, months and hours at a glance, plus a live counter down to the second.</p></article><article class="card"><div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div><h3>Never miss a special day</h3><p>Reminders for monthly and yearly anniversaries, every 100 days and fun numbers like 222.</p></article><article class="card"><div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div><h3>Your photo</h3><p>Pick a picture of the two of you and adjust the framing with one finger.</p></article><article class="card"><div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"/></svg></div><h3>Home screen widgets</h3><p>Your photo with your days together, or a compact counter in your phone's colors.</p></article><article class="card"><div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg></div><h3>English &amp; German</h3><p>Light and dark mode, and the app follows your phone's language.</p></article><article class="card"><div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg></div><h3>Open source</h3><p>Free forever under the GPL-3.0. Anyone can read and check the code.</p></article></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split">
+    <div>
+      <h2>Your love on your home screen</h2>
+      <p>The photo widget shows your picture and your days together, framed exactly like in the app. Resize it to fit the space next to your other widgets.</p>
+    </div>
+    <div class="widget-demo"><img src="img/widget-en.jpg" alt="Widget" loading="lazy"></div>
+  </div>
+</section>
+
+<section id="privacy" class="privacy">
+  <div class="wrap split">
+    <div>
+      <h2>Your story stays yours</h2>
+      <p>No account, no cloud, no ads. Names, date and photo never leave your phone.</p>
+      <ul class="checks"><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>No account and no sign-up</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>No ads, no tracking, no analytics</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>No internet access in the F-Droid and Google Play versions</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><span>Delete everything with one tap</span></li></ul>
+      <p><a href="privacy-en.html">Read the privacy policy</a></p>
+    </div>
+    <div class="lock-art"><div class="circle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div></div>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <div class="section-head"><h2>Get Since Us</h2><p>Choose where you want to get updates from.</p></div>
+    <div class="stores"><article class="card store"><span class="badge">Available</span><h3>GitHub</h3><p>Download the APK. The app tells you when an update is ready.</p><a class="btn btn-accent" href="https://github.com/DerDieDasLian/sinceus/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Download</a></article><article class="card store"><span class="badge later">Coming soon</span><h3>F-Droid</h3><p>The open source app store, built from source.</p></article><article class="card store"><span class="badge later">Coming soon</span><h3>Google Play</h3><p>Automatic updates through the Play Store.</p></article></div>
+  </div>
+</section>
 </main>
+
+<footer>
+  <div class="wrap">
+    <span>Free and open source under the GPL-3.0. Developed with AI assistance.</span>
+    <span class="links"><a href="privacy-en.html">Privacy policy</a><a href="https://github.com/DerDieDasLian/sinceus">Source code</a><a href="index-de.html">Deutsch</a></span>
+  </div>
+</footer>
 </body>
 </html>

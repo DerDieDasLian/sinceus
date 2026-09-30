@@ -29,7 +29,9 @@ class WidgetRenderTest {
     private val context: Context get() = ApplicationProvider.getApplicationContext()
 
     private fun setUp(): Unit = runBlocking {
-        java.util.Locale.setDefault(java.util.Locale.GERMANY)
+        java.util.Locale.setDefault(
+            if (context.resources.configuration.locales[0].language == "de") java.util.Locale.GERMANY else java.util.Locale.US,
+        )
         val repo = LoveRepository(context)
         repo.setNames("Alex", "Sam")
         // 153 Tage vor heute, damit die Zahlen wie auf dem Handy aussehen
@@ -59,6 +61,10 @@ class WidgetRenderTest {
         }
         render(PhotoWidget(), "photo_3x2_real", DpSize(250.dp, 150.dp))
     }
+
+    @Test
+    @Config(qualifiers = "en-night-xxhdpi")
+    fun photoEnglish() = render(PhotoWidget(), "photo_3x2_en", DpSize(250.dp, 150.dp))
 
     @Test
     fun photoSmall() = render(PhotoWidget(), "photo_2x2", DpSize(160.dp, 150.dp))
