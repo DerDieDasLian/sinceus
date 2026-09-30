@@ -1,2 +1,1 @@
-• Open-Source-Lizenzen in der App, Spiegelung nach GitLab
-
+New page Settings > Open source licenses listing all libraries used. Privacy policy updated.

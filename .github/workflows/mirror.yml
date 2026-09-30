@@ -1,9 +1,7 @@
-name: Mirror
+name: Mirror to Forgejo
 
-# Optional: spiegelt alle Branches und Tags auf eine eigene Forgejo-Instanz und/oder auf GitLab.
-# Jedes Ziel läuft nur, wenn seine Variable gesetzt ist:
-#   Forgejo: variables FORGEJO_REPO_URL, FORGEJO_USERNAME, secret FORGEJO_TOKEN
-#   GitLab:  variables GITLAB_REPO_URL, GITLAB_USERNAME, secret GITLAB_TOKEN (Projekt-Token mit write_repository)
+# Optional: spiegelt alle Branches und Tags auf eine eigene Forgejo-Instanz.
+# Läuft nur, wenn die Variable FORGEJO_REPO_URL gesetzt ist (variables FORGEJO_REPO_URL, FORGEJO_USERNAME, secret FORGEJO_TOKEN).
 on:
   push:
     branches: ["**"]
@@ -12,30 +10,17 @@ on:
 
 jobs:
   mirror:
+    if: vars.FORGEJO_REPO_URL != ''
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [forgejo, gitlab]
     steps:
-      - name: Check target
-        id: target
-        env:
-          FORGEJO_URL: ${{ vars.FORGEJO_REPO_URL }}
-          GITLAB_URL: ${{ vars.GITLAB_REPO_URL }}
-        run: |
-          if [ "${{ matrix.target }}" = forgejo ]; then url="$FORGEJO_URL"; else url="$GITLAB_URL"; fi
-          echo "enabled=$([ -n "$url" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v7
-        if: steps.target.outputs.enabled == 'true'
         with:
           fetch-depth: 0
-      - name: Push
-        if: steps.target.outputs.enabled == 'true'
+      - name: Push to Forgejo
         env:
-          REPO_URL: ${{ matrix.target == 'forgejo' && vars.FORGEJO_REPO_URL || vars.GITLAB_REPO_URL }}
-          USERNAME: ${{ matrix.target == 'forgejo' && vars.FORGEJO_USERNAME || vars.GITLAB_USERNAME }}
-          TOKEN: ${{ matrix.target == 'forgejo' && secrets.FORGEJO_TOKEN || secrets.GITLAB_TOKEN }}
+          REPO_URL: ${{ vars.FORGEJO_REPO_URL }}
+          USERNAME: ${{ vars.FORGEJO_USERNAME }}
+          TOKEN: ${{ secrets.FORGEJO_TOKEN }}
         run: |
           url="https://${USERNAME}:${TOKEN}@${REPO_URL#https://}"
           refs=$(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | grep -vx HEAD \
