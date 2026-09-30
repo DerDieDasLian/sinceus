@@ -90,6 +90,13 @@ section { padding: 88px 0; }
 .widget-demo img { border-radius: 26px; box-shadow: 0 20px 40px rgba(60, 10, 20, .35); }
 
 .privacy { background: var(--surface-2); }
+.tint { background: linear-gradient(180deg, var(--surface-2), transparent); }
+.split.reverse > :first-child { order: 2; }
+.solo-wrap { display: grid; place-items: center; }
+.phone.solo { position: relative; width: 280px; transform: rotate(-3deg); }
+.share-demo { display: grid; place-items: center; padding: 24px; }
+.share-demo img { width: min(340px, 100%); border-radius: 28px; transform: rotate(3deg);
+  box-shadow: 0 30px 60px rgba(90, 10, 30, .35); }
 .checks { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 12px; }
 .checks li { display: flex; gap: 12px; align-items: flex-start; }
 .checks svg { flex: none; width: 24px; height: 24px; fill: var(--accent); margin-top: 2px; }
@@ -121,6 +128,8 @@ footer .links { display: flex; flex-wrap: wrap; gap: 18px; }
 @media (max-width: 900px) {
   .hero { padding-top: 104px; }
   .hero .wrap, .split { grid-template-columns: 1fr; }
+  .split.reverse > :first-child { order: 0; }
+  .phone.solo { width: 230px; }
   .phones { height: 440px; margin-top: 8px; }
   .phone { width: 190px; border-radius: 30px; }
   .phone img { border-radius: 23px; }
