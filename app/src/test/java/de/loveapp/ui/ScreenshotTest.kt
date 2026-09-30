@@ -20,12 +20,18 @@ import java.time.LocalDate
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [35], qualifiers = "w411dp-h891dp-xxhdpi")
+// 1233 x 2460 px: Seitenverhaeltnis max. 2:1, wie vom Play Store verlangt
+@Config(sdk = [35], qualifiers = "w411dp-h820dp-xxhdpi")
 class ScreenshotTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private val settings = LoveSettings()
+    private val settings = LoveSettings(
+        name1 = "Alex",
+        name2 = "Sam",
+        startDate = LocalDate.of(2025, 3, 15),
+        onboardingDone = true,
+    )
     private val today = LocalDate.of(2026, 9, 30)
 
     @Test
@@ -36,7 +42,7 @@ class ScreenshotTest {
 
     @Test
     fun settings() = shot("settings") {
-        SettingsScreen(settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {})
+        SettingsScreen(settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {})
     }
 
     @Test
@@ -64,7 +70,7 @@ class ScreenshotTest {
 
     private fun onboarding(step: Int) = shot("onboarding_$step") {
         OnboardingScreen(
-            settings, false, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {},
+            settings, false, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
             step = step, onStep = {},
         )
     }

@@ -2,6 +2,7 @@ package de.loveapp.data
 
 import android.content.Context
 import android.net.Uri
+import androidx.datastore.core.DataMigration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -17,16 +18,23 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
-private val Context.dataStore by preferencesDataStore(name = "love")
+private val Context.dataStore by preferencesDataStore(
+    name = "love",
+    produceMigrations = { listOf(EarlyVersionMigration) },
+)
 
 /** Die meisten Paarfotos haben die Gesichter im oberen Bilddrittel */
 const val DEFAULT_FOCUS_Y = -0.6f
 
 data class LoveSettings(
-    val name1: String = "Alex",
-    val name2: String = "Sam",
-    val startDate: LocalDate = LocalDate.of(2025, 3, 15),
+    val name1: String = "",
+    val name2: String = "",
+    val startDate: LocalDate = LocalDate.now(),
+    /** Optionale Uhrzeit, zu der alles begann (nur fuer den Live-Zaehler) */
+    val startTime: LocalTime? = null,
     /** Pfad zum eigenen Foto im App-Speicher, null = Standardmotiv */
     val photoPath: String? = null,
     val presetIndex: Int = 0,
@@ -42,26 +50,53 @@ data class LoveSettings(
     val homePage: Int = 0,
 ) {
     val names: String get() = "$name1 & $name2"
+    val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
+}
+
+internal object Keys {
+    val schema = intPreferencesKey("schema")
+    val name1 = stringPreferencesKey("name1")
+    val name2 = stringPreferencesKey("name2")
+    val start = longPreferencesKey("start_epoch_day")
+    val startTime = intPreferencesKey("start_second_of_day")
+    val photo = stringPreferencesKey("photo_path")
+    val preset = intPreferencesKey("preset")
+    val notify = booleanPreferencesKey("notify")
+    val notifyHour = intPreferencesKey("notify_hour")
+    val notifyMinute = intPreferencesKey("notify_minute")
+    val lastNotified = longPreferencesKey("last_notified_epoch_day")
+    val focusX = floatPreferencesKey("focus_x")
+    val focusY = floatPreferencesKey("focus_y")
+    val zoom = floatPreferencesKey("zoom")
+    val onboardingDone = booleanPreferencesKey("onboarding_done")
+    val homePage = intPreferencesKey("home_page")
+}
+
+/**
+ * Die ersten Testversionen (1.0/1.1) hatten fest eingetragene Namen und ein festes Datum
+ * und haben diese nur gespeichert, wenn man sie geaendert hat. Bestehende Installationen
+ * bekommen diese Werte einmalig fest gespeichert, damit sich nach dem Update nichts aendert.
+ * Neue Installationen (leerer Speicher) sind nicht betroffen.
+ */
+internal object EarlyVersionMigration : DataMigration<Preferences> {
+    private const val SCHEMA = 2
+
+    override suspend fun shouldMigrate(currentData: Preferences) = currentData[Keys.schema] == null
+
+    override suspend fun migrate(currentData: Preferences): Preferences =
+        currentData.toMutablePreferences().apply {
+            if (currentData.asMap().isNotEmpty()) {
+                if (this[Keys.name1] == null) this[Keys.name1] = "Alex"
+                if (this[Keys.name2] == null) this[Keys.name2] = "Sam"
+                if (this[Keys.start] == null) this[Keys.start] = LocalDate.of(2025, 3, 15).toEpochDay()
+            }
+            this[Keys.schema] = SCHEMA
+        }
+
+    override suspend fun cleanUp() {}
 }
 
 class LoveRepository(private val context: Context) {
-
-    private object Keys {
-        val name1 = stringPreferencesKey("name1")
-        val name2 = stringPreferencesKey("name2")
-        val start = longPreferencesKey("start_epoch_day")
-        val photo = stringPreferencesKey("photo_path")
-        val preset = intPreferencesKey("preset")
-        val notify = booleanPreferencesKey("notify")
-        val notifyHour = intPreferencesKey("notify_hour")
-        val notifyMinute = intPreferencesKey("notify_minute")
-        val lastNotified = longPreferencesKey("last_notified_epoch_day")
-        val focusX = floatPreferencesKey("focus_x")
-        val focusY = floatPreferencesKey("focus_y")
-        val zoom = floatPreferencesKey("zoom")
-        val onboardingDone = booleanPreferencesKey("onboarding_done")
-        val homePage = intPreferencesKey("home_page")
-    }
 
     val settings: Flow<LoveSettings> = context.dataStore.data.map { it.toSettings() }
 
@@ -73,6 +108,7 @@ class LoveRepository(private val context: Context) {
             name1 = this[Keys.name1] ?: d.name1,
             name2 = this[Keys.name2] ?: d.name2,
             startDate = this[Keys.start]?.let(LocalDate::ofEpochDay) ?: d.startDate,
+            startTime = this[Keys.startTime]?.let { LocalTime.ofSecondOfDay(it.toLong()) },
             photoPath = this[Keys.photo]?.takeIf { File(it).exists() },
             presetIndex = this[Keys.preset] ?: d.presetIndex,
             notificationsEnabled = this[Keys.notify] ?: d.notificationsEnabled,
@@ -93,6 +129,19 @@ class LoveRepository(private val context: Context) {
 
     suspend fun setStartDate(date: LocalDate) = context.dataStore.edit {
         it[Keys.start] = date.toEpochDay()
+    }
+
+    suspend fun setStartTime(time: LocalTime?) = context.dataStore.edit {
+        if (time == null) it.remove(Keys.startTime) else it[Keys.startTime] = time.toSecondOfDay()
+    }
+
+    /** Loescht alle Daten und das Foto, danach startet die Einrichtung neu. */
+    suspend fun resetAll() {
+        deletePhotos()
+        context.dataStore.edit {
+            it.clear()
+            it[Keys.schema] = 2
+        }
     }
 
     suspend fun setNotifications(enabled: Boolean) = context.dataStore.edit {

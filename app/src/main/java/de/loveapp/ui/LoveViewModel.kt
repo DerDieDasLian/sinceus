@@ -46,6 +46,8 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setNames(a: String, b: String) = viewModelScope.launch { repo.setNames(a, b) }
     fun setStartDate(date: LocalDate) = viewModelScope.launch { repo.setStartDate(date) }
+    fun setStartTime(time: java.time.LocalTime?) = viewModelScope.launch { repo.setStartTime(time) }
+    fun resetAll() = viewModelScope.launch { repo.resetAll() }
     fun setNotifications(enabled: Boolean) = viewModelScope.launch { repo.setNotifications(enabled) }
     fun setNotifyTime(h: Int, m: Int) = viewModelScope.launch { repo.setNotifyTime(h, m) }
     fun setPhoto(uri: Uri) = viewModelScope.launch { repo.setPhoto(uri) }

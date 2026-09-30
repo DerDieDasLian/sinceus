@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import de.loveapp.data.LoveSettings
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneOffset
 
 private const val STEPS = 5
@@ -82,6 +83,7 @@ fun OnboardingScreen(
     onNotifications: (Boolean) -> Unit,
     onNotifyTime: (Int, Int) -> Unit,
     onFinish: () -> Unit,
+    onStartTime: (LocalTime?) -> Unit,
     step: Int,
     onStep: (Int) -> Unit,
 ) {
@@ -89,6 +91,7 @@ fun OnboardingScreen(
     var name2 by rememberSaveable { mutableStateOf(settings.name2) }
     var presets by remember { mutableStateOf(false) }
     var time by remember { mutableStateOf(false) }
+    var startTime by remember { mutableStateOf(false) }
     val date = rememberDatePickerState(
         initialSelectedDateMillis = settings.startDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
     )
@@ -158,6 +161,19 @@ fun OnboardingScreen(
                             shape = RoundedCornerShape(28.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         ) { DatePicker(state = date, title = null, headline = null, showModeToggle = true) }
+                        FilledTonalButton(
+                            onClick = { startTime = true },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp),
+                        ) {
+                            Icon(Icons.Rounded.Schedule, null)
+                            Text(
+                                settings.startTime?.let { "Uhrzeit: %02d:%02d Uhr".format(it.hour, it.minute) }
+                                    ?: "Uhrzeit hinzufügen (optional)",
+                                Modifier.padding(start = 8.dp),
+                            )
+                        }
                     }
                     3 -> Step("Euer Foto", "Wählt ein Bild von euch beiden. Den Ausschnitt könnt ihr danach anpassen.") {
                         Box(
@@ -241,7 +257,8 @@ fun OnboardingScreen(
                 .padding(24.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (step in 1 until STEPS - 1) {
+            // Namen und Datum sind Pflicht, nur das Foto kann warten
+            if (step == 3) {
                 TextButton(onClick = { onStep(step + 1) }) { Text("Überspringen") }
             }
             Spacer(Modifier.weight(1f))
@@ -267,9 +284,27 @@ fun OnboardingScreen(
         }
     }
     if (time) {
-        TimeDialog(settings, onDismiss = { time = false }) { h, m ->
-            onNotifyTime(h, m)
+        TimeDialog(
+            "Uhrzeit der Mitteilung",
+            LocalTime.of(settings.notifyHour, settings.notifyMinute),
+            onDismiss = { time = false },
+        ) {
+            onNotifyTime(it.hour, it.minute)
             time = false
+        }
+    }
+    if (startTime) {
+        TimeDialog(
+            "Uhrzeit (optional)",
+            settings.startTime,
+            onDismiss = { startTime = false },
+            onClear = {
+                onStartTime(null)
+                startTime = false
+            },
+        ) {
+            onStartTime(it)
+            startTime = false
         }
     }
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 und aelter -->
+<full-backup-content>
+    <include domain="file" path="datastore/" />
+    <include domain="file" path="photos/" />
+</full-backup-content>

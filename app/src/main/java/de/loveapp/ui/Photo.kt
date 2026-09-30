@@ -41,7 +41,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
@@ -54,7 +55,9 @@ import kotlin.math.max
 
 /** Hoehe des Titelbilds: 60 % des Bildschirms, damit Hochformat-Fotos gut passen. */
 @Composable
-fun heroHeight(): Dp = (LocalConfiguration.current.screenHeightDp * 0.6f).dp
+fun heroHeight(): Dp = with(LocalDensity.current) {
+    (LocalWindowInfo.current.containerSize.height * 0.6f).toDp()
+}
 
 /** Euer Foto (mit gespeichertem Ausschnitt) oder das gewaehlte Standardmotiv. */
 @Composable

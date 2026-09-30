@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Crop
+import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.Collections
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.People
@@ -33,6 +35,7 @@ import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.rounded.Widgets
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
@@ -71,6 +74,7 @@ import androidx.compose.ui.unit.dp
 import de.loveapp.data.LoveSettings
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
@@ -93,6 +97,8 @@ fun SettingsScreen(
     onAddWidget: () -> Unit,
     onAdjustPhoto: () -> Unit,
     onRestartOnboarding: () -> Unit,
+    onStartTime: (LocalTime?) -> Unit,
+    onResetAll: () -> Unit,
 ) {
     var dialog by remember { mutableStateOf<String?>(null) }
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -125,6 +131,12 @@ fun SettingsScreen(
                 Row(Icons.Rounded.CalendarMonth, "Zusammen seit dem", settings.startDate.format(DateFmt)) {
                     dialog = "date"
                 }
+                Divider()
+                Row(
+                    Icons.Rounded.Schedule,
+                    "Uhrzeit (optional)",
+                    settings.startTime?.let { "%02d:%02d Uhr".format(it.hour, it.minute) } ?: "Nicht festgelegt",
+                ) { dialog = "startTime" }
             }
             Section("Foto") {
                 Row(Icons.Rounded.AddPhotoAlternate, "Eigenes Foto auswählen", null, onClick = onPickPhoto)
@@ -173,6 +185,14 @@ fun SettingsScreen(
                 Row(Icons.Rounded.AutoAwesome, "Einrichtung erneut starten", null, onClick = onRestartOnboarding)
                 Divider()
                 Row(Icons.Rounded.Shield, "Datenschutz", null) { dialog = "privacy" }
+                Divider()
+                ListItem(
+                    headlineContent = { Text("Alle Daten löschen", color = MaterialTheme.colorScheme.error) },
+                    supportingContent = { Text("Setzt die App komplett zurück") },
+                    leadingContent = { Icon(Icons.Rounded.DeleteForever, null, tint = MaterialTheme.colorScheme.error) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { dialog = "reset" },
+                )
             }
             Spacer(Modifier.height(24.dp))
         }
@@ -187,9 +207,29 @@ fun SettingsScreen(
             onStartDate(it)
             dialog = null
         }
-        "time" -> TimeDialog(settings, onDismiss = { dialog = null }) { h, m ->
-            onNotifyTime(h, m)
+        "time" -> TimeDialog(
+            "Uhrzeit der Mitteilung",
+            LocalTime.of(settings.notifyHour, settings.notifyMinute),
+            onDismiss = { dialog = null },
+        ) {
+            onNotifyTime(it.hour, it.minute)
             dialog = null
+        }
+        "startTime" -> TimeDialog(
+            "Uhrzeit (optional)",
+            settings.startTime,
+            onDismiss = { dialog = null },
+            onClear = {
+                onStartTime(null)
+                dialog = null
+            },
+        ) {
+            onStartTime(it)
+            dialog = null
+        }
+        "reset" -> ResetDialog(onDismiss = { dialog = null }) {
+            dialog = null
+            onResetAll()
         }
         "presets" -> PresetDialog(settings.presetIndex, onDismiss = { dialog = null }) {
             onPreset(it)
@@ -289,13 +329,48 @@ private fun DateDialog(current: LocalDate, onDismiss: () -> Unit, onSave: (Local
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun TimeDialog(settings: LoveSettings, onDismiss: () -> Unit, onSave: (Int, Int) -> Unit) {
-    val state = rememberTimePickerState(settings.notifyHour, settings.notifyMinute, is24Hour = true)
+internal fun TimeDialog(
+    title: String,
+    time: LocalTime?,
+    onDismiss: () -> Unit,
+    onClear: (() -> Unit)? = null,
+    onSave: (LocalTime) -> Unit,
+) {
+    val state = rememberTimePickerState(time?.hour ?: 12, time?.minute ?: 0, is24Hour = true)
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Uhrzeit der Mitteilung") },
+        title = { Text(title) },
         text = { Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { TimePicker(state) } },
-        confirmButton = { TextButton(onClick = { onSave(state.hour, state.minute) }) { Text("Speichern") } },
+        confirmButton = {
+            TextButton(onClick = { onSave(LocalTime.of(state.hour, state.minute)) }) { Text("Speichern") }
+        },
+        dismissButton = {
+            Row {
+                if (onClear != null && time != null) TextButton(onClick = onClear) { Text("Entfernen") }
+                TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            }
+        },
+    )
+}
+
+@Composable
+internal fun ResetDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(Icons.Rounded.DeleteForever, null) },
+        title = { Text("Alle Daten löschen?") },
+        text = {
+            Text(
+                "Namen, Datum, Foto und alle Einstellungen werden von diesem Gerät gelöscht. " +
+                    "Danach startet die Einrichtung neu. Das kann nicht rückgängig gemacht werden.",
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+            ) { Text("Alles löschen") }
+        },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Abbrechen") } },
     )
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: Einstellungen und Foto in die Google-Sicherung und beim Geraetewechsel mitnehmen -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="file" path="datastore/" />
+        <include domain="file" path="photos/" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="file" path="datastore/" />
+        <include domain="file" path="photos/" />
+    </device-transfer>
+</data-extraction-rules>

@@ -145,6 +145,7 @@ class MainActivity : ComponentActivity() {
                                 onPreset = vm::setPreset,
                                 onNotifications = ::setNotifications,
                                 onNotifyTime = vm::setNotifyTime,
+                                onStartTime = vm::setStartTime,
                                 onFinish = {
                                     vm.setOnboardingDone(true)
                                     showSettings = false
@@ -171,6 +172,12 @@ class MainActivity : ComponentActivity() {
                                 onRestartOnboarding = {
                                     onboardingStep = 0
                                     vm.setOnboardingDone(false)
+                                },
+                                onStartTime = vm::setStartTime,
+                                onResetAll = {
+                                    onboardingStep = 0
+                                    showSettings = false
+                                    vm.resetAll()
                                 },
                             )
                             else -> HomeScreen(

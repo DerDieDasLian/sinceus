@@ -83,7 +83,7 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
             delay(1000 - System.currentTimeMillis() % 1000)
         }
     }
-    val start = settings.startDate.atStartOfDay()
+    val start = settings.startDateTime
     val future = start.isAfter(current)
     val span = liveSpan(start, current)
     // Pro Zeile: Einzelwert oder Gesamtzahl anzeigen

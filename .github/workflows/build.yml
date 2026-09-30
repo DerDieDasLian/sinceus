@@ -1,4 +1,4 @@
-name: Build APK
+name: Build
 
 on:
   push:
@@ -14,16 +14,41 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
+
+      # Optional: Upload-Schluessel aus den Repository-Secrets (siehe PLAY_STORE.md)
+      - name: Upload-Schlüssel einrichten
+        env:
+          KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+        if: env.KEYSTORE_BASE64 != ''
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > upload.jks
+          {
+            echo "storeFile=upload.jks"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$KEY_PASSWORD"
+          } > keystore.properties
+
       - name: Tests
         run: ./gradlew testDebugUnitTest
-      - name: APK bauen
-        run: ./gradlew assembleRelease
+      - name: APK und App Bundle bauen
+        run: ./gradlew assembleRelease bundleRelease
+
       - uses: actions/upload-artifact@v4
         with:
-          name: love-app
+          name: love-app-apk
           path: app/build/outputs/apk/release/app-release.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: love-app-bundle
+          path: app/build/outputs/bundle/release/app-release.aab
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: screenshots
-          path: app/build/screenshots/
+          name: screenshots-und-store-grafiken
+          path: |
+            app/build/screenshots/
+            app/build/store/

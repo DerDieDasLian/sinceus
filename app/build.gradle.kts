@@ -1,7 +1,14 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+}
+
+// Upload-Schluessel fuer den Play Store, liegt NICHT im Repo (siehe PLAY_STORE.md)
+val releaseKeystore = rootProject.file("keystore.properties").takeIf { it.exists() }?.let { file ->
+    Properties().apply { file.inputStream().use { load(it) } }
 }
 
 android {
@@ -12,18 +19,26 @@ android {
         applicationId = "de.loveapp"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 3
+        versionName = "1.2"
     }
 
-    // Fester Debug-Schluessel im Repo, damit lokal und per GitHub Actions gebaute
-    // APKs sich gegenseitig updaten koennen (private App, kein Play Store).
     signingConfigs {
+        // Fester Debug-Schluessel im Repo, damit lokal und per GitHub Actions gebaute
+        // Test-APKs sich gegenseitig updaten koennen. Nicht fuer den Play Store.
         getByName("debug") {
             storeFile = file("debug.keystore")
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"
+        }
+        if (releaseKeystore != null) {
+            create("release") {
+                storeFile = rootProject.file(releaseKeystore.getProperty("storeFile"))
+                storePassword = releaseKeystore.getProperty("storePassword")
+                keyAlias = releaseKeystore.getProperty("keyAlias")
+                keyPassword = releaseKeystore.getProperty("keyPassword")
+            }
         }
     }
 
@@ -32,7 +47,8 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
-            signingConfig = signingConfigs.getByName("debug")
+            // Ohne Upload-Schluessel: mit Debug-Schluessel signieren (nur zum Selbst-Installieren)
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
 
