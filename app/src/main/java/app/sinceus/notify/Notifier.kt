@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import app.sinceus.BuildConfig
 import app.sinceus.update.UpdateChecker
@@ -22,6 +21,9 @@ import app.sinceus.data.Milestone
 import app.sinceus.data.Moment
 
 object Notifier {
+    /** Öffnet die App und startet dort Download und Installation des Updates */
+    const val ACTION_INSTALL_UPDATE = "app.sinceus.action.INSTALL_UPDATE"
+
     private const val CHANNEL_ID = "special_days"
     private const val NOTIFICATION_ID = 1
     private const val UPDATE_CHANNEL_ID = "updates"
@@ -50,7 +52,9 @@ object Notifier {
         if (!canNotify(context)) return
         val open = PendingIntent.getActivity(
             context, 1,
-            Intent(Intent.ACTION_VIEW, Uri.parse(release.url)),
+            Intent(context, MainActivity::class.java)
+                .setAction(ACTION_INSTALL_UPDATE)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
         val notification = NotificationCompat.Builder(context, UPDATE_CHANNEL_ID)

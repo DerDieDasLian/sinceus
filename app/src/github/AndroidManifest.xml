@@ -2,4 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Nur die GitHub-Variante: fragt bei GitHub nach neuen Versionen -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Updates aus dem GitHub Release direkt installieren (Android fragt vorher nach) -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 </manifest>

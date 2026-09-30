@@ -4,7 +4,6 @@ import android.Manifest
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -53,10 +52,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        if (savedInstanceState == null) handleIntent(intent)
         setContent {
             LoveTheme {
                 val settings by vm.settings.collectAsStateWithLifecycle()
                 val today by vm.today.collectAsStateWithLifecycle()
+                val updateProgress by vm.updateProgress.collectAsStateWithLifecycle()
                 val scope = rememberCoroutineScope()
                 var showSettings by rememberSaveable { mutableStateOf(false) }
                 var editingPhoto by rememberSaveable { mutableStateOf(false) }
@@ -207,9 +208,8 @@ class MainActivity : ComponentActivity() {
                                 onUpdateCheck = vm::setUpdateCheck,
                                 onShowMoments = vm::setShowMoments,
                                 onCheckUpdates = vm::checkUpdatesNow,
-                                onOpenUpdate = {
-                                    s.updateUrl?.let { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it))) }
-                                },
+                                onOpenUpdate = vm::installUpdate,
+                                updateProgress = updateProgress,
                             )
                             else -> HomeScreen(
                                 s,
@@ -230,6 +230,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    /** Tipp auf die Update-Mitteilung: Update direkt laden und installieren */
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == Notifier.ACTION_INSTALL_UPDATE) vm.installUpdate()
     }
 
     private fun pinWidget() {

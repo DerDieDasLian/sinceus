@@ -49,6 +49,8 @@ data class LoveSettings(
     /** Neuere Version auf GitHub, falls gefunden */
     val updateVersion: String? = null,
     val updateUrl: String? = null,
+    /** Direkter Download der neuen APK, falls das Release eine enthält */
+    val updateApkUrl: String? = null,
     /** Wichtige Momente der Beziehung, sortiert nach Datum */
     val moments: List<Moment> = emptyList(),
     /** Bereich „Momente“ anzeigen (lässt sich ausblenden, die Daten bleiben erhalten) */
@@ -78,6 +80,7 @@ private object Keys {
     val lastUpdateCheck = longPreferencesKey("last_update_check")
     val updateVersion = stringPreferencesKey("update_version")
     val updateUrl = stringPreferencesKey("update_url")
+    val updateApkUrl = stringPreferencesKey("update_apk_url")
     val updateNotified = stringPreferencesKey("update_notified")
     val moments = stringPreferencesKey("moments")
     val showMoments = booleanPreferencesKey("show_moments")
@@ -109,6 +112,7 @@ class LoveRepository(private val context: Context) {
             updateCheck = this[Keys.updateCheck] ?: d.updateCheck,
             updateVersion = this[Keys.updateVersion],
             updateUrl = this[Keys.updateUrl],
+            updateApkUrl = this[Keys.updateApkUrl],
             moments = MomentCodec.decode(this[Keys.moments]).sortedBy { it.date },
             showMoments = this[Keys.showMoments] ?: d.showMoments,
         )
@@ -226,14 +230,16 @@ class LoveRepository(private val context: Context) {
     suspend fun lastUpdateCheck(): Long = context.dataStore.data.first()[Keys.lastUpdateCheck] ?: 0L
 
     /** Speichert das Ergebnis einer Update-Suche; [version] null = aktuell. */
-    suspend fun setUpdateResult(version: String?, url: String?) = context.dataStore.edit {
+    suspend fun setUpdateResult(version: String?, url: String?, apkUrl: String? = null) = context.dataStore.edit {
         it[Keys.lastUpdateCheck] = System.currentTimeMillis()
         if (version == null || url == null) {
             it.remove(Keys.updateVersion)
             it.remove(Keys.updateUrl)
+            it.remove(Keys.updateApkUrl)
         } else {
             it[Keys.updateVersion] = version
             it[Keys.updateUrl] = url
+            if (apkUrl != null) it[Keys.updateApkUrl] = apkUrl else it.remove(Keys.updateApkUrl)
         }
     }
 

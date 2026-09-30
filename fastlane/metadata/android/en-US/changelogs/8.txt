@@ -1,0 +1,1 @@
+Updates in the GitHub version now install right in the app: tap the notification or the entry in the settings, and Android asks to install. Build prepared for F-Droid.

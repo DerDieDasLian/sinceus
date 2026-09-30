@@ -2,7 +2,7 @@
 # Ermittelt die nächste Version für ein Release und trägt sie in app/build.gradle.kts ein.
 #
 # Regeln:
-# - Keine Änderung unter app/ seit dem letzten Release-Tag: kein Release (release=false).
+# - Keine Änderung unter app/ (ohne Tests) seit dem letzten Release-Tag: kein Release (release=false).
 # - versionName in der Datei wurde von Hand über den letzten Tag erhöht: diese Version nehmen.
 # - Sonst automatisch erhöhen: [major] oder [minor] in einer Commit-Nachricht seit dem letzten
 #   Tag erhöht die entsprechende Stelle, ansonsten die letzte Stelle (Patch).
@@ -27,7 +27,7 @@ fi
 last_name=${last_tag#v}
 last_code=$(git show "$last_tag:$FILE" | grep -oP 'versionCode = \K[0-9]+')
 
-if [ "$FORCE" != "true" ] && git diff --quiet "$last_tag" HEAD -- app/; then
+if [ "$FORCE" != "true" ] && git diff --quiet "$last_tag" HEAD -- app/ ':!app/src/test'; then
   echo "release=false"; echo "version=$last_name"; echo "code=$last_code"; echo "changed=false"
   exit 0
 fi
@@ -61,7 +61,7 @@ for lang in en-US de-DE; do
   notes="fastlane/metadata/android/$lang/changelogs/$code.txt"
   if [ -d "fastlane/metadata/android/$lang" ] && [ ! -f "$notes" ]; then
     mkdir -p "$(dirname "$notes")"
-    git log --format='• %s' --no-merges "$last_tag"..HEAD -- app/ \
+    git log --format='• %s' --no-merges "$last_tag"..HEAD -- app/ ':!app/src/test' \
       | sed -E 's/ *\[(major|minor)\]//I' | head -c 480 > "$notes"
     echo >> "$notes"
     changed=true

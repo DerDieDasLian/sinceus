@@ -101,7 +101,23 @@ class ScreenshotTest {
     fun moments() = shot("moments", lang = "de") { MomentsScreen(withMoments, today, {}, {}) }
 
     @Test
-    fun momentEditor() = shot("moment_editor", lang = "de") {
+    fun momentsEnglish() = shot("moments") {
+        MomentsScreen(
+            settings.copy(
+                moments = listOf(
+                    app.sinceus.data.Moment("1", "How we met", LocalDate.of(2025, 1, 20), "At Mia's birthday party"),
+                    app.sinceus.data.Moment("2", "First date", LocalDate.of(2025, 2, 14), "Movies and pizza afterwards"),
+                    app.sinceus.data.Moment("3", "First trip", LocalDate.of(2025, 7, 5), "A week by the sea"),
+                ),
+            ),
+            today,
+            {},
+            {},
+        )
+    }
+
+    @Test
+    fun momentEditor()= shot("moment_editor", lang = "de") {
         MomentEditorScreen(withMoments.moments[1], null, today, {}, { _, _, _ -> }, {})
     }
 

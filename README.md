@@ -24,7 +24,7 @@ A privacy-friendly Android app for couples: counts how long you have been togeth
 
 | Where | Updates |
 | --- | --- |
-| [GitHub Releases](https://github.com/DerDieDasLian/sinceus/releases) | The app checks GitHub once a day and notifies you (can be turned off). Also works with [Obtainium](https://github.com/ImranR98/Obtainium). |
+| [GitHub Releases](https://github.com/DerDieDasLian/sinceus/releases) | The app checks GitHub once a day, notifies you and installs the update with one tap (can be turned off). Also works with [Obtainium](https://github.com/ImranR98/Obtainium). |
 | F-Droid | Through F-Droid (planned) |
 | Google Play | Through the Play Store (planned) |
 
@@ -44,7 +44,7 @@ Tests, screenshots and store graphics: `./gradlew testGithubDebugUnitTest` (outp
 
 ## Releasing
 
-- **Signing:** create `keystore.properties` (not committed) with `storeFile`, `storePassword`, `keyAlias`, `keyPassword`. In GitHub Actions the secrets `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS` and `UPLOAD_KEY_PASSWORD` are used.
+- **Signing:** create `keystore.properties` (not committed) with `storeFile`, `storePassword`, `keyAlias`, `keyPassword`. Without it, release builds stay unsigned (this is what F-Droid expects). In GitHub Actions the secrets `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS` and `UPLOAD_KEY_PASSWORD` are used.
 - **GitHub releases are automatic:** every push to the default branch that changes `app/` bumps the version (patch by default, `[minor]` or `[major]` in a commit message for bigger steps), commits it back, tags `v<versionName>` and publishes the signed APK. A manually raised `versionName` is respected. Release notes come from `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` and are generated from commit messages if missing. Pull before working, since the release workflow pushes version commits.
 - **F-Droid** builds the `fdroid` variant from source; store texts and images are in `fastlane/`, a metadata template is in `fdroid/`.
 - **Website:** `docs/` (landing page and privacy policy) is published via GitHub Pages and can be copied to any static web server.

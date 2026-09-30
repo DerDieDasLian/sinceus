@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Nur der Ordner für das Teilen-Bild wird anderen Apps zugänglich gemacht -->
+<!-- Nur der Ordner für das Teilen-Bild und für Updates (GitHub-Variante) wird anderen Apps zugänglich gemacht -->
 <paths>
     <cache-path name="share" path="share/" />
+    <cache-path name="update" path="update/" />
 </paths>

@@ -61,9 +61,15 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
-            // Ohne eigenen Schlüssel: mit dem lokalen Debug-Schlüssel signieren (nur zum Testen)
-            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
+            // Ohne keystore.properties bleibt die APK unsigniert (so erwartet es F-Droid, das selbst signiert)
+            signingConfig = signingConfigs.findByName("release")
         }
+    }
+
+    // Keine verschlüsselten Abhängigkeits-Infos in der APK (F-Droid kann sie nicht prüfen); im Play-Bundle bleiben sie
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = true
     }
 
     compileOptions {

@@ -6,7 +6,7 @@ name: Release
 on:
   push:
     branches: ["**"]
-    paths: ["app/**"]
+    paths: ["app/**", "!app/src/test/**"]
   workflow_dispatch:
     inputs:
       force:

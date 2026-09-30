@@ -13,10 +13,11 @@ import java.net.URL
 /**
  * Sucht in der GitHub-Variante nach einer neueren Version unter den GitHub Releases.
  * Es wird nur die öffentliche Release-Liste abgefragt, es werden keine Daten gesendet.
- * Heruntergeladen und installiert wird nichts automatisch, die Mitteilung öffnet die Release-Seite.
+ * Heruntergeladen wird erst, wenn man auf „Installieren“ tippt (siehe [UpdateInstaller]).
  */
 object UpdateChecker {
-    data class Release(val version: String, val url: String)
+    /** [url] = Release-Seite, [apkUrl] = direkter Download der APK (falls vorhanden) */
+    data class Release(val version: String, val url: String, val apkUrl: String? = null)
 
     private const val INTERVAL_MS = 20 * 60 * 60 * 1000L
     private const val TIMEOUT_MS = 8000
@@ -36,7 +37,7 @@ object UpdateChecker {
         val repo = LoveRepository(context)
         val latest = fetchLatest()
         val newer = latest?.takeIf { isNewer(it.version, BuildConfig.VERSION_NAME) }
-        repo.setUpdateResult(newer?.version, newer?.url)
+        repo.setUpdateResult(newer?.version, newer?.url, newer?.apkUrl)
         if (newer != null && repo.markUpdateNotified(newer.version)) {
             Notifier.showUpdate(context, newer)
         }
@@ -54,10 +55,18 @@ object UpdateChecker {
             // 404: noch kein Release veröffentlicht
             if (connection.responseCode != HttpURLConnection.HTTP_OK) return@withContext null
             val json = JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
-            Release(json.getString("tag_name").removePrefix("v"), json.getString("html_url"))
+            parse(json)
         } finally {
             connection.disconnect()
         }
+    }
+
+    fun parse(json: JSONObject): Release {
+        val assets = json.optJSONArray("assets")
+        val apk = (0 until (assets?.length() ?: 0))
+            .map { assets!!.getJSONObject(it).optString("browser_download_url") }
+            .firstOrNull { UpdateInstaller.isAllowed(it) }
+        return Release(json.getString("tag_name").removePrefix("v"), json.getString("html_url"), apk)
     }
 
     /** Vergleicht Versionen wie "2.10.1" und "2.9" Zahl für Zahl. */

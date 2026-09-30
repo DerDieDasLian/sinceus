@@ -1,5 +1,5 @@
 # Vorlage für die Aufnahme in F-Droid (Merge Request an https://gitlab.com/fdroid/fdroiddata,
-# Datei metadata/app.sinceus.yml). Vor dem Einreichen Repo-URL und commit prüfen.
+# Datei metadata/app.sinceus.yml). Vor dem Einreichen Version und commit mit dem neuesten Release abgleichen.
 Categories:
   - Time
 License: GPL-3.0-or-later
@@ -13,14 +13,14 @@ RepoType: git
 Repo: https://github.com/DerDieDasLian/sinceus.git
 
 Builds:
-  - versionName: 2.1.0
-    versionCode: 6
-    commit: v2.1.0
+  - versionName: 2.2.1
+    versionCode: 8
+    commit: v2.2.1
     subdir: app
     gradle:
       - fdroid
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 2.1.0
-CurrentVersionCode: 6
+CurrentVersion: 2.2.1
+CurrentVersionCode: 8

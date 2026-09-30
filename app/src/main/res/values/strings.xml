@@ -108,7 +108,10 @@
     <string name="and_word">\u0020and\u0020</string>
     <string name="update_channel_name">App updates</string>
     <string name="update_available">Version %1$s available</string>
-    <string name="update_tap_to_open">Tap to open the download page</string>
+    <string name="update_tap_to_open">Tap to install</string>
+    <string name="update_downloading">Downloading update…</string>
+    <string name="update_downloading_percent">Downloading update… %1$d %%</string>
+    <string name="update_download_failed">Download failed, opening the download page</string>
     <string name="section_updates">Updates</string>
     <string name="update_auto">Check for updates automatically</string>
     <string name="update_auto_summary">Asks GitHub once a day whether there is a new version</string>

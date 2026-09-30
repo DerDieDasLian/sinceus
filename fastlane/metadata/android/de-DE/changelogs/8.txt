@@ -1,0 +1,1 @@
+Updates der GitHub-Version werden jetzt direkt in der App installiert: auf die Mitteilung oder den Eintrag in den Einstellungen tippen, dann fragt Android nach der Installation. Build für F-Droid vorbereitet.

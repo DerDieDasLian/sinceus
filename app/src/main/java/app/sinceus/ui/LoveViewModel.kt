@@ -8,6 +8,7 @@ import android.widget.Toast
 import app.sinceus.R
 import app.sinceus.data.LoveRepository
 import app.sinceus.update.UpdateChecker
+import app.sinceus.update.UpdateInstaller
 import app.sinceus.data.LoveSettings
 import app.sinceus.notify.DailyScheduler
 import app.sinceus.notify.Notifier
@@ -77,6 +78,38 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
             app.getString(R.string.update_failed)
         }
         Toast.makeText(app, message, Toast.LENGTH_SHORT).show()
+    }
+
+    /** Download-Fortschritt eines Updates in Prozent, null = kein Download */
+    val updateProgress: StateFlow<Int?> = UpdateInstaller.progress
+
+    /**
+     * Lädt das Update und öffnet den Installationsdialog.
+     * Ohne APK im Release (oder wenn der Download scheitert) wird die Release-Seite geöffnet.
+     */
+    fun installUpdate() = viewModelScope.launch {
+        val app = getApplication<Application>()
+        val s = repo.current()
+        val apk = s.updateApkUrl
+        if (apk == null) {
+            openUpdatePage(s.updateUrl)
+            return@launch
+        }
+        Toast.makeText(app, app.getString(R.string.update_downloading), Toast.LENGTH_SHORT).show()
+        try {
+            UpdateInstaller.downloadAndInstall(app, apk)
+        } catch (_: Exception) {
+            Toast.makeText(app, app.getString(R.string.update_download_failed), Toast.LENGTH_LONG).show()
+            openUpdatePage(s.updateUrl)
+        }
+    }
+
+    private fun openUpdatePage(url: String?) {
+        if (url == null) return
+        getApplication<Application>().startActivity(
+            android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+        )
     }
 
     fun sendTestNotification() {

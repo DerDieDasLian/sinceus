@@ -111,6 +111,8 @@ fun SettingsScreen(
     onCheckUpdates: () -> Unit = {},
     onOpenUpdate: () -> Unit = {},
     onShowMoments: (Boolean) -> Unit = {},
+    /** Download-Fortschritt eines Updates in Prozent (-1 = unbekannt), null = kein Download */
+    updateProgress: Int? = null,
 ) {
     var dialog by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
@@ -207,10 +209,18 @@ fun SettingsScreen(
                                     fontWeight = FontWeight.SemiBold,
                                 )
                             },
-                            supportingContent = { Text(stringResource(R.string.update_tap_to_open)) },
+                            supportingContent = {
+                                Text(
+                                    when {
+                                        updateProgress == null -> stringResource(R.string.update_tap_to_open)
+                                        updateProgress < 0 -> stringResource(R.string.update_downloading)
+                                        else -> stringResource(R.string.update_downloading_percent, updateProgress)
+                                    },
+                                )
+                            },
                             leadingContent = { Icon(Icons.Rounded.SystemUpdate, null, tint = MaterialTheme.colorScheme.primary) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable(onClick = onOpenUpdate),
+                            modifier = Modifier.clickable(enabled = updateProgress == null, onClick = onOpenUpdate),
                         )
                         Divider()
                     }
