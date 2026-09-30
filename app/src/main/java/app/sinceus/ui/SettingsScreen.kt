@@ -80,6 +80,7 @@ import java.time.ZoneOffset
 import app.sinceus.BuildConfig
 import app.sinceus.R
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.SystemUpdate
@@ -112,6 +113,7 @@ fun SettingsScreen(
     onCheckUpdates: () -> Unit = {},
     onOpenUpdate: () -> Unit = {},
     onShowMoments: (Boolean) -> Unit = {},
+    onShowLive: (Boolean) -> Unit = {},
     /** Download-Fortschritt eines Updates in Prozent (-1 = unbekannt), null = kein Download */
     updateProgress: Int? = null,
     onOpenLicenses: () -> Unit = {},
@@ -202,7 +204,10 @@ fun SettingsScreen(
             }
             if (BuildConfig.UPDATE_CHECK) {
                 Section(stringResource(R.string.section_updates)) {
-                    if (settings.updateVersion != null) {
+                    // Nach einem Update kann noch die alte Meldung gespeichert sein
+                    if (settings.updateVersion != null &&
+                        app.sinceus.update.UpdateChecker.isNewer(settings.updateVersion, BuildConfig.VERSION_NAME)
+                    ) {
                         ListItem(
                             headlineContent = {
                                 Text(
@@ -246,6 +251,15 @@ fun SettingsScreen(
                     trailingContent = { Switch(checked = settings.showMoments, onCheckedChange = onShowMoments) },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     modifier = Modifier.clickable { onShowMoments(!settings.showMoments) },
+                )
+                Divider()
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.live_show)) },
+                    supportingContent = { Text(stringResource(R.string.live_show_summary)) },
+                    leadingContent = { Icon(Icons.Rounded.Timer, null) },
+                    trailingContent = { Switch(checked = settings.showLive, onCheckedChange = onShowLive) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { onShowLive(!settings.showLive) },
                 )
                 Divider()
                 Row(Icons.Rounded.Widgets, stringResource(R.string.add_widget), null, onClick = onAddWidget)

@@ -3,8 +3,8 @@
     <string name="app_name" translatable="false">Since Us</string>
     <string name="widget_days_name">Days together</string>
     <string name="widget_days_description">Shows how many days you have been together</string>
-    <string name="widget_photo_name">Photo &amp; days</string>
-    <string name="widget_photo_description">Your photo with your days together</string>
+    <string name="widget_photo_name">Love card</string>
+    <string name="widget_photo_description">Your names, your days together and the next special day</string>
     <string name="channel_name">Special days</string>
     <string name="channel_description">Monthly and yearly anniversaries and milestone days</string>
     <string name="settings">Settings</string>
@@ -111,7 +111,7 @@
     <string name="update_tap_to_open">Tap to install</string>
     <string name="update_downloading">Downloading update…</string>
     <string name="update_downloading_percent">Downloading update… %1$d %%</string>
-    <string name="update_download_failed">Download failed, opening the download page</string>
+    <string name="update_download_failed">Update could not be downloaded. Please try again later.</string>
     <string name="section_updates">Updates</string>
     <string name="update_auto">Check for updates automatically</string>
     <string name="update_auto_summary">Asks GitHub once a day whether there is a new version</string>
@@ -214,5 +214,7 @@
         <item quantity="other">%s days ago</item>
     </plurals>
     <string name="moments_show">Show moments</string>
+    <string name="live_show">Show live counter</string>
+    <string name="live_show_summary">Counts your time together to the second</string>
     <string name="moments_show_summary">A timeline for important moments. Hiding it keeps your saved moments.</string>
 </resources>

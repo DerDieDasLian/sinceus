@@ -1,0 +1,1 @@
+Tap a value in live mode to see the total, the others blur for a moment. Live mode can now be hidden in the settings. New love card widget without a photo. Updates in the GitHub version now always install directly.

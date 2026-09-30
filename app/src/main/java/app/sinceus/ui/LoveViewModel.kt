@@ -65,6 +65,7 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch { repo.saveMoment(moment, photo, removePhoto) }
     fun deleteMoment(id: String) = viewModelScope.launch { repo.deleteMoment(id) }
     fun setShowMoments(show: Boolean) = viewModelScope.launch { repo.setShowMoments(show) }
+    fun setShowLive(show: Boolean) = viewModelScope.launch { repo.setShowLive(show) }
 
     fun setUpdateCheck(enabled: Boolean) = viewModelScope.launch { repo.setUpdateCheck(enabled) }
 
@@ -84,32 +85,24 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     val updateProgress: StateFlow<Int?> = UpdateInstaller.progress
 
     /**
-     * Lädt das Update und öffnet den Installationsdialog.
-     * Ohne APK im Release (oder wenn der Download scheitert) wird die Release-Seite geöffnet.
+     * Lädt das Update und öffnet direkt den Installationsdialog von Android.
+     * Vorher wird kurz neu gesucht, damit immer die neueste APK geladen wird (gespeicherte Treffer
+     * können veraltet sein oder von einer älteren App-Version ohne Download-Link stammen).
      */
     fun installUpdate() = viewModelScope.launch {
         val app = getApplication<Application>()
-        val s = repo.current()
-        val apk = s.updateApkUrl
-        if (apk == null) {
-            openUpdatePage(s.updateUrl)
-            return@launch
-        }
         Toast.makeText(app, app.getString(R.string.update_downloading), Toast.LENGTH_SHORT).show()
         try {
+            val apk = UpdateChecker.check(app)?.apkUrl
+            if (apk == null) {
+                Toast.makeText(app, app.getString(R.string.update_none), Toast.LENGTH_SHORT).show()
+                return@launch
+            }
             UpdateInstaller.downloadAndInstall(app, apk)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            android.util.Log.w("SinceUs", "Update fehlgeschlagen", e)
             Toast.makeText(app, app.getString(R.string.update_download_failed), Toast.LENGTH_LONG).show()
-            openUpdatePage(s.updateUrl)
         }
-    }
-
-    private fun openUpdatePage(url: String?) {
-        if (url == null) return
-        getApplication<Application>().startActivity(
-            android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
-                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
-        )
     }
 
     fun sendTestNotification() {

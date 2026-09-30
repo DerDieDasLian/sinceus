@@ -90,8 +90,13 @@ fun HomeScreen(
     onAddMoment: (String?) -> Unit = {},
     onOpenMoment: (app.sinceus.data.Moment) -> Unit = {},
 ) {
-    // Ohne Momente nur zwei Seiten
-    val pageCount = if (settings.showMoments) 3 else 2
+    // Live und Momente lassen sich in den Einstellungen ausblenden
+    val pages = listOfNotNull(
+        HomePage.Overview,
+        HomePage.Live.takeIf { settings.showLive },
+        HomePage.Moments.takeIf { settings.showMoments },
+    )
+    val pageCount = pages.size
     val pager = rememberPagerState(initialPage = settings.homePage.coerceIn(0, pageCount - 1)) { pageCount }
     val scope = rememberCoroutineScope()
     LaunchedEffect(pager) {
@@ -103,10 +108,10 @@ fun HomeScreen(
             .background(MaterialTheme.colorScheme.background),
     ) {
         HorizontalPager(pager, Modifier.fillMaxSize()) { page ->
-            when (page) {
-                0 -> Overview(settings, today)
-                1 -> LiveScreen(settings, active = pager.currentPage == 1)
-                else -> MomentsScreen(settings, today, onAdd = onAddMoment, onOpen = onOpenMoment)
+            when (pages[page]) {
+                HomePage.Overview -> Overview(settings, today)
+                HomePage.Live -> LiveScreen(settings, active = pager.currentPage == page)
+                HomePage.Moments -> MomentsScreen(settings, today, onAdd = onAddMoment, onOpen = onOpenMoment)
             }
         }
         // Schwebende Leiste unten, damit oben nichts das Foto verdeckt.
@@ -124,7 +129,9 @@ fun HomeScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            ModeSwitch(pager.currentPage, settings.showMoments) { scope.launch { pager.animateScrollToPage(it) } }
+            if (pages.size > 1) {
+                ModeSwitch(pager.currentPage, pages) { scope.launch { pager.animateScrollToPage(it) } }
+            }
             Box(
                 Modifier
                     .size(BarItemHeight)
@@ -143,17 +150,19 @@ fun HomeScreen(
     }
 }
 
+private enum class HomePage(@androidx.annotation.StringRes val label: Int) {
+    Overview(R.string.tab_overview),
+    Live(R.string.tab_live),
+    Moments(R.string.tab_moments),
+}
+
 private val BarItemHeight = 40.dp
 private val BarPadding = 4.dp
 
 @Composable
-private fun ModeSwitch(selected: Int, showMoments: Boolean, onSelect: (Int) -> Unit) {
+private fun ModeSwitch(selected: Int, pages: List<HomePage>, onSelect: (Int) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-        listOfNotNull(
-            stringResource(R.string.tab_overview),
-            stringResource(R.string.tab_live),
-            if (showMoments) stringResource(R.string.tab_moments) else null,
-        ).forEachIndexed { i, label ->
+        pages.map { stringResource(it.label) }.forEachIndexed { i, label ->
             val active = i == selected
             Box(
                 Modifier

@@ -7,6 +7,8 @@ import androidx.core.view.drawToBitmap
 import app.sinceus.data.LoveSettings
 import org.junit.Rule
 import org.junit.Test
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -48,6 +50,36 @@ class ScreenshotTest {
     @Test
     fun settingsGerman() = shot("settings", lang = "de") {
         SettingsScreen(settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {})
+    }
+
+    @Test
+    fun liveFocusedGerman() = shot(
+        "live_focused",
+        lang = "de",
+        before = { compose.onNodeWithText("33 Sekunden").performClick() },
+    ) {
+        LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2025, 8, 15, 12, 46, 33))
+    }
+
+    @Test
+    fun liveFocusEndsAfterAFewSeconds() {
+        java.util.Locale.setDefault(java.util.Locale.GERMANY)
+        org.robolectric.RuntimeEnvironment.setQualifiers("+de")
+        compose.mainClock.autoAdvance = false
+        compose.setContent {
+            LoveTheme { LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2025, 8, 15, 12, 46, 33)) }
+        }
+        compose.mainClock.advanceTimeBy(500)
+        compose.onNodeWithText("33 Sekunden").performClick()
+        compose.mainClock.advanceTimeBy(1000)
+        compose.onNodeWithText("33 Sekunden").assertDoesNotExist()
+        compose.mainClock.advanceTimeBy(4000)
+        compose.onNodeWithText("33 Sekunden").assertExists()
+    }
+
+    @Test
+    fun homeWithoutLiveAndMoments() = shot("home_only_overview", lang = "de") {
+        HomeScreen(settings.copy(showLive = false, showMoments = false), today, {}, {})
     }
 
     @Test
@@ -149,12 +181,16 @@ class ScreenshotTest {
         name: String,
         dark: Boolean = false,
         lang: String = "en",
+        before: () -> Unit = {},
         content: @androidx.compose.runtime.Composable () -> Unit,
     ) {
         java.util.Locale.setDefault(if (lang == "de") java.util.Locale.GERMANY else java.util.Locale.US)
         org.robolectric.RuntimeEnvironment.setQualifiers("+$lang")
         if (dark) org.robolectric.RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { LoveTheme(content) }
+        compose.mainClock.advanceTimeBy(500)
+        compose.waitForIdle()
+        before()
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         val bitmap = compose.activity.window.decorView.drawToBitmap()

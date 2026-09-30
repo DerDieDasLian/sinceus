@@ -42,32 +42,20 @@ class WidgetRenderTest {
     fun days() = render(LoveWidget(), "days_2x2", DpSize(160.dp, 150.dp))
 
     @Test
-    fun photo() = render(PhotoWidget(), "photo_3x2", DpSize(250.dp, 150.dp))
-
-    @Test
-    fun photoWithLargeDetailedImage() {
-        runBlocking {
-            // Rauschen komprimiert am schlechtesten: Worst Case für die Größe
-            val random = java.util.Random(1)
-            val big = Bitmap.createBitmap(3000, 4000, Bitmap.Config.ARGB_8888)
-            val pixels = IntArray(3000) { 0 }
-            for (y in 0 until 4000) {
-                for (x in 0 until 3000) pixels[x] = 0xFF000000.toInt() or random.nextInt(0xFFFFFF)
-                big.setPixels(pixels, 0, 3000, 0, y, 3000, 1)
-            }
-            val file = File(context.cacheDir, "big.jpg")
-            file.outputStream().use { big.compress(Bitmap.CompressFormat.JPEG, 95, it) }
-            LoveRepository(context).setPhoto(android.net.Uri.fromFile(file))
-        }
-        render(PhotoWidget(), "photo_3x2_real", DpSize(250.dp, 150.dp))
-    }
+    fun card() = render(CardWidget(), "card_3x2", DpSize(250.dp, 150.dp))
 
     @Test
     @Config(qualifiers = "en-night-xxhdpi")
-    fun photoEnglish() = render(PhotoWidget(), "photo_3x2_en", DpSize(250.dp, 150.dp))
+    fun cardEnglish() = render(CardWidget(), "card_3x2_en", DpSize(250.dp, 150.dp))
 
     @Test
-    fun photoSmall() = render(PhotoWidget(), "photo_2x2", DpSize(160.dp, 150.dp))
+    fun cardSmall() = render(CardWidget(), "card_2x2", DpSize(160.dp, 150.dp))
+
+    @Test
+    fun cardLarge() = render(CardWidget(), "card_4x2", DpSize(330.dp, 180.dp))
+
+    @Test
+    fun cardFlat() = render(CardWidget(), "card_4x1", DpSize(330.dp, 90.dp))
 
     @OptIn(ExperimentalGlanceRemoteViewsApi::class)
     private fun render(widget: GlanceAppWidget, name: String, size: DpSize): Unit = runBlocking {

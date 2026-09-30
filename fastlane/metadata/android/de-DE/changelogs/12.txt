@@ -1,0 +1,1 @@
+Im Live-Modus zeigt ein Tipp auf einen Wert kurz die Gesamtzahl, die anderen werden solange weichgezeichnet. Der Live-Modus lässt sich jetzt in den Einstellungen ausblenden. Neues Widget „Liebeskarte“ ohne Foto. Updates der GitHub-Version werden jetzt immer direkt installiert.

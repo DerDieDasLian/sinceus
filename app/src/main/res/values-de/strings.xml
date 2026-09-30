@@ -2,8 +2,8 @@
 <resources>
     <string name="widget_days_name">Tage zusammen</string>
     <string name="widget_days_description">Zeigt, wie viele Tage ihr schon zusammen seid</string>
-    <string name="widget_photo_name">Foto &amp; Tage</string>
-    <string name="widget_photo_description">Euer Foto mit euren gemeinsamen Tagen</string>
+    <string name="widget_photo_name">Liebeskarte</string>
+    <string name="widget_photo_description">Eure Namen, eure gemeinsamen Tage und der nächste besondere Tag</string>
     <string name="channel_name">Besondere Tage</string>
     <string name="channel_description">Monatstage, Jahrestage und runde Tage</string>
     <string name="settings">Einstellungen</string>
@@ -110,7 +110,7 @@
     <string name="update_tap_to_open">Tippen zum Installieren</string>
     <string name="update_downloading">Update wird geladen…</string>
     <string name="update_downloading_percent">Update wird geladen… %1$d %%</string>
-    <string name="update_download_failed">Download fehlgeschlagen, die Download-Seite wird geöffnet</string>
+    <string name="update_download_failed">Das Update konnte nicht geladen werden. Bitte später noch einmal versuchen.</string>
     <string name="section_updates">Updates</string>
     <string name="update_auto">Automatisch nach Updates suchen</string>
     <string name="update_auto_summary">Fragt einmal täglich bei GitHub nach einer neuen Version</string>
@@ -213,5 +213,7 @@
         <item quantity="other">vor %s Tagen</item>
     </plurals>
     <string name="moments_show">Momente anzeigen</string>
+    <string name="live_show">Live-Zähler anzeigen</string>
+    <string name="live_show_summary">Zählt eure gemeinsame Zeit sekundengenau</string>
     <string name="moments_show_summary">Zeitleiste für wichtige Momente. Beim Ausblenden bleiben gespeicherte Momente erhalten.</string>
 </resources>

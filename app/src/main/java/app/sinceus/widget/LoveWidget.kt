@@ -61,7 +61,7 @@ class LoveWidget : GlanceAppWidget() {
         /** Aktualisiert alle Widgets der App. */
         suspend fun refresh(context: Context) {
             LoveWidget().updateAll(context)
-            PhotoWidget().updateAll(context)
+            CardWidget().updateAll(context)
         }
     }
 }
@@ -130,89 +130,107 @@ private fun DaysContent(settings: LoveSettings) {
     }
 }
 
-/** Großes Foto-Widget: euer Bild mit Namen und Tagen, der Ausschnitt passt sich der Widget-Größe an. */
-class PhotoWidget : GlanceAppWidget() {
+/**
+ * Große Widget-Karte ohne Foto: Namen, Tage zusammen und der Weg zum nächsten besonderen Tag
+ * auf einem Weinrot-Verlauf. Ohne Bild bleibt das Update klein und das Widget lädt immer zuverlässig.
+ */
+class CardWidget : GlanceAppWidget() {
 
     override val sizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val settings = LoveRepository(context).current()
-        provideContent {
-            val size = LocalSize.current
-            val density = context.resources.displayMetrics.density
-            val photo = androidx.compose.runtime.remember(settings, size) {
-                WidgetPhoto.renderIcon(context, settings, size.width.value * density, size.height.value * density)
-            }
-            PhotoContent(settings, photo)
-        }
+        provideContent { CardContent(settings) }
     }
 }
 
 @androidx.compose.runtime.Composable
-private fun PhotoContent(settings: LoveSettings, photo: android.graphics.drawable.Icon?) {
+private fun CardContent(settings: LoveSettings) {
     val context = LocalContext.current
     val today = LocalDate.now()
     val days = LoveMath.together(settings.startDate, today).totalDays
     val future = settings.startDate.isAfter(today)
+    val next = LoveMath.upcoming(settings.startDate, today, 1).firstOrNull()
     val size = LocalSize.current
     val wide = size.width >= 200.dp
+    // Flache Karte (z. B. 4x1): nur Namen und Zahl, ab mittlerer Höhe auch der nächste besondere Tag
+    val flat = size.height < 110.dp
+    val tall = size.height >= 140.dp
     val white = ColorProvider(Color.White)
-    val soft = ColorProvider(Color(0xDDFFFFFF))
+    val soft = ColorProvider(Color(0xD9FFE3E7))
+    val pink = ColorProvider(Color(0xFFFFB2B9))
+    val label = if (future) {
+        context.getString(R.string.widget_days_until)
+    } else {
+        context.resources.getQuantityString(R.plurals.unit_days_together, days.toInt())
+    }
 
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
             .cornerRadius(28.dp)
-            .background(Color(0xFF2A1A1D))
+            .background(ImageProvider(R.drawable.widget_card_bg))
             .clickable(actionStartActivity<MainActivity>()),
     ) {
-        if (photo != null) {
+        // Großes, kaum sichtbares Herz als Dekoration unten rechts
+        Box(modifier = GlanceModifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
             Image(
-                ImageProvider(photo),
-                contentDescription = context.getString(R.string.your_photo),
-                contentScale = androidx.glance.layout.ContentScale.Crop,
-                modifier = GlanceModifier.fillMaxSize(),
+                ImageProvider(R.drawable.widget_heart_deco),
+                contentDescription = null,
+                modifier = GlanceModifier.size(if (flat) 70.dp else if (wide) 110.dp else 84.dp),
             )
         }
-        // Verlauf von unten für lesbare Schrift
-        Image(
-            ImageProvider(R.drawable.widget_scrim),
-            contentDescription = null,
-            contentScale = androidx.glance.layout.ContentScale.FillBounds,
-            modifier = GlanceModifier.fillMaxSize(),
-        )
         Column(
-            modifier = GlanceModifier.fillMaxSize().padding(14.dp),
-            verticalAlignment = Alignment.Bottom,
+            modifier = GlanceModifier.fillMaxSize().padding(horizontal = 18.dp, vertical = if (flat) 10.dp else 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            val label = if (future) {
-                context.getString(R.string.widget_days_until)
-            } else {
-                context.resources.getQuantityString(R.plurals.unit_days_together, days.toInt())
-            }
-            val number = TextStyle(color = white, fontSize = if (wide) 40.sp else 32.sp, fontWeight = FontWeight.Bold)
-            if (wide) {
-                Row(verticalAlignment = Alignment.Bottom, modifier = GlanceModifier.fillMaxWidth()) {
-                    Text(formatNumber(days), style = number)
-                    Spacer(GlanceModifier.width(6.dp))
+            Text(
+                "${settings.name1} ❤ ${settings.name2}",
+                style = TextStyle(color = soft, fontSize = 13.sp, fontFamily = FontFamily.Serif),
+                maxLines = 1,
+            )
+            Spacer(GlanceModifier.height(if (flat) 0.dp else 4.dp))
+            if (wide || flat) {
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        formatNumber(days),
+                        style = TextStyle(color = white, fontSize = if (flat) 32.sp else 40.sp, fontWeight = FontWeight.Bold),
+                    )
+                    Spacer(GlanceModifier.width(8.dp))
                     Text(
                         label,
-                        style = TextStyle(color = soft, fontSize = 13.sp),
+                        style = TextStyle(color = soft, fontSize = 14.sp),
                         maxLines = 1,
-                        modifier = GlanceModifier.padding(bottom = 6.dp),
+                        modifier = GlanceModifier.padding(bottom = if (flat) 5.dp else 7.dp),
                     )
                 }
             } else {
-                // Schmales Widget: Beschriftung unter die Zahl
-                Text(formatNumber(days), style = number)
+                // Schmale Karte: Beschriftung unter die Zahl
+                Text(
+                    formatNumber(days),
+                    style = TextStyle(color = white, fontSize = 34.sp, fontWeight = FontWeight.Bold),
+                )
                 Text(label, style = TextStyle(color = soft, fontSize = 13.sp), maxLines = 1)
-                Spacer(GlanceModifier.height(4.dp))
             }
-            Text(
-                "${settings.name1} ❤ ${settings.name2}",
-                style = TextStyle(color = soft, fontSize = 14.sp, fontFamily = FontFamily.Serif),
-                maxLines = 1,
-            )
+            if (tall && next != null && !future) {
+                // Fortschritt vom letzten bis zum nächsten besonderen Tag
+                val previous = LoveMath.previousMilestoneDate(settings.startDate, today)
+                val total = ChronoUnit.DAYS.between(previous, next.date).coerceAtLeast(1)
+                val done = ChronoUnit.DAYS.between(previous, today)
+                Spacer(GlanceModifier.height(10.dp))
+                LinearProgressIndicator(
+                    progress = done.toFloat() / total,
+                    modifier = GlanceModifier.fillMaxWidth().height(4.dp),
+                    color = pink,
+                    backgroundColor = ColorProvider(Color(0x33FFFFFF)),
+                )
+                Spacer(GlanceModifier.height(5.dp))
+                Text(
+                    context.getString(R.string.widget_next, Texts.milestoneTitle(context, next)),
+                    style = TextStyle(color = soft, fontSize = 11.sp),
+                    maxLines = 1,
+                )
+            }
         }
     }
 }
@@ -221,6 +239,7 @@ class LoveWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = LoveWidget()
 }
 
+// Name bleibt „PhotoWidget…“, damit bereits platzierte Widgets nach dem Update weiter funktionieren
 class PhotoWidgetReceiver : GlanceAppWidgetReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = PhotoWidget()
+    override val glanceAppWidget: GlanceAppWidget = CardWidget()
 }

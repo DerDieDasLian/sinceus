@@ -47,8 +47,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -64,6 +64,9 @@ import app.sinceus.data.LoveSettings
 import app.sinceus.data.liveSpan
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
+
+/** So lange bleibt eine angetippte Gesamtzahl stehen */
+private const val FOCUS_MS = 4000L
 
 private data class LiveRow(val key: String, val value: Long, @PluralsRes val unit: Int, val total: Long)
 
@@ -90,8 +93,14 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
     val start = settings.startDateTime
     val future = start.isAfter(current)
     val span = liveSpan(start, current)
-    // Pro Zeile: Einzelwert oder Gesamtzahl anzeigen
-    val showTotal: SnapshotStateMap<String, Boolean> = remember { mutableStateMapOf() }
+    // Angetippte Zeile zeigt kurz die Gesamtzahl, die anderen werden solange weichgezeichnet
+    var focused by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(focused) {
+        if (focused != null) {
+            delay(FOCUS_MS)
+            focused = null
+        }
+    }
     val context = LocalContext.current
     // Teilen als Bild, mit den aktuellen Live-Werten als Begleittext
     val shareLive = {
@@ -142,7 +151,10 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
                 modifier = Modifier.padding(top = 32.dp, bottom = 16.dp),
             )
             span.rows().forEach { row ->
-                val total = showTotal[row.key] == true
+                val total = focused == row.key
+                val dimmed = focused != null && !total
+                val blur by animateDpAsState(if (dimmed) 6.dp else 0.dp, tween(300), label = "blur")
+                val fade by animateFloatAsState(if (dimmed) 0.35f else 1f, tween(300), label = "fade")
                 val text = Texts.count(context, row.unit, if (total) row.total else row.value)
                 AnimatedContent(
                     targetState = text,
@@ -153,8 +165,10 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
                     label = row.key,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .blur(blur)
+                        .alpha(fade)
                         .combinedClickable(
-                            onClick = { showTotal[row.key] = !total },
+                            onClick = { focused = if (total) null else row.key },
                             onLongClick = shareLive,
                         ),
                 ) { t ->

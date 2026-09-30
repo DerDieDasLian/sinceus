@@ -9,38 +9,20 @@ import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Shader
-import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.compose.ui.graphics.toArgb
 import app.sinceus.data.LoveSettings
 import app.sinceus.ui.Presets
-import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * Bereitet das Bild fürs Widget vor: passend zur Widget-Größe zugeschnitten (mit dem
- * in der App gewählten Ausschnitt) und klein genug für das Widget-System.
+ * Rendert euer Foto in einer bestimmten Größe, mit dem in der App gewählten Ausschnitt
+ * (ohne Foto: der gewählte Farbverlauf). Genutzt fürs Teilen-Bild.
  */
 object WidgetPhoto {
-    /**
-     * Widget-Updates laufen über einen Kanal mit ca. 1 MB Limit, und Android fordert oft mehrere
-     * Größen gleichzeitig an. Rohe Bitmaps überschreiten das schnell, dann wird das Update verworfen
-     * und das Widget bleibt ohne Bild. Deshalb geht das Bild als JPEG (rund 50 bis 100 KB) ans Widget.
-     */
     private const val MAX_SIDE = 900f
-    private const val JPEG_QUALITY = 85
-
-    /** Fertiges Widget-Bild als komprimiertes Icon. */
-    fun renderIcon(context: Context, s: LoveSettings, widthPx: Float, heightPx: Float): Icon? {
-        val bitmap = render(context, s, widthPx, heightPx) ?: return null
-        val bytes = ByteArrayOutputStream().use {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it)
-            it.toByteArray()
-        }
-        return Icon.createWithData(bytes, 0, bytes.size)
-    }
 
     fun render(
         context: Context,

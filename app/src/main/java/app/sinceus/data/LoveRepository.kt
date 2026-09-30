@@ -55,6 +55,8 @@ data class LoveSettings(
     val moments: List<Moment> = emptyList(),
     /** Bereich „Momente“ anzeigen (lässt sich ausblenden, die Daten bleiben erhalten) */
     val showMoments: Boolean = true,
+    /** Live-Zähler anzeigen (lässt sich ausblenden) */
+    val showLive: Boolean = true,
 ) {
     val names: String get() = "$name1 & $name2"
     val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
@@ -84,6 +86,7 @@ private object Keys {
     val updateNotified = stringPreferencesKey("update_notified")
     val moments = stringPreferencesKey("moments")
     val showMoments = booleanPreferencesKey("show_moments")
+    val showLive = booleanPreferencesKey("show_live")
 }
 
 class LoveRepository(private val context: Context) {
@@ -115,6 +118,7 @@ class LoveRepository(private val context: Context) {
             updateApkUrl = this[Keys.updateApkUrl],
             moments = MomentCodec.decode(this[Keys.moments]).sortedBy { it.date },
             showMoments = this[Keys.showMoments] ?: d.showMoments,
+            showLive = this[Keys.showLive] ?: d.showLive,
         )
     }
 
@@ -156,6 +160,8 @@ class LoveRepository(private val context: Context) {
     }
 
     suspend fun setShowMoments(show: Boolean) = context.dataStore.edit { it[Keys.showMoments] = show }
+
+    suspend fun setShowLive(show: Boolean) = context.dataStore.edit { it[Keys.showLive] = show }
 
     suspend fun deleteMoment(id: String) {
         val old = current().moments.firstOrNull { it.id == id } ?: return
