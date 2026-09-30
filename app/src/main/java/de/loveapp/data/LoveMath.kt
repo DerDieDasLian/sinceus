@@ -115,3 +115,49 @@ fun Period.toGermanText(dative: Boolean = false): String {
         else -> parts.dropLast(1).joinToString(", ") + " und " + parts.last()
     }
 }
+
+/** Sekundengenauer Abstand zwischen zwei Zeitpunkten, fuer den Live-Zaehler. */
+data class LiveSpan(
+    val years: Int,
+    val months: Int,
+    val days: Int,
+    val hours: Int,
+    val minutes: Int,
+    val seconds: Int,
+    val totalMonths: Long,
+    val totalDays: Long,
+    val totalHours: Long,
+    val totalMinutes: Long,
+    val totalSeconds: Long,
+)
+
+fun liveSpan(
+    a: java.time.LocalDateTime,
+    b: java.time.LocalDateTime,
+    zone: java.time.ZoneId = java.time.ZoneId.systemDefault(),
+): LiveSpan {
+    val from = minOf(a, b)
+    val to = maxOf(a, b)
+    // Uhrzeit-Anteil: wenn die Uhrzeit "zurueckliegt", zaehlt der letzte Tag noch nicht voll
+    var endDate = to.toLocalDate()
+    var secsOfDay = to.toLocalTime().toSecondOfDay() - from.toLocalTime().toSecondOfDay()
+    if (secsOfDay < 0) {
+        endDate = endDate.minusDays(1)
+        secsOfDay += 24 * 3600
+    }
+    val p = Period.between(from.toLocalDate(), endDate)
+    val total = java.time.Duration.between(from.atZone(zone), to.atZone(zone)).seconds
+    return LiveSpan(
+        years = p.years,
+        months = p.months,
+        days = p.days,
+        hours = secsOfDay / 3600,
+        minutes = secsOfDay / 60 % 60,
+        seconds = secsOfDay % 60,
+        totalMonths = ChronoUnit.MONTHS.between(from, to),
+        totalDays = ChronoUnit.DAYS.between(from, to),
+        totalHours = total / 3600,
+        totalMinutes = total / 60,
+        totalSeconds = total,
+    )
+}

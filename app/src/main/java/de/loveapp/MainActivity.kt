@@ -24,7 +24,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,10 +36,13 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.loveapp.notify.Notifier
 import de.loveapp.ui.HomeScreen
+import de.loveapp.ui.OnboardingScreen
+import de.loveapp.ui.PhotoEditorScreen
 import de.loveapp.ui.LoveTheme
 import de.loveapp.ui.LoveViewModel
 import de.loveapp.ui.SettingsScreen
 import de.loveapp.widget.LoveWidgetReceiver
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val vm: LoveViewModel by viewModels()
@@ -51,7 +54,10 @@ class MainActivity : ComponentActivity() {
             LoveTheme {
                 val settings by vm.settings.collectAsStateWithLifecycle()
                 val today by vm.today.collectAsStateWithLifecycle()
+                val scope = rememberCoroutineScope()
                 var showSettings by rememberSaveable { mutableStateOf(false) }
+                var editingPhoto by rememberSaveable { mutableStateOf(false) }
+                var onboardingStep by rememberSaveable { mutableIntStateOf(0) }
                 // Aendert sich bei jedem Zurueckkehren, damit der Berechtigungsstatus neu gelesen wird
                 var resumeCount by rememberSaveable { mutableIntStateOf(0) }
 
@@ -60,6 +66,7 @@ class MainActivity : ComponentActivity() {
                     resumeCount++
                     onPauseOrDispose { }
                 }
+                val allowed = remember(resumeCount) { Notifier.canNotify(this@MainActivity) }
 
                 val permission = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestPermission(),
@@ -67,66 +74,111 @@ class MainActivity : ComponentActivity() {
                 fun askPermission() {
                     if (Build.VERSION.SDK_INT >= 33) permission.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
-
-                val photoPicker = rememberLauncherForActivityResult(
-                    ActivityResultContracts.PickVisualMedia(),
-                ) { uri -> if (uri != null) vm.setPhoto(uri) }
-
-                // Beim ersten Start einmal nach der Mitteilungs-Berechtigung fragen
-                LaunchedEffect(settings?.notificationsEnabled) {
-                    if (settings?.notificationsEnabled == true && !Notifier.canNotify(this@MainActivity)) {
-                        askPermission()
-                    }
+                fun setNotifications(on: Boolean) {
+                    vm.setNotifications(on)
+                    if (on && !allowed) askPermission()
                 }
 
-                BackHandler(enabled = showSettings) { showSettings = false }
+                // Nach der Auswahl direkt den Bildausschnitt anpassen lassen
+                val photoPicker = rememberLauncherForActivityResult(
+                    ActivityResultContracts.PickVisualMedia(),
+                ) { uri ->
+                    if (uri != null) {
+                        scope.launch {
+                            vm.setPhoto(uri).join()
+                            editingPhoto = true
+                        }
+                    }
+                }
+                fun pickPhoto() = photoPicker.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                )
+
+                BackHandler(enabled = showSettings || editingPhoto) {
+                    if (editingPhoto) editingPhoto = false else showSettings = false
+                }
 
                 val s = settings
+                val screen = when {
+                    s == null -> "loading"
+                    editingPhoto && s.photoPath != null -> "editor"
+                    !s.onboardingDone -> "onboarding"
+                    showSettings -> "settings"
+                    else -> "home"
+                }
                 Box(
                     Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background),
                 ) {
-                    if (s != null) {
-                        AnimatedContent(
-                            targetState = showSettings,
-                            transitionSpec = {
-                                if (targetState) {
-                                    (slideInHorizontally { it / 3 } + fadeIn()) togetherWith fadeOut()
-                                } else {
-                                    fadeIn() togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
-                                }
-                            },
-                            label = "screen",
-                        ) { settingsOpen ->
-                            if (settingsOpen) {
-                                val allowed = remember(resumeCount) { Notifier.canNotify(this@MainActivity) }
-                                SettingsScreen(
-                                    settings = s,
-                                    notificationsAllowed = allowed,
-                                    onBack = { showSettings = false },
-                                    onNames = vm::setNames,
-                                    onStartDate = vm::setStartDate,
-                                    onPickPhoto = {
-                                        photoPicker.launch(
-                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
-                                        )
-                                    },
-                                    onPreset = vm::setPreset,
-                                    onResetPhoto = vm::resetPhoto,
-                                    onNotifications = { on ->
-                                        vm.setNotifications(on)
-                                        if (on && !allowed) askPermission()
-                                    },
-                                    onNotifyTime = vm::setNotifyTime,
-                                    onTestNotification = {
-                                        if (allowed) vm.sendTestNotification() else askPermission()
-                                    },
-                                    onAddWidget = ::pinWidget,
-                                )
+                    AnimatedContent(
+                        targetState = screen,
+                        transitionSpec = {
+                            if (targetState == "settings") {
+                                (slideInHorizontally { it / 3 } + fadeIn()) togetherWith fadeOut()
+                            } else if (initialState == "settings") {
+                                fadeIn() togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
                             } else {
-                                HomeScreen(s, today, onOpenSettings = { showSettings = true })
+                                fadeIn() togetherWith fadeOut()
                             }
+                        },
+                        label = "screen",
+                    ) { target ->
+                        if (s == null) return@AnimatedContent
+                        when (target) {
+                            "editor" -> PhotoEditorScreen(
+                                settings = s,
+                                onPickOther = ::pickPhoto,
+                                onCancel = { editingPhoto = false },
+                                onSave = { x, y, z ->
+                                    vm.setPhotoFrame(x, y, z)
+                                    editingPhoto = false
+                                },
+                            )
+                            "onboarding" -> OnboardingScreen(
+                                settings = s,
+                                notificationsAllowed = allowed,
+                                onNames = vm::setNames,
+                                onStartDate = vm::setStartDate,
+                                onPickPhoto = ::pickPhoto,
+                                onAdjustPhoto = { editingPhoto = true },
+                                onPreset = vm::setPreset,
+                                onNotifications = ::setNotifications,
+                                onNotifyTime = vm::setNotifyTime,
+                                onFinish = {
+                                    vm.setOnboardingDone(true)
+                                    showSettings = false
+                                },
+                                step = onboardingStep,
+                                onStep = { onboardingStep = it },
+                            )
+                            "settings" -> SettingsScreen(
+                                settings = s,
+                                notificationsAllowed = allowed,
+                                onBack = { showSettings = false },
+                                onNames = vm::setNames,
+                                onStartDate = vm::setStartDate,
+                                onPickPhoto = ::pickPhoto,
+                                onPreset = vm::setPreset,
+                                onResetPhoto = vm::resetPhoto,
+                                onNotifications = ::setNotifications,
+                                onNotifyTime = vm::setNotifyTime,
+                                onTestNotification = {
+                                    if (allowed) vm.sendTestNotification() else askPermission()
+                                },
+                                onAddWidget = ::pinWidget,
+                                onAdjustPhoto = { editingPhoto = true },
+                                onRestartOnboarding = {
+                                    onboardingStep = 0
+                                    vm.setOnboardingDone(false)
+                                },
+                            )
+                            else -> HomeScreen(
+                                s,
+                                today,
+                                onOpenSettings = { showSettings = true },
+                                onPageChange = vm::setHomePage,
+                            )
                         }
                     }
                 }

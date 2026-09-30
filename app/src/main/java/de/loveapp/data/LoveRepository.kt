@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -19,6 +20,9 @@ import java.time.LocalDate
 
 private val Context.dataStore by preferencesDataStore(name = "love")
 
+/** Die meisten Paarfotos haben die Gesichter im oberen Bilddrittel */
+const val DEFAULT_FOCUS_Y = -0.6f
+
 data class LoveSettings(
     val name1: String = "Alex",
     val name2: String = "Sam",
@@ -29,6 +33,13 @@ data class LoveSettings(
     val notificationsEnabled: Boolean = true,
     val notifyHour: Int = 9,
     val notifyMinute: Int = 0,
+    /** Bildausschnitt: Fokuspunkt (-1..1) und Zoom (1..4) */
+    val focusX: Float = 0f,
+    val focusY: Float = DEFAULT_FOCUS_Y,
+    val zoom: Float = 1f,
+    val onboardingDone: Boolean = false,
+    /** 0 = Uebersicht, 1 = Live-Zaehler */
+    val homePage: Int = 0,
 ) {
     val names: String get() = "$name1 & $name2"
 }
@@ -45,6 +56,11 @@ class LoveRepository(private val context: Context) {
         val notifyHour = intPreferencesKey("notify_hour")
         val notifyMinute = intPreferencesKey("notify_minute")
         val lastNotified = longPreferencesKey("last_notified_epoch_day")
+        val focusX = floatPreferencesKey("focus_x")
+        val focusY = floatPreferencesKey("focus_y")
+        val zoom = floatPreferencesKey("zoom")
+        val onboardingDone = booleanPreferencesKey("onboarding_done")
+        val homePage = intPreferencesKey("home_page")
     }
 
     val settings: Flow<LoveSettings> = context.dataStore.data.map { it.toSettings() }
@@ -62,6 +78,11 @@ class LoveRepository(private val context: Context) {
             notificationsEnabled = this[Keys.notify] ?: d.notificationsEnabled,
             notifyHour = this[Keys.notifyHour] ?: d.notifyHour,
             notifyMinute = this[Keys.notifyMinute] ?: d.notifyMinute,
+            focusX = this[Keys.focusX] ?: d.focusX,
+            focusY = this[Keys.focusY] ?: d.focusY,
+            zoom = this[Keys.zoom] ?: d.zoom,
+            onboardingDone = this[Keys.onboardingDone] ?: d.onboardingDone,
+            homePage = this[Keys.homePage] ?: d.homePage,
         )
     }
 
@@ -104,8 +125,24 @@ class LoveRepository(private val context: Context) {
             } ?: return@withContext null
             file
         } ?: return
-        context.dataStore.edit { it[Keys.photo] = target.absolutePath }
+        context.dataStore.edit {
+            it[Keys.photo] = target.absolutePath
+            // Neues Foto startet mit dem Standard-Ausschnitt
+            it.remove(Keys.focusX)
+            it.remove(Keys.focusY)
+            it.remove(Keys.zoom)
+        }
     }
+
+    suspend fun setPhotoFrame(focusX: Float, focusY: Float, zoom: Float) = context.dataStore.edit {
+        it[Keys.focusX] = focusX
+        it[Keys.focusY] = focusY
+        it[Keys.zoom] = zoom
+    }
+
+    suspend fun setOnboardingDone(done: Boolean) = context.dataStore.edit { it[Keys.onboardingDone] = done }
+
+    suspend fun setHomePage(page: Int) = context.dataStore.edit { it[Keys.homePage] = page }
 
     /** true, wenn fuer [day] noch keine Mitteilung verschickt wurde (und merkt ihn sich). */
     suspend fun markNotified(day: LocalDate): Boolean {

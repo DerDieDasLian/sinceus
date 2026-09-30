@@ -6,6 +6,15 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.unit.Dp
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,19 +59,16 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import de.loveapp.data.LoveMath
 import de.loveapp.data.LoveSettings
 import de.loveapp.data.Milestone
 import de.loveapp.data.MilestoneKind
 import de.loveapp.data.formatNumber
 import de.loveapp.data.toGermanText
-import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -72,7 +78,75 @@ private val LongDate = DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMAN
 private val ShortDate = DateTimeFormatter.ofPattern("EE, d. MMM yyyy", Locale.GERMAN)
 
 @Composable
-fun HomeScreen(settings: LoveSettings, today: LocalDate, onOpenSettings: () -> Unit) {
+fun HomeScreen(
+    settings: LoveSettings,
+    today: LocalDate,
+    onOpenSettings: () -> Unit,
+    onPageChange: (Int) -> Unit,
+) {
+    val pager = rememberPagerState(initialPage = settings.homePage.coerceIn(0, 1)) { 2 }
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(pager) {
+        snapshotFlow { pager.settledPage }.drop(1).collect(onPageChange)
+    }
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+    ) {
+        HorizontalPager(pager, Modifier.fillMaxSize()) { page ->
+            if (page == 0) Overview(settings, today) else LiveScreen(settings, active = pager.currentPage == 1)
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Spacer(Modifier.size(40.dp))
+            Spacer(Modifier.weight(1f))
+            ModeSwitch(pager.currentPage) { scope.launch { pager.animateScrollToPage(it) } }
+            Spacer(Modifier.weight(1f))
+            FilledIconButton(
+                onClick = onOpenSettings,
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = Color.Black.copy(alpha = 0.3f),
+                    contentColor = Color.White,
+                ),
+            ) {
+                Icon(Icons.Rounded.Settings, contentDescription = "Einstellungen")
+            }
+        }
+    }
+}
+
+@Composable
+private fun ModeSwitch(selected: Int, onSelect: (Int) -> Unit) {
+    Row(
+        Modifier
+            .clip(RoundedCornerShape(50))
+            .background(Color.Black.copy(alpha = 0.3f))
+            .padding(4.dp),
+    ) {
+        listOf("Übersicht", "Live").forEachIndexed { i, label ->
+            val active = i == selected
+            Text(
+                label,
+                style = MaterialTheme.typography.labelLarge,
+                color = if (active) Wine else Color.White,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(if (active) Color.White else Color.Transparent)
+                    .clickable { onSelect(i) }
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun Overview(settings: LoveSettings, today: LocalDate) {
     val start = settings.startDate
     val together = LoveMath.together(start, today)
     val future = start.isAfter(today)
@@ -82,10 +156,9 @@ fun HomeScreen(settings: LoveSettings, today: LocalDate, onOpenSettings: () -> U
     Column(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState()),
     ) {
-        Hero(settings, onOpenSettings)
+        Hero(settings)
 
         Column(
             Modifier
@@ -131,64 +204,36 @@ fun HomeScreen(settings: LoveSettings, today: LocalDate, onOpenSettings: () -> U
 }
 
 @Composable
-private fun Hero(settings: LoveSettings, onOpenSettings: () -> Unit) {
+private fun Hero(settings: LoveSettings) {
     Box(
         Modifier
             .fillMaxWidth()
-            .height(460.dp),
+            .height(heroHeight()),
     ) {
-        if (settings.photoPath != null) {
-            AsyncImage(
-                model = File(settings.photoPath),
-                contentDescription = "Euer Foto",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
-            )
-        } else {
-            PresetBackground(Presets.getOrElse(settings.presetIndex) { Presets[0] }, Modifier.fillMaxSize())
-        }
-        // Verlauf, damit Schrift auf jedem Foto lesbar bleibt
+        CouplePhoto(settings, Modifier.fillMaxSize())
         Box(
             Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        0f to Color.Black.copy(alpha = 0.35f),
-                        0.25f to Color.Transparent,
-                        0.55f to Color.Transparent,
-                        1f to Color.Black.copy(alpha = 0.7f),
-                    ),
-                ),
+                .background(PhotoScrim),
         )
-        FilledIconButton(
-            onClick = onOpenSettings,
-            colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = Color.Black.copy(alpha = 0.3f),
-                contentColor = Color.White,
-            ),
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(12.dp),
-        ) {
-            Icon(Icons.Rounded.Settings, contentDescription = "Einstellungen")
-        }
-        Column(
-            Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 24.dp, end = 24.dp, bottom = 48.dp),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(settings.name1, style = MaterialTheme.typography.displayMedium, color = Color.White)
-                BeatingHeart(Modifier.padding(horizontal = 12.dp))
-                Text(settings.name2, style = MaterialTheme.typography.displayMedium, color = Color.White)
-            }
-        }
+        NamesOverlay(settings, Modifier.align(Alignment.BottomStart))
     }
 }
 
 @Composable
-private fun BeatingHeart(modifier: Modifier = Modifier) {
+fun NamesOverlay(settings: LoveSettings, modifier: Modifier = Modifier) {
+    Row(
+        modifier.padding(start = 24.dp, end = 24.dp, bottom = 48.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(settings.name1, style = MaterialTheme.typography.displayMedium, color = Color.White, maxLines = 1)
+        BeatingHeart(Modifier.padding(horizontal = 12.dp))
+        Text(settings.name2, style = MaterialTheme.typography.displayMedium, color = Color.White, maxLines = 1)
+    }
+}
+
+@Composable
+fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp) {
     val beat by rememberInfiniteTransition(label = "heart").animateFloat(
         initialValue = 1f,
         targetValue = 1.18f,
@@ -200,23 +245,9 @@ private fun BeatingHeart(modifier: Modifier = Modifier) {
         contentDescription = null,
         tint = Color(0xFFFF5C77),
         modifier = modifier
-            .size(30.dp)
+            .size(size)
             .scale(beat),
     )
-}
-
-@Composable
-fun PresetBackground(preset: Preset, modifier: Modifier = Modifier) {
-    Box(modifier.background(preset.brush)) {
-        Icon(
-            Icons.Rounded.Favorite,
-            contentDescription = null,
-            tint = Color.White.copy(alpha = 0.10f),
-            modifier = Modifier
-                .align(Alignment.Center)
-                .size(220.dp),
-        )
-    }
 }
 
 @Composable

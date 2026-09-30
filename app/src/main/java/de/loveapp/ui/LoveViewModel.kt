@@ -51,6 +51,9 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun setPhoto(uri: Uri) = viewModelScope.launch { repo.setPhoto(uri) }
     fun setPreset(index: Int) = viewModelScope.launch { repo.setPreset(index) }
     fun resetPhoto() = viewModelScope.launch { repo.resetPhoto() }
+    fun setPhotoFrame(x: Float, y: Float, zoom: Float) = viewModelScope.launch { repo.setPhotoFrame(x, y, zoom) }
+    fun setOnboardingDone(done: Boolean) = viewModelScope.launch { repo.setOnboardingDone(done) }
+    fun setHomePage(page: Int) = viewModelScope.launch { repo.setHomePage(page) }
 
     fun sendTestNotification() {
         settings.value?.let { Notifier.showTest(getApplication(), it) }

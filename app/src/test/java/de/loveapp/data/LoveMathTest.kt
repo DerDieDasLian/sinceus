@@ -61,4 +61,24 @@ class LoveMathTest {
         val t = LoveMath.together(LocalDate.of(2024, 1, 1), LocalDate.of(2025, 3, 2))
         assertEquals("1 Jahr, 2 Monate und 1 Tag", t.period.toGermanText())
     }
+
+    @Test
+    fun liveSpan() {
+        val zone = java.time.ZoneOffset.UTC
+        val s = liveSpan(start.atStartOfDay(), java.time.LocalDateTime.of(2026, 9, 30, 12, 46, 33), zone)
+        assertEquals(listOf(0, 5, 0, 12, 46, 33), listOf(s.years, s.months, s.days, s.hours, s.minutes, s.seconds))
+        assertEquals(153, s.totalDays)
+        assertEquals(153L * 24 + 12, s.totalHours)
+        assertEquals((153L * 24 + 12) * 3600 + 46 * 60 + 33, s.totalSeconds)
+    }
+
+    @Test
+    fun liveSpanCountdown() {
+        val s = liveSpan(
+            java.time.LocalDateTime.of(2026, 9, 30, 22, 0),
+            java.time.LocalDate.of(2026, 10, 2).atStartOfDay(),
+            java.time.ZoneOffset.UTC,
+        )
+        assertEquals(listOf(0, 0, 1, 2, 0, 0), listOf(s.years, s.months, s.days, s.hours, s.minutes, s.seconds))
+    }
 }

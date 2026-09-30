@@ -21,7 +21,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Crop
 import androidx.compose.material.icons.rounded.Collections
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.People
@@ -89,6 +91,8 @@ fun SettingsScreen(
     onNotifyTime: (Int, Int) -> Unit,
     onTestNotification: () -> Unit,
     onAddWidget: () -> Unit,
+    onAdjustPhoto: () -> Unit,
+    onRestartOnboarding: () -> Unit,
 ) {
     var dialog by remember { mutableStateOf<String?>(null) }
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -125,6 +129,10 @@ fun SettingsScreen(
             Section("Foto") {
                 Row(Icons.Rounded.AddPhotoAlternate, "Eigenes Foto auswählen", null, onClick = onPickPhoto)
                 Divider()
+                if (settings.photoPath != null) {
+                    Row(Icons.Rounded.Crop, "Bildausschnitt anpassen", null, onClick = onAdjustPhoto)
+                    Divider()
+                }
                 Row(Icons.Rounded.Collections, "Aus Standardmotiven auswählen", null) { dialog = "presets" }
                 Divider()
                 Row(Icons.Rounded.RestartAlt, "Foto zurücksetzen", null, onClick = onResetPhoto)
@@ -161,6 +169,8 @@ fun SettingsScreen(
             }
             Section("Verschiedenes") {
                 Row(Icons.Rounded.Widgets, "Widget zum Startbildschirm hinzufügen", null, onClick = onAddWidget)
+                Divider()
+                Row(Icons.Rounded.AutoAwesome, "Einrichtung erneut starten", null, onClick = onRestartOnboarding)
                 Divider()
                 Row(Icons.Rounded.Shield, "Datenschutz", null) { dialog = "privacy" }
             }
@@ -279,7 +289,7 @@ private fun DateDialog(current: LocalDate, onDismiss: () -> Unit, onSave: (Local
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TimeDialog(settings: LoveSettings, onDismiss: () -> Unit, onSave: (Int, Int) -> Unit) {
+internal fun TimeDialog(settings: LoveSettings, onDismiss: () -> Unit, onSave: (Int, Int) -> Unit) {
     val state = rememberTimePickerState(settings.notifyHour, settings.notifyMinute, is24Hour = true)
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -291,7 +301,7 @@ private fun TimeDialog(settings: LoveSettings, onDismiss: () -> Unit, onSave: (I
 }
 
 @Composable
-private fun PresetDialog(selected: Int, onDismiss: () -> Unit, onPick: (Int) -> Unit) {
+internal fun PresetDialog(selected: Int, onDismiss: () -> Unit, onPick: (Int) -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Standardmotive") },

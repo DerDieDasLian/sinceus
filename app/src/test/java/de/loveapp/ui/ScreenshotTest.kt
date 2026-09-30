@@ -29,14 +29,44 @@ class ScreenshotTest {
     private val today = LocalDate.of(2026, 9, 30)
 
     @Test
-    fun home() = shot("home") { HomeScreen(settings, today) {} }
+    fun home() = shot("home") { HomeScreen(settings, today, {}, {}) }
 
     @Test
-    fun homeDark() = shot("home_dark", dark = true) { HomeScreen(settings.copy(presetIndex = 3), today) {} }
+    fun homeDark() = shot("home_dark", dark = true) { HomeScreen(settings.copy(presetIndex = 3), today, {}, {}) }
 
     @Test
     fun settings() = shot("settings") {
-        SettingsScreen(settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {})
+        SettingsScreen(settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {})
+    }
+
+    @Test
+    fun live() = shot("live") {
+        LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2026, 9, 30, 12, 46, 33))
+    }
+
+    @Test
+    fun onboardingWelcome() = onboarding(0)
+
+    @Test
+    fun onboardingNames() = onboarding(1)
+
+    @Test
+    fun onboardingDate() = onboarding(2)
+
+    @Test
+    fun onboardingPhoto() = onboarding(3)
+
+    @Test
+    fun onboardingNotify() = onboarding(4)
+
+    @Test
+    fun editor() = shot("editor") { PhotoEditorScreen(settings, {}, {}, { _, _, _ -> }) }
+
+    private fun onboarding(step: Int) = shot("onboarding_$step") {
+        OnboardingScreen(
+            settings, false, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {},
+            step = step, onStep = {},
+        )
     }
 
     private fun shot(name: String, dark: Boolean = false, content: @androidx.compose.runtime.Composable () -> Unit) {
