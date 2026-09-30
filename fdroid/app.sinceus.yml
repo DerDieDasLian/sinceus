@@ -1,0 +1,26 @@
+# Vorlage für die Aufnahme in F-Droid (Merge Request an https://gitlab.com/fdroid/fdroiddata,
+# Datei metadata/app.sinceus.yml). Vor dem Einreichen Repo-URL und commit prüfen.
+Categories:
+  - Time
+License: GPL-3.0-or-later
+AuthorName: DerDieDasLian
+SourceCode: https://github.com/DerDieDasLian/loveapp
+IssueTracker: https://github.com/DerDieDasLian/loveapp/issues
+
+AutoName: Since Us
+
+RepoType: git
+Repo: https://github.com/DerDieDasLian/loveapp.git
+
+Builds:
+  - versionName: 2.0.1
+    versionCode: 5
+    commit: v2.0.1
+    subdir: app
+    gradle:
+      - fdroid
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 2.0.1
+CurrentVersionCode: 5

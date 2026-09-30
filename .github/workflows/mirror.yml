@@ -1,0 +1,28 @@
+name: Mirror to Forgejo
+
+# Optional: spiegelt alle Branches und Tags auf eine eigene Forgejo-Instanz.
+# Läuft nur, wenn die Variable FORGEJO_REPO_URL gesetzt ist (siehe RELEASING.md).
+on:
+  push:
+    branches: ["**"]
+    tags: ["**"]
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    if: vars.FORGEJO_REPO_URL != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push to Forgejo
+        env:
+          REPO_URL: ${{ vars.FORGEJO_REPO_URL }}
+          USERNAME: ${{ vars.FORGEJO_USERNAME }}
+          TOKEN: ${{ secrets.FORGEJO_TOKEN }}
+        run: |
+          url="https://${USERNAME}:${TOKEN}@${REPO_URL#https://}"
+          refs=$(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | grep -vx HEAD \
+            | sed 's|.*|refs/remotes/origin/&:refs/heads/&|')
+          git push --force "$url" $refs "refs/tags/*:refs/tags/*"

@@ -1,0 +1,82 @@
+package app.sinceus.data
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.time.LocalDate
+
+class LoveMathTest {
+
+    private val start = LocalDate.of(2025, 3, 15)
+
+    @Test
+    fun matchesOriginalApp() {
+        // 15.03. bis 15.08.: genau 5 Monate, 21 Wochen, 153 Tage
+        val t = LoveMath.together(start, LocalDate.of(2026, 9, 30))
+        assertEquals(5, t.totalMonths)
+        assertEquals(21, t.totalWeeks)
+        assertEquals(153, t.totalDays)
+    }
+
+    @Test
+    fun monthlyAnniversary() {
+        val m = LoveMath.milestonesOn(start, LocalDate.of(2026, 9, 30))
+        assertEquals(listOf(Milestone(MilestoneKind.MONTHS, 5, LocalDate.of(2026, 9, 30))), m)
+    }
+
+    @Test
+    fun monthEndIsClamped() {
+        val s = LocalDate.of(2026, 1, 31)
+        assertEquals(MilestoneKind.MONTHS, LoveMath.milestonesOn(s, LocalDate.of(2026, 2, 28)).single().kind)
+        assertTrue(LoveMath.milestonesOn(s, LocalDate.of(2026, 3, 1)).isEmpty())
+    }
+
+    @Test
+    fun yearlyAnniversary() {
+        val m = LoveMath.milestonesOn(start, LocalDate.of(2027, 4, 30))
+        assertEquals(MilestoneKind.YEARS, m.first().kind)
+        assertEquals(1, m.first().value)
+    }
+
+    @Test
+    fun hundredDays() {
+        val m = LoveMath.milestonesOn(start, start.plusDays(200))
+        assertTrue(m.any { it.kind == MilestoneKind.DAYS && it.value == 200L })
+    }
+
+    @Test
+    fun upcomingIsSortedAndInFuture() {
+        val today = LocalDate.of(2026, 9, 30)
+        val next = LoveMath.upcoming(start, today, 3)
+        assertEquals(3, next.size)
+        assertTrue(next.all { it.date.isAfter(today) })
+        assertEquals(next.sortedBy { it.date }, next)
+        assertEquals(LocalDate.of(2026, 10, 30), next.first().date)
+    }
+
+    @Test
+    fun previousMilestone() {
+        assertEquals(LocalDate.of(2026, 9, 30), LoveMath.previousMilestoneDate(start, LocalDate.of(2026, 10, 5)))
+        assertEquals(start, LoveMath.previousMilestoneDate(start, start.plusDays(3)))
+    }
+
+    @Test
+    fun liveSpan() {
+        val zone = java.time.ZoneOffset.UTC
+        val s = liveSpan(start.atStartOfDay(), java.time.LocalDateTime.of(2026, 9, 30, 12, 46, 33), zone)
+        assertEquals(listOf(0, 5, 0, 12, 46, 33), listOf(s.years, s.months, s.days, s.hours, s.minutes, s.seconds))
+        assertEquals(153, s.totalDays)
+        assertEquals(153L * 24 + 12, s.totalHours)
+        assertEquals((153L * 24 + 12) * 3600 + 46 * 60 + 33, s.totalSeconds)
+    }
+
+    @Test
+    fun liveSpanCountdown() {
+        val s = liveSpan(
+            java.time.LocalDateTime.of(2026, 9, 30, 22, 0),
+            java.time.LocalDate.of(2026, 10, 2).atStartOfDay(),
+            java.time.ZoneOffset.UTC,
+        )
+        assertEquals(listOf(0, 0, 1, 2, 0, 0), listOf(s.years, s.months, s.days, s.hours, s.minutes, s.seconds))
+    }
+}

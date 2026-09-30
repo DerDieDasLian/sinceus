@@ -6,13 +6,13 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-// Upload-Schluessel fuer den Play Store, liegt NICHT im Repo (siehe PLAY_STORE.md)
+// Signier-Schlüssel für Releases, liegt NICHT im Repo (siehe RELEASING.md)
 val releaseKeystore = rootProject.file("keystore.properties").takeIf { it.exists() }?.let { file ->
     Properties().apply { file.inputStream().use { load(it) } }
 }
 
 android {
-    namespace = "de.loveapp"
+    namespace = "app.sinceus"
     compileSdk = 36
 
     defaultConfig {
@@ -21,17 +21,31 @@ android {
         targetSdk = 36
         versionCode = 5
         versionName = "2.0.1"
+        // Repository, in dem die GitHub-Version nach neuen Releases sucht
+        val githubRepo = providers.gradleProperty("githubRepo").getOrElse("DerDieDasLian/loveapp")
+        buildConfigField("String", "GITHUB_REPO", "\"$githubRepo\"")
+    }
+
+    // play:   Google Play, Updates über den Play Store
+    // github: Releases auf GitHub, sucht selbst nach Updates (einzige Variante mit Internet)
+    // fdroid: F-Droid, Updates über F-Droid
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("play") {
+            dimension = "distribution"
+            buildConfigField("boolean", "UPDATE_CHECK", "false")
+        }
+        create("github") {
+            dimension = "distribution"
+            buildConfigField("boolean", "UPDATE_CHECK", "true")
+        }
+        create("fdroid") {
+            dimension = "distribution"
+            buildConfigField("boolean", "UPDATE_CHECK", "false")
+        }
     }
 
     signingConfigs {
-        // Fester Debug-Schluessel im Repo, damit lokal und per GitHub Actions gebaute
-        // Test-APKs sich gegenseitig updaten koennen. Nicht fuer den Play Store.
-        getByName("debug") {
-            storeFile = file("debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
         if (releaseKeystore != null) {
             create("release") {
                 storeFile = rootProject.file(releaseKeystore.getProperty("storeFile"))
@@ -47,7 +61,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
-            // Ohne Upload-Schluessel: mit Debug-Schluessel signieren (nur zum Selbst-Installieren)
+            // Ohne eigenen Schlüssel: mit dem lokalen Debug-Schlüssel signieren (nur zum Testen)
             signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
@@ -59,6 +73,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     // Sprachauswahl pro App in den Android-Einstellungen (Englisch, Deutsch)

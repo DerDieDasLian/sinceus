@@ -105,6 +105,17 @@
     <string name="msg_exact">Heute seid ihr genau %1$s zusammen.</string>
     <string name="msg_together">Heute seid ihr %1$s zusammen.</string>
     <string name="and_word">\u0020und\u0020</string>
+    <string name="update_channel_name">App-Updates</string>
+    <string name="update_available">Version %1$s verfügbar</string>
+    <string name="update_tap_to_open">Tippen, um die Download-Seite zu öffnen</string>
+    <string name="section_updates">Updates</string>
+    <string name="update_auto">Automatisch nach Updates suchen</string>
+    <string name="update_auto_summary">Fragt einmal täglich bei GitHub nach einer neuen Version</string>
+    <string name="update_check_now">Jetzt nach Updates suchen</string>
+    <string name="update_none">Du hast die neueste Version</string>
+    <string name="update_failed">GitHub ist gerade nicht erreichbar</string>
+    <string name="version">Version</string>
+    <string name="version_value">%1$s (%2$s)</string>
     <plurals name="years">
         <item quantity="one">%s Jahr</item>
         <item quantity="other">%s Jahre</item>
