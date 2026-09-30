@@ -32,7 +32,7 @@ class ScreenshotTest {
         startDate = LocalDate.of(2025, 3, 15),
         onboardingDone = true,
     )
-    private val today = LocalDate.of(2026, 9, 30)
+    private val today = LocalDate.of(2025, 8, 15)
 
     @Test
     fun home() = shot("home") { HomeScreen(settings, today, {}, {}) }
@@ -42,7 +42,7 @@ class ScreenshotTest {
 
     @Test
     fun liveGerman() = shot("live", lang = "de") {
-        LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2026, 9, 30, 12, 46, 33))
+        LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2025, 8, 15, 12, 46, 33))
     }
 
     @Test
@@ -60,7 +60,7 @@ class ScreenshotTest {
 
     @Test
     fun live() = shot("live") {
-        LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2026, 9, 30, 12, 46, 33))
+        LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2025, 8, 15, 12, 46, 33))
     }
 
     @Test

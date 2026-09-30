@@ -16,7 +16,7 @@ import java.util.Locale
 class TextsTest {
     private val context: Context get() = ApplicationProvider.getApplicationContext()
     private val period = Period.between(LocalDate.of(2024, 1, 1), LocalDate.of(2025, 3, 2))
-    private val day = LocalDate.of(2027, 4, 30)
+    private val day = LocalDate.of(2026, 3, 15)
 
     @Test
     @Config(qualifiers = "de")
