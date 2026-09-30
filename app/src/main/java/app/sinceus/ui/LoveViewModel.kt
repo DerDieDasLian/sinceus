@@ -60,6 +60,11 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun setOnboardingDone(done: Boolean) = viewModelScope.launch { repo.setOnboardingDone(done) }
     fun setHomePage(page: Int) = viewModelScope.launch { repo.setHomePage(page) }
 
+    fun saveMoment(moment: app.sinceus.data.Moment, photo: Uri?, removePhoto: Boolean) =
+        viewModelScope.launch { repo.saveMoment(moment, photo, removePhoto) }
+    fun deleteMoment(id: String) = viewModelScope.launch { repo.deleteMoment(id) }
+    fun setShowMoments(show: Boolean) = viewModelScope.launch { repo.setShowMoments(show) }
+
     fun setUpdateCheck(enabled: Boolean) = viewModelScope.launch { repo.setUpdateCheck(enabled) }
 
     /** Sucht sofort nach Updates und meldet das Ergebnis kurz als Hinweis. */

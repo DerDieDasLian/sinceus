@@ -49,6 +49,10 @@ data class LoveSettings(
     /** Neuere Version auf GitHub, falls gefunden */
     val updateVersion: String? = null,
     val updateUrl: String? = null,
+    /** Wichtige Momente der Beziehung, sortiert nach Datum */
+    val moments: List<Moment> = emptyList(),
+    /** Bereich „Momente“ anzeigen (lässt sich ausblenden, die Daten bleiben erhalten) */
+    val showMoments: Boolean = true,
 ) {
     val names: String get() = "$name1 & $name2"
     val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
@@ -75,6 +79,8 @@ private object Keys {
     val updateVersion = stringPreferencesKey("update_version")
     val updateUrl = stringPreferencesKey("update_url")
     val updateNotified = stringPreferencesKey("update_notified")
+    val moments = stringPreferencesKey("moments")
+    val showMoments = booleanPreferencesKey("show_moments")
 }
 
 class LoveRepository(private val context: Context) {
@@ -103,6 +109,8 @@ class LoveRepository(private val context: Context) {
             updateCheck = this[Keys.updateCheck] ?: d.updateCheck,
             updateVersion = this[Keys.updateVersion],
             updateUrl = this[Keys.updateUrl],
+            moments = MomentCodec.decode(this[Keys.moments]).sortedBy { it.date },
+            showMoments = this[Keys.showMoments] ?: d.showMoments,
         )
     }
 
@@ -119,9 +127,48 @@ class LoveRepository(private val context: Context) {
         if (time == null) it.remove(Keys.startTime) else it[Keys.startTime] = time.toSecondOfDay()
     }
 
+    /**
+     * Speichert einen neuen oder geänderten Moment. [newPhoto] ersetzt das bisherige Foto,
+     * [removePhoto] entfernt es.
+     */
+    suspend fun saveMoment(moment: Moment, newPhoto: Uri?, removePhoto: Boolean) {
+        val old = current().moments.firstOrNull { it.id == moment.id }
+        var photo = if (removePhoto) null else old?.photoPath
+        if (newPhoto != null) {
+            photo = withContext(Dispatchers.IO) {
+                val file = File(momentDir(), "${moment.id}_${System.currentTimeMillis()}.jpg")
+                context.contentResolver.openInputStream(newPhoto)?.use { input ->
+                    file.outputStream().use { input.copyTo(it) }
+                } ?: return@withContext photo
+                file.absolutePath
+            }
+        }
+        if (old?.photoPath != null && old.photoPath != photo) deleteFile(old.photoPath)
+        val saved = moment.copy(photoPath = photo)
+        context.dataStore.edit { prefs ->
+            val list = MomentCodec.decode(prefs[Keys.moments]).filterNot { it.id == moment.id } + saved
+            prefs[Keys.moments] = MomentCodec.encode(list)
+        }
+    }
+
+    suspend fun setShowMoments(show: Boolean) = context.dataStore.edit { it[Keys.showMoments] = show }
+
+    suspend fun deleteMoment(id: String) {
+        val old = current().moments.firstOrNull { it.id == id } ?: return
+        old.photoPath?.let { deleteFile(it) }
+        context.dataStore.edit { prefs ->
+            prefs[Keys.moments] = MomentCodec.encode(MomentCodec.decode(prefs[Keys.moments]).filterNot { it.id == id })
+        }
+    }
+
+    private fun momentDir() = File(context.filesDir, "moments").apply { mkdirs() }
+
+    private suspend fun deleteFile(path: String) = withContext(Dispatchers.IO) { File(path).delete() }
+
     /** Löscht alle Daten und das Foto, danach startet die Einrichtung neu. */
     suspend fun resetAll() {
         deletePhotos()
+        withContext(Dispatchers.IO) { momentDir().listFiles()?.forEach { it.delete() } }
         context.dataStore.edit {
             it.clear()
         }

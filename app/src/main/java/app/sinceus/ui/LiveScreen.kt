@@ -4,7 +4,10 @@ import androidx.annotation.PluralsRes
 import app.sinceus.R
 import app.sinceus.data.Texts
 import androidx.compose.ui.res.stringResource
-import android.content.Intent
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material.icons.rounded.IosShare
+import androidx.compose.material3.OutlinedButton
+import app.sinceus.share.ShareCard
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -90,6 +93,15 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
     // Pro Zeile: Einzelwert oder Gesamtzahl anzeigen
     val showTotal: SnapshotStateMap<String, Boolean> = remember { mutableStateMapOf() }
     val context = LocalContext.current
+    // Teilen als Bild, mit den aktuellen Live-Werten als Begleittext
+    val shareLive = {
+        val text = context.getString(
+            R.string.share_text,
+            settings.names,
+            span.rows().filter { it.value > 0 }.joinToString(", ") { Texts.count(context, it.unit, it.value) },
+        )
+        ShareCard.share(context, settings, current.toLocalDate(), text)
+    }
 
     Box(
         Modifier
@@ -143,18 +155,7 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
                         .fillMaxWidth()
                         .combinedClickable(
                             onClick = { showTotal[row.key] = !total },
-                            onLongClick = {
-                                val msg = context.getString(
-                                    R.string.share_text,
-                                    settings.names,
-                                    span.rows().filter { it.value > 0 }
-                                        .joinToString(", ") { Texts.count(context, it.unit, it.value) },
-                                )
-                                val send = Intent(Intent.ACTION_SEND)
-                                    .setType("text/plain")
-                                    .putExtra(Intent.EXTRA_TEXT, msg)
-                                context.startActivity(Intent.createChooser(send, context.getString(R.string.share)))
-                            },
+                            onLongClick = shareLive,
                         ),
                 ) { t ->
                     Text(
@@ -169,12 +170,20 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
                     )
                 }
             }
+            OutlinedButton(
+                onClick = shareLive,
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.4f)),
+                modifier = Modifier.padding(top = 32.dp),
+            ) {
+                Icon(Icons.Rounded.IosShare, null, tint = Color.White, modifier = Modifier.size(18.dp))
+                Text(stringResource(R.string.share), color = Color.White, modifier = Modifier.padding(start = 8.dp))
+            }
             Text(
                 stringResource(R.string.live_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 40.dp),
+                modifier = Modifier.padding(top = 16.dp),
             )
         }
     }

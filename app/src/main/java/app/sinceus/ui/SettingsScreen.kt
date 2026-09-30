@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Crop
 import androidx.compose.material.icons.rounded.DeleteForever
@@ -109,6 +110,7 @@ fun SettingsScreen(
     onUpdateCheck: (Boolean) -> Unit = {},
     onCheckUpdates: () -> Unit = {},
     onOpenUpdate: () -> Unit = {},
+    onShowMoments: (Boolean) -> Unit = {},
 ) {
     var dialog by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
@@ -225,6 +227,15 @@ fun SettingsScreen(
                 }
             }
             Section(stringResource(R.string.section_misc)) {
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.moments_show)) },
+                    supportingContent = { Text(stringResource(R.string.moments_show_summary)) },
+                    leadingContent = { Icon(Icons.Rounded.AutoStories, null) },
+                    trailingContent = { Switch(checked = settings.showMoments, onCheckedChange = onShowMoments) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { onShowMoments(!settings.showMoments) },
+                )
+                Divider()
                 Row(Icons.Rounded.Widgets, stringResource(R.string.add_widget), null, onClick = onAddWidget)
                 Divider()
                 Row(Icons.Rounded.AutoAwesome, stringResource(R.string.restart_setup), null, onClick = onRestartOnboarding)
@@ -354,7 +365,12 @@ private fun NamesDialog(settings: LoveSettings, onDismiss: () -> Unit, onSave: (
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DateDialog(current: LocalDate, onDismiss: () -> Unit, onSave: (LocalDate) -> Unit) {
+internal fun DateDialog(
+    current: LocalDate,
+    onDismiss: () -> Unit,
+    @androidx.annotation.StringRes title: Int = R.string.together_since_title,
+    onSave: (LocalDate) -> Unit,
+) {
     // Der DatePicker rechnet in UTC-Millisekunden
     val state = rememberDatePickerState(
         initialSelectedDateMillis = current.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
@@ -370,7 +386,7 @@ private fun DateDialog(current: LocalDate, onDismiss: () -> Unit, onSave: (Local
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     ) {
-        DatePicker(state = state, title = { Text(stringResource(R.string.together_since_title), Modifier.padding(start = 24.dp, top = 16.dp)) })
+        DatePicker(state = state, title = { Text(stringResource(title), Modifier.padding(start = 24.dp, top = 16.dp)) })
     }
 }
 

@@ -14,6 +14,7 @@ A privacy-friendly Android app for couples: counts how long you have been togeth
 - Your own photo with adjustable framing, or one of several backgrounds
 - Notifications on monthly and yearly anniversaries, every 100 days, fun numbers like 222 and every 50 weeks, at a time you choose
 - Upcoming special days with a countdown
+- Moments: a timeline of important moments with note, photo and yearly reminder (can be hidden)
 - Two home screen widgets: your photo with your days together, and a compact counter in Material You colors
 - Guided setup, optional start time, one-tap "delete all data"
 - Light and dark mode, English and German (per-app language supported)

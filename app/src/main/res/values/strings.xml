@@ -30,7 +30,7 @@
     <string name="add_widget">Add widget to home screen</string>
     <string name="restart_setup">Run setup again</string>
     <string name="privacy">Privacy</string>
-    <string name="privacy_text">Your names, date and photo are stored only on this device. The app has no internet access, sends no data and contains no tracking or ads.</string>
+    <string name="privacy_text">Your names, date, photos and moments are stored only on this device. The app has no internet access, sends no data and contains no tracking or ads.</string>
     <string name="delete_all">Delete all data</string>
     <string name="delete_all_summary">Completely resets the app</string>
     <string name="delete_all_question">Delete all data?</string>
@@ -92,7 +92,7 @@
     <string name="live_until">Still to go</string>
     <string name="share">Share</string>
     <string name="share_text">%1$s have been together for %2$s ❤</string>
-    <string name="live_hint">Tap a value to see the total.\nLong press to share.</string>
+    <string name="live_hint">Tap a value to see the total.</string>
     <string name="your_photo">Your photo</string>
     <string name="editor_hint">Drag with one finger, pinch with two to zoom.</string>
     <string name="other_photo">Other photo</string>
@@ -169,4 +169,42 @@
         <item quantity="one">day together</item>
         <item quantity="other">days together</item>
     </plurals>
+    <string name="tab_moments">Moments</string>
+    <string name="moments_title">Your moments</string>
+    <string name="moment_add">Add a moment</string>
+    <string name="moments_empty_title">Keep your special moments</string>
+    <string name="moments_empty_sub">First date, first kiss, first trip: save the moments that matter to you. Tap a suggestion to start.</string>
+    <string name="suggest_met">Met each other</string>
+    <string name="suggest_first_date">First date</string>
+    <string name="suggest_first_kiss">First kiss</string>
+    <string name="suggest_i_love_you">First “I love you”</string>
+    <string name="suggest_first_trip">First trip together</string>
+    <string name="suggest_moved_in">Moved in together</string>
+    <string name="moment_together_start">You got together</string>
+    <string name="moment_new">New moment</string>
+    <string name="moment_edit">Edit moment</string>
+    <string name="moment_field_title">What happened?</string>
+    <string name="moment_field_date">Date</string>
+    <string name="moment_field_note">Note (optional)</string>
+    <string name="moment_add_photo">Add photo</string>
+    <string name="moment_change_photo">Change photo</string>
+    <string name="moment_remove_photo">Remove photo</string>
+    <string name="moment_remind">Yearly reminder</string>
+    <string name="moment_remind_summary">Get a notification on the anniversary</string>
+    <string name="moment_delete">Delete moment</string>
+    <string name="moment_delete_question">Delete this moment?</string>
+    <string name="moment_delete_text">The moment and its photo will be removed from this device.</string>
+    <string name="delete">Delete</string>
+    <string name="moment_next_anniversary">Next anniversary: %1$s</string>
+    <string name="notify_moment">Today %1$s ago: %2$s</string>
+    <plurals name="moments_count">
+        <item quantity="one">%s moment</item>
+        <item quantity="other">%s moments</item>
+    </plurals>
+    <plurals name="days_ago">
+        <item quantity="one">%s day ago</item>
+        <item quantity="other">%s days ago</item>
+    </plurals>
+    <string name="moments_show">Show moments</string>
+    <string name="moments_show_summary">A timeline for important moments. Hiding it keeps your saved moments.</string>
 </resources>

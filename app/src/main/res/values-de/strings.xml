@@ -29,7 +29,7 @@
     <string name="add_widget">Widget zum Startbildschirm hinzufügen</string>
     <string name="restart_setup">Einrichtung erneut starten</string>
     <string name="privacy">Datenschutz</string>
-    <string name="privacy_text">Namen, Datum und Foto werden ausschließlich auf diesem Gerät gespeichert. Die App hat keinen Internetzugriff, sendet keine Daten und enthält kein Tracking und keine Werbung.</string>
+    <string name="privacy_text">Namen, Datum, Fotos und Momente werden ausschließlich auf diesem Gerät gespeichert. Die App hat keinen Internetzugriff, sendet keine Daten und enthält kein Tracking und keine Werbung.</string>
     <string name="delete_all">Alle Daten löschen</string>
     <string name="delete_all_summary">Setzt die App komplett zurück</string>
     <string name="delete_all_question">Alle Daten löschen?</string>
@@ -91,7 +91,7 @@
     <string name="live_until">Noch</string>
     <string name="share">Teilen</string>
     <string name="share_text">%1$s sind schon %2$s zusammen ❤</string>
-    <string name="live_hint">Tippe auf einen Wert für die Gesamtzahl.\nGedrückt halten, um zu teilen.</string>
+    <string name="live_hint">Tippe auf einen Wert für die Gesamtzahl.</string>
     <string name="your_photo">Euer Foto</string>
     <string name="editor_hint">Mit einem Finger verschieben, mit zwei Fingern zoomen.</string>
     <string name="other_photo">Anderes Foto</string>
@@ -168,4 +168,42 @@
         <item quantity="one">Tag zusammen</item>
         <item quantity="other">Tage zusammen</item>
     </plurals>
+    <string name="tab_moments">Momente</string>
+    <string name="moments_title">Eure Momente</string>
+    <string name="moment_add">Moment hinzufügen</string>
+    <string name="moments_empty_title">Haltet eure besonderen Momente fest</string>
+    <string name="moments_empty_sub">Erstes Date, erster Kuss, erster Urlaub: speichert die Momente, die euch wichtig sind. Tippt auf einen Vorschlag.</string>
+    <string name="suggest_met">Kennengelernt</string>
+    <string name="suggest_first_date">Erstes Date</string>
+    <string name="suggest_first_kiss">Erster Kuss</string>
+    <string name="suggest_i_love_you">Erstes „Ich liebe dich“</string>
+    <string name="suggest_first_trip">Erster gemeinsamer Urlaub</string>
+    <string name="suggest_moved_in">Zusammengezogen</string>
+    <string name="moment_together_start">Ihr seid zusammengekommen</string>
+    <string name="moment_new">Neuer Moment</string>
+    <string name="moment_edit">Moment bearbeiten</string>
+    <string name="moment_field_title">Was ist passiert?</string>
+    <string name="moment_field_date">Datum</string>
+    <string name="moment_field_note">Notiz (optional)</string>
+    <string name="moment_add_photo">Foto hinzufügen</string>
+    <string name="moment_change_photo">Foto ändern</string>
+    <string name="moment_remove_photo">Foto entfernen</string>
+    <string name="moment_remind">Jährlich erinnern</string>
+    <string name="moment_remind_summary">Mitteilung am Jahrestag</string>
+    <string name="moment_delete">Moment löschen</string>
+    <string name="moment_delete_question">Diesen Moment löschen?</string>
+    <string name="moment_delete_text">Der Moment und sein Foto werden von diesem Gerät entfernt.</string>
+    <string name="delete">Löschen</string>
+    <string name="moment_next_anniversary">Nächster Jahrestag: %1$s</string>
+    <string name="notify_moment">Heute vor %1$s: %2$s</string>
+    <plurals name="moments_count">
+        <item quantity="one">%s Moment</item>
+        <item quantity="other">%s Momente</item>
+    </plurals>
+    <plurals name="days_ago">
+        <item quantity="one">vor %s Tag</item>
+        <item quantity="other">vor %s Tagen</item>
+    </plurals>
+    <string name="moments_show">Momente anzeigen</string>
+    <string name="moments_show_summary">Zeitleiste für wichtige Momente. Beim Ausblenden bleiben gespeicherte Momente erhalten.</string>
 </resources>

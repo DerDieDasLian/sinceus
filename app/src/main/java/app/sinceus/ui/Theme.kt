@@ -69,6 +69,7 @@ private val serif = FontFamily.Serif
 private val LoveTypography = base.copy(
     displayLarge = base.displayLarge.copy(fontFamily = serif, fontWeight = FontWeight.SemiBold),
     displayMedium = base.displayMedium.copy(fontFamily = serif, fontWeight = FontWeight.SemiBold),
+    displaySmall = base.displaySmall.copy(fontFamily = serif),
     headlineLarge = base.headlineLarge.copy(fontFamily = serif),
     headlineMedium = base.headlineMedium.copy(fontFamily = serif),
     headlineSmall = base.headlineSmall.copy(fontFamily = serif),

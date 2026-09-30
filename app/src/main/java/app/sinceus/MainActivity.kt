@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.sinceus.notify.Notifier
 import app.sinceus.ui.HomeScreen
+import app.sinceus.ui.MomentEditorScreen
 import app.sinceus.ui.OnboardingScreen
 import app.sinceus.ui.PhotoEditorScreen
 import app.sinceus.ui.LoveTheme
@@ -59,6 +60,9 @@ class MainActivity : ComponentActivity() {
                 val scope = rememberCoroutineScope()
                 var showSettings by rememberSaveable { mutableStateOf(false) }
                 var editingPhoto by rememberSaveable { mutableStateOf(false) }
+                // Moment-Editor: null = zu, "" = neuer Moment, sonst ID; dazu optional ein vorgeschlagener Titel
+                var editingMoment by rememberSaveable { mutableStateOf<String?>(null) }
+                var momentSuggestion by rememberSaveable { mutableStateOf<String?>(null) }
                 var onboardingStep by rememberSaveable { mutableIntStateOf(0) }
                 // Ändert sich bei jedem Zurückkehren, damit der Berechtigungsstatus neu gelesen wird
                 var resumeCount by rememberSaveable { mutableIntStateOf(0) }
@@ -96,14 +100,19 @@ class MainActivity : ComponentActivity() {
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
                 )
 
-                BackHandler(enabled = showSettings || editingPhoto) {
-                    if (editingPhoto) editingPhoto = false else showSettings = false
+                BackHandler(enabled = showSettings || editingPhoto || editingMoment != null) {
+                    when {
+                        editingMoment != null -> editingMoment = null
+                        editingPhoto -> editingPhoto = false
+                        else -> showSettings = false
+                    }
                 }
 
                 val s = settings
                 val screen = when {
                     s == null -> "loading"
                     editingPhoto && s.photoPath != null -> "editor"
+                    editingMoment != null && s.onboardingDone -> "moment"
                     !s.onboardingDone -> "onboarding"
                     showSettings -> "settings"
                     else -> "home"
@@ -128,6 +137,20 @@ class MainActivity : ComponentActivity() {
                     ) { target ->
                         if (s == null) return@AnimatedContent
                         when (target) {
+                            "moment" -> MomentEditorScreen(
+                                existing = s.moments.firstOrNull { it.id == editingMoment },
+                                suggestedTitle = momentSuggestion,
+                                defaultDate = today,
+                                onClose = { editingMoment = null },
+                                onSave = { moment, photo, remove ->
+                                    vm.saveMoment(moment, photo, remove)
+                                    editingMoment = null
+                                },
+                                onDelete = {
+                                    vm.deleteMoment(it.id)
+                                    editingMoment = null
+                                },
+                            )
                             "editor" -> PhotoEditorScreen(
                                 settings = s,
                                 onPickOther = ::pickPhoto,
@@ -182,6 +205,7 @@ class MainActivity : ComponentActivity() {
                                     vm.resetAll()
                                 },
                                 onUpdateCheck = vm::setUpdateCheck,
+                                onShowMoments = vm::setShowMoments,
                                 onCheckUpdates = vm::checkUpdatesNow,
                                 onOpenUpdate = {
                                     s.updateUrl?.let { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it))) }
@@ -192,6 +216,14 @@ class MainActivity : ComponentActivity() {
                                 today,
                                 onOpenSettings = { showSettings = true },
                                 onPageChange = vm::setHomePage,
+                                onAddMoment = { title ->
+                                    momentSuggestion = title
+                                    editingMoment = ""
+                                },
+                                onOpenMoment = {
+                                    momentSuggestion = null
+                                    editingMoment = it.id
+                                },
                             )
                         }
                     }

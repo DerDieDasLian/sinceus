@@ -6,6 +6,9 @@ Days, weeks, months and hours since you got together. Live mode even counts ever
 <b>Never miss a special day</b>
 Reminders for monthly and yearly anniversaries, round numbers like 100, 200 or 500 days and fun numbers like 222, at a time you choose.
 
+<b>Your moments</b>
+Keep the moments that matter, like your first date or first trip, with a note and a photo. Optional yearly reminders.
+
 <b>Your photo</b>
 Pick a picture of the two of you and adjust the framing with one finger.
 

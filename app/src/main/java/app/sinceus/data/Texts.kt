@@ -51,6 +51,10 @@ object Texts {
         else -> context.getString(R.string.msg_together, milestoneTitle(context, m))
     }
 
+    /** „Heute vor 2 Jahren: Erstes Date“ */
+    fun momentMessage(context: Context, m: Moment, years: Int): String =
+        context.getString(R.string.notify_moment, count(context, R.plurals.years_dative, years.toLong()), m.title)
+
     /** Uhrzeit im Format des Geräts (12/24 Stunden), z. B. "09:00 Uhr" oder "9:00 AM". */
     fun time(context: Context, t: LocalTime): String {
         val date = Date.from(LocalDate.now().atTime(t).atZone(ZoneId.systemDefault()).toInstant())

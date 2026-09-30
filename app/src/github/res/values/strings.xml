@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="privacy_text">Your names, date and photo are stored only on this device and are never sent anywhere. This version only connects to GitHub to check for new versions (can be turned off in the settings). No tracking, no ads.</string>
+    <string name="privacy_text">Your names, date, photos and moments are stored only on this device and are never sent anywhere. This version only connects to GitHub to check for new versions (can be turned off in the settings). No tracking, no ads.</string>
 </resources>

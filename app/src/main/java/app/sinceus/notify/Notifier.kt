@@ -19,6 +19,7 @@ import app.sinceus.MainActivity
 import app.sinceus.R
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.Milestone
+import app.sinceus.data.Moment
 
 object Notifier {
     private const val CHANNEL_ID = "special_days"
@@ -73,12 +74,16 @@ object Notifier {
             PackageManager.PERMISSION_GRANTED) &&
             NotificationManagerCompat.from(context).areNotificationsEnabled()
 
-    fun show(context: Context, settings: LoveSettings, milestones: List<Milestone>) {
-        if (milestones.isEmpty() || !canNotify(context)) return
-        val title = "${settings.names} ❤"
-        val text = Texts.milestoneMessage(context, milestones.first())
-        val big = milestones.joinToString("\n") { Texts.milestoneMessage(context, it) }
-        post(context, title, text, big)
+    fun show(
+        context: Context,
+        settings: LoveSettings,
+        milestones: List<Milestone>,
+        moments: List<Pair<Moment, Int>> = emptyList(),
+    ) {
+        val lines = milestones.map { Texts.milestoneMessage(context, it) } +
+            moments.map { (m, years) -> Texts.momentMessage(context, m, years) }
+        if (lines.isEmpty() || !canNotify(context)) return
+        post(context, "${settings.names} ❤", lines.first(), lines.joinToString("\n"))
     }
 
     fun showTest(context: Context, settings: LoveSettings) {

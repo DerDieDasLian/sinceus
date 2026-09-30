@@ -71,6 +71,8 @@ import app.sinceus.data.Milestone
 import app.sinceus.data.MilestoneKind
 import app.sinceus.data.formatNumber
 import app.sinceus.data.Texts
+import app.sinceus.share.ShareCard
+import androidx.compose.material.icons.rounded.IosShare
 import app.sinceus.R
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
@@ -85,8 +87,12 @@ fun HomeScreen(
     today: LocalDate,
     onOpenSettings: () -> Unit,
     onPageChange: (Int) -> Unit,
+    onAddMoment: (String?) -> Unit = {},
+    onOpenMoment: (app.sinceus.data.Moment) -> Unit = {},
 ) {
-    val pager = rememberPagerState(initialPage = settings.homePage.coerceIn(0, 1)) { 2 }
+    // Ohne Momente nur zwei Seiten
+    val pageCount = if (settings.showMoments) 3 else 2
+    val pager = rememberPagerState(initialPage = settings.homePage.coerceIn(0, pageCount - 1)) { pageCount }
     val scope = rememberCoroutineScope()
     LaunchedEffect(pager) {
         snapshotFlow { pager.settledPage }.drop(1).collect(onPageChange)
@@ -97,7 +103,11 @@ fun HomeScreen(
             .background(MaterialTheme.colorScheme.background),
     ) {
         HorizontalPager(pager, Modifier.fillMaxSize()) { page ->
-            if (page == 0) Overview(settings, today) else LiveScreen(settings, active = pager.currentPage == 1)
+            when (page) {
+                0 -> Overview(settings, today)
+                1 -> LiveScreen(settings, active = pager.currentPage == 1)
+                else -> MomentsScreen(settings, today, onAdd = onAddMoment, onOpen = onOpenMoment)
+            }
         }
         // Schwebende Leiste unten, damit oben nichts das Foto verdeckt.
         // Alle Elemente sind gleich hoch und haben rundherum denselben Abstand,
@@ -114,7 +124,7 @@ fun HomeScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            ModeSwitch(pager.currentPage) { scope.launch { pager.animateScrollToPage(it) } }
+            ModeSwitch(pager.currentPage, settings.showMoments) { scope.launch { pager.animateScrollToPage(it) } }
             Box(
                 Modifier
                     .size(BarItemHeight)
@@ -137,9 +147,13 @@ private val BarItemHeight = 40.dp
 private val BarPadding = 4.dp
 
 @Composable
-private fun ModeSwitch(selected: Int, onSelect: (Int) -> Unit) {
+private fun ModeSwitch(selected: Int, showMoments: Boolean, onSelect: (Int) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-        listOf(stringResource(R.string.tab_overview), stringResource(R.string.tab_live)).forEachIndexed { i, label ->
+        listOfNotNull(
+            stringResource(R.string.tab_overview),
+            stringResource(R.string.tab_live),
+            if (showMoments) stringResource(R.string.tab_moments) else null,
+        ).forEachIndexed { i, label ->
             val active = i == selected
             Box(
                 Modifier
@@ -168,6 +182,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
     val todays = LoveMath.milestonesOn(start, today)
     val upcoming = LoveMath.upcoming(start, today, 4)
     val context = LocalContext.current
+    val share = { ShareCard.share(context, settings, today, ShareCard.defaultText(context, settings, today)) }
 
     Column(
         Modifier
@@ -188,6 +203,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
                     stringResource(R.string.today_word),
                     "",
                     stringResource(R.string.beginning),
+                    onShare = share,
                 )
             } else {
                 CounterCard(
@@ -195,6 +211,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
                     big = formatNumber(together.totalDays),
                     unit = pluralStringResource(R.plurals.unit_days_dative, together.totalDays.toInt()),
                     sub = Texts.period(context, together.period, dative = true),
+                    onShare = share,
                 )
             }
 
@@ -273,34 +290,48 @@ fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp) {
 }
 
 @Composable
-private fun CounterCard(label: String, big: String, unit: String, sub: String) {
+private fun CounterCard(label: String, big: String, unit: String, sub: String, onShare: () -> Unit) {
     Card(
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp, horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(label.uppercase(), style = LabelCaps, color = MaterialTheme.colorScheme.primary)
-            Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(top = 6.dp)) {
-                Text(
-                    big,
-                    style = MaterialTheme.typography.displayLarge.copy(fontSize = 64.sp),
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    unit,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
+        Box {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp, horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(label.uppercase(), style = LabelCaps, color = MaterialTheme.colorScheme.primary)
+                Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(top = 6.dp)) {
+                    Text(
+                        big,
+                        style = MaterialTheme.typography.displayLarge.copy(fontSize = 64.sp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        unit,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 8.dp, bottom = 12.dp),
+                    )
+                }
+                Text(sub, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            IconButton(
+                onClick = onShare,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(6.dp),
+            ) {
+                Icon(
+                    Icons.Rounded.IosShare,
+                    contentDescription = stringResource(R.string.share),
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
-            Text(sub, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

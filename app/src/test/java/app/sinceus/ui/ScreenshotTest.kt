@@ -86,6 +86,28 @@ class ScreenshotTest {
     @Test
     fun onboardingNotify() = onboarding(4)
 
+    private val withMoments = settings.copy(
+        moments = listOf(
+            app.sinceus.data.Moment("1", "Kennengelernt", LocalDate.of(2025, 1, 20), "Auf der Geburtstagsfeier von Mia"),
+            app.sinceus.data.Moment("2", "Erstes Date", LocalDate.of(2025, 2, 14), "Kino und danach Pizza"),
+            app.sinceus.data.Moment("3", "Erster Urlaub", LocalDate.of(2025, 7, 5), "Eine Woche an der Ostsee"),
+        ),
+    )
+
+    @Test
+    fun momentsEmpty() = shot("moments_empty", lang = "de") { MomentsScreen(settings, today, {}, {}) }
+
+    @Test
+    fun moments() = shot("moments", lang = "de") { MomentsScreen(withMoments, today, {}, {}) }
+
+    @Test
+    fun momentEditor() = shot("moment_editor", lang = "de") {
+        MomentEditorScreen(withMoments.moments[1], null, today, {}, { _, _, _ -> }, {})
+    }
+
+    @Test
+    fun homeWithMomentsTab() = shot("home_moments_tab", lang = "de") { HomeScreen(withMoments, today, {}, {}) }
+
     @Test
     fun editor() = shot("editor") { PhotoEditorScreen(settings, {}, {}, { _, _, _ -> }) }
 

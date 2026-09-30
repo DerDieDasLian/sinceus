@@ -30,6 +30,7 @@ class TextsTest {
             Texts.milestoneMessage(context, Milestone(MilestoneKind.MONTHS, 5, day)),
         )
         assertEquals("1.000 Tage", Texts.milestoneTitle(context, Milestone(MilestoneKind.DAYS, 1000, day)))
+        assertEquals("Heute vor 2 Jahren: Erstes Date", Texts.momentMessage(context, Moment("a", "Erstes Date", day), 2))
     }
 
     @Test
@@ -43,5 +44,6 @@ class TextsTest {
             Texts.milestoneMessage(context, Milestone(MilestoneKind.MONTHS, 5, day)),
         )
         assertEquals("1,000 days", Texts.milestoneTitle(context, Milestone(MilestoneKind.DAYS, 1000, day)))
+        assertEquals("Today 1 year ago: First date", Texts.momentMessage(context, Moment("a", "First date", day), 1))
     }
 }

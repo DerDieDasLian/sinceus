@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="privacy_text">Namen, Datum und Foto werden ausschließlich auf diesem Gerät gespeichert und nirgendwohin gesendet. Diese Version verbindet sich nur mit GitHub, um nach neuen Versionen zu suchen (in den Einstellungen abschaltbar). Kein Tracking, keine Werbung.</string>
+    <string name="privacy_text">Namen, Datum, Fotos und Momente werden ausschließlich auf diesem Gerät gespeichert und nirgendwohin gesendet. Diese Version verbindet sich nur mit GitHub, um nach neuen Versionen zu suchen (in den Einstellungen abschaltbar). Kein Tracking, keine Werbung.</string>
 </resources>
