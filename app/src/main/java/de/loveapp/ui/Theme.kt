@@ -5,7 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -77,11 +79,11 @@ val LabelCaps = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.SemiBold, le
 
 @Composable
 fun LoveTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) Dark else Light,
-        typography = LoveTypography,
-        content = content,
-    )
+    val colors = if (isSystemInDarkTheme()) Dark else Light
+    MaterialTheme(colorScheme = colors, typography = LoveTypography) {
+        // Standard-Textfarbe passend zum Hintergrund, sonst ist Text ohne eigene Farbe im Dunkelmodus schwarz
+        CompositionLocalProvider(LocalContentColor provides colors.onBackground, content = content)
+    }
 }
 
 /** Standardmotive, falls kein eigenes Foto gewaehlt ist. */

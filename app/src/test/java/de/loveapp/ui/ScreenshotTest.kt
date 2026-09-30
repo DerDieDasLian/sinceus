@@ -67,6 +67,14 @@ class ScreenshotTest {
     fun onboardingWelcome() = onboarding(0)
 
     @Test
+    fun onboardingDarkGerman() = shot("onboarding_1_dark", dark = true, lang = "de") {
+        OnboardingScreen(
+            settings, false, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
+            step = 1, onStep = {},
+        )
+    }
+
+    @Test
     fun onboardingNames() = onboarding(1)
 
     @Test
