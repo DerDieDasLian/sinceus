@@ -43,12 +43,37 @@ class WidgetRenderTest {
     fun photo() = render(PhotoWidget(), "photo_3x2", DpSize(250.dp, 150.dp))
 
     @Test
+    fun photoWithLargeDetailedImage() {
+        runBlocking {
+            // Rauschen komprimiert am schlechtesten: Worst Case für die Größe
+            val random = java.util.Random(1)
+            val big = Bitmap.createBitmap(3000, 4000, Bitmap.Config.ARGB_8888)
+            val pixels = IntArray(3000) { 0 }
+            for (y in 0 until 4000) {
+                for (x in 0 until 3000) pixels[x] = 0xFF000000.toInt() or random.nextInt(0xFFFFFF)
+                big.setPixels(pixels, 0, 3000, 0, y, 3000, 1)
+            }
+            val file = File(context.cacheDir, "big.jpg")
+            file.outputStream().use { big.compress(Bitmap.CompressFormat.JPEG, 95, it) }
+            LoveRepository(context).setPhoto(android.net.Uri.fromFile(file))
+        }
+        render(PhotoWidget(), "photo_3x2_real", DpSize(250.dp, 150.dp))
+    }
+
+    @Test
     fun photoSmall() = render(PhotoWidget(), "photo_2x2", DpSize(160.dp, 150.dp))
 
     @OptIn(ExperimentalGlanceRemoteViewsApi::class)
     private fun render(widget: GlanceAppWidget, name: String, size: DpSize): Unit = runBlocking {
         setUp()
         val views = widget.compose(context, size = size)
+        val parcel = android.os.Parcel.obtain()
+        views.writeToParcel(parcel, 0)
+        val kb = parcel.dataSize() / 1024
+        parcel.recycle()
+        println("WIDGET $name parcel=$kb KB")
+        // Über ca. 1 MB verwirft Android das Update, dann fehlt das Bild im Widget
+        org.junit.Assert.assertTrue("Widget-Update zu groß: $kb KB", kb < 400)
         val density = context.resources.displayMetrics.density
         val w = (size.width.value * density).toInt()
         val h = (size.height.value * density).toInt()

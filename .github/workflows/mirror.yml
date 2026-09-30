@@ -1,7 +1,7 @@
 name: Mirror to Forgejo
 
 # Optional: spiegelt alle Branches und Tags auf eine eigene Forgejo-Instanz.
-# Läuft nur, wenn die Variable FORGEJO_REPO_URL gesetzt ist (siehe RELEASING.md).
+# Läuft nur, wenn die Variable FORGEJO_REPO_URL gesetzt ist (variables FORGEJO_REPO_URL, FORGEJO_USERNAME, secret FORGEJO_TOKEN).
 on:
   push:
     branches: ["**"]

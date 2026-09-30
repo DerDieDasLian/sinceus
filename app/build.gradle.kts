@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-// Signier-Schlüssel für Releases, liegt NICHT im Repo (siehe RELEASING.md)
+// Signier-Schlüssel für Releases, liegt NICHT im Repo (keystore.properties, siehe README)
 val releaseKeystore = rootProject.file("keystore.properties").takeIf { it.exists() }?.let { file ->
     Properties().apply { file.inputStream().use { load(it) } }
 }
@@ -19,8 +19,8 @@ android {
         applicationId = "app.sinceus"
         minSdk = 26
         targetSdk = 36
-        versionCode = 5
-        versionName = "2.0.1"
+        versionCode = 6
+        versionName = "2.1.0"
         // Repository, in dem die GitHub-Version nach neuen Releases sucht
         val githubRepo = providers.gradleProperty("githubRepo").getOrElse("DerDieDasLian/loveapp")
         buildConfigField("String", "GITHUB_REPO", "\"$githubRepo\"")

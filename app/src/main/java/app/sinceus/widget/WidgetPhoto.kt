@@ -9,10 +9,12 @@ import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Shader
+import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.compose.ui.graphics.toArgb
 import app.sinceus.data.LoveSettings
 import app.sinceus.ui.Presets
+import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -22,8 +24,23 @@ import kotlin.math.roundToInt
  * in der App gewählten Ausschnitt) und klein genug für das Widget-System.
  */
 object WidgetPhoto {
-    /** Widgets dürfen nur begrenzt große Bilder übertragen */
-    private const val MAX_SIDE = 720f
+    /**
+     * Widget-Updates laufen über einen Kanal mit ca. 1 MB Limit, und Android fordert oft mehrere
+     * Größen gleichzeitig an. Rohe Bitmaps überschreiten das schnell, dann wird das Update verworfen
+     * und das Widget bleibt ohne Bild. Deshalb geht das Bild als JPEG (rund 50 bis 100 KB) ans Widget.
+     */
+    private const val MAX_SIDE = 900f
+    private const val JPEG_QUALITY = 85
+
+    /** Fertiges Widget-Bild als komprimiertes Icon. */
+    fun renderIcon(context: Context, s: LoveSettings, widthPx: Float, heightPx: Float): Icon? {
+        val bitmap = render(context, s, widthPx, heightPx) ?: return null
+        val bytes = ByteArrayOutputStream().use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it)
+            it.toByteArray()
+        }
+        return Icon.createWithData(bytes, 0, bytes.size)
+    }
 
     fun render(context: Context, s: LoveSettings, widthPx: Float, heightPx: Float): Bitmap? {
         if (widthPx <= 0f || heightPx <= 0f) return null
@@ -35,15 +52,20 @@ object WidgetPhoto {
         return crop(source, w, h, s.focusX, s.focusY, s.zoom)
     }
 
-    private fun decode(file: File, targetSide: Int): Bitmap? = try {
+    private fun decode(file: File, targetSide: Int): Bitmap? {
         if (Build.VERSION.SDK_INT >= 28) {
-            // ImageDecoder beachtet die Drehung aus den Foto-Metadaten (EXIF)
-            ImageDecoder.decodeBitmap(ImageDecoder.createSource(file)) { decoder, info, _ ->
-                val side = max(info.size.width, info.size.height)
-                decoder.setTargetSampleSize(max(1, side / (targetSide * 2)))
-                decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+            try {
+                // ImageDecoder beachtet die Drehung aus den Foto-Metadaten (EXIF)
+                return ImageDecoder.decodeBitmap(ImageDecoder.createSource(file)) { decoder, info, _ ->
+                    val side = max(info.size.width, info.size.height)
+                    decoder.setTargetSampleSize(max(1, side / (targetSide * 2)))
+                    decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                }
+            } catch (_: Exception) {
+                // Weiter mit BitmapFactory, das kommt mit manchen Dateien besser zurecht
             }
-        } else {
+        }
+        return try {
             val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             BitmapFactory.decodeFile(file.path, bounds)
             val side = max(bounds.outWidth, bounds.outHeight)
@@ -51,9 +73,9 @@ object WidgetPhoto {
                 file.path,
                 BitmapFactory.Options().apply { inSampleSize = max(1, side / (targetSide * 2)) },
             )
+        } catch (_: Exception) {
+            null
         }
-    } catch (_: Exception) {
-        null
     }
 
     /** Gleiche Logik wie in der App: Fokuspunkt -1..1 und Zoom, dann auf w x h skalieren. */

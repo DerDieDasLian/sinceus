@@ -41,11 +41,20 @@ Tip: if notifications arrive late, set *Settings → Apps → Since Us → Batte
 
 Tests, screenshots and store graphics: `./gradlew testGithubDebugUnitTest` (output in `app/build/screenshots` and `app/build/store`).
 
-Release signing and publishing are described in [RELEASING.md](RELEASING.md) (German).
+## Releasing
+
+- **Signing:** create `keystore.properties` (not committed) with `storeFile`, `storePassword`, `keyAlias`, `keyPassword`. In GitHub Actions the secrets `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS` and `UPLOAD_KEY_PASSWORD` are used.
+- **GitHub releases are automatic:** raise `versionCode` and `versionName` in `app/build.gradle.kts` and push to the default branch. The Release workflow tags `v<versionName>` and publishes the signed APK. Release notes come from `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt`.
+- **F-Droid** builds the `fdroid` variant from source; store texts and images are in `fastlane/`, a metadata template is in `fdroid/`.
+- **Website:** `docs/` (landing page and privacy policy) is published via GitHub Pages and can be copied to any static web server.
 
 ## Tech
 
 Kotlin, Jetpack Compose (Material 3), Glance widgets, DataStore, Coil. Minimum Android 8.0.
+
+## Website
+
+https://derdiedaslian.github.io/loveapp/ (privacy policy: [English](docs/privacy-en.html), [Deutsch](docs/privacy-de.html))
 
 ## How this app was made
 

@@ -13,14 +13,14 @@ RepoType: git
 Repo: https://github.com/DerDieDasLian/loveapp.git
 
 Builds:
-  - versionName: 2.0.1
-    versionCode: 5
-    commit: v2.0.1
+  - versionName: 2.1.0
+    versionCode: 6
+    commit: v2.1.0
     subdir: app
     gradle:
       - fdroid
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 2.0.1
-CurrentVersionCode: 5
+CurrentVersion: 2.1.0
+CurrentVersionCode: 6

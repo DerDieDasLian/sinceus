@@ -55,6 +55,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.material3.IconButton
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -97,25 +99,25 @@ fun HomeScreen(
         HorizontalPager(pager, Modifier.fillMaxSize()) { page ->
             if (page == 0) Overview(settings, today) else LiveScreen(settings, active = pager.currentPage == 1)
         }
+        // Schwebende Leiste unten, damit oben nichts das Foto verdeckt
         Row(
             Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(12.dp),
+                .align(Alignment.BottomCenter)
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .padding(bottom = 16.dp)
+                .shadow(8.dp, RoundedCornerShape(50))
+                .clip(RoundedCornerShape(50))
+                .background(Color(0xE6201517))
+                .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Spacer(Modifier.size(40.dp))
-            Spacer(Modifier.weight(1f))
             ModeSwitch(pager.currentPage) { scope.launch { pager.animateScrollToPage(it) } }
-            Spacer(Modifier.weight(1f))
-            FilledIconButton(
-                onClick = onOpenSettings,
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = Color.Black.copy(alpha = 0.3f),
-                    contentColor = Color.White,
-                ),
-            ) {
-                Icon(Icons.Rounded.Settings, contentDescription = stringResource(R.string.settings))
+            IconButton(onClick = onOpenSettings) {
+                Icon(
+                    Icons.Rounded.Settings,
+                    contentDescription = stringResource(R.string.settings),
+                    tint = Color.White,
+                )
             }
         }
     }
@@ -125,9 +127,7 @@ fun HomeScreen(
 private fun ModeSwitch(selected: Int, onSelect: (Int) -> Unit) {
     Row(
         Modifier
-            .clip(RoundedCornerShape(50))
-            .background(Color.Black.copy(alpha = 0.3f))
-            .padding(4.dp),
+            .padding(end = 4.dp),
     ) {
         listOf(stringResource(R.string.tab_overview), stringResource(R.string.tab_live)).forEachIndexed { i, label ->
             val active = i == selected
@@ -205,6 +205,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
                     .padding(top = 8.dp),
             )
         }
+        Spacer(Modifier.height(72.dp))
         Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
     }
 }

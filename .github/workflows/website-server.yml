@@ -1,0 +1,28 @@
+name: Website on own server
+
+# Optional: kopiert docs/ per SSH auf einen eigenen Webserver.
+# Läuft nur, wenn die Variable WEB_DEPLOY_HOST gesetzt ist (variables WEB_DEPLOY_HOST, WEB_DEPLOY_USER, WEB_DEPLOY_PATH, secrets WEB_DEPLOY_SSH_KEY, WEB_DEPLOY_KNOWN_HOSTS).
+on:
+  push:
+    branches: ["**"]
+    paths: ["docs/**"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    if: vars.WEB_DEPLOY_HOST != '' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload with rsync
+        env:
+          HOST: ${{ vars.WEB_DEPLOY_HOST }}
+          USER: ${{ vars.WEB_DEPLOY_USER }}
+          TARGET: ${{ vars.WEB_DEPLOY_PATH }}
+          KEY: ${{ secrets.WEB_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.WEB_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$KEY" > ~/.ssh/id_deploy && chmod 600 ~/.ssh/id_deploy
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          rsync -az --delete -e "ssh -i ~/.ssh/id_deploy" docs/ "$USER@$HOST:$TARGET/"

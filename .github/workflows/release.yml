@@ -1,25 +1,47 @@
 name: Release
 
-# Neues Release: versionCode/versionName erhöhen, committen, dann z. B. "git tag v2.1.0 && git push --tags"
+# Erstellt automatisch ein GitHub-Release, sobald auf dem Hauptbranch eine neue versionName
+# (app/build.gradle.kts) landet, für die es noch kein Release gibt. Kein Tag von Hand nötig.
 on:
   push:
-    tags: ["v*"]
+    branches: ["**"]
+    paths: ["app/build.gradle.kts"]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   release:
+    if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          code=$(grep -oP 'versionCode = \K[0-9]+' app/build.gradle.kts)
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if gh release view "v$version" > /dev/null 2>&1; then
+            echo "Release v$version already exists, nothing to do"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-java@v4
+        if: steps.version.outputs.exists != 'true'
         with:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
+        if: steps.version.outputs.exists != 'true'
 
       - name: Set up signing key
+        if: steps.version.outputs.exists != 'true'
         env:
           KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
@@ -27,7 +49,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
         run: |
           if [ -z "$KEYSTORE_BASE64" ]; then
-            echo "Signing secrets are missing, see RELEASING.md" >&2
+            echo "Signing secrets are missing (UPLOAD_KEYSTORE_BASE64, UPLOAD_KEYSTORE_PASSWORD, UPLOAD_KEY_ALIAS, UPLOAD_KEY_PASSWORD)" >&2
             exit 1
           fi
           echo "$KEYSTORE_BASE64" | base64 -d > upload.jks
@@ -38,27 +60,30 @@ jobs:
             echo "keyPassword=$KEY_PASSWORD"
           } > keystore.properties
 
-      - name: Check version matches tag
-        run: |
-          version=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
-          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
-            echo "Tag $GITHUB_REF_NAME does not match versionName $version" >&2
-            exit 1
-          fi
-
       - name: Build
+        if: steps.version.outputs.exists != 'true'
         run: ./gradlew testGithubDebugUnitTest assembleGithubRelease bundlePlayRelease
 
-      - name: Rename APK
-        run: cp app/build/outputs/apk/github/release/app-github-release.apk "SinceUs-${GITHUB_REF_NAME}.apk"
+      - name: Prepare files
+        if: steps.version.outputs.exists != 'true'
+        run: |
+          cp app/build/outputs/apk/github/release/app-github-release.apk "SinceUs-${{ steps.version.outputs.tag }}.apk"
+          notes=fastlane/metadata/android/en-US/changelogs/${{ steps.version.outputs.code }}.txt
+          if [ -f "$notes" ]; then cp "$notes" notes.md; else echo "" > notes.md; fi
 
       - uses: softprops/action-gh-release@v2
+        if: steps.version.outputs.exists != 'true'
         with:
-          files: SinceUs-${{ github.ref_name }}.apk
+          tag_name: ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: Since Us ${{ steps.version.outputs.tag }}
+          body_path: notes.md
           generate_release_notes: true
+          files: SinceUs-${{ steps.version.outputs.tag }}.apk
 
       # Das Bundle für Google Play wird nicht öffentlich veröffentlicht, nur als Artefakt abgelegt
       - uses: actions/upload-artifact@v4
+        if: steps.version.outputs.exists != 'true'
         with:
-          name: play-bundle-${{ github.ref_name }}
+          name: play-bundle-${{ steps.version.outputs.tag }}
           path: app/build/outputs/bundle/playRelease/app-play-release.aab

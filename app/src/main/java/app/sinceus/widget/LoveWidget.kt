@@ -140,16 +140,16 @@ class PhotoWidget : GlanceAppWidget() {
         provideContent {
             val size = LocalSize.current
             val density = context.resources.displayMetrics.density
-            val bitmap = androidx.compose.runtime.remember(settings, size) {
-                WidgetPhoto.render(context, settings, size.width.value * density, size.height.value * density)
+            val photo = androidx.compose.runtime.remember(settings, size) {
+                WidgetPhoto.renderIcon(context, settings, size.width.value * density, size.height.value * density)
             }
-            PhotoContent(settings, bitmap)
+            PhotoContent(settings, photo)
         }
     }
 }
 
 @androidx.compose.runtime.Composable
-private fun PhotoContent(settings: LoveSettings, bitmap: android.graphics.Bitmap?) {
+private fun PhotoContent(settings: LoveSettings, photo: android.graphics.drawable.Icon?) {
     val context = LocalContext.current
     val today = LocalDate.now()
     val days = LoveMath.together(settings.startDate, today).totalDays
@@ -166,9 +166,9 @@ private fun PhotoContent(settings: LoveSettings, bitmap: android.graphics.Bitmap
             .background(Color(0xFF2A1A1D))
             .clickable(actionStartActivity<MainActivity>()),
     ) {
-        if (bitmap != null) {
+        if (photo != null) {
             Image(
-                ImageProvider(bitmap),
+                ImageProvider(photo),
                 contentDescription = context.getString(R.string.your_photo),
                 contentScale = androidx.glance.layout.ContentScale.Crop,
                 modifier = GlanceModifier.fillMaxSize(),

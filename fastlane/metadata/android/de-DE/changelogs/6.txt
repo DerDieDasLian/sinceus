@@ -1,0 +1,1 @@
+Umschalter und Einstellungen sind jetzt in einer Leiste unten, nichts verdeckt mehr euer Foto. Behoben: Das Foto-Widget hat manchmal sein Bild verloren.
