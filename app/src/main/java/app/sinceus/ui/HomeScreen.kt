@@ -99,48 +99,63 @@ fun HomeScreen(
         HorizontalPager(pager, Modifier.fillMaxSize()) { page ->
             if (page == 0) Overview(settings, today) else LiveScreen(settings, active = pager.currentPage == 1)
         }
-        // Schwebende Leiste unten, damit oben nichts das Foto verdeckt
+        // Schwebende Leiste unten, damit oben nichts das Foto verdeckt.
+        // Alle Elemente sind gleich hoch und haben rundherum denselben Abstand,
+        // so laufen die Rundungen von Leiste und Knöpfen parallel.
         Row(
             Modifier
                 .align(Alignment.BottomCenter)
                 .windowInsetsPadding(WindowInsets.navigationBars)
                 .padding(bottom = 16.dp)
-                .shadow(8.dp, RoundedCornerShape(50))
-                .clip(RoundedCornerShape(50))
-                .background(Color(0xE6201517))
-                .padding(4.dp),
+                .shadow(8.dp, CircleShape)
+                .clip(CircleShape)
+                .background(Color(0xFF2A1D1F))
+                .padding(BarPadding),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             ModeSwitch(pager.currentPage) { scope.launch { pager.animateScrollToPage(it) } }
-            IconButton(onClick = onOpenSettings) {
+            Box(
+                Modifier
+                    .size(BarItemHeight)
+                    .clip(CircleShape)
+                    .clickable(onClick = onOpenSettings),
+                contentAlignment = Alignment.Center,
+            ) {
                 Icon(
                     Icons.Rounded.Settings,
                     contentDescription = stringResource(R.string.settings),
                     tint = Color.White,
+                    modifier = Modifier.size(22.dp),
                 )
             }
         }
     }
 }
 
+private val BarItemHeight = 40.dp
+private val BarPadding = 4.dp
+
 @Composable
 private fun ModeSwitch(selected: Int, onSelect: (Int) -> Unit) {
-    Row(
-        Modifier
-            .padding(end = 4.dp),
-    ) {
+    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
         listOf(stringResource(R.string.tab_overview), stringResource(R.string.tab_live)).forEachIndexed { i, label ->
             val active = i == selected
-            Text(
-                label,
-                style = MaterialTheme.typography.labelLarge,
-                color = if (active) Wine else Color.White,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(50))
+            Box(
+                Modifier
+                    .height(BarItemHeight)
+                    .clip(CircleShape)
                     .background(if (active) Color.White else Color.Transparent)
                     .clickable { onSelect(i) }
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-            )
+                    .padding(horizontal = 18.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    label,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = if (active) Wine else Color.White,
+                )
+            }
         }
     }
 }
