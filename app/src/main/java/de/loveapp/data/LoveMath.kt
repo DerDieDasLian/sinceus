@@ -14,23 +14,7 @@ data class Together(
 
 enum class MilestoneKind { YEARS, MONTHS, DAYS, WEEKS }
 
-data class Milestone(val kind: MilestoneKind, val value: Long, val date: LocalDate) {
-    val title: String
-        get() = when (kind) {
-            MilestoneKind.YEARS -> if (value == 1L) "1. Jahrestag" else "$value. Jahrestag"
-            MilestoneKind.MONTHS -> plural(value, "Monat", "Monate")
-            MilestoneKind.DAYS -> "${formatNumber(value)} Tage"
-            MilestoneKind.WEEKS -> "${formatNumber(value)} Wochen"
-        }
-
-    val message: String
-        get() = when (kind) {
-            MilestoneKind.YEARS -> "Heute ist euer $title! Alles Liebe zu ${plural(value, "Jahr", "Jahren")} zusammen."
-            MilestoneKind.MONTHS -> "Heute seid ihr genau ${plural(value, "Monat", "Monate")} zusammen."
-            MilestoneKind.DAYS -> "Heute seid ihr ${formatNumber(value)} Tage zusammen."
-            MilestoneKind.WEEKS -> "Heute seid ihr ${formatNumber(value)} Wochen zusammen."
-        }
-}
+data class Milestone(val kind: MilestoneKind, val value: Long, val date: LocalDate)
 
 object LoveMath {
 
@@ -82,6 +66,16 @@ object LoveMath {
         return result.take(count)
     }
 
+    /** Datum des letzten besonderen Tags bis einschliesslich [today], sonst der Starttag. */
+    fun previousMilestoneDate(start: LocalDate, today: LocalDate): LocalDate {
+        var day = today
+        while (day.isAfter(start)) {
+            if (milestonesOn(start, day).isNotEmpty()) return day
+            day = day.minusDays(1)
+        }
+        return start
+    }
+
     fun isSpecialDayCount(days: Long): Boolean {
         if (days <= 0) return false
         if (days == 50L) return true
@@ -98,23 +92,7 @@ object LoveMath {
     }
 }
 
-fun plural(n: Long, one: String, many: String) = "${formatNumber(n)} ${if (n == 1L) one else many}"
-
-fun formatNumber(n: Long): String = "%,d".format(java.util.Locale.GERMANY, n)
-
-/** "1 Jahr, 5 Monate und 3 Tage", mit [dative] passend fuer "seit 5 Monaten". */
-fun Period.toGermanText(dative: Boolean = false): String {
-    val n = if (dative) "n" else ""
-    val parts = buildList {
-        if (years > 0) add(plural(years.toLong(), "Jahr", "Jahre$n"))
-        if (months > 0) add(plural(months.toLong(), "Monat", "Monate$n"))
-        if (days > 0 || isEmpty()) add(plural(days.toLong(), "Tag", "Tage$n"))
-    }
-    return when (parts.size) {
-        1 -> parts[0]
-        else -> parts.dropLast(1).joinToString(", ") + " und " + parts.last()
-    }
-}
+fun formatNumber(n: Long): String = "%,d".format(java.util.Locale.getDefault(), n)
 
 /** Sekundengenauer Abstand zwischen zwei Zeitpunkten, fuer den Live-Zaehler. */
 data class LiveSpan(

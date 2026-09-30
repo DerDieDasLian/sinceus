@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_days_name">Tage zusammen</string>
+    <string name="widget_days_description">Zeigt, wie viele Tage ihr schon zusammen seid</string>
+    <string name="widget_photo_name">Foto &amp; Tage</string>
+    <string name="widget_photo_description">Euer Foto mit euren gemeinsamen Tagen</string>
+    <string name="channel_name">Besondere Tage</string>
+    <string name="channel_description">Monatstage, Jahrestage und runde Tage</string>
+    <string name="settings">Einstellungen</string>
+    <string name="back">Zurück</string>
+    <string name="section_your_data">Eure Daten</string>
+    <string name="names">Namen</string>
+    <string name="together_since_date">Zusammen seit dem</string>
+    <string name="start_time_optional">Uhrzeit (optional)</string>
+    <string name="not_set">Nicht festgelegt</string>
+    <string name="section_photo">Foto</string>
+    <string name="pick_own_photo">Eigenes Foto auswählen</string>
+    <string name="adjust_crop">Bildausschnitt anpassen</string>
+    <string name="pick_preset">Aus Standardmotiven auswählen</string>
+    <string name="reset_photo">Foto zurücksetzen</string>
+    <string name="section_notifications">Mitteilungen</string>
+    <string name="notify_special">Mitteilung an besonderen Tagen</string>
+    <string name="notify_blocked">Mitteilungen sind in den Android-Einstellungen blockiert</string>
+    <string name="notify_summary">Monatstage, Jahrestage, 100er-Tage und mehr</string>
+    <string name="notify_time">Uhrzeit</string>
+    <string name="time_value">%1$s Uhr</string>
+    <string name="send_test">Testmitteilung senden</string>
+    <string name="section_misc">Verschiedenes</string>
+    <string name="add_widget">Widget zum Startbildschirm hinzufügen</string>
+    <string name="restart_setup">Einrichtung erneut starten</string>
+    <string name="privacy">Datenschutz</string>
+    <string name="privacy_text">Namen, Datum und Foto werden ausschließlich auf diesem Gerät gespeichert. Die App hat keinen Internetzugriff, sendet keine Daten und enthält kein Tracking und keine Werbung.</string>
+    <string name="delete_all">Alle Daten löschen</string>
+    <string name="delete_all_summary">Setzt die App komplett zurück</string>
+    <string name="delete_all_question">Alle Daten löschen?</string>
+    <string name="delete_all_text">Namen, Datum, Foto und alle Einstellungen werden von diesem Gerät gelöscht. Danach startet die Einrichtung neu. Das kann nicht rückgängig gemacht werden.</string>
+    <string name="delete_all_confirm">Alles löschen</string>
+    <string name="ok">Okay</string>
+    <string name="your_names">Eure Namen</string>
+    <string name="name_1">Name 1</string>
+    <string name="name_2">Name 2</string>
+    <string name="save">Speichern</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="remove">Entfernen</string>
+    <string name="close">Schließen</string>
+    <string name="done">Fertig</string>
+    <string name="next">Weiter</string>
+    <string name="skip">Überspringen</string>
+    <string name="lets_go">Los geht\'s</string>
+    <string name="together_since_title">Zusammen seit</string>
+    <string name="notify_time_title">Uhrzeit der Mitteilung</string>
+    <string name="backgrounds">Standardmotive</string>
+    <string name="preset_wine">Weinrot</string>
+    <string name="preset_sunset">Abendrot</string>
+    <string name="preset_lavender">Lavendel</string>
+    <string name="preset_night">Nachthimmel</string>
+    <string name="preset_rose">Rosé</string>
+    <string name="preset_ocean">Meer</string>
+    <string name="ob_names_title">Wie heißt ihr?</string>
+    <string name="ob_names_sub">Die Namen stehen groß auf eurem Foto.</string>
+    <string name="ob_date_title">Seit wann seid ihr zusammen?</string>
+    <string name="ob_date_sub">Ab diesem Tag zählt die App.</string>
+    <string name="add_time_optional">Uhrzeit hinzufügen (optional)</string>
+    <string name="time_label">Uhrzeit: %1$s</string>
+    <string name="ob_photo_title">Euer Foto</string>
+    <string name="ob_photo_sub">Wählt ein Bild von euch beiden. Den Ausschnitt könnt ihr danach anpassen.</string>
+    <string name="pick_photo">Foto auswählen</string>
+    <string name="presets_short">Motive</string>
+    <string name="adjust">Anpassen</string>
+    <string name="ob_notify_title">Besondere Tage nicht verpassen</string>
+    <string name="ob_notify_sub">Die App meldet sich an Monatstagen, Jahrestagen, runden Tagen wie 100, 200, 300 und Schnapszahlen wie 222.</string>
+    <string name="notifications_on">Mitteilungen sind aktiv</string>
+    <string name="allow_notifications">Mitteilungen erlauben</string>
+    <string name="welcome">Willkommen</string>
+    <string name="welcome_sub">Zählt eure gemeinsame Zeit und erinnert euch an alle besonderen Tage.</string>
+    <string name="tab_overview">Übersicht</string>
+    <string name="tab_live">Live</string>
+    <string name="together_for">Ihr seid zusammen seit</string>
+    <string name="starts_in">Es geht los in</string>
+    <string name="today_word">heute</string>
+    <string name="beginning">Der Anfang von allem ❤</string>
+    <string name="stat_months">Monate</string>
+    <string name="stat_weeks">Wochen</string>
+    <string name="stat_hours">Stunden</string>
+    <string name="together_since_long">Zusammen seit %1$s</string>
+    <string name="special_today">Heute ist ein besonderer Tag!</string>
+    <string name="upcoming">Nächste besondere Tage</string>
+    <string name="tomorrow">morgen</string>
+    <string name="day_after_tomorrow">übermorgen</string>
+    <string name="live_together">Schon zusammen</string>
+    <string name="live_until">Noch</string>
+    <string name="share">Teilen</string>
+    <string name="share_text">%1$s sind schon %2$s zusammen ❤</string>
+    <string name="live_hint">Tippe auf einen Wert für die Gesamtzahl.\nGedrückt halten, um zu teilen.</string>
+    <string name="your_photo">Euer Foto</string>
+    <string name="editor_hint">Mit einem Finger verschieben, mit zwei Fingern zoomen.</string>
+    <string name="other_photo">Anderes Foto</string>
+    <string name="reset">Zurücksetzen</string>
+    <string name="widget_manual_hint">Lange auf den Startbildschirm drücken, „Widgets“ öffnen und Since Us wählen</string>
+    <string name="test_notification">So sehen eure Mitteilungen an besonderen Tagen aus.</string>
+    <string name="widget_days_until">Tage bis es losgeht</string>
+    <string name="widget_next">Als Nächstes: %1$s</string>
+    <string name="anniversary_title">%1$s. Jahrestag</string>
+    <string name="msg_anniversary">Heute ist euer %1$s! Alles Liebe zu %2$s zusammen.</string>
+    <string name="msg_exact">Heute seid ihr genau %1$s zusammen.</string>
+    <string name="msg_together">Heute seid ihr %1$s zusammen.</string>
+    <string name="and_word">\u0020und\u0020</string>
+    <plurals name="years">
+        <item quantity="one">%s Jahr</item>
+        <item quantity="other">%s Jahre</item>
+    </plurals>
+    <plurals name="years_dative">
+        <item quantity="one">%s Jahr</item>
+        <item quantity="other">%s Jahren</item>
+    </plurals>
+    <plurals name="months">
+        <item quantity="one">%s Monat</item>
+        <item quantity="other">%s Monate</item>
+    </plurals>
+    <plurals name="months_dative">
+        <item quantity="one">%s Monat</item>
+        <item quantity="other">%s Monaten</item>
+    </plurals>
+    <plurals name="days">
+        <item quantity="one">%s Tag</item>
+        <item quantity="other">%s Tage</item>
+    </plurals>
+    <plurals name="days_dative">
+        <item quantity="one">%s Tag</item>
+        <item quantity="other">%s Tagen</item>
+    </plurals>
+    <plurals name="weeks">
+        <item quantity="one">%s Woche</item>
+        <item quantity="other">%s Wochen</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">%s Stunde</item>
+        <item quantity="other">%s Stunden</item>
+    </plurals>
+    <plurals name="minutes">
+        <item quantity="one">%s Minute</item>
+        <item quantity="other">%s Minuten</item>
+    </plurals>
+    <plurals name="seconds">
+        <item quantity="one">%s Sekunde</item>
+        <item quantity="other">%s Sekunden</item>
+    </plurals>
+    <plurals name="in_days">
+        <item quantity="one">in %s Tag</item>
+        <item quantity="other">in %s Tagen</item>
+    </plurals>
+    <plurals name="unit_days_dative">
+        <item quantity="one">Tag</item>
+        <item quantity="other">Tagen</item>
+    </plurals>
+    <plurals name="unit_days_together">
+        <item quantity="one">Tag zusammen</item>
+        <item quantity="other">Tage zusammen</item>
+    </plurals>
+</resources>

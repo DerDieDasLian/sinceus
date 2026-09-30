@@ -16,11 +16,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "de.loveapp"
+        applicationId = "app.sinceus"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.2"
+        versionCode = 4
+        versionName = "2.0"
     }
 
     signingConfigs {
@@ -59,6 +59,11 @@ android {
 
     buildFeatures {
         compose = true
+    }
+
+    // Sprachauswahl pro App in den Android-Einstellungen (Englisch, Deutsch)
+    androidResources {
+        generateLocaleConfig = true
     }
 
     testOptions {

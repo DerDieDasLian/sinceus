@@ -40,13 +40,25 @@
         <receiver
             android:name=".widget.LoveWidgetReceiver"
             android:exported="true"
-            android:label="@string/widget_name">
+            android:label="@string/widget_days_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/love_widget" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.PhotoWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_photo_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/photo_widget" />
         </receiver>
     </application>
 </manifest>

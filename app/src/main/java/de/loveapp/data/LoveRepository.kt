@@ -2,7 +2,6 @@ package de.loveapp.data
 
 import android.content.Context
 import android.net.Uri
-import androidx.datastore.core.DataMigration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -21,10 +20,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-private val Context.dataStore by preferencesDataStore(
-    name = "love",
-    produceMigrations = { listOf(EarlyVersionMigration) },
-)
+private val Context.dataStore by preferencesDataStore(name = "love")
 
 /** Die meisten Paarfotos haben die Gesichter im oberen Bilddrittel */
 const val DEFAULT_FOCUS_Y = -0.6f
@@ -53,8 +49,7 @@ data class LoveSettings(
     val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
 }
 
-internal object Keys {
-    val schema = intPreferencesKey("schema")
+private object Keys {
     val name1 = stringPreferencesKey("name1")
     val name2 = stringPreferencesKey("name2")
     val start = longPreferencesKey("start_epoch_day")
@@ -70,30 +65,6 @@ internal object Keys {
     val zoom = floatPreferencesKey("zoom")
     val onboardingDone = booleanPreferencesKey("onboarding_done")
     val homePage = intPreferencesKey("home_page")
-}
-
-/**
- * Die ersten Testversionen (1.0/1.1) hatten fest eingetragene Namen und ein festes Datum
- * und haben diese nur gespeichert, wenn man sie geaendert hat. Bestehende Installationen
- * bekommen diese Werte einmalig fest gespeichert, damit sich nach dem Update nichts aendert.
- * Neue Installationen (leerer Speicher) sind nicht betroffen.
- */
-internal object EarlyVersionMigration : DataMigration<Preferences> {
-    private const val SCHEMA = 2
-
-    override suspend fun shouldMigrate(currentData: Preferences) = currentData[Keys.schema] == null
-
-    override suspend fun migrate(currentData: Preferences): Preferences =
-        currentData.toMutablePreferences().apply {
-            if (currentData.asMap().isNotEmpty()) {
-                if (this[Keys.name1] == null) this[Keys.name1] = "Alex"
-                if (this[Keys.name2] == null) this[Keys.name2] = "Sam"
-                if (this[Keys.start] == null) this[Keys.start] = LocalDate.of(2025, 3, 15).toEpochDay()
-            }
-            this[Keys.schema] = SCHEMA
-        }
-
-    override suspend fun cleanUp() {}
 }
 
 class LoveRepository(private val context: Context) {
@@ -140,7 +111,6 @@ class LoveRepository(private val context: Context) {
         deletePhotos()
         context.dataStore.edit {
             it.clear()
-            it[Keys.schema] = 2
         }
     }
 

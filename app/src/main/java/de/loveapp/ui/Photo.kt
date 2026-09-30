@@ -1,5 +1,7 @@
 package de.loveapp.ui
 
+import de.loveapp.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -73,7 +75,7 @@ fun CouplePhoto(
         if (settings.photoPath != null) {
             AsyncImage(
                 model = File(settings.photoPath),
-                contentDescription = "Euer Foto",
+                contentDescription = stringResource(R.string.your_photo),
                 contentScale = ContentScale.Crop,
                 alignment = BiasAlignment(focusX, focusY),
                 onSuccess = { onImageSize(it.painter.intrinsicSize) },
@@ -175,13 +177,13 @@ fun PhotoEditorScreen(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(Icons.Rounded.OpenWith, null, tint = Color.White.copy(alpha = 0.8f))
                 Text(
-                    "Bildausschnitt anpassen",
+                    stringResource(R.string.adjust_crop),
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White,
                     modifier = Modifier.padding(top = 8.dp),
                 )
                 Text(
-                    "Mit einem Finger verschieben, mit zwei Fingern zoomen.",
+                    stringResource(R.string.editor_hint),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center,
@@ -190,12 +192,12 @@ fun PhotoEditorScreen(
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedButton(onClick = onPickOther) { Text("Anderes Foto", color = Color.White) }
+                    OutlinedButton(onClick = onPickOther) { Text(stringResource(R.string.other_photo), color = Color.White) }
                     OutlinedButton(onClick = {
                         fx = 0f
                         fy = DEFAULT_FOCUS_Y
                         zoom = 1f
-                    }) { Text("Zurücksetzen", color = Color.White) }
+                    }) { Text(stringResource(R.string.reset), color = Color.White) }
                 }
                 Row(
                     Modifier
@@ -204,10 +206,10 @@ fun PhotoEditorScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     TextButton(onClick = onCancel, modifier = Modifier.weight(1f)) {
-                        Text("Abbrechen", color = Color.White)
+                        Text(stringResource(R.string.cancel), color = Color.White)
                     }
                     Button(onClick = { onSave(fx, fy, zoom) }, modifier = Modifier.weight(1f)) {
-                        Text("Fertig")
+                        Text(stringResource(R.string.done))
                     }
                 }
             }

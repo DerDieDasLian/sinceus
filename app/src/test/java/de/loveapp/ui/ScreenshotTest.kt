@@ -38,6 +38,19 @@ class ScreenshotTest {
     fun home() = shot("home") { HomeScreen(settings, today, {}, {}) }
 
     @Test
+    fun homeGerman() = shot("home", lang = "de") { HomeScreen(settings, today, {}, {}) }
+
+    @Test
+    fun liveGerman() = shot("live", lang = "de") {
+        LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2026, 9, 30, 12, 46, 33))
+    }
+
+    @Test
+    fun settingsGerman() = shot("settings", lang = "de") {
+        SettingsScreen(settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {})
+    }
+
+    @Test
     fun homeDark() = shot("home_dark", dark = true) { HomeScreen(settings.copy(presetIndex = 3), today, {}, {}) }
 
     @Test
@@ -75,13 +88,20 @@ class ScreenshotTest {
         )
     }
 
-    private fun shot(name: String, dark: Boolean = false, content: @androidx.compose.runtime.Composable () -> Unit) {
+    private fun shot(
+        name: String,
+        dark: Boolean = false,
+        lang: String = "en",
+        content: @androidx.compose.runtime.Composable () -> Unit,
+    ) {
+        java.util.Locale.setDefault(if (lang == "de") java.util.Locale.GERMANY else java.util.Locale.US)
+        org.robolectric.RuntimeEnvironment.setQualifiers("+$lang")
         if (dark) org.robolectric.RuntimeEnvironment.setQualifiers("+night")
         compose.setContent { LoveTheme(content) }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         val bitmap = compose.activity.window.decorView.drawToBitmap()
-        val dir = File("build/screenshots").apply { mkdirs() }
+        val dir = File("build/screenshots/$lang").apply { mkdirs() }
         File(dir, "$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
     }
 }

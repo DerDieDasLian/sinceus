@@ -1,6 +1,6 @@
-# Love ❤
+# Since Us ❤
 
-Android App für Paare: zählt, wie lange ihr zusammen seid, und erinnert an besondere Tage.
+Android App für Paare (Deutsch und Englisch): zählt, wie lange ihr zusammen seid, und erinnert an besondere Tage.
 
 ## Funktionen
 
@@ -10,8 +10,8 @@ Android App für Paare: zählt, wie lange ihr zusammen seid, und erinnert an bes
 - Zähler in Tagen, Wochen, Monaten und Stunden
 - Liste der nächsten besonderen Tage mit Countdown
 - Mitteilungen an Monatstagen, Jahrestagen, 50/100/200… Tagen, Schnapszahlen (111, 222…) und alle 50 Wochen, zur Wunschuhrzeit
-- Homescreen-Widget „Tage zusammen“
-- Hell- und Dunkelmodus
+- Zwei Homescreen-Widgets: Foto mit Tagen (ab 2 × 2, ideal 3 × 2) und kompakter Zähler in den Systemfarben
+- Hell- und Dunkelmodus, Deutsch und Englisch
 - Keine Internet-Berechtigung: alle Daten bleiben auf dem Gerät
 - Alle Daten löschen mit einem Tipp
 
@@ -19,11 +19,11 @@ Veröffentlichung im Play Store: siehe [PLAY_STORE.md](PLAY_STORE.md).
 
 ## Installieren
 
-1. Unter **Actions → Build** den neuesten Lauf öffnen und das Artefakt `love-app-apk` herunterladen (ZIP entpacken).
+1. Unter **Actions → Build** den neuesten Lauf öffnen und das Artefakt `since-us-apk` herunterladen (ZIP entpacken).
 2. `app-release.apk` aufs Handy kopieren und öffnen, „Aus unbekannten Quellen installieren“ erlauben.
 3. Beim ersten Start Mitteilungen erlauben.
 
-Tipp: Wenn Mitteilungen nicht zuverlässig ankommen, in den Android-Einstellungen unter *Apps → Love → Akku* „Nicht eingeschränkt“ wählen.
+Tipp: Wenn Mitteilungen nicht zuverlässig ankommen, in den Android-Einstellungen unter *Apps → Since Us → Akku* „Nicht eingeschränkt“ wählen.
 
 ## Selbst bauen
 

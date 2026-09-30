@@ -1,5 +1,9 @@
 package de.loveapp.ui
 
+import de.loveapp.R
+import de.loveapp.data.Texts
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
@@ -92,6 +96,7 @@ fun OnboardingScreen(
     var presets by remember { mutableStateOf(false) }
     var time by remember { mutableStateOf(false) }
     var startTime by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     val date = rememberDatePickerState(
         initialSelectedDateMillis = settings.startDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
     )
@@ -144,19 +149,19 @@ fun OnboardingScreen(
             ) {
                 when (s) {
                     0 -> Welcome()
-                    1 -> Step("Wie heißt ihr?", "Die Namen stehen groß auf eurem Foto.") {
+                    1 -> Step(stringResource(R.string.ob_names_title), stringResource(R.string.ob_names_sub)) {
                         val caps = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
                         OutlinedTextField(
-                            name1, { name1 = it }, label = { Text("Name 1") }, singleLine = true,
+                            name1, { name1 = it }, label = { Text(stringResource(R.string.name_1)) }, singleLine = true,
                             keyboardOptions = caps, modifier = Modifier.fillMaxWidth(),
                         )
                         Spacer(Modifier.height(12.dp))
                         OutlinedTextField(
-                            name2, { name2 = it }, label = { Text("Name 2") }, singleLine = true,
+                            name2, { name2 = it }, label = { Text(stringResource(R.string.name_2)) }, singleLine = true,
                             keyboardOptions = caps, modifier = Modifier.fillMaxWidth(),
                         )
                     }
-                    2 -> Step("Seit wann seid ihr zusammen?", "Ab diesem Tag zählt die App.") {
+                    2 -> Step(stringResource(R.string.ob_date_title), stringResource(R.string.ob_date_sub)) {
                         Card(
                             shape = RoundedCornerShape(28.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
@@ -169,13 +174,13 @@ fun OnboardingScreen(
                         ) {
                             Icon(Icons.Rounded.Schedule, null)
                             Text(
-                                settings.startTime?.let { "Uhrzeit: %02d:%02d Uhr".format(it.hour, it.minute) }
-                                    ?: "Uhrzeit hinzufügen (optional)",
+                                settings.startTime?.let { stringResource(R.string.time_label, Texts.time(context, it)) }
+                                    ?: stringResource(R.string.add_time_optional),
                                 Modifier.padding(start = 8.dp),
                             )
                         }
                     }
-                    3 -> Step("Euer Foto", "Wählt ein Bild von euch beiden. Den Ausschnitt könnt ihr danach anpassen.") {
+                    3 -> Step(stringResource(R.string.ob_photo_title), stringResource(R.string.ob_photo_sub)) {
                         Box(
                             Modifier
                                 .fillMaxWidth(0.75f)
@@ -192,7 +197,7 @@ fun OnboardingScreen(
                         Spacer(Modifier.height(20.dp))
                         Button(onClick = onPickPhoto, modifier = Modifier.fillMaxWidth()) {
                             Icon(Icons.Rounded.AddPhotoAlternate, null)
-                            Text("Foto auswählen", Modifier.padding(start = 8.dp))
+                            Text(stringResource(R.string.pick_photo), Modifier.padding(start = 8.dp))
                         }
                         Row(
                             Modifier
@@ -202,20 +207,19 @@ fun OnboardingScreen(
                         ) {
                             FilledTonalButton(onClick = { presets = true }, modifier = Modifier.weight(1f)) {
                                 Icon(Icons.Rounded.Collections, null)
-                                Text("Motive", Modifier.padding(start = 8.dp))
+                                Text(stringResource(R.string.presets_short), Modifier.padding(start = 8.dp))
                             }
                             if (settings.photoPath != null) {
                                 FilledTonalButton(onClick = onAdjustPhoto, modifier = Modifier.weight(1f)) {
                                     Icon(Icons.Rounded.OpenWith, null)
-                                    Text("Anpassen", Modifier.padding(start = 8.dp))
+                                    Text(stringResource(R.string.adjust), Modifier.padding(start = 8.dp))
                                 }
                             }
                         }
                     }
                     else -> Step(
-                        "Besondere Tage nicht verpassen",
-                        "Die App meldet sich an Monatstagen, Jahrestagen, runden Tagen wie 100, 200, 300 " +
-                            "und Schnapszahlen wie 222.",
+                        stringResource(R.string.ob_notify_title),
+                        stringResource(R.string.ob_notify_sub),
                     ) {
                         Icon(
                             Icons.Rounded.NotificationsActive,
@@ -227,11 +231,11 @@ fun OnboardingScreen(
                         if (settings.notificationsEnabled && notificationsAllowed) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Rounded.CheckCircle, null, tint = MaterialTheme.colorScheme.primary)
-                                Text("Mitteilungen sind aktiv", Modifier.padding(start = 8.dp))
+                                Text(stringResource(R.string.notifications_on), Modifier.padding(start = 8.dp))
                             }
                         } else {
                             Button(onClick = { onNotifications(true) }, modifier = Modifier.fillMaxWidth()) {
-                                Text("Mitteilungen erlauben")
+                                Text(stringResource(R.string.allow_notifications))
                             }
                         }
                         FilledTonalButton(
@@ -242,7 +246,10 @@ fun OnboardingScreen(
                         ) {
                             Icon(Icons.Rounded.Schedule, null)
                             Text(
-                                "Uhrzeit: %02d:%02d Uhr".format(settings.notifyHour, settings.notifyMinute),
+                                stringResource(
+                                    R.string.time_label,
+                                    Texts.time(context, LocalTime.of(settings.notifyHour, settings.notifyMinute)),
+                                ),
                                 Modifier.padding(start = 8.dp),
                             )
                         }
@@ -259,7 +266,7 @@ fun OnboardingScreen(
         ) {
             // Namen und Datum sind Pflicht, nur das Foto kann warten
             if (step == 3) {
-                TextButton(onClick = { onStep(step + 1) }) { Text("Überspringen") }
+                TextButton(onClick = { onStep(step + 1) }) { Text(stringResource(R.string.skip)) }
             }
             Spacer(Modifier.weight(1f))
             Button(
@@ -268,9 +275,9 @@ fun OnboardingScreen(
             ) {
                 Text(
                     when (step) {
-                        0 -> "Los geht's"
-                        STEPS - 1 -> "Fertig"
-                        else -> "Weiter"
+                        0 -> stringResource(R.string.lets_go)
+                        STEPS - 1 -> stringResource(R.string.done)
+                        else -> stringResource(R.string.next)
                     },
                 )
             }
@@ -285,7 +292,7 @@ fun OnboardingScreen(
     }
     if (time) {
         TimeDialog(
-            "Uhrzeit der Mitteilung",
+            stringResource(R.string.notify_time_title),
             LocalTime.of(settings.notifyHour, settings.notifyMinute),
             onDismiss = { time = false },
         ) {
@@ -295,7 +302,7 @@ fun OnboardingScreen(
     }
     if (startTime) {
         TimeDialog(
-            "Uhrzeit (optional)",
+            stringResource(R.string.start_time_optional),
             settings.startTime,
             onDismiss = { startTime = false },
             onClear = {
@@ -322,12 +329,12 @@ private fun Welcome() {
         BeatingHeart(size = 80.dp)
     }
     Text(
-        "Willkommen",
+        stringResource(R.string.welcome),
         style = MaterialTheme.typography.displayMedium,
         modifier = Modifier.padding(top = 40.dp),
     )
     Text(
-        "Zählt eure gemeinsame Zeit und erinnert euch an alle besonderen Tage.",
+        stringResource(R.string.welcome_sub),
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,

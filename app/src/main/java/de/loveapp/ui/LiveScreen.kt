@@ -1,5 +1,9 @@
 package de.loveapp.ui
 
+import androidx.annotation.PluralsRes
+import de.loveapp.R
+import de.loveapp.data.Texts
+import androidx.compose.ui.res.stringResource
 import android.content.Intent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
@@ -54,23 +58,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.loveapp.data.LiveSpan
 import de.loveapp.data.LoveSettings
-import de.loveapp.data.formatNumber
 import de.loveapp.data.liveSpan
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 
-private data class LiveRow(val key: String, val value: Long, val one: String, val many: String, val total: Long)
+private data class LiveRow(val key: String, val value: Long, @PluralsRes val unit: Int, val total: Long)
 
 private fun LiveSpan.rows(): List<LiveRow> = buildList {
-    if (years > 0) add(LiveRow("y", years.toLong(), "Jahr", "Jahre", years.toLong()))
-    add(LiveRow("mo", months.toLong(), "Monat", "Monate", totalMonths))
-    add(LiveRow("d", days.toLong(), "Tag", "Tage", totalDays))
-    add(LiveRow("h", hours.toLong(), "Stunde", "Stunden", totalHours))
-    add(LiveRow("mi", minutes.toLong(), "Minute", "Minuten", totalMinutes))
-    add(LiveRow("s", seconds.toLong(), "Sekunde", "Sekunden", totalSeconds))
+    if (years > 0) add(LiveRow("y", years.toLong(), R.plurals.years, years.toLong()))
+    add(LiveRow("mo", months.toLong(), R.plurals.months, totalMonths))
+    add(LiveRow("d", days.toLong(), R.plurals.days, totalDays))
+    add(LiveRow("h", hours.toLong(), R.plurals.hours, totalHours))
+    add(LiveRow("mi", minutes.toLong(), R.plurals.minutes, totalMinutes))
+    add(LiveRow("s", seconds.toLong(), R.plurals.seconds, totalSeconds))
 }
-
-private fun label(n: Long, one: String, many: String) = "${formatNumber(n)} ${if (n == 1L) one else many}"
 
 /** Sekundengenauer Live-Zaehler auf eurem (weichgezeichneten) Foto. */
 @OptIn(ExperimentalFoundationApi::class)
@@ -123,18 +124,14 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
                 Text(settings.name2, style = MaterialTheme.typography.headlineSmall, color = Color.White)
             }
             Text(
-                (if (future) "Noch" else "Schon zusammen").uppercase(),
+                stringResource(if (future) R.string.live_until else R.string.live_together).uppercase(),
                 style = LabelCaps,
                 color = Color(0xFFFFB2B9),
                 modifier = Modifier.padding(top = 32.dp, bottom = 16.dp),
             )
             span.rows().forEach { row ->
                 val total = showTotal[row.key] == true
-                val text = if (total) {
-                    label(row.total, row.one, row.many)
-                } else {
-                    label(row.value, row.one, row.many)
-                }
+                val text = Texts.count(context, row.unit, if (total) row.total else row.value)
                 AnimatedContent(
                     targetState = text,
                     transitionSpec = {
@@ -147,14 +144,16 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
                         .combinedClickable(
                             onClick = { showTotal[row.key] = !total },
                             onLongClick = {
-                                val msg = "${settings.names} sind schon " +
+                                val msg = context.getString(
+                                    R.string.share_text,
+                                    settings.names,
                                     span.rows().filter { it.value > 0 }
-                                        .joinToString(", ") { label(it.value, it.one, it.many) } +
-                                    " zusammen ❤"
+                                        .joinToString(", ") { Texts.count(context, it.unit, it.value) },
+                                )
                                 val send = Intent(Intent.ACTION_SEND)
                                     .setType("text/plain")
                                     .putExtra(Intent.EXTRA_TEXT, msg)
-                                context.startActivity(Intent.createChooser(send, "Teilen"))
+                                context.startActivity(Intent.createChooser(send, context.getString(R.string.share)))
                             },
                         ),
                 ) { t ->
@@ -171,7 +170,7 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
                 }
             }
             Text(
-                "Tippe auf einen Wert für die Gesamtzahl.\nGedrückt halten, um zu teilen.",
+                stringResource(R.string.live_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center,

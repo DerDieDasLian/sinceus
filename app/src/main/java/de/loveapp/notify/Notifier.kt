@@ -1,5 +1,6 @@
 package de.loveapp.notify
 
+import de.loveapp.data.Texts
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -38,8 +39,8 @@ object Notifier {
     fun show(context: Context, settings: LoveSettings, milestones: List<Milestone>) {
         if (milestones.isEmpty() || !canNotify(context)) return
         val title = "${settings.names} ❤"
-        val text = milestones.first().message
-        val big = milestones.joinToString("\n") { it.message }
+        val text = Texts.milestoneMessage(context, milestones.first())
+        val big = milestones.joinToString("\n") { Texts.milestoneMessage(context, it) }
         post(context, title, text, big)
     }
 
@@ -48,7 +49,7 @@ object Notifier {
         post(
             context,
             "${settings.names} ❤",
-            "So sehen eure Mitteilungen an besonderen Tagen aus.",
+            context.getString(R.string.test_notification),
             null,
         )
     }

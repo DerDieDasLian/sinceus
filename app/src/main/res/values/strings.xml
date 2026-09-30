@@ -1,8 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Love</string>
-    <string name="widget_name">Tage zusammen</string>
-    <string name="widget_description">Zeigt, wie viele Tage ihr schon zusammen seid</string>
-    <string name="channel_name">Besondere Tage</string>
-    <string name="channel_description">Monatstage, Jahrestage und runde Tage</string>
+    <string name="app_name" translatable="false">Since Us</string>
+    <string name="widget_days_name">Days together</string>
+    <string name="widget_days_description">Shows how many days you have been together</string>
+    <string name="widget_photo_name">Photo &amp; days</string>
+    <string name="widget_photo_description">Your photo with your days together</string>
+    <string name="channel_name">Special days</string>
+    <string name="channel_description">Monthly and yearly anniversaries and milestone days</string>
+    <string name="settings">Settings</string>
+    <string name="back">Back</string>
+    <string name="section_your_data">Your details</string>
+    <string name="names">Names</string>
+    <string name="together_since_date">Together since</string>
+    <string name="start_time_optional">Time (optional)</string>
+    <string name="not_set">Not set</string>
+    <string name="section_photo">Photo</string>
+    <string name="pick_own_photo">Choose your own photo</string>
+    <string name="adjust_crop">Adjust framing</string>
+    <string name="pick_preset">Choose a background</string>
+    <string name="reset_photo">Reset photo</string>
+    <string name="section_notifications">Notifications</string>
+    <string name="notify_special">Notify on special days</string>
+    <string name="notify_blocked">Notifications are blocked in the Android settings</string>
+    <string name="notify_summary">Monthly and yearly anniversaries, every 100 days and more</string>
+    <string name="notify_time">Time</string>
+    <string name="time_value">%1$s</string>
+    <string name="send_test">Send test notification</string>
+    <string name="section_misc">More</string>
+    <string name="add_widget">Add widget to home screen</string>
+    <string name="restart_setup">Run setup again</string>
+    <string name="privacy">Privacy</string>
+    <string name="privacy_text">Your names, date and photo are stored only on this device. The app has no internet access, sends no data and contains no tracking or ads.</string>
+    <string name="delete_all">Delete all data</string>
+    <string name="delete_all_summary">Completely resets the app</string>
+    <string name="delete_all_question">Delete all data?</string>
+    <string name="delete_all_text">Names, date, photo and all settings will be deleted from this device and setup starts again. This cannot be undone.</string>
+    <string name="delete_all_confirm">Delete everything</string>
+    <string name="ok">OK</string>
+    <string name="your_names">Your names</string>
+    <string name="name_1">Name 1</string>
+    <string name="name_2">Name 2</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="remove">Remove</string>
+    <string name="close">Close</string>
+    <string name="done">Done</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="lets_go">Let\'s go</string>
+    <string name="together_since_title">Together since</string>
+    <string name="notify_time_title">Notification time</string>
+    <string name="backgrounds">Backgrounds</string>
+    <string name="preset_wine">Wine</string>
+    <string name="preset_sunset">Sunset</string>
+    <string name="preset_lavender">Lavender</string>
+    <string name="preset_night">Night sky</string>
+    <string name="preset_rose">Rosé</string>
+    <string name="preset_ocean">Ocean</string>
+    <string name="ob_names_title">What are your names?</string>
+    <string name="ob_names_sub">Your names appear big on your photo.</string>
+    <string name="ob_date_title">When did you get together?</string>
+    <string name="ob_date_sub">The app counts from this day.</string>
+    <string name="add_time_optional">Add a time (optional)</string>
+    <string name="time_label">Time: %1$s</string>
+    <string name="ob_photo_title">Your photo</string>
+    <string name="ob_photo_sub">Choose a picture of the two of you. You can adjust the framing afterwards.</string>
+    <string name="pick_photo">Choose photo</string>
+    <string name="presets_short">Backgrounds</string>
+    <string name="adjust">Adjust</string>
+    <string name="ob_notify_title">Never miss a special day</string>
+    <string name="ob_notify_sub">The app reminds you of monthly and yearly anniversaries, round numbers like 100, 200, 300 and repeating numbers like 222.</string>
+    <string name="notifications_on">Notifications are on</string>
+    <string name="allow_notifications">Allow notifications</string>
+    <string name="welcome">Welcome</string>
+    <string name="welcome_sub">Counts your time together and reminds you of every special day.</string>
+    <string name="tab_overview">Overview</string>
+    <string name="tab_live">Live</string>
+    <string name="together_for">Together for</string>
+    <string name="starts_in">Starting in</string>
+    <string name="today_word">today</string>
+    <string name="beginning">The beginning of everything ❤</string>
+    <string name="stat_months">Months</string>
+    <string name="stat_weeks">Weeks</string>
+    <string name="stat_hours">Hours</string>
+    <string name="together_since_long">Together since %1$s</string>
+    <string name="special_today">Today is a special day!</string>
+    <string name="upcoming">Upcoming special days</string>
+    <string name="tomorrow">tomorrow</string>
+    <string name="day_after_tomorrow">in 2 days</string>
+    <string name="live_together">Together for</string>
+    <string name="live_until">Still to go</string>
+    <string name="share">Share</string>
+    <string name="share_text">%1$s have been together for %2$s ❤</string>
+    <string name="live_hint">Tap a value to see the total.\nLong press to share.</string>
+    <string name="your_photo">Your photo</string>
+    <string name="editor_hint">Drag with one finger, pinch with two to zoom.</string>
+    <string name="other_photo">Other photo</string>
+    <string name="reset">Reset</string>
+    <string name="widget_manual_hint">Long press your home screen, open Widgets and choose Since Us</string>
+    <string name="test_notification">This is how your special-day notifications will look.</string>
+    <string name="widget_days_until">days to go</string>
+    <string name="widget_next">Next: %1$s</string>
+    <string name="anniversary_title">%1$s-year anniversary</string>
+    <string name="msg_anniversary">Today is your %1$s! Here\'s to %2$s together.</string>
+    <string name="msg_exact">Today you have been together for exactly %1$s.</string>
+    <string name="msg_together">Today you have been together for %1$s.</string>
+    <string name="and_word">\u0020and\u0020</string>
+    <plurals name="years">
+        <item quantity="one">%s year</item>
+        <item quantity="other">%s years</item>
+    </plurals>
+    <plurals name="years_dative">
+        <item quantity="one">%s year</item>
+        <item quantity="other">%s years</item>
+    </plurals>
+    <plurals name="months">
+        <item quantity="one">%s month</item>
+        <item quantity="other">%s months</item>
+    </plurals>
+    <plurals name="months_dative">
+        <item quantity="one">%s month</item>
+        <item quantity="other">%s months</item>
+    </plurals>
+    <plurals name="days">
+        <item quantity="one">%s day</item>
+        <item quantity="other">%s days</item>
+    </plurals>
+    <plurals name="days_dative">
+        <item quantity="one">%s day</item>
+        <item quantity="other">%s days</item>
+    </plurals>
+    <plurals name="weeks">
+        <item quantity="one">%s week</item>
+        <item quantity="other">%s weeks</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">%s hour</item>
+        <item quantity="other">%s hours</item>
+    </plurals>
+    <plurals name="minutes">
+        <item quantity="one">%s minute</item>
+        <item quantity="other">%s minutes</item>
+    </plurals>
+    <plurals name="seconds">
+        <item quantity="one">%s second</item>
+        <item quantity="other">%s seconds</item>
+    </plurals>
+    <plurals name="in_days">
+        <item quantity="one">in %s day</item>
+        <item quantity="other">in %s days</item>
+    </plurals>
+    <plurals name="unit_days_dative">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
+    <plurals name="unit_days_together">
+        <item quantity="one">day together</item>
+        <item quantity="other">days together</item>
+    </plurals>
 </resources>

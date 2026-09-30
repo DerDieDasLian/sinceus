@@ -16,7 +16,6 @@ class LoveMathTest {
         assertEquals(5, t.totalMonths)
         assertEquals(21, t.totalWeeks)
         assertEquals(153, t.totalDays)
-        assertEquals("5 Monate", t.period.toGermanText())
     }
 
     @Test
@@ -37,7 +36,6 @@ class LoveMathTest {
         val m = LoveMath.milestonesOn(start, LocalDate.of(2027, 4, 30))
         assertEquals(MilestoneKind.YEARS, m.first().kind)
         assertEquals(1, m.first().value)
-        assertEquals("1. Jahrestag", m.first().title)
     }
 
     @Test
@@ -57,9 +55,9 @@ class LoveMathTest {
     }
 
     @Test
-    fun germanText() {
-        val t = LoveMath.together(LocalDate.of(2024, 1, 1), LocalDate.of(2025, 3, 2))
-        assertEquals("1 Jahr, 2 Monate und 1 Tag", t.period.toGermanText())
+    fun previousMilestone() {
+        assertEquals(LocalDate.of(2026, 9, 30), LoveMath.previousMilestoneDate(start, LocalDate.of(2026, 10, 5)))
+        assertEquals(start, LoveMath.previousMilestoneDate(start, start.plusDays(3)))
     }
 
     @Test

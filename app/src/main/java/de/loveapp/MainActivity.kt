@@ -41,7 +41,7 @@ import de.loveapp.ui.PhotoEditorScreen
 import de.loveapp.ui.LoveTheme
 import de.loveapp.ui.LoveViewModel
 import de.loveapp.ui.SettingsScreen
-import de.loveapp.widget.LoveWidgetReceiver
+import de.loveapp.widget.PhotoWidgetReceiver
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -196,11 +196,11 @@ class MainActivity : ComponentActivity() {
     private fun pinWidget() {
         val manager = getSystemService(AppWidgetManager::class.java)
         if (manager.isRequestPinAppWidgetSupported) {
-            manager.requestPinAppWidget(ComponentName(this, LoveWidgetReceiver::class.java), null, null)
+            manager.requestPinAppWidget(ComponentName(this, PhotoWidgetReceiver::class.java), null, null)
         } else {
             Toast.makeText(
                 this,
-                "Lange auf den Startbildschirm drücken und unter „Widgets“ die Love App wählen",
+                getString(R.string.widget_manual_hint),
                 Toast.LENGTH_LONG,
             ).show()
         }

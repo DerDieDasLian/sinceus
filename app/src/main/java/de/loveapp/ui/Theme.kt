@@ -85,13 +85,15 @@ fun LoveTheme(content: @Composable () -> Unit) {
 }
 
 /** Standardmotive, falls kein eigenes Foto gewaehlt ist. */
-data class Preset(val name: String, val brush: Brush)
+data class Preset(@androidx.annotation.StringRes val name: Int, val colors: List<Color>) {
+    val brush: Brush get() = Brush.linearGradient(colors)
+}
 
 val Presets = listOf(
-    Preset("Weinrot", Brush.linearGradient(listOf(Color(0xFF4A0B18), Color(0xFF8B1E31), Color(0xFFE0566B)))),
-    Preset("Abendrot", Brush.linearGradient(listOf(Color(0xFF3B1C4A), Color(0xFFC2466B), Color(0xFFF7A26B)))),
-    Preset("Lavendel", Brush.linearGradient(listOf(Color(0xFF2E2A5A), Color(0xFF7B63B8), Color(0xFFE6B7E0)))),
-    Preset("Nachthimmel", Brush.linearGradient(listOf(Color(0xFF05070F), Color(0xFF1B2450), Color(0xFF6A4C93)))),
-    Preset("Rosé", Brush.linearGradient(listOf(Color(0xFF8C4A5A), Color(0xFFE8A0A8), Color(0xFFFBE3DA)))),
-    Preset("Meer", Brush.linearGradient(listOf(Color(0xFF062B3A), Color(0xFF1C6E8C), Color(0xFF8FD3D1)))),
+    Preset(de.loveapp.R.string.preset_wine, listOf(Color(0xFF4A0B18), Color(0xFF8B1E31), Color(0xFFE0566B))),
+    Preset(de.loveapp.R.string.preset_sunset, listOf(Color(0xFF3B1C4A), Color(0xFFC2466B), Color(0xFFF7A26B))),
+    Preset(de.loveapp.R.string.preset_lavender, listOf(Color(0xFF2E2A5A), Color(0xFF7B63B8), Color(0xFFE6B7E0))),
+    Preset(de.loveapp.R.string.preset_night, listOf(Color(0xFF05070F), Color(0xFF1B2450), Color(0xFF6A4C93))),
+    Preset(de.loveapp.R.string.preset_rose, listOf(Color(0xFF8C4A5A), Color(0xFFE8A0A8), Color(0xFFFBE3DA))),
+    Preset(de.loveapp.R.string.preset_ocean, listOf(Color(0xFF062B3A), Color(0xFF1C6E8C), Color(0xFF8FD3D1))),
 )

@@ -68,14 +68,14 @@ import de.loveapp.data.LoveSettings
 import de.loveapp.data.Milestone
 import de.loveapp.data.MilestoneKind
 import de.loveapp.data.formatNumber
-import de.loveapp.data.toGermanText
+import de.loveapp.data.Texts
+import de.loveapp.R
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.Locale
 
-private val LongDate = DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.GERMAN)
-private val ShortDate = DateTimeFormatter.ofPattern("EE, d. MMM yyyy", Locale.GERMAN)
 
 @Composable
 fun HomeScreen(
@@ -115,7 +115,7 @@ fun HomeScreen(
                     contentColor = Color.White,
                 ),
             ) {
-                Icon(Icons.Rounded.Settings, contentDescription = "Einstellungen")
+                Icon(Icons.Rounded.Settings, contentDescription = stringResource(R.string.settings))
             }
         }
     }
@@ -129,7 +129,7 @@ private fun ModeSwitch(selected: Int, onSelect: (Int) -> Unit) {
             .background(Color.Black.copy(alpha = 0.3f))
             .padding(4.dp),
     ) {
-        listOf("Übersicht", "Live").forEachIndexed { i, label ->
+        listOf(stringResource(R.string.tab_overview), stringResource(R.string.tab_live)).forEachIndexed { i, label ->
             val active = i == selected
             Text(
                 label,
@@ -152,6 +152,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
     val future = start.isAfter(today)
     val todays = LoveMath.milestonesOn(start, today)
     val upcoming = LoveMath.upcoming(start, today, 4)
+    val context = LocalContext.current
 
     Column(
         Modifier
@@ -167,13 +168,18 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             if (together.totalDays == 0L) {
-                CounterCard("Ihr seid zusammen seit", "heute", "", "Der Anfang von allem ❤")
+                CounterCard(
+                    stringResource(R.string.together_for),
+                    stringResource(R.string.today_word),
+                    "",
+                    stringResource(R.string.beginning),
+                )
             } else {
                 CounterCard(
-                    label = if (future) "Es geht los in" else "Ihr seid zusammen seit",
+                    label = stringResource(if (future) R.string.starts_in else R.string.together_for),
                     big = formatNumber(together.totalDays),
-                    unit = if (together.totalDays == 1L) "Tag" else "Tagen",
-                    sub = together.period.toGermanText(dative = true),
+                    unit = pluralStringResource(R.plurals.unit_days_dative, together.totalDays.toInt()),
+                    sub = Texts.period(context, together.period, dative = true),
                 )
             }
 
@@ -181,16 +187,16 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
 
             if (!future) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    StatTile(Modifier.weight(1f), formatNumber(together.totalMonths), "Monate")
-                    StatTile(Modifier.weight(1f), formatNumber(together.totalWeeks), "Wochen")
-                    StatTile(Modifier.weight(1f), formatNumber(together.totalDays * 24), "Stunden")
+                    StatTile(Modifier.weight(1f), formatNumber(together.totalMonths), stringResource(R.string.stat_months))
+                    StatTile(Modifier.weight(1f), formatNumber(together.totalWeeks), stringResource(R.string.stat_weeks))
+                    StatTile(Modifier.weight(1f), formatNumber(together.totalDays * 24), stringResource(R.string.stat_hours))
                 }
             }
 
             if (upcoming.isNotEmpty()) UpcomingCard(upcoming, today)
 
             Text(
-                "Zusammen seit ${start.format(LongDate)}",
+                stringResource(R.string.together_since_long, Texts.longDate(start)),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -322,8 +328,9 @@ private fun TodayBanner(milestones: List<Milestone>) {
             Icon(Icons.Rounded.Celebration, contentDescription = null, modifier = Modifier.size(36.dp))
             Spacer(Modifier.width(16.dp))
             Column {
-                Text("Heute ist ein besonderer Tag!", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                milestones.forEach { Text(it.message, style = MaterialTheme.typography.bodyMedium) }
+                Text(stringResource(R.string.special_today), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                val context = LocalContext.current
+                milestones.forEach { Text(Texts.milestoneMessage(context, it), style = MaterialTheme.typography.bodyMedium) }
             }
         }
     }
@@ -331,6 +338,7 @@ private fun TodayBanner(milestones: List<Milestone>) {
 
 @Composable
 private fun UpcomingCard(upcoming: List<Milestone>, today: LocalDate) {
+    val context = LocalContext.current
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
@@ -338,7 +346,7 @@ private fun UpcomingCard(upcoming: List<Milestone>, today: LocalDate) {
     ) {
         Column(Modifier.padding(vertical = 16.dp)) {
             Text(
-                "NÄCHSTE BESONDERE TAGE",
+                stringResource(R.string.upcoming).uppercase(),
                 style = LabelCaps,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
@@ -370,18 +378,18 @@ private fun UpcomingCard(upcoming: List<Milestone>, today: LocalDate) {
                             .weight(1f)
                             .padding(horizontal = 16.dp),
                     ) {
-                        Text(m.title, style = MaterialTheme.typography.titleMedium)
+                        Text(Texts.milestoneTitle(context, m), style = MaterialTheme.typography.titleMedium)
                         Text(
-                            m.date.format(ShortDate),
+                            Texts.dateWithWeekday(m.date),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     Text(
                         when (inDays) {
-                            1L -> "morgen"
-                            2L -> "übermorgen"
-                            else -> "in ${formatNumber(inDays)} Tagen"
+                            1L -> stringResource(R.string.tomorrow)
+                            2L -> stringResource(R.string.day_after_tomorrow)
+                            else -> pluralStringResource(R.plurals.in_days, inDays.toInt(), formatNumber(inDays))
                         },
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary,

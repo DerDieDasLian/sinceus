@@ -52,7 +52,13 @@ class StoreAssetsTest {
 
     @Test
     @Config(sdk = [35], qualifiers = "w1024dp-h500dp-mdpi")
-    fun featureGraphic() = render("feature-graphic-1024x500") {
+    fun featureGraphicEnglish() = featureGraphic("en", "Counts your time together")
+
+    @Test
+    @Config(sdk = [35], qualifiers = "w1024dp-h500dp-mdpi")
+    fun featureGraphicGerman() = featureGraphic("de", "Zählt eure gemeinsame Zeit")
+
+    private fun featureGraphic(lang: String, tagline: String) = render("feature-graphic-1024x500-$lang") {
         Box(
             Modifier
                 .fillMaxSize()
@@ -75,9 +81,9 @@ class StoreAssetsTest {
             ) {
                 BeatingHeart(size = 120.dp)
                 Column(Modifier.padding(start = 40.dp)) {
-                    Text("Love", style = MaterialTheme.typography.displayLarge.copy(fontSize = 96.sp), color = Color.White)
+                    Text("Since Us", style = MaterialTheme.typography.displayLarge.copy(fontSize = 88.sp), color = Color.White)
                     Text(
-                        "Zählt eure gemeinsame Zeit",
+                        tagline,
                         style = MaterialTheme.typography.headlineSmall,
                         color = Color.White.copy(alpha = 0.85f),
                     )
