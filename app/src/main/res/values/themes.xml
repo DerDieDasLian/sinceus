@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="wine">#8B1E31</color>
+    <color name="icon_bg">#7A1A2C</color>
+
+    <style name="Theme.Love" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>

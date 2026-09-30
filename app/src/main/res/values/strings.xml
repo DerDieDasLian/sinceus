@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Love</string>
+    <string name="widget_name">Tage zusammen</string>
+    <string name="widget_description">Zeigt, wie viele Tage ihr schon zusammen seid</string>
+    <string name="channel_name">Besondere Tage</string>
+    <string name="channel_description">Monatstage, Jahrestage und runde Tage</string>
+</resources>
