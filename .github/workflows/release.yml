@@ -87,7 +87,7 @@ jobs:
         if: steps.version.outputs.release == 'true'
         run: |
           cp app/build/outputs/apk/github/release/app-github-release.apk "SinceUs-${{ steps.version.outputs.tag }}.apk"
-          cp app/build/outputs/apk/fdroid/release/app-fdroid-release.apk "SinceUs-fdroid-${{ steps.version.outputs.tag }}.apk"
+          cp app/build/outputs/apk/fdroid/release/app-fdroid-release.apk "SinceUs-${{ steps.version.outputs.tag }}-fdroid.apk.bin"
           notes=fastlane/metadata/android/en-US/changelogs/${{ steps.version.outputs.code }}.txt
           if [ -f "$notes" ]; then cp "$notes" notes.md; else echo "" > notes.md; fi
 
@@ -102,12 +102,12 @@ jobs:
           files: SinceUs-${{ steps.version.outputs.tag }}.apk
 
       # F-Droid-Variante mit unserer Signatur: F-Droid baut sie nach, vergleicht sie (Reproducible Builds)
-      # und liefert dann diese Signatur aus. Eigener Schritt, damit die GitHub-APK zuerst in der Liste steht.
+      # und liefert dann diese Signatur aus. Endung .apk.bin, damit ältere App-Versionen sie nicht als Update laden.
       - uses: softprops/action-gh-release@v3
         if: steps.version.outputs.release == 'true'
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          files: SinceUs-fdroid-${{ steps.version.outputs.tag }}.apk
+          files: SinceUs-${{ steps.version.outputs.tag }}-fdroid.apk.bin
 
       # Das Bundle für Google Play wird nicht öffentlich veröffentlicht, nur als Artefakt abgelegt
       - uses: actions/upload-artifact@v7
