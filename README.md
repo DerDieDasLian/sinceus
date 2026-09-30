@@ -20,6 +20,10 @@ A privacy-friendly Android app for couples: counts how long you have been togeth
 - Light and dark mode, English and German (per-app language supported)
 - No account, no ads, no tracking, all data stays on the device
 
+## Third-party libraries
+
+Since Us uses Android Jetpack (AndroidX, Jetpack Compose, Material 3, Glance, DataStore), Kotlin and kotlinx.coroutines, Coil, Okio, Guava ListenableFuture, Accompanist, JSpecify and Material Symbols. All of them are licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). The app lists them under *Settings → Open source licenses*.
+
 ## Download
 
 | Where | Updates |

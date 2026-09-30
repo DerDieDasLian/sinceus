@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.sinceus.notify.Notifier
 import app.sinceus.ui.HomeScreen
+import app.sinceus.ui.LicensesScreen
 import app.sinceus.ui.MomentEditorScreen
 import app.sinceus.ui.OnboardingScreen
 import app.sinceus.ui.PhotoEditorScreen
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
                 val scope = rememberCoroutineScope()
                 var showSettings by rememberSaveable { mutableStateOf(false) }
                 var editingPhoto by rememberSaveable { mutableStateOf(false) }
+                var showLicenses by rememberSaveable { mutableStateOf(false) }
                 // Moment-Editor: null = zu, "" = neuer Moment, sonst ID; dazu optional ein vorgeschlagener Titel
                 var editingMoment by rememberSaveable { mutableStateOf<String?>(null) }
                 var momentSuggestion by rememberSaveable { mutableStateOf<String?>(null) }
@@ -101,8 +103,9 @@ class MainActivity : ComponentActivity() {
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
                 )
 
-                BackHandler(enabled = showSettings || editingPhoto || editingMoment != null) {
+                BackHandler(enabled = showSettings || editingPhoto || editingMoment != null || showLicenses) {
                     when {
+                        showLicenses -> showLicenses = false
                         editingMoment != null -> editingMoment = null
                         editingPhoto -> editingPhoto = false
                         else -> showSettings = false
@@ -115,6 +118,7 @@ class MainActivity : ComponentActivity() {
                     editingPhoto && s.photoPath != null -> "editor"
                     editingMoment != null && s.onboardingDone -> "moment"
                     !s.onboardingDone -> "onboarding"
+                    showSettings && showLicenses -> "licenses"
                     showSettings -> "settings"
                     else -> "home"
                 }
@@ -126,9 +130,10 @@ class MainActivity : ComponentActivity() {
                     AnimatedContent(
                         targetState = screen,
                         transitionSpec = {
-                            if (targetState == "settings") {
+                            // Tiefer hinein (Einstellungen, Lizenzen) gleitet von rechts herein, zurück wieder hinaus
+                            if (targetState == "licenses" || (targetState == "settings" && initialState != "licenses")) {
                                 (slideInHorizontally { it / 3 } + fadeIn()) togetherWith fadeOut()
-                            } else if (initialState == "settings") {
+                            } else if (initialState == "settings" || initialState == "licenses") {
                                 fadeIn() togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
                             } else {
                                 fadeIn() togetherWith fadeOut()
@@ -138,6 +143,7 @@ class MainActivity : ComponentActivity() {
                     ) { target ->
                         if (s == null) return@AnimatedContent
                         when (target) {
+                            "licenses" -> LicensesScreen(onBack = { showLicenses = false })
                             "moment" -> MomentEditorScreen(
                                 existing = s.moments.firstOrNull { it.id == editingMoment },
                                 suggestedTitle = momentSuggestion,
@@ -210,6 +216,7 @@ class MainActivity : ComponentActivity() {
                                 onCheckUpdates = vm::checkUpdatesNow,
                                 onOpenUpdate = vm::installUpdate,
                                 updateProgress = updateProgress,
+                                onOpenLicenses = { showLicenses = true },
                             )
                             else -> HomeScreen(
                                 s,

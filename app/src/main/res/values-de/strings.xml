@@ -118,6 +118,11 @@
     <string name="update_none">Du hast die neueste Version</string>
     <string name="update_failed">GitHub ist gerade nicht erreichbar</string>
     <string name="version">Version</string>
+    <string name="licenses">Open-Source-Lizenzen</string>
+    <string name="licenses_app">Since Us ist freie Software unter der GNU General Public License 3.0 oder neuer. Der Quellcode liegt auf GitHub:</string>
+    <string name="licenses_libraries">Verwendete Bibliotheken</string>
+    <string name="licenses_show_text">Apache License 2.0 anzeigen</string>
+    <string name="licenses_hide_text">Lizenztext ausblenden</string>
     <string name="version_value">%1$s (%2$s)</string>
     <plurals name="years">
         <item quantity="one">%s Jahr</item>

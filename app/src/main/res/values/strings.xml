@@ -119,6 +119,11 @@
     <string name="update_none">You have the latest version</string>
     <string name="update_failed">GitHub could not be reached</string>
     <string name="version">Version</string>
+    <string name="licenses">Open source licenses</string>
+    <string name="licenses_app">Since Us is free software under the GNU General Public License 3.0 or later. The source code is on GitHub:</string>
+    <string name="licenses_libraries">Libraries used</string>
+    <string name="licenses_show_text">Show Apache License 2.0</string>
+    <string name="licenses_hide_text">Hide license text</string>
     <string name="version_value">%1$s (%2$s)</string>
     <plurals name="years">
         <item quantity="one">%s year</item>

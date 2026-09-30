@@ -80,6 +80,7 @@ import java.time.ZoneOffset
 import app.sinceus.BuildConfig
 import app.sinceus.R
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Update
@@ -113,6 +114,7 @@ fun SettingsScreen(
     onShowMoments: (Boolean) -> Unit = {},
     /** Download-Fortschritt eines Updates in Prozent (-1 = unbekannt), null = kein Download */
     updateProgress: Int? = null,
+    onOpenLicenses: () -> Unit = {},
 ) {
     var dialog by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
@@ -251,6 +253,8 @@ fun SettingsScreen(
                 Row(Icons.Rounded.AutoAwesome, stringResource(R.string.restart_setup), null, onClick = onRestartOnboarding)
                 Divider()
                 Row(Icons.Rounded.Shield, stringResource(R.string.privacy), null) { dialog = "privacy" }
+                Divider()
+                Row(Icons.Rounded.Description, stringResource(R.string.licenses), null, onClick = onOpenLicenses)
                 Divider()
                 Row(
                     Icons.Rounded.Info,

@@ -125,6 +125,9 @@ class ScreenshotTest {
     fun homeWithMomentsTab() = shot("home_moments_tab", lang = "de") { HomeScreen(withMoments, today, {}, {}) }
 
     @Test
+    fun licenses() = shot("licenses", lang = "de") { LicensesScreen(onBack = {}) }
+
+    @Test
     fun editor() = shot("editor") { PhotoEditorScreen(settings, {}, {}, { _, _, _ -> }) }
 
     @Test
