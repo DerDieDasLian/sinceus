@@ -1,0 +1,1 @@
+Live mode: the other values are now really blurred instead of just greyed out.

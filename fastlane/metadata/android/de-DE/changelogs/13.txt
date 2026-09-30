@@ -1,0 +1,1 @@
+Live-Modus: Die anderen Werte werden jetzt richtig weichgezeichnet statt nur ausgegraut.

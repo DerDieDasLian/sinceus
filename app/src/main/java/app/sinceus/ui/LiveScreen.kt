@@ -47,12 +47,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -153,8 +154,9 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
             span.rows().forEach { row ->
                 val total = focused == row.key
                 val dimmed = focused != null && !total
-                val blur by animateDpAsState(if (dimmed) 6.dp else 0.dp, tween(300), label = "blur")
-                val fade by animateFloatAsState(if (dimmed) 0.35f else 1f, tween(300), label = "fade")
+                // Weichzeichnen: die Schrift wird unsichtbar, nur ihr weicher Schatten bleibt stehen.
+                // Funktioniert auf allen Android-Versionen (Modifier.blur erst ab Android 12).
+                val soft by animateFloatAsState(if (dimmed) 1f else 0f, tween(350), label = "soft")
                 val text = Texts.count(context, row.unit, if (total) row.total else row.value)
                 AnimatedContent(
                     targetState = text,
@@ -165,18 +167,24 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
                     label = row.key,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .blur(blur)
-                        .alpha(fade)
                         .combinedClickable(
                             onClick = { focused = if (total) null else row.key },
                             onLongClick = shareLive,
                         ),
                 ) { t ->
+                    val base = if (total) Color(0xFFFFB2B9) else Color.White
                     Text(
                         t,
-                        style = MaterialTheme.typography.displaySmall.copy(fontSize = 40.sp),
+                        style = MaterialTheme.typography.displaySmall.copy(
+                            fontSize = 40.sp,
+                            shadow = if (soft > 0f) {
+                                Shadow(base.copy(alpha = 0.85f * soft), Offset.Zero, blurRadius = 42f * soft)
+                            } else {
+                                null
+                            },
+                        ),
                         fontWeight = FontWeight.SemiBold,
-                        color = if (total) Color(0xFFFFB2B9) else Color.White,
+                        color = base.copy(alpha = 1f - soft),
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
