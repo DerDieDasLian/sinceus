@@ -1,15 +1,25 @@
 name: Release
 
-# Erstellt automatisch ein GitHub-Release, sobald auf dem Hauptbranch eine neue versionName
-# (app/build.gradle.kts) landet, für die es noch kein Release gibt. Kein Tag von Hand nötig.
+# Erstellt automatisch ein GitHub-Release, sobald auf dem Hauptbranch App-Code geändert wird.
+# Die Version wird dabei automatisch erhöht (siehe .github/scripts/next-version.sh):
+# normal die letzte Stelle, mit [minor] oder [major] in einer Commit-Nachricht die entsprechende.
 on:
   push:
     branches: ["**"]
-    paths: ["app/build.gradle.kts"]
+    paths: ["app/**"]
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Auch ohne App-Änderung ein neues Release erstellen"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -17,31 +27,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
-      - name: Read version
+      - name: Determine version
         id: version
         env:
-          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force }}
         run: |
-          version=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
-          code=$(grep -oP 'versionCode = \K[0-9]+' app/build.gradle.kts)
-          echo "tag=v$version" >> "$GITHUB_OUTPUT"
-          echo "code=$code" >> "$GITHUB_OUTPUT"
-          if gh release view "v$version" > /dev/null 2>&1; then
-            echo "Release v$version already exists, nothing to do"
-            echo "exists=true" >> "$GITHUB_OUTPUT"
+          .github/scripts/next-version.sh | tee -a "$GITHUB_OUTPUT"
+          echo "tag=v$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit new version
+        id: commit
+        if: steps.version.outputs.release == 'true'
+        run: |
+          if [ "${{ steps.version.outputs.changed }}" = "true" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add app/build.gradle.kts fastlane/metadata/android
+            git commit -m "Version ${{ steps.version.outputs.version }}"
+            git push origin HEAD:${{ github.ref_name }}
           fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-java@v6
-        if: steps.version.outputs.exists != 'true'
+        if: steps.version.outputs.release == 'true'
         with:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v6
-        if: steps.version.outputs.exists != 'true'
+        if: steps.version.outputs.release == 'true'
 
       - name: Set up signing key
-        if: steps.version.outputs.exists != 'true'
+        if: steps.version.outputs.release == 'true'
         env:
           KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
@@ -61,21 +80,21 @@ jobs:
           } > keystore.properties
 
       - name: Build
-        if: steps.version.outputs.exists != 'true'
+        if: steps.version.outputs.release == 'true'
         run: ./gradlew testGithubDebugUnitTest assembleGithubRelease bundlePlayRelease
 
       - name: Prepare files
-        if: steps.version.outputs.exists != 'true'
+        if: steps.version.outputs.release == 'true'
         run: |
           cp app/build/outputs/apk/github/release/app-github-release.apk "SinceUs-${{ steps.version.outputs.tag }}.apk"
           notes=fastlane/metadata/android/en-US/changelogs/${{ steps.version.outputs.code }}.txt
           if [ -f "$notes" ]; then cp "$notes" notes.md; else echo "" > notes.md; fi
 
       - uses: softprops/action-gh-release@v3
-        if: steps.version.outputs.exists != 'true'
+        if: steps.version.outputs.release == 'true'
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          target_commitish: ${{ github.sha }}
+          target_commitish: ${{ steps.commit.outputs.sha }}
           name: Since Us ${{ steps.version.outputs.tag }}
           body_path: notes.md
           generate_release_notes: true
@@ -83,7 +102,7 @@ jobs:
 
       # Das Bundle für Google Play wird nicht öffentlich veröffentlicht, nur als Artefakt abgelegt
       - uses: actions/upload-artifact@v7
-        if: steps.version.outputs.exists != 'true'
+        if: steps.version.outputs.release == 'true'
         with:
           name: play-bundle-${{ steps.version.outputs.tag }}
           path: app/build/outputs/bundle/playRelease/app-play-release.aab
