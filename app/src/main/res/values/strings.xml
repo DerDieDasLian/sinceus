@@ -35,8 +35,6 @@
     <string name="delete_all_text">Names, dates, photos, moments and all settings will be deleted from this device and setup starts again. This cannot be undone.</string>
     <string name="ok">OK</string>
     <string name="your_names">Your names</string>
-    <string name="name_1">Name 1</string>
-    <string name="name_2">Name 2</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="remove">Remove</string>
@@ -238,7 +236,7 @@
     <string name="backup_save_failed">Backup could not be saved</string>
     <string name="backup_restored">Backup restored</string>
     <string name="backup_restore_failed">This file is not a valid Since Us backup</string>
-    <string name="settings_couple">You two</string>
+    <string name="settings_couple">People &amp; relationships</string>
     <string name="settings_home">Home screen</string>
     <string name="settings_home_summary">Moments, live counter and widget</string>
     <string name="settings_backup_summary">Save and restore all your data</string>
@@ -264,4 +262,34 @@
     <string name="delete_all_hold">Hold to delete</string>
     <string name="language">Language</string>
     <string name="language_system">Same as phone</string>
+    <string name="name">Name</string>
+    <string name="name_n">Name %1$d</string>
+    <string name="add_person">Add person</string>
+    <string name="edit_person">Edit person</string>
+    <string name="remove_person">Remove person</string>
+    <string name="remove_person_confirm">Tap again to remove</string>
+    <string name="pronouns">Pronouns (optional)</string>
+    <string name="pronouns_hint">e.g. she/her, they/them</string>
+    <string name="ob_names_poly_hint">More than two of you? Add more people. You can set up several relationships with their own dates later in the settings.</string>
+    <string name="poly_all">All</string>
+    <string name="poly_title">Your relationships</string>
+    <string name="poly_hint">More than two of you, or several relationships? Add more people here and give every relationship its own date.</string>
+    <string name="section_people">People</string>
+    <string name="section_relationships">Relationships</string>
+    <string name="add_relationship">Add relationship</string>
+    <string name="edit_relationship">Edit relationship</string>
+    <string name="remove_relationship">Remove relationship</string>
+    <string name="remove_relationship_confirm">Tap again to remove</string>
+    <string name="relationship_members">Who is part of it?</string>
+    <string name="relationship_label">Name (optional)</string>
+    <string name="relationship_label_hint">e.g. nesting partner</string>
+    <string name="relationship_notify">Notifications for special days</string>
+    <string name="relationship_widget">Show in widget</string>
+    <string name="discreet">Discreet mode</string>
+    <string name="discreet_summary">Widgets and notifications only show initials</string>
+    <string name="moment_for">Belongs to</string>
+    <plurals name="relationships_count">
+        <item quantity="one">%1$s relationship</item>
+        <item quantity="other">%1$s relationships</item>
+    </plurals>
 </resources>

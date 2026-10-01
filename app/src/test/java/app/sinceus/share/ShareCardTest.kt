@@ -20,7 +20,7 @@ import java.util.Locale
 @Config(sdk = [35])
 class ShareCardTest {
     private val context: Context get() = ApplicationProvider.getApplicationContext()
-    private val settings = LoveSettings(name1 = "Alex", name2 = "Sam", startDate = LocalDate.of(2025, 3, 15))
+    private val settings = LoveSettings.couple("Alex", "Sam", LocalDate.of(2025, 3, 15))
     private val today = LocalDate.of(2025, 8, 15)
 
     @Test
@@ -35,9 +35,9 @@ class ShareCardTest {
     @Config(qualifiers = "de")
     fun longNamesStayInside() {
         Locale.setDefault(Locale.GERMANY)
-        val bitmap = ShareCard.render(context, settings.copy(name1 = "Maximiliane-Sophie", name2 = "Konstantin-Alexander"), today)
+        val bitmap = ShareCard.render(context, LoveSettings.couple("Maximiliane-Sophie", "Konstantin-Alexander", LocalDate.of(2025, 3, 15)), today)
         assertEquals(ShareCard.WIDTH, bitmap.width)
-        save("de_long", Locale.GERMANY, settings.copy(name1 = "Maximiliane-Sophie", name2 = "Konstantin-Alexander"))
+        save("de_long", Locale.GERMANY, LoveSettings.couple("Maximiliane-Sophie", "Konstantin-Alexander", LocalDate.of(2025, 3, 15)))
     }
 
     private fun save(name: String, locale: Locale, s: LoveSettings = settings) {

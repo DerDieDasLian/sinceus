@@ -1,0 +1,4 @@
+• Poly-Modus: Fügt beliebig viele Menschen hinzu und legt mehrere Beziehungen an, jede mit eigenem Datum, eigenen besonderen Tagen und eigenen Mitteilungen. Unter "Alle" seht ihr, wer mit wem zusammen ist und was als Nächstes ansteht.
+• Pronomen für jeden Menschen und eigene Bezeichnungen für Beziehungen.
+• Momente können zu einer Beziehung gehören oder zu allen.
+• Diskreter Modus: Widgets und Mitteilungen zeigen nur Anfangsbuchstaben.

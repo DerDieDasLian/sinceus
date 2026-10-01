@@ -108,12 +108,19 @@ object ShareCard {
         val namePaint = paint(92f, serifBold, white)
         val heartSize = { namePaint.textSize * 0.62f }
         val gap = { namePaint.textSize * 0.25f }
-        val nameWidth = { namePaint.measureText(s.name1) + namePaint.measureText(s.name2) + heartSize() + 2 * gap() }
+        // Bei mehr als zwei Menschen steht zwischen allen Namen ein Herz
+        val names = s.memberNames()
+        val nameWidth = { names.sumOf { namePaint.measureText(it).toDouble() }.toFloat() + (names.size - 1) * (heartSize() + 2 * gap()) }
         while (nameWidth() > maxWidth && namePaint.textSize > 20f) namePaint.textSize -= 2f
-        canvas.drawText(s.name1, MARGIN, y, namePaint)
-        val heartX = MARGIN + namePaint.measureText(s.name1) + gap()
-        drawHeart(canvas, heartX, y - namePaint.textSize * 0.62f, heartSize(), pink)
-        canvas.drawText(s.name2, heartX + heartSize() + gap(), y, namePaint)
+        var x = MARGIN
+        names.forEachIndexed { i, name ->
+            if (i > 0) {
+                drawHeart(canvas, x + gap(), y - namePaint.textSize * 0.62f, heartSize(), pink)
+                x += heartSize() + 2 * gap()
+            }
+            canvas.drawText(name, x, y, namePaint)
+            x += namePaint.measureText(name)
+        }
 
         // Dünne Akzentlinie über den Namen
         canvas.drawRoundRect(RectF(MARGIN, y - 150f, MARGIN + 96f, y - 140f), 5f, 5f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = pink })

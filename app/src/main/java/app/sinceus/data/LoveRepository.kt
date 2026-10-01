@@ -2,6 +2,7 @@ package app.sinceus.data
 
 import android.content.Context
 import android.net.Uri
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -32,11 +33,18 @@ private val Context.dataStore by preferencesDataStore(name = "love")
 const val DEFAULT_FOCUS_Y = -0.6f
 
 data class LoveSettings(
-    val name1: String = "",
-    val name2: String = "",
-    val startDate: LocalDate = LocalDate.now(),
-    /** Optionale Uhrzeit, zu der alles begann (nur für den Live-Zähler) */
-    val startTime: LocalTime? = null,
+    /** Alle Menschen, mindestens zwei */
+    val people: List<Person> = listOf(Person(PeopleCodec.FIRST_ID, ""), Person(PeopleCodec.SECOND_ID, "")),
+    /** Alle Beziehungen, mindestens eine. Bei einem Paar gibt es genau eine. */
+    val relationships: List<Relationship> = listOf(
+        Relationship(PeopleCodec.MAIN_ID, people.map { it.id }, LocalDate.now()),
+    ),
+    /** Auf der Startseite gezeigte Beziehung, [ALL_RELATIONSHIPS] = alle zusammen */
+    val selected: String = relationships.first().id,
+    /** Beziehung für die Widgets, leer = die erste */
+    val widgetRelationship: String = "",
+    /** Diskreter Modus: Widgets und Mitteilungen zeigen nur Anfangsbuchstaben */
+    val discreet: Boolean = false,
     /** Pfad zum eigenen Foto im App-Speicher, null = Standardmotiv */
     val photoPath: String? = null,
     val presetIndex: Int = 0,
@@ -66,8 +74,62 @@ data class LoveSettings(
     /** Weitere Fotos für die Diashow im Titelbild (Pfade im App-Speicher, files/slides/) */
     val slides: List<String> = emptyList(),
 ) {
-    val names: String get() = "$name1 & $name2"
-    val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
+    /** Die gerade gezeigte Beziehung (bei „alle“ die erste) */
+    val relationship: Relationship
+        get() = relationships.firstOrNull { it.id == selected } ?: relationships.first()
+
+    /** true, wenn die Startseite alle Beziehungen zusammen zeigt */
+    val showAll: Boolean get() = selected == ALL_RELATIONSHIPS && relationships.size > 1
+
+    /** Mehr als zwei Menschen oder mehrere Beziehungen */
+    val isPoly: Boolean get() = people.size > 2 || relationships.size > 1
+
+    fun person(id: String): Person? = people.firstOrNull { it.id == id }
+
+    fun members(r: Relationship = relationship): List<Person> = r.members.mapNotNull(::person)
+
+    fun memberNames(r: Relationship = relationship): List<String> = members(r).map { it.name }
+
+    fun namesOf(r: Relationship): String = Names.join(memberNames(r))
+
+    /** Namen für Widgets und Mitteilungen, im diskreten Modus nur Anfangsbuchstaben */
+    fun shownNames(r: Relationship = relationship): List<String> =
+        memberNames(r).map { if (discreet) Names.initial(it) else it }
+
+    val names: String get() = namesOf(relationship)
+    val name1: String get() = memberNames().getOrElse(0) { "" }
+    val name2: String get() = memberNames().getOrElse(1) { "" }
+    val startDate: LocalDate get() = relationship.startDate
+    val startTime: LocalTime? get() = relationship.startTime
+    val startDateTime: LocalDateTime get() = relationship.startDateTime
+
+    /** Beziehung der Widgets */
+    val widget: Relationship get() = relationships.firstOrNull { it.id == widgetRelationship } ?: relationships.first()
+
+    /** Dieselben Daten mit der Beziehung der Widgets als gezeigter Beziehung */
+    fun forWidget(): LoveSettings = copy(selected = widget.id)
+
+    /** Momente einer Beziehung: ihre eigenen und die für alle */
+    fun momentsOf(r: Relationship): List<Moment> =
+        moments.filter { it.relationshipId == null || it.relationshipId == r.id || relationships.none { x -> x.id == it.relationshipId } }
+
+    /** Momente der gezeigten Beziehung, bei „alle“ sämtliche */
+    val visibleMoments: List<Moment> get() = if (showAll) moments else momentsOf(relationship)
+
+    companion object {
+        /** Ein Paar mit einer Beziehung, z. B. für Tests und Vorschauen */
+        fun couple(name1: String, name2: String, startDate: LocalDate, startTime: LocalTime? = null) = LoveSettings(
+            people = listOf(Person(PeopleCodec.FIRST_ID, name1), Person(PeopleCodec.SECOND_ID, name2)),
+            relationships = listOf(
+                Relationship(
+                    PeopleCodec.MAIN_ID,
+                    listOf(PeopleCodec.FIRST_ID, PeopleCodec.SECOND_ID),
+                    startDate,
+                    startTime,
+                ),
+            ),
+        )
+    }
 }
 
 private object Keys {
@@ -96,6 +158,43 @@ private object Keys {
     val showMoments = booleanPreferencesKey("show_moments")
     val showLive = booleanPreferencesKey("show_live")
     val slides = stringPreferencesKey("slides")
+    val people = stringPreferencesKey("people")
+    val relationships = stringPreferencesKey("relationships")
+    val selected = stringPreferencesKey("selected_relationship")
+    val widgetRelationship = stringPreferencesKey("widget_relationship")
+    val discreet = booleanPreferencesKey("discreet")
+}
+
+/**
+ * Menschen und Beziehungen aus den gespeicherten Daten. Ältere Versionen kannten nur zwei Namen
+ * und ein Datum, daraus wird hier ein Paar mit einer Beziehung.
+ */
+private fun Preferences.model(): Pair<List<Person>, List<Relationship>> {
+    val start = this[Keys.start]?.let(LocalDate::ofEpochDay) ?: LocalDate.now()
+    val people = PeopleCodec.decodePeople(this[Keys.people]) ?: listOf(
+        Person(PeopleCodec.FIRST_ID, this[Keys.name1].orEmpty()),
+        Person(PeopleCodec.SECOND_ID, this[Keys.name2].orEmpty()),
+    )
+    val relationships = PeopleCodec.decodeRelationships(this[Keys.relationships]) ?: listOf(
+        Relationship(
+            PeopleCodec.MAIN_ID,
+            listOf(PeopleCodec.FIRST_ID, PeopleCodec.SECOND_ID),
+            start,
+            this[Keys.startTime]?.let { LocalTime.ofSecondOfDay(it.toLong()) },
+        ),
+    )
+    return PeopleCodec.sanitize(people, relationships, start)
+}
+
+private fun MutablePreferences.writeModel(people: List<Person>, relationships: List<Relationship>) {
+    val (p, r) = PeopleCodec.sanitize(people, relationships, LocalDate.now())
+    this[Keys.people] = PeopleCodec.encodePeople(p)
+    this[Keys.relationships] = PeopleCodec.encodeRelationships(r)
+    // Die alten Einträge stehen jetzt in den neuen
+    remove(Keys.name1)
+    remove(Keys.name2)
+    remove(Keys.start)
+    remove(Keys.startTime)
 }
 
 /** Höchstzahl weiterer Fotos in der Diashow */
@@ -109,11 +208,15 @@ class LoveRepository(private val context: Context) {
 
     private fun Preferences.toSettings(): LoveSettings {
         val d = LoveSettings()
+        val (people, relationships) = model()
         return LoveSettings(
-            name1 = this[Keys.name1] ?: d.name1,
-            name2 = this[Keys.name2] ?: d.name2,
-            startDate = this[Keys.start]?.let(LocalDate::ofEpochDay) ?: d.startDate,
-            startTime = this[Keys.startTime]?.let { LocalTime.ofSecondOfDay(it.toLong()) },
+            people = people,
+            relationships = relationships,
+            selected = this[Keys.selected]
+                ?.takeIf { id -> id == ALL_RELATIONSHIPS || relationships.any { it.id == id } }
+                ?: relationships.first().id,
+            widgetRelationship = this[Keys.widgetRelationship].orEmpty(),
+            discreet = this[Keys.discreet] ?: false,
             photoPath = this[Keys.photo]?.takeIf { File(it).exists() },
             presetIndex = this[Keys.preset] ?: d.presetIndex,
             notificationsEnabled = this[Keys.notify] ?: d.notificationsEnabled,
@@ -135,18 +238,87 @@ class LoveRepository(private val context: Context) {
         )
     }
 
-    suspend fun setNames(name1: String, name2: String) = context.dataStore.edit {
-        it[Keys.name1] = name1.trim()
-        it[Keys.name2] = name2.trim()
+    /**
+     * Namen aus der Einrichtung: bestehende Menschen behalten ihre ID (und Pronomen), weitere kommen
+     * dazu, überzählige fallen weg. Gibt es nur eine Beziehung, gehören alle Genannten dazu.
+     */
+    suspend fun setNames(names: List<String>) = context.dataStore.edit { prefs ->
+        val (people, relationships) = prefs.model()
+        val cleaned = names.map { it.trim().take(PeopleCodec.MAX_NAME) }.filter { it.isNotEmpty() }.take(MAX_PEOPLE)
+        val updated = cleaned.mapIndexed { i, name ->
+            people.getOrNull(i)?.copy(name = name) ?: Person(newId(), name)
+        }
+        val rels = if (relationships.size == 1) {
+            listOf(relationships[0].copy(members = updated.map { it.id }))
+        } else {
+            relationships
+        }
+        prefs.writeModel(updated, rels)
     }
 
-    suspend fun setStartDate(date: LocalDate) = context.dataStore.edit {
-        it[Keys.start] = date.toEpochDay()
+    /** Startdatum der ersten Beziehung (aus der Einrichtung) */
+    suspend fun setStartDate(date: LocalDate) = context.dataStore.edit { prefs ->
+        val (people, relationships) = prefs.model()
+        prefs.writeModel(people, listOf(relationships[0].copy(startDate = date)) + relationships.drop(1))
     }
 
-    suspend fun setStartTime(time: LocalTime?) = context.dataStore.edit {
-        if (time == null) it.remove(Keys.startTime) else it[Keys.startTime] = time.toSecondOfDay()
+    /** Uhrzeit der ersten Beziehung (aus der Einrichtung) */
+    suspend fun setStartTime(time: LocalTime?) = context.dataStore.edit { prefs ->
+        val (people, relationships) = prefs.model()
+        prefs.writeModel(people, listOf(relationships[0].copy(startTime = time)) + relationships.drop(1))
     }
+
+    /** Neuer oder geänderter Mensch */
+    suspend fun savePerson(person: Person) = context.dataStore.edit { prefs ->
+        val (people, relationships) = prefs.model()
+        val clean = person.copy(
+            name = person.name.trim().take(PeopleCodec.MAX_NAME),
+            pronouns = person.pronouns.trim().take(PeopleCodec.MAX_NAME),
+        )
+        val list = if (people.any { it.id == clean.id }) {
+            people.map { if (it.id == clean.id) clean else it }
+        } else {
+            people + clean
+        }
+        prefs.writeModel(list, relationships)
+    }
+
+    /** Entfernt einen Menschen; Beziehungen mit weniger als zwei Menschen fallen dabei weg. */
+    suspend fun deletePerson(id: String) = context.dataStore.edit { prefs ->
+        val (people, relationships) = prefs.model()
+        if (people.size <= 2) return@edit
+        prefs.writeModel(people.filterNot { it.id == id }, relationships)
+    }
+
+    /** Neue oder geänderte Beziehung */
+    suspend fun saveRelationship(relationship: Relationship) = context.dataStore.edit { prefs ->
+        val (people, relationships) = prefs.model()
+        val clean = relationship.copy(label = relationship.label.trim().take(PeopleCodec.MAX_NAME))
+        val list = if (relationships.any { it.id == clean.id }) {
+            relationships.map { if (it.id == clean.id) clean else it }
+        } else {
+            relationships + clean
+        }
+        prefs.writeModel(people, list)
+    }
+
+    /** Entfernt eine Beziehung (nie die letzte); ihre Momente gelten danach für alle. */
+    suspend fun deleteRelationship(id: String) = context.dataStore.edit { prefs ->
+        val (people, relationships) = prefs.model()
+        if (relationships.size <= 1) return@edit
+        prefs.writeModel(people, relationships.filterNot { it.id == id })
+        prefs[Keys.moments] = MomentCodec.encode(
+            MomentCodec.decode(prefs[Keys.moments]).map { if (it.relationshipId == id) it.copy(relationshipId = null) else it },
+        )
+        if (prefs[Keys.selected] == id) prefs.remove(Keys.selected)
+        if (prefs[Keys.widgetRelationship] == id) prefs.remove(Keys.widgetRelationship)
+    }
+
+    suspend fun setSelected(id: String) = context.dataStore.edit { it[Keys.selected] = id }
+
+    suspend fun setWidgetRelationship(id: String) = context.dataStore.edit { it[Keys.widgetRelationship] = id }
+
+    suspend fun setDiscreet(on: Boolean) = context.dataStore.edit { it[Keys.discreet] = on }
 
     /**
      * Speichert einen neuen oder geänderten Moment. [newPhoto] ersetzt das bisherige Foto,
@@ -301,10 +473,10 @@ class LoveRepository(private val context: Context) {
             val lastNotified = p[Keys.lastNotified]
             p.clear()
             lastNotified?.let { p[Keys.lastNotified] = it }
-            p[Keys.name1] = restored.name1
-            p[Keys.name2] = restored.name2
-            p[Keys.start] = restored.startDate.toEpochDay()
-            restored.startTime?.let { p[Keys.startTime] = it.toSecondOfDay() }
+            p.writeModel(restored.people, restored.relationships)
+            p[Keys.selected] = restored.selected
+            if (restored.widgetRelationship.isNotEmpty()) p[Keys.widgetRelationship] = restored.widgetRelationship
+            p[Keys.discreet] = restored.discreet
             restored.photoPath?.let { p[Keys.photo] = it }
             p[Keys.preset] = restored.presetIndex
             p[Keys.notify] = restored.notificationsEnabled

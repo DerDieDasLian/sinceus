@@ -34,8 +34,6 @@
     <string name="delete_all_text">Namen, Daten, Fotos, Momente und alle Einstellungen werden von diesem Gerät gelöscht. Danach startet die Einrichtung neu. Das kann nicht rückgängig gemacht werden.</string>
     <string name="ok">Okay</string>
     <string name="your_names">Eure Namen</string>
-    <string name="name_1">Name 1</string>
-    <string name="name_2">Name 2</string>
     <string name="save">Speichern</string>
     <string name="cancel">Abbrechen</string>
     <string name="remove">Entfernen</string>
@@ -237,7 +235,7 @@
     <string name="backup_save_failed">Sicherung konnte nicht gespeichert werden</string>
     <string name="backup_restored">Sicherung wiederhergestellt</string>
     <string name="backup_restore_failed">Diese Datei ist keine gültige Sicherung von Since Us</string>
-    <string name="settings_couple">Ihr zwei</string>
+    <string name="settings_couple">Menschen &amp; Beziehungen</string>
     <string name="settings_home">Startseite</string>
     <string name="settings_home_summary">Momente, Live-Zähler und Widget</string>
     <string name="settings_backup_summary">Alle Daten sichern und wiederherstellen</string>
@@ -261,4 +259,34 @@
     <string name="delete_all_hold">Gedrückt halten zum Löschen</string>
     <string name="language">Sprache</string>
     <string name="language_system">Wie am Handy</string>
+    <string name="name">Name</string>
+    <string name="name_n">Name %1$d</string>
+    <string name="add_person">Person hinzufügen</string>
+    <string name="edit_person">Person bearbeiten</string>
+    <string name="remove_person">Person entfernen</string>
+    <string name="remove_person_confirm">Zum Entfernen nochmal tippen</string>
+    <string name="pronouns">Pronomen (optional)</string>
+    <string name="pronouns_hint">z. B. sie/ihr, they/them</string>
+    <string name="ob_names_poly_hint">Ihr seid mehr als zwei? Fügt weitere Personen hinzu. Mehrere Beziehungen mit eigenem Datum könnt ihr später in den Einstellungen anlegen.</string>
+    <string name="poly_all">Alle</string>
+    <string name="poly_title">Eure Beziehungen</string>
+    <string name="poly_hint">Ihr seid mehr als zwei oder habt mehrere Beziehungen? Fügt hier weitere Personen hinzu und gebt jeder Beziehung ihr eigenes Datum.</string>
+    <string name="section_people">Menschen</string>
+    <string name="section_relationships">Beziehungen</string>
+    <string name="add_relationship">Beziehung hinzufügen</string>
+    <string name="edit_relationship">Beziehung bearbeiten</string>
+    <string name="remove_relationship">Beziehung entfernen</string>
+    <string name="remove_relationship_confirm">Zum Entfernen nochmal tippen</string>
+    <string name="relationship_members">Wer gehört dazu?</string>
+    <string name="relationship_label">Bezeichnung (optional)</string>
+    <string name="relationship_label_hint">z. B. Nesting-Partner*in</string>
+    <string name="relationship_notify">Mitteilungen zu besonderen Tagen</string>
+    <string name="relationship_widget">Im Widget zeigen</string>
+    <string name="discreet">Diskreter Modus</string>
+    <string name="discreet_summary">Widgets und Mitteilungen zeigen nur Anfangsbuchstaben</string>
+    <string name="moment_for">Gehört zu</string>
+    <plurals name="relationships_count">
+        <item quantity="one">%1$s Beziehung</item>
+        <item quantity="other">%1$s Beziehungen</item>
+    </plurals>
 </resources>

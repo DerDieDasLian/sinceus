@@ -3,9 +3,7 @@ package app.sinceus.notify
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import app.sinceus.data.LoveMath
 import app.sinceus.data.LoveRepository
-import app.sinceus.data.MomentMath
 import app.sinceus.update.UpdateChecker
 import app.sinceus.widget.LoveWidget
 import kotlinx.coroutines.CoroutineScope
@@ -25,10 +23,9 @@ class DailyReceiver : BroadcastReceiver() {
                 val settings = repo.current()
                 if (intent.action == DailyScheduler.ACTION_CHECK && settings.notificationsEnabled) {
                     val today = LocalDate.now()
-                    val milestones = LoveMath.milestonesOn(settings.startDate, today)
-                    val moments = if (settings.showMoments) MomentMath.remindersOn(settings.moments, today) else emptyList()
-                    if ((milestones.isNotEmpty() || moments.isNotEmpty()) && repo.markNotified(today)) {
-                        Notifier.show(app, settings, milestones, moments)
+                    val due = Notifier.dueToday(app, settings, today)
+                    if (due != null && repo.markNotified(today)) {
+                        Notifier.show(app, due.first, due.second)
                     }
                 }
                 LoveWidget.refresh(app)

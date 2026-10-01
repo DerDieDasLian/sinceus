@@ -19,8 +19,11 @@ import android.graphics.Bitmap
 import app.sinceus.MainActivity
 import app.sinceus.R
 import app.sinceus.data.LoveSettings
-import app.sinceus.data.Milestone
-import app.sinceus.data.Moment
+import app.sinceus.data.LoveMath
+import app.sinceus.data.MomentMath
+import app.sinceus.data.Names
+import app.sinceus.data.Relationship
+import java.time.LocalDate
 
 object Notifier {
     /** Öffnet die App und startet dort Download und Installation des Updates */
@@ -80,23 +83,45 @@ object Notifier {
             PackageManager.PERMISSION_GRANTED) &&
             NotificationManagerCompat.from(context).areNotificationsEnabled()
 
-    fun show(
-        context: Context,
-        settings: LoveSettings,
-        milestones: List<Milestone>,
-        moments: List<Pair<Moment, Int>> = emptyList(),
-    ) {
-        val lines = milestones.map { Texts.milestoneMessage(context, it) } +
-            moments.map { (m, years) -> Texts.momentMessage(context, m, years) }
+    /** Titel und Zeilen der Mitteilung für [today], null = heute ist nichts Besonderes */
+    fun dueToday(context: Context, settings: LoveSettings, today: LocalDate): Pair<String, List<String>>? {
+        val multi = settings.relationships.size > 1
+        fun shown(r: Relationship) = Names.join(settings.shownNames(r))
+        val involved = mutableSetOf<Relationship>()
+        val lines = mutableListOf<String>()
+        settings.relationships.filter { it.notify }.forEach { r ->
+            LoveMath.milestonesOn(r.startDate, today).forEach { m ->
+                involved += r
+                lines += (if (multi) "${shown(r)}: " else "") + Texts.milestoneMessage(context, m)
+            }
+        }
+        if (settings.showMoments) {
+            MomentMath.remindersOn(settings.moments, today).forEach { (m, years) ->
+                val r = settings.relationships.firstOrNull { it.id == m.relationshipId }
+                if (r != null && !r.notify) return@forEach
+                r?.let { involved += it }
+                lines += (if (multi && r != null) "${shown(r)}: " else "") + Texts.momentMessage(context, m, years)
+            }
+        }
+        if (lines.isEmpty()) return null
+        val title = when {
+            involved.size == 1 -> shown(involved.first())
+            multi -> Names.join(settings.people.map { if (settings.discreet) Names.initial(it.name) else it.name })
+            else -> shown(settings.relationships.first())
+        }
+        return title to lines
+    }
+
+    fun show(context: Context, title: String, lines: List<String>) {
         if (lines.isEmpty() || !canNotify(context)) return
-        post(context, settings.names, lines.first(), lines.joinToString("\n"))
+        post(context, title, lines.first(), lines.joinToString("\n"))
     }
 
     fun showTest(context: Context, settings: LoveSettings) {
         if (!canNotify(context)) return
         post(
             context,
-            settings.names,
+            Names.join(settings.shownNames()),
             context.getString(R.string.test_notification),
             null,
         )

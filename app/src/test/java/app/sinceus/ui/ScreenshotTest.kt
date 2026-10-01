@@ -28,12 +28,7 @@ class ScreenshotTest {
     @get:Rule
     val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private val settings = LoveSettings(
-        name1 = "Alex",
-        name2 = "Sam",
-        startDate = LocalDate.of(2025, 3, 15),
-        onboardingDone = true,
-    )
+    private val settings = LoveSettings.couple("Alex", "Sam", LocalDate.of(2025, 3, 15)).copy(onboardingDone = true)
     private val today = LocalDate.of(2025, 8, 15)
 
     @Test
@@ -49,13 +44,13 @@ class ScreenshotTest {
 
     @Test
     fun settingsGerman() = shot("settings", lang = "de") {
-        SettingsScreen(settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {})
+        SettingsScreen(settings, true)
     }
 
     @Test
     fun settingsPhotoGerman() = shot("settings_photo", lang = "de") {
         SettingsScreen(
-            settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {},
+            settings, true,
             initialPage = SettingsPage.Photo,
         )
     }
@@ -63,7 +58,7 @@ class ScreenshotTest {
     @Test
     fun settingsAbout() = shot("settings_about") {
         SettingsScreen(
-            settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {},
+            settings, true,
             initialPage = SettingsPage.About,
         )
     }
@@ -71,9 +66,38 @@ class ScreenshotTest {
     @Test
     fun settingsResetGerman() = shot("settings_reset", lang = "de") {
         SettingsScreen(
-            settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {},
+            settings, true,
             initialPage = SettingsPage.Reset,
         )
+    }
+
+    private val poly = settings.copy(
+        people = listOf(
+            app.sinceus.data.Person("a", "Alex"),
+            app.sinceus.data.Person("s", "Sam", "they/them"),
+            app.sinceus.data.Person("k", "Kim", "sie/ihr"),
+        ),
+        relationships = listOf(
+            app.sinceus.data.Relationship("r1", listOf("a", "s"), LocalDate.of(2025, 3, 15)),
+            app.sinceus.data.Relationship("r2", listOf("a", "k"), LocalDate.of(2024, 6, 1), label = "Nesting-Partner*in"),
+        ),
+        selected = app.sinceus.data.ALL_RELATIONSHIPS,
+    )
+
+    @Test
+    fun homePolyGerman() = shot("home_poly", lang = "de") { HomeScreen(poly, today, {}, {}) }
+
+    @Test
+    fun homePolyOneGerman() = shot("home_poly_one", lang = "de") { HomeScreen(poly.copy(selected = "r2"), today, {}, {}) }
+
+    @Test
+    fun settingsPeopleGerman() = shot("settings_people", lang = "de") {
+        SettingsScreen(poly, true, initialPage = SettingsPage.Couple)
+    }
+
+    @Test
+    fun settingsPeopleCoupleGerman() = shot("settings_people_couple", lang = "de") {
+        SettingsScreen(settings, true, initialPage = SettingsPage.Couple)
     }
 
     @Test
@@ -118,7 +142,7 @@ class ScreenshotTest {
 
     @Test
     fun settings() = shot("settings") {
-        SettingsScreen(settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {})
+        SettingsScreen(settings, true)
     }
 
     @Test
@@ -132,7 +156,7 @@ class ScreenshotTest {
     @Test
     fun onboardingDarkGerman() = shot("onboarding_1_dark", dark = true, lang = "de") {
         OnboardingScreen(
-            settings, false, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
+            settings, false, {}, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
             step = 1, onStep = {},
         )
     }
@@ -196,14 +220,14 @@ class ScreenshotTest {
     @Test
     fun onboardingPhotoGerman() = shot("onboarding_3", lang = "de") {
         OnboardingScreen(
-            settings, false, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
+            settings, false, {}, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
             step = 3, onStep = {},
         )
     }
 
     private fun onboarding(step: Int) = shot("onboarding_$step") {
         OnboardingScreen(
-            settings, false, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
+            settings, false, {}, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
             step = step, onStep = {},
         )
     }

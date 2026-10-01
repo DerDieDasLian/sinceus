@@ -47,15 +47,17 @@ object Backup {
  */
 object BackupCodec {
     private const val APP = "app.sinceus"
-    const val FORMAT = 1
+    /** 2 = mit Menschen und Beziehungen (Poly-Modus), 1 = nur zwei Namen und ein Datum */
+    const val FORMAT = 2
 
     fun encode(s: LoveSettings): String = JSONObject()
         .put("app", APP)
         .put("format", FORMAT)
-        .put("name1", s.name1)
-        .put("name2", s.name2)
-        .put("startDate", s.startDate.toEpochDay())
-        .put("startTime", s.startTime?.toSecondOfDay() ?: JSONObject.NULL)
+        .put("people", JSONArray(PeopleCodec.encodePeople(s.people)))
+        .put("relationships", JSONArray(PeopleCodec.encodeRelationships(s.relationships)))
+        .put("selected", s.selected)
+        .put("widgetRelationship", s.widgetRelationship)
+        .put("discreet", s.discreet)
         .put("photo", s.photoPath?.let { File(it).name } ?: JSONObject.NULL)
         .put("preset", s.presetIndex)
         .put("focusX", s.focusX.toDouble())
@@ -80,17 +82,41 @@ object BackupCodec {
         val o = JSONObject(json)
         require(o.optString("app") == APP) { "not a Since Us backup" }
         require(o.optInt("format", 0) in 1..FORMAT) { "unsupported backup format" }
-        val name1 = o.optString("name1").trim()
-        val name2 = o.optString("name2").trim()
-        require(name1.isNotEmpty() && name2.isNotEmpty()) { "names missing" }
         val d = LoveSettings()
+        val people: List<Person>
+        val relationships: List<Relationship>
+        if (o.has("people")) {
+            people = PeopleCodec.decodePeople(o.optJSONArray("people")?.toString()).orEmpty()
+            relationships = PeopleCodec.decodeRelationships(o.optJSONArray("relationships")?.toString()).orEmpty()
+        } else {
+            // Format 1: ein Paar
+            people = listOf(
+                Person(PeopleCodec.FIRST_ID, o.optString("name1").trim()),
+                Person(PeopleCodec.SECOND_ID, o.optString("name2").trim()),
+            )
+            relationships = listOf(
+                Relationship(
+                    PeopleCodec.MAIN_ID,
+                    listOf(PeopleCodec.FIRST_ID, PeopleCodec.SECOND_ID),
+                    LocalDate.ofEpochDay(o.getLong("startDate")),
+                    if (o.isNull("startTime")) null else LocalTime.ofSecondOfDay(o.getLong("startTime")),
+                ),
+            )
+        }
+        require(people.size >= 2 && people.all { it.name.isNotEmpty() }) { "names missing" }
+        require(relationships.any { r -> r.members.count { id -> people.any { it.id == id } } >= 2 }) { "relationship missing" }
+        val (cleanPeople, cleanRelationships) = PeopleCodec.sanitize(people, relationships, LocalDate.now())
+        val selected = o.optString("selected")
+            .takeIf { id -> id == ALL_RELATIONSHIPS || cleanRelationships.any { it.id == id } }
+            ?: cleanRelationships.first().id
         fun fileName(value: String?) = value?.takeIf { Backup.isSafeName(it) }
         val slides = o.optJSONArray("slides")
         return LoveSettings(
-            name1 = name1,
-            name2 = name2,
-            startDate = LocalDate.ofEpochDay(o.getLong("startDate")),
-            startTime = if (o.isNull("startTime")) null else LocalTime.ofSecondOfDay(o.getLong("startTime")),
+            people = cleanPeople,
+            relationships = cleanRelationships,
+            selected = selected,
+            widgetRelationship = o.optString("widgetRelationship").takeIf { id -> cleanRelationships.any { it.id == id } }.orEmpty(),
+            discreet = o.optBoolean("discreet", false),
             photoPath = if (o.isNull("photo")) null else fileName(o.optString("photo")),
             presetIndex = o.optInt("preset", d.presetIndex),
             notificationsEnabled = o.optBoolean("notifications", d.notificationsEnabled),

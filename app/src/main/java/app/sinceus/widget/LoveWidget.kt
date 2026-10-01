@@ -42,6 +42,7 @@ import app.sinceus.R
 import app.sinceus.data.LoveMath
 import app.sinceus.data.LoveRepository
 import app.sinceus.data.LoveSettings
+import app.sinceus.data.Names
 import app.sinceus.data.Texts
 import app.sinceus.data.formatNumber
 import java.time.LocalDate
@@ -53,7 +54,7 @@ class LoveWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val settings = LoveRepository(context).current()
+        val settings = LoveRepository(context).current().forWidget()
         provideContent { GlanceTheme { DaysContent(settings) } }
     }
 
@@ -139,7 +140,7 @@ class CardWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val settings = LoveRepository(context).current()
+        val settings = LoveRepository(context).current().forWidget()
         provideContent { CardContent(settings) }
     }
 }
@@ -187,13 +188,22 @@ private fun CardContent(settings: LoveSettings) {
             // Gezeichnetes Herz statt Emoji
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val nameStyle = TextStyle(color = soft, fontSize = 13.sp, fontFamily = FontFamily.Serif)
-                Text(settings.name1, style = nameStyle, maxLines = 1)
-                Image(
-                    ImageProvider(R.drawable.ic_heart_small),
-                    contentDescription = null,
-                    modifier = GlanceModifier.padding(horizontal = 4.dp).size(12.dp),
-                )
-                Text(settings.name2, style = nameStyle, maxLines = 1)
+                // Im diskreten Modus nur Anfangsbuchstaben; ab vier Menschen als eine Zeile ohne Herzen
+                val names = settings.shownNames()
+                if (names.size > 3) {
+                    Text(Names.join(names), style = nameStyle, maxLines = 1)
+                } else {
+                    names.forEachIndexed { i, name ->
+                        if (i > 0) {
+                            Image(
+                                ImageProvider(R.drawable.ic_heart_small),
+                                contentDescription = null,
+                                modifier = GlanceModifier.padding(horizontal = 4.dp).size(12.dp),
+                            )
+                        }
+                        Text(name, style = nameStyle, maxLines = 1)
+                    }
+                }
             }
             Spacer(GlanceModifier.height(if (flat) 0.dp else 4.dp))
             if (wide || flat) {

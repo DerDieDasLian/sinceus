@@ -140,11 +140,7 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(settings.name1, style = MaterialTheme.typography.headlineSmall, color = Color.White)
-                BeatingHeart(Modifier.padding(horizontal = 10.dp), size = 22.dp)
-                Text(settings.name2, style = MaterialTheme.typography.headlineSmall, color = Color.White)
-            }
+            NamesRow(settings.memberNames(), MaterialTheme.typography.headlineSmall, heart = 22.dp)
             Text(
                 stringResource(if (future) R.string.live_until else R.string.live_together).uppercase(),
                 style = LabelCaps,

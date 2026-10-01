@@ -16,6 +16,9 @@ import androidx.compose.ui.unit.Dp
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -91,6 +94,8 @@ fun HomeScreen(
     onPageChange: (Int) -> Unit,
     onAddMoment: (String?) -> Unit = {},
     onOpenMoment: (app.sinceus.data.Moment) -> Unit = {},
+    /** Andere Beziehung zeigen (Poly-Modus), [app.sinceus.data.ALL_RELATIONSHIPS] = alle */
+    onSelect: (String) -> Unit = {},
 ) {
     // Live und Momente lassen sich in den Einstellungen ausblenden
     val pages = listOfNotNull(
@@ -111,7 +116,11 @@ fun HomeScreen(
     ) {
         HorizontalPager(pager, Modifier.fillMaxSize()) { page ->
             when (pages[page]) {
-                HomePage.Overview -> Overview(settings, today)
+                HomePage.Overview -> if (settings.showAll) {
+                    PolyOverview(settings, today, onSelect)
+                } else {
+                    Overview(settings, today, onSelect)
+                }
                 HomePage.Live -> LiveScreen(settings, active = pager.currentPage == page)
                 HomePage.Moments -> MomentsScreen(settings, today, onAdd = onAddMoment, onOpen = onOpenMoment)
             }
@@ -186,16 +195,17 @@ private fun ModeSwitch(selected: Int, pages: List<HomePage>, onSelect: (Int) -> 
 }
 
 @Composable
-private fun Overview(settings: LoveSettings, today: LocalDate) {
+private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String) -> Unit) {
     val start = settings.startDate
     val together = LoveMath.together(start, today)
     val future = start.isAfter(today)
     // Jahrestage der Momente erscheinen mit, solange die Momente nicht ausgeblendet sind
-    val moments = if (settings.showMoments) settings.moments else emptyList()
+    val moments = if (settings.showMoments) settings.visibleMoments else emptyList()
     val todays = LoveMath.milestonesOn(start, today) + MomentMath.milestonesOn(moments, today)
     val upcoming = (LoveMath.upcoming(start, today, 4) + MomentMath.upcoming(moments, today, 4))
         .sortedBy { it.date }
         .take(4)
+        .map { it to (null as String?) }
     val context = LocalContext.current
     val share = { ShareCard.share(context, settings, today, ShareCard.defaultText(context, settings, today)) }
 
@@ -204,7 +214,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        Hero(settings)
+        Hero(settings, onSelect)
 
         Column(
             Modifier
@@ -230,7 +240,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
                 )
             }
 
-            if (todays.isNotEmpty()) TodayBanner(todays)
+            if (todays.isNotEmpty()) TodayBanner(todays.map { Texts.milestoneMessage(context, it) })
 
             if (LocalPrideMonth.current) RainbowCard(stringResource(R.string.pride_title), stringResource(R.string.all_couples_text))
 
@@ -260,7 +270,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
 }
 
 @Composable
-private fun Hero(settings: LoveSettings) {
+internal fun Hero(settings: LoveSettings, onSelect: (String) -> Unit) {
     Box(
         Modifier
             .fillMaxWidth()
@@ -273,18 +283,30 @@ private fun Hero(settings: LoveSettings) {
                 .background(PhotoScrim),
         )
         NamesOverlay(settings, Modifier.align(Alignment.BottomStart))
+        if (settings.relationships.size > 1) RelationshipSwitch(settings, onSelect)
     }
 }
 
 @Composable
 fun NamesOverlay(settings: LoveSettings, modifier: Modifier = Modifier) {
-    Row(
-        modifier.padding(start = 24.dp, end = 24.dp, bottom = 48.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(settings.name1, style = MaterialTheme.typography.displayMedium, color = Color.White, maxLines = 1)
-        BeatingHeart(Modifier.padding(horizontal = 12.dp))
-        Text(settings.name2, style = MaterialTheme.typography.displayMedium, color = Color.White, maxLines = 1)
+    val names = if (settings.showAll) settings.people.map { it.name } else settings.memberNames()
+    NamesRow(
+        names,
+        if (names.size > 2) MaterialTheme.typography.displaySmall else MaterialTheme.typography.displayMedium,
+        heart = if (names.size > 2) 24.dp else 30.dp,
+        modifier = modifier.padding(start = 24.dp, end = 24.dp, bottom = 48.dp),
+    )
+}
+
+/** Namen mit schlagendem Herz dazwischen; bei mehr als zwei Menschen mit Zeilenumbruch */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun NamesRow(names: List<String>, style: TextStyle, heart: Dp, modifier: Modifier = Modifier) {
+    FlowRow(modifier, itemVerticalAlignment = Alignment.CenterVertically) {
+        names.forEachIndexed { i, name ->
+            if (i > 0) BeatingHeart(Modifier.padding(horizontal = heart * 0.4f), size = heart)
+            Text(name, style = style, color = Color.White, maxLines = 1)
+        }
     }
 }
 
@@ -411,7 +433,7 @@ private fun StatTile(modifier: Modifier, value: String, label: String) {
 }
 
 @Composable
-private fun TodayBanner(milestones: List<Milestone>) {
+internal fun TodayBanner(lines: List<String>) {
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
@@ -425,15 +447,15 @@ private fun TodayBanner(milestones: List<Milestone>) {
             Spacer(Modifier.width(16.dp))
             Column {
                 Text(stringResource(R.string.special_today), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                val context = LocalContext.current
-                milestones.forEach { Text(Texts.milestoneMessage(context, it), style = MaterialTheme.typography.bodyMedium) }
+                lines.forEach { Text(it, style = MaterialTheme.typography.bodyMedium) }
             }
         }
     }
 }
 
+/** Die nächsten besonderen Tage, jeweils mit den Namen der Beziehung, wenn es mehrere gibt */
 @Composable
-private fun UpcomingCard(upcoming: List<Milestone>, today: LocalDate) {
+internal fun UpcomingCard(upcoming: List<Pair<Milestone, String?>>, today: LocalDate) {
     val context = LocalContext.current
     Card(
         shape = RoundedCornerShape(24.dp),
@@ -447,7 +469,7 @@ private fun UpcomingCard(upcoming: List<Milestone>, today: LocalDate) {
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
             )
-            upcoming.forEach { m ->
+            upcoming.forEach { (m, who) ->
                 val inDays = ChronoUnit.DAYS.between(today, m.date)
                 Row(
                     Modifier
@@ -476,7 +498,7 @@ private fun UpcomingCard(upcoming: List<Milestone>, today: LocalDate) {
                     ) {
                         Text(Texts.milestoneTitle(context, m), style = MaterialTheme.typography.titleMedium)
                         Text(
-                            Texts.dateWithWeekday(m.date),
+                            listOfNotNull(who, Texts.dateWithWeekday(m.date)).joinToString(" · "),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

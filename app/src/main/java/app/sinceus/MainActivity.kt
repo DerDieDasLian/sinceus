@@ -188,6 +188,8 @@ class MainActivity : ComponentActivity() {
                                     vm.deleteMoment(it.id)
                                     editingMoment = null
                                 },
+                                relationships = s.relationships.map { it.id to s.namesOf(it) },
+                                defaultRelationship = if (s.showAll) null else s.relationship.id,
                             )
                             "editor" -> PhotoEditorScreen(
                                 settings = s,
@@ -221,8 +223,6 @@ class MainActivity : ComponentActivity() {
                                 settings = s,
                                 notificationsAllowed = allowed,
                                 onBack = { showSettings = false },
-                                onNames = vm::setNames,
-                                onStartDate = vm::setStartDate,
                                 onPickPhoto = ::pickPhoto,
                                 onPreset = vm::setPreset,
                                 onResetPhoto = vm::resetPhoto,
@@ -237,7 +237,6 @@ class MainActivity : ComponentActivity() {
                                     onboardingStep = 0
                                     vm.setOnboardingDone(false)
                                 },
-                                onStartTime = vm::setStartTime,
                                 onResetAll = {
                                     onboardingStep = 0
                                     showSettings = false
@@ -256,6 +255,12 @@ class MainActivity : ComponentActivity() {
                                 onImportBackup = ::loadBackup,
                                 language = remember { AppLanguage.current(this@MainActivity) },
                                 onLanguage = { AppLanguage.set(this@MainActivity, it) },
+                                onSavePerson = vm::savePerson,
+                                onDeletePerson = vm::deletePerson,
+                                onSaveRelationship = vm::saveRelationship,
+                                onDeleteRelationship = vm::deleteRelationship,
+                                onWidgetRelationship = vm::setWidgetRelationship,
+                                onDiscreet = vm::setDiscreet,
                             )
                             else -> HomeScreen(
                                 s,
@@ -270,6 +275,7 @@ class MainActivity : ComponentActivity() {
                                     momentSuggestion = null
                                     editingMoment = it.id
                                 },
+                                onSelect = vm::setSelected,
                             )
                         }
                     }

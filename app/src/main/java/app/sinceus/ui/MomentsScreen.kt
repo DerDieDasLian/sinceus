@@ -73,11 +73,14 @@ val MomentSuggestions = listOf(
 private sealed interface TimelineEntry {
     val date: LocalDate
 
-    data class Saved(val moment: Moment) : TimelineEntry {
+    /** Namen der Beziehung, wenn es mehrere gibt, sonst null */
+    val who: String?
+
+    data class Saved(val moment: Moment, override val who: String? = null) : TimelineEntry {
         override val date get() = moment.date
     }
 
-    data class Start(override val date: LocalDate) : TimelineEntry
+    data class Start(override val date: LocalDate, override val who: String? = null) : TimelineEntry
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -89,7 +92,15 @@ fun MomentsScreen(
     onOpen: (Moment) -> Unit,
 ) {
     val context = LocalContext.current
-    val entries = (settings.moments.map { TimelineEntry.Saved(it) } + TimelineEntry.Start(settings.startDate))
+    // Mit mehreren Beziehungen steht an jedem Eintrag, zu wem er gehört
+    val multi = settings.relationships.size > 1
+    fun who(id: String?) = settings.relationships.firstOrNull { it.id == id }?.takeIf { multi }?.let(settings::namesOf)
+    val moments = settings.visibleMoments
+    val starts = if (settings.showAll) settings.relationships else listOf(settings.relationship)
+    val entries = (
+        moments.map { TimelineEntry.Saved(it, who(it.relationshipId)) } +
+            starts.map { TimelineEntry.Start(it.startDate, who(it.id)) }
+        )
         .sortedBy { it.date }
 
     Column(
@@ -106,17 +117,17 @@ fun MomentsScreen(
             modifier = Modifier.padding(top = 28.dp),
         )
         Text(
-            if (settings.moments.isEmpty()) {
+            if (moments.isEmpty()) {
                 ""
             } else {
-                pluralStringResource(R.plurals.moments_count, settings.moments.size, formatNumber(settings.moments.size.toLong()))
+                pluralStringResource(R.plurals.moments_count, moments.size, formatNumber(moments.size.toLong()))
             },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp, bottom = 20.dp),
         )
 
-        if (settings.moments.isEmpty()) {
+        if (moments.isEmpty()) {
             Card(
                 shape = RoundedCornerShape(28.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
@@ -276,6 +287,9 @@ private fun TimelineItem(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(top = 4.dp),
                 )
+                entry.who?.let {
+                    Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                }
                 if (!moment?.note.isNullOrBlank()) {
                     Text(
                         moment!!.note,

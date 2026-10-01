@@ -109,6 +109,20 @@ import app.sinceus.data.MAX_SLIDES
 import coil3.compose.AsyncImage
 import java.io.File
 import app.sinceus.AppLanguage
+import app.sinceus.data.MAX_PEOPLE
+import app.sinceus.data.MAX_RELATIONSHIPS
+import app.sinceus.data.Names
+import app.sinceus.data.Person
+import app.sinceus.data.Relationship
+import app.sinceus.data.newId
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.PersonAdd
+import androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.material3.FilterChip
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -135,20 +149,17 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     settings: LoveSettings,
     notificationsAllowed: Boolean,
-    onBack: () -> Unit,
-    onNames: (String, String) -> Unit,
-    onStartDate: (LocalDate) -> Unit,
-    onPickPhoto: () -> Unit,
-    onPreset: (Int) -> Unit,
-    onResetPhoto: () -> Unit,
-    onNotifications: (Boolean) -> Unit,
-    onNotifyTime: (Int, Int) -> Unit,
-    onTestNotification: () -> Unit,
-    onAddWidget: () -> Unit,
-    onAdjustPhoto: () -> Unit,
-    onRestartOnboarding: () -> Unit,
-    onStartTime: (LocalTime?) -> Unit,
-    onResetAll: () -> Unit,
+    onBack: () -> Unit = {},
+    onPickPhoto: () -> Unit = {},
+    onPreset: (Int) -> Unit = {},
+    onResetPhoto: () -> Unit = {},
+    onNotifications: (Boolean) -> Unit = {},
+    onNotifyTime: (Int, Int) -> Unit = { _, _ -> },
+    onTestNotification: () -> Unit = {},
+    onAddWidget: () -> Unit = {},
+    onAdjustPhoto: () -> Unit = {},
+    onRestartOnboarding: () -> Unit = {},
+    onResetAll: () -> Unit = {},
     onUpdateCheck: (Boolean) -> Unit = {},
     onCheckUpdates: () -> Unit = {},
     onOpenUpdate: () -> Unit = {},
@@ -164,6 +175,12 @@ fun SettingsScreen(
     /** Gewählte App-Sprache, "" = wie das Handy */
     language: String = "",
     onLanguage: (String) -> Unit = {},
+    onSavePerson: (Person) -> Unit = {},
+    onDeletePerson: (String) -> Unit = {},
+    onSaveRelationship: (Relationship) -> Unit = {},
+    onDeleteRelationship: (String) -> Unit = {},
+    onWidgetRelationship: (String) -> Unit = {},
+    onDiscreet: (Boolean) -> Unit = {},
     /** Geöffnete Unterseite beim Start (für Tests), null = Übersicht */
     initialPage: SettingsPage? = null,
 ) {
@@ -199,22 +216,65 @@ fun SettingsScreen(
             ) {
                 when (page) {
                     null -> Overview(settings, notificationsAllowed, onOpen = { page = it })
-                    SettingsPage.Couple -> Section(null) {
-                        Row(Icons.Rounded.People, stringResource(R.string.names), settings.names) { dialog = "names" }
-                        Divider()
-                        Row(
-                            Icons.Rounded.CalendarMonth,
-                            stringResource(R.string.together_since_date),
-                            Texts.mediumDate(settings.startDate),
-                        ) {
-                            dialog = "date"
+                    SettingsPage.Couple -> {
+                        if (!settings.isPoly) {
+                            Text(
+                                stringResource(R.string.poly_hint),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            )
                         }
-                        Divider()
-                        Row(
-                            Icons.Rounded.Schedule,
-                            stringResource(R.string.start_time_optional),
-                            settings.startTime?.let { Texts.time(context, it) } ?: stringResource(R.string.not_set),
-                        ) { dialog = "startTime" }
+                        Section(stringResource(R.string.section_people)) {
+                            settings.people.forEachIndexed { i, p ->
+                                if (i > 0) Divider()
+                                ListItem(
+                                    headlineContent = { Text(p.name.ifBlank { "?" }) },
+                                    supportingContent = p.pronouns.ifBlank { null }?.let { { Text(it) } },
+                                    leadingContent = { Avatar(p.name) },
+                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                    modifier = Modifier.clickable { dialog = "person:${p.id}" },
+                                )
+                            }
+                            if (settings.people.size < MAX_PEOPLE) {
+                                Divider()
+                                Row(Icons.Rounded.PersonAdd, stringResource(R.string.add_person), null) { dialog = "person:" }
+                            }
+                        }
+                        Section(stringResource(R.string.section_relationships)) {
+                            settings.relationships.forEachIndexed { i, r ->
+                                if (i > 0) Divider()
+                                ListItem(
+                                    headlineContent = { Text(settings.namesOf(r)) },
+                                    supportingContent = {
+                                        Text(
+                                            listOfNotNull(
+                                                r.label.ifBlank { null },
+                                                stringResource(R.string.together_since_long, Texts.mediumDate(r.startDate)),
+                                            ).joinToString(" · "),
+                                            color = MaterialTheme.colorScheme.primary,
+                                        )
+                                    },
+                                    leadingContent = { Icon(Icons.Rounded.Favorite, null) },
+                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                    modifier = Modifier.clickable { dialog = "rel:${r.id}" },
+                                )
+                            }
+                            if (settings.relationships.size < MAX_RELATIONSHIPS) {
+                                Divider()
+                                Row(Icons.Rounded.Add, stringResource(R.string.add_relationship), null) { dialog = "rel:" }
+                            }
+                        }
+                        Section(null) {
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.discreet)) },
+                                supportingContent = { Text(stringResource(R.string.discreet_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.VisibilityOff, null) },
+                                trailingContent = { Switch(checked = settings.discreet, onCheckedChange = onDiscreet) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { onDiscreet(!settings.discreet) },
+                            )
+                        }
                     }
                     SettingsPage.Photo -> Section(null) {
                         Row(Icons.Rounded.AddPhotoAlternate, stringResource(R.string.pick_own_photo), null, onClick = onPickPhoto)
@@ -407,33 +467,53 @@ fun SettingsScreen(
         }
     }
 
-    when (dialog) {
-        "names" -> NamesDialog(settings, onDismiss = { dialog = null }) { a, b ->
-            onNames(a, b)
-            dialog = null
+    val current = dialog
+    when {
+        current == null -> {}
+        current.startsWith("person:") -> {
+            val id = current.removePrefix("person:")
+            val fresh = remember(current) { Person(newId(), "") }
+            PersonDialog(
+                person = settings.person(id) ?: fresh,
+                isNew = settings.person(id) == null,
+                canDelete = settings.people.size > 2 && settings.person(id) != null,
+                onDismiss = { dialog = null },
+                onDelete = {
+                    onDeletePerson(id)
+                    dialog = null
+                },
+            ) {
+                onSavePerson(it)
+                dialog = null
+            }
         }
-        "date" -> DateDialog(settings.startDate, onDismiss = { dialog = null }) {
-            onStartDate(it)
-            dialog = null
+        current.startsWith("rel:") -> {
+            val id = current.removePrefix("rel:")
+            val existing = settings.relationships.firstOrNull { it.id == id }
+            val fresh = remember(current) { Relationship(newId(), emptyList(), LocalDate.now()) }
+            RelationshipDialog(
+                settings = settings,
+                relationship = existing ?: fresh,
+                isNew = existing == null,
+                onDismiss = { dialog = null },
+                onDelete = {
+                    onDeleteRelationship(id)
+                    dialog = null
+                },
+                onWidget = onWidgetRelationship,
+            ) {
+                onSaveRelationship(it)
+                dialog = null
+            }
         }
+    }
+    when (current) {
         "time" -> TimeDialog(
             stringResource(R.string.notify_time_title),
             LocalTime.of(settings.notifyHour, settings.notifyMinute),
             onDismiss = { dialog = null },
         ) {
             onNotifyTime(it.hour, it.minute)
-            dialog = null
-        }
-        "startTime" -> TimeDialog(
-            stringResource(R.string.start_time_optional),
-            settings.startTime,
-            onDismiss = { dialog = null },
-            onClear = {
-                onStartTime(null)
-                dialog = null
-            },
-        ) {
-            onStartTime(it)
             dialog = null
         }
         "reset" -> ResetDialog(onDismiss = { dialog = null }, onBackup = onExportBackup) {
@@ -548,7 +628,12 @@ private fun Overview(settings: LoveSettings, notificationsAllowed: Boolean, onOp
         }
     }.joinToString(", ")
     val summaries = mapOf(
-        SettingsPage.Couple to "${settings.names}, ${Texts.mediumDate(settings.startDate)}",
+        SettingsPage.Couple to if (settings.relationships.size > 1) {
+            pluralStringResource(R.plurals.relationships_count, settings.relationships.size, settings.relationships.size.toString()) +
+                ", " + Names.join(settings.people.map { it.name })
+        } else {
+            "${settings.names}, ${Texts.mediumDate(settings.startDate)}"
+        },
         SettingsPage.Photo to photo,
         SettingsPage.Notifications to when {
             !settings.notificationsEnabled -> stringResource(R.string.notify_off)
@@ -626,26 +711,197 @@ private fun Row(icon: ImageVector, title: String, value: String?, onClick: () ->
     )
 }
 
+/** Runder Anfangsbuchstabe als Bild für einen Menschen */
 @Composable
-private fun NamesDialog(settings: LoveSettings, onDismiss: () -> Unit, onSave: (String, String) -> Unit) {
-    var a by remember { mutableStateOf(settings.name1) }
-    var b by remember { mutableStateOf(settings.name2) }
+private fun Avatar(name: String) {
+    Box(
+        Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            Names.initial(name).dropLast(1),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+    }
+}
+
+/** Name und Pronomen eines Menschen bearbeiten */
+@Composable
+private fun PersonDialog(
+    person: Person,
+    isNew: Boolean,
+    canDelete: Boolean,
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit,
+    onSave: (Person) -> Unit,
+) {
+    var name by rememberSaveable { mutableStateOf(person.name) }
+    var pronouns by rememberSaveable { mutableStateOf(person.pronouns) }
+    var confirmDelete by remember { mutableStateOf(false) }
+    val caps = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.your_names)) },
+        title = { Text(stringResource(if (isNew) R.string.add_person else R.string.edit_person)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(a, { a = it }, label = { Text(stringResource(R.string.name_1)) }, singleLine = true)
-                OutlinedTextField(b, { b = it }, label = { Text(stringResource(R.string.name_2)) }, singleLine = true)
+                OutlinedTextField(
+                    name, { name = it },
+                    label = { Text(stringResource(R.string.name)) },
+                    singleLine = true,
+                    keyboardOptions = caps,
+                )
+                OutlinedTextField(
+                    pronouns, { pronouns = it },
+                    label = { Text(stringResource(R.string.pronouns)) },
+                    placeholder = { Text(stringResource(R.string.pronouns_hint)) },
+                    singleLine = true,
+                )
+                if (canDelete) {
+                    TextButton(
+                        onClick = { if (confirmDelete) onDelete() else confirmDelete = true },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                    ) {
+                        Text(stringResource(if (confirmDelete) R.string.remove_person_confirm else R.string.remove_person))
+                    }
+                }
             }
         },
         confirmButton = {
-            TextButton(onClick = { onSave(a, b) }, enabled = a.isNotBlank() && b.isNotBlank()) {
+            TextButton(
+                onClick = { onSave(person.copy(name = name, pronouns = pronouns)) },
+                enabled = name.isNotBlank(),
+            ) { Text(stringResource(R.string.save)) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+    )
+}
+
+/** Wer gehört zur Beziehung, seit wann, wie heißt sie und gibt es Mitteilungen */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun RelationshipDialog(
+    settings: LoveSettings,
+    relationship: Relationship,
+    isNew: Boolean,
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit,
+    onWidget: (String) -> Unit,
+    onSave: (Relationship) -> Unit,
+) {
+    var draft by remember { mutableStateOf(relationship) }
+    var pick by remember { mutableStateOf<String?>(null) }
+    var confirmDelete by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val canDelete = !isNew && settings.relationships.size > 1
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(if (isNew) R.string.add_relationship else R.string.edit_relationship)) },
+        text = {
+            Column(
+                Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(stringResource(R.string.relationship_members), style = MaterialTheme.typography.titleSmall)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    settings.people.forEach { p ->
+                        val selected = p.id in draft.members
+                        FilterChip(
+                            selected = selected,
+                            onClick = {
+                                draft = draft.copy(members = if (selected) draft.members - p.id else draft.members + p.id)
+                            },
+                            label = { Text(p.name) },
+                        )
+                    }
+                }
+                OutlinedTextField(
+                    draft.label,
+                    { draft = draft.copy(label = it) },
+                    label = { Text(stringResource(R.string.relationship_label)) },
+                    placeholder = { Text(stringResource(R.string.relationship_label_hint)) },
+                    singleLine = true,
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.together_since_date)) },
+                    supportingContent = { Text(Texts.mediumDate(draft.startDate), color = MaterialTheme.colorScheme.primary) },
+                    leadingContent = { Icon(Icons.Rounded.CalendarMonth, null) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { pick = "date" },
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.start_time_optional)) },
+                    supportingContent = {
+                        Text(
+                            draft.startTime?.let { Texts.time(context, it) } ?: stringResource(R.string.not_set),
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    },
+                    leadingContent = { Icon(Icons.Rounded.Schedule, null) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { pick = "time" },
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.relationship_notify)) },
+                    leadingContent = { Icon(Icons.Rounded.NotificationsActive, null) },
+                    trailingContent = { Switch(checked = draft.notify, onCheckedChange = { draft = draft.copy(notify = it) }) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { draft = draft.copy(notify = !draft.notify) },
+                )
+                if (!isNew && settings.relationships.size > 1) {
+                    val inWidget = settings.widget.id == relationship.id
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.relationship_widget)) },
+                        leadingContent = { Icon(Icons.Rounded.Widgets, null) },
+                        trailingContent = {
+                            RadioButton(selected = inWidget, onClick = { onWidget(relationship.id) })
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable { onWidget(relationship.id) },
+                    )
+                }
+                if (canDelete) {
+                    TextButton(
+                        onClick = { if (confirmDelete) onDelete() else confirmDelete = true },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                    ) {
+                        Text(
+                            stringResource(
+                                if (confirmDelete) R.string.remove_relationship_confirm else R.string.remove_relationship,
+                            ),
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave(draft) }, enabled = draft.members.size >= 2) {
                 Text(stringResource(R.string.save))
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
+    when (pick) {
+        "date" -> DateDialog(draft.startDate, onDismiss = { pick = null }) {
+            draft = draft.copy(startDate = it)
+            pick = null
+        }
+        "time" -> TimeDialog(
+            stringResource(R.string.start_time_optional),
+            draft.startTime,
+            onDismiss = { pick = null },
+            onClear = {
+                draft = draft.copy(startTime = null)
+                pick = null
+            },
+        ) {
+            draft = draft.copy(startTime = it)
+            pick = null
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -59,12 +59,15 @@ import coil3.compose.AsyncImage
 import java.io.File
 import java.time.LocalDate
 import java.util.UUID
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material3.FilterChip
 
 /**
  * Neuen Moment anlegen ([existing] = null, optional mit [suggestedTitle]) oder bestehenden bearbeiten.
  * [onSave] bekommt den Moment, ein neu gewähltes Foto und ob das alte Foto entfernt werden soll.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun MomentEditorScreen(
     existing: Moment?,
@@ -73,11 +76,18 @@ fun MomentEditorScreen(
     onClose: () -> Unit,
     onSave: (Moment, Uri?, Boolean) -> Unit,
     onDelete: (Moment) -> Unit,
+    /** Beziehungen zur Auswahl als ID und Titel; nur bei mehreren wird gefragt, zu wem der Moment gehört */
+    relationships: List<Pair<String, String>> = emptyList(),
+    /** Vorauswahl für neue Momente, null = für alle */
+    defaultRelationship: String? = null,
 ) {
     var title by rememberSaveable { mutableStateOf(existing?.title ?: suggestedTitle.orEmpty()) }
     var epochDay by rememberSaveable { mutableStateOf((existing?.date ?: defaultDate).toEpochDay()) }
     var note by rememberSaveable { mutableStateOf(existing?.note.orEmpty()) }
     var remind by rememberSaveable { mutableStateOf(existing?.yearlyReminder ?: true) }
+    var relationship by rememberSaveable {
+        mutableStateOf(if (existing != null) existing.relationshipId else defaultRelationship)
+    }
     var newPhoto by rememberSaveable { mutableStateOf<String?>(null) }
     var removePhoto by rememberSaveable { mutableStateOf(false) }
     var dateDialog by rememberSaveable { mutableStateOf(false) }
@@ -182,6 +192,30 @@ fun MomentEditorScreen(
                 }
             }
 
+            if (relationships.size > 1) {
+                Column {
+                    Text(
+                        stringResource(R.string.moment_for),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(bottom = 4.dp),
+                    )
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FilterChip(
+                            selected = relationship == null,
+                            onClick = { relationship = null },
+                            label = { Text(stringResource(R.string.poly_all)) },
+                        )
+                        relationships.forEach { (id, name) ->
+                            FilterChip(
+                                selected = relationship == id,
+                                onClick = { relationship = id },
+                                label = { Text(name) },
+                            )
+                        }
+                    }
+                }
+            }
+
             ListItem(
                 headlineContent = { Text(stringResource(R.string.moment_remind)) },
                 supportingContent = { Text(stringResource(R.string.moment_remind_summary)) },
@@ -199,6 +233,7 @@ fun MomentEditorScreen(
                         note = note.trim(),
                         photoPath = existing?.photoPath,
                         yearlyReminder = remind,
+                        relationshipId = relationship?.takeIf { id -> relationships.any { it.first == id } },
                     )
                     onSave(moment, newPhoto?.let(Uri::parse), removePhoto)
                 },

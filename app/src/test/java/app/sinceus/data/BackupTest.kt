@@ -27,11 +27,7 @@ import java.util.zip.ZipOutputStream
 class BackupTest {
     private val context: Context get() = ApplicationProvider.getApplicationContext()
 
-    private val sample = LoveSettings(
-        name1 = "Alex",
-        name2 = "Sam",
-        startDate = LocalDate.of(2025, 3, 15),
-        startTime = LocalTime.of(20, 30),
+    private val sample = LoveSettings.couple("Alex", "Sam", LocalDate.of(2025, 3, 15), LocalTime.of(20, 30)).copy(
         photoPath = "/data/x/files/photos/photo_1.jpg",
         presetIndex = 2,
         notificationsEnabled = false,
@@ -82,7 +78,7 @@ class BackupTest {
     fun exportAndImportRestoreEverything(): Unit = runBlocking {
         val repo = LoveRepository(context)
         repo.resetAll()
-        repo.setNames("Alex", "Sam")
+        repo.setNames(listOf("Alex", "Sam"))
         repo.setStartDate(LocalDate.of(2025, 3, 15))
         repo.saveMoment(Moment("1", "Erstes Date", LocalDate.of(2025, 2, 14), "Kino"), null, false)
         val file = ByteArrayOutputStream()
@@ -129,7 +125,7 @@ class BackupTest {
     fun brokenFileChangesNothing(): Unit = runBlocking {
         val repo = LoveRepository(context)
         repo.resetAll()
-        repo.setNames("Alex", "Sam")
+        repo.setNames(listOf("Alex", "Sam"))
         assertThrows(Exception::class.java) {
             runBlocking { repo.importBackup(ByteArrayInputStream("kein zip".toByteArray())) }
         }

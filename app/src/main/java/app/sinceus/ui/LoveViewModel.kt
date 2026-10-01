@@ -50,7 +50,14 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
         _today.value = LocalDate.now()
     }
 
-    fun setNames(a: String, b: String) = viewModelScope.launch { repo.setNames(a, b) }
+    fun setNames(names: List<String>) = viewModelScope.launch { repo.setNames(names) }
+    fun savePerson(person: app.sinceus.data.Person) = viewModelScope.launch { repo.savePerson(person) }
+    fun deletePerson(id: String) = viewModelScope.launch { repo.deletePerson(id) }
+    fun saveRelationship(r: app.sinceus.data.Relationship) = viewModelScope.launch { repo.saveRelationship(r) }
+    fun deleteRelationship(id: String) = viewModelScope.launch { repo.deleteRelationship(id) }
+    fun setSelected(id: String) = viewModelScope.launch { repo.setSelected(id) }
+    fun setWidgetRelationship(id: String) = viewModelScope.launch { repo.setWidgetRelationship(id) }
+    fun setDiscreet(on: Boolean) = viewModelScope.launch { repo.setDiscreet(on) }
     fun setStartDate(date: LocalDate) = viewModelScope.launch { repo.setStartDate(date) }
     fun setStartTime(time: java.time.LocalTime?) = viewModelScope.launch { repo.setStartTime(time) }
     fun resetAll() = viewModelScope.launch { repo.resetAll() }

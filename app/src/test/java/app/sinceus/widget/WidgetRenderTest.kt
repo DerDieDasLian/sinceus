@@ -33,7 +33,7 @@ class WidgetRenderTest {
             if (context.resources.configuration.locales[0].language == "de") java.util.Locale.GERMANY else java.util.Locale.US,
         )
         val repo = LoveRepository(context)
-        repo.setNames("Alex", "Sam")
+        repo.setNames(listOf("Alex", "Sam"))
         // 153 Tage vor heute, damit die Zahlen wie auf dem Handy aussehen
         repo.setStartDate(LocalDate.now().minusDays(153))
     }

@@ -15,6 +15,8 @@ data class Moment(
     val photoPath: String? = null,
     /** Am Jahrestag eine Mitteilung schicken */
     val yearlyReminder: Boolean = true,
+    /** Gehört zu dieser Beziehung, null = zu allen */
+    val relationshipId: String? = null,
 )
 
 object MomentCodec {
@@ -27,7 +29,8 @@ object MomentCodec {
                     .put("date", m.date.toEpochDay())
                     .put("note", m.note)
                     .put("photo", m.photoPath ?: JSONObject.NULL)
-                    .put("remind", m.yearlyReminder),
+                    .put("remind", m.yearlyReminder)
+                    .put("rel", m.relationshipId ?: JSONObject.NULL),
             )
         }
     }.toString()
@@ -46,6 +49,7 @@ object MomentCodec {
                     note = o.optString("note", ""),
                     photoPath = if (o.isNull("photo")) null else o.optString("photo").ifBlank { null },
                     yearlyReminder = o.optBoolean("remind", true),
+                    relationshipId = if (o.isNull("rel")) null else o.optString("rel").ifBlank { null },
                 )
             }.getOrNull()
         }

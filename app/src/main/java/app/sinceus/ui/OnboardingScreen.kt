@@ -66,6 +66,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.sinceus.data.LoveSettings
+import app.sinceus.data.MAX_PEOPLE
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.PersonAdd
+import androidx.compose.material3.IconButton
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -79,7 +83,7 @@ private const val STEPS = 5
 fun OnboardingScreen(
     settings: LoveSettings,
     notificationsAllowed: Boolean,
-    onNames: (String, String) -> Unit,
+    onNames: (List<String>) -> Unit,
     onStartDate: (LocalDate) -> Unit,
     onPickPhoto: () -> Unit,
     onAdjustPhoto: () -> Unit,
@@ -93,8 +97,8 @@ fun OnboardingScreen(
     /** Daten aus einer Sicherungsdatei laden, z. B. auf einem neuen Handy */
     onRestoreBackup: (() -> Unit)? = null,
 ) {
-    var name1 by rememberSaveable { mutableStateOf(settings.name1) }
-    var name2 by rememberSaveable { mutableStateOf(settings.name2) }
+    // Alle Namen; mit „Weitere Person“ kommen Felder dazu (Poly-Modus)
+    var names by rememberSaveable { mutableStateOf(ArrayList(settings.people.map { it.name })) }
     var presets by remember { mutableStateOf(false) }
     var time by remember { mutableStateOf(false) }
     var startTime by remember { mutableStateOf(false) }
@@ -107,7 +111,7 @@ fun OnboardingScreen(
 
     fun next() {
         when (step) {
-            1 -> onNames(name1, name2)
+            1 -> onNames(names)
             2 -> date.selectedDateMillis?.let {
                 onStartDate(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate())
             }
@@ -153,14 +157,41 @@ fun OnboardingScreen(
                     0 -> Welcome()
                     1 -> Step(stringResource(R.string.ob_names_title), stringResource(R.string.ob_names_sub)) {
                         val caps = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
-                        OutlinedTextField(
-                            name1, { name1 = it }, label = { Text(stringResource(R.string.name_1)) }, singleLine = true,
-                            keyboardOptions = caps, modifier = Modifier.fillMaxWidth(),
-                        )
-                        Spacer(Modifier.height(12.dp))
-                        OutlinedTextField(
-                            name2, { name2 = it }, label = { Text(stringResource(R.string.name_2)) }, singleLine = true,
-                            keyboardOptions = caps, modifier = Modifier.fillMaxWidth(),
+                        names.forEachIndexed { i, name ->
+                            if (i > 0) Spacer(Modifier.height(12.dp))
+                            OutlinedTextField(
+                                name,
+                                { value -> names = ArrayList(names).apply { set(i, value) } },
+                                label = { Text(stringResource(R.string.name_n, i + 1)) },
+                                singleLine = true,
+                                keyboardOptions = caps,
+                                trailingIcon = if (i >= 2) {
+                                    {
+                                        IconButton(onClick = { names = ArrayList(names).apply { removeAt(i) } }) {
+                                            Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.remove))
+                                        }
+                                    }
+                                } else {
+                                    null
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                        if (names.size < MAX_PEOPLE) {
+                            TextButton(
+                                onClick = { names = ArrayList(names).apply { add("") } },
+                                modifier = Modifier.padding(top = 8.dp),
+                            ) {
+                                Icon(Icons.Rounded.PersonAdd, null)
+                                Text(stringResource(R.string.add_person), Modifier.padding(start = 8.dp))
+                            }
+                        }
+                        Text(
+                            stringResource(R.string.ob_names_poly_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top = 8.dp),
                         )
                     }
                     2 -> Step(stringResource(R.string.ob_date_title), stringResource(R.string.ob_date_sub)) {
@@ -276,7 +307,7 @@ fun OnboardingScreen(
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = ::next,
-                enabled = step != 1 || (name1.isNotBlank() && name2.isNotBlank()),
+                enabled = step != 1 || names.count { it.isNotBlank() } >= 2,
             ) {
                 Text(
                     when (step) {
