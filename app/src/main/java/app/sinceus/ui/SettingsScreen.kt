@@ -359,7 +359,6 @@ fun SettingsScreen(
                             ) {}
                         }
                     }
-                }
                     SettingsPage.Reset -> {
                         Text(
                             stringResource(R.string.reset_intro),
