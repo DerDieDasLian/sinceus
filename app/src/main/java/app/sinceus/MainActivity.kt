@@ -26,6 +26,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.CompositionLocalProvider
+import app.sinceus.ui.LocalPrideMonth
+import app.sinceus.ui.isPrideMonth
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -144,6 +147,8 @@ class MainActivity : ComponentActivity() {
                     showSettings -> "settings"
                     else -> "home"
                 }
+                // Im Juni (Pride Month) ist die App ein bisschen bunter
+                CompositionLocalProvider(LocalPrideMonth provides isPrideMonth(today)) {
                 Box(
                     Modifier
                         .fillMaxSize()
@@ -262,6 +267,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     }
+                }
                 }
             }
         }

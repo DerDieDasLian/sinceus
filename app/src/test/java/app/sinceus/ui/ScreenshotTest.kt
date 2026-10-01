@@ -69,6 +69,13 @@ class ScreenshotTest {
     }
 
     @Test
+    fun homePrideGerman() = shot("home_pride", lang = "de") {
+        androidx.compose.runtime.CompositionLocalProvider(LocalPrideMonth provides true) {
+            HomeScreen(settings, today, {}, {})
+        }
+    }
+
+    @Test
     fun liveFocusedGerman() = shot(
         "live_focused",
         lang = "de",

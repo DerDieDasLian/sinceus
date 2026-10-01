@@ -248,4 +248,10 @@
     <string name="photo_own">Your own photo</string>
     <string name="notify_off">Off</string>
     <string name="notify_daily_at">On special days at %1$s</string>
+    <string name="all_couples">For every couple</string>
+    <string name="all_couples_text">Since Us is for every couple, no matter who you are or whom you love.</string>
+    <string name="pride_title">Happy Pride Month! 🏳️‍🌈</string>
+    <string name="credit_before" translatable="false">Built with</string>
+    <string name="credit_heart">love</string>
+    <string name="credit_after" translatable="false">by Lian</string>
 </resources>

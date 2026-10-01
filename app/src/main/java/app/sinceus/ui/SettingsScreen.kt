@@ -91,6 +91,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Dashboard
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.runtime.key
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.text.style.TextOverflow
@@ -324,7 +325,14 @@ fun SettingsScreen(
                             }
                         }
                         Section(if (BuildConfig.UPDATE_CHECK) stringResource(R.string.settings_about) else null) {
-                            Row(Icons.Rounded.Shield, stringResource(R.string.privacy), null) { dialog = "privacy" }
+                            ListItem(
+                            headlineContent = { Text(stringResource(R.string.all_couples)) },
+                            supportingContent = { Text(stringResource(R.string.all_couples_text)) },
+                            leadingContent = { Icon(Icons.Rounded.Favorite, null, Modifier.rainbow()) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        )
+                        Divider()
+                        Row(Icons.Rounded.Shield, stringResource(R.string.privacy), null) { dialog = "privacy" }
                             Divider()
                             Row(Icons.Rounded.Description, stringResource(R.string.licenses), null, onClick = onOpenLicenses)
                             Divider()
@@ -349,6 +357,7 @@ fun SettingsScreen(
                         )
                     }
                 }
+                if (page == null) Credit()
                 Spacer(Modifier.height(24.dp))
             }
         }
@@ -419,6 +428,32 @@ fun SettingsScreen(
             },
             confirmButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.ok)) } },
         )
+    }
+}
+
+/** Ganz unten in den Einstellungen */
+@Composable
+private fun Credit() {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val style = MaterialTheme.typography.bodySmall
+        val color = MaterialTheme.colorScheme.onSurfaceVariant
+        Text(stringResource(R.string.credit_before), style = style, color = color)
+        Icon(
+            Icons.Rounded.Favorite,
+            contentDescription = stringResource(R.string.credit_heart),
+            tint = if (LocalPrideMonth.current) Color.White else Color(0xFFFF5C77),
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .size(14.dp)
+                .then(if (LocalPrideMonth.current) Modifier.rainbow() else Modifier),
+        )
+        Text(stringResource(R.string.credit_after), style = style, color = color)
     }
 }
 

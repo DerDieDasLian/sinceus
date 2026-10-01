@@ -20,6 +20,7 @@ A privacy-friendly Android app for couples: counts how long you have been togeth
 - Backup as a file (all data and photos) to move to a new phone, without internet
 - Light and dark mode, English and German (per-app language supported)
 - No account, no ads, no tracking, all data stays on the device
+- For every couple, no matter who you are or whom you love, with a little rainbow decoration in Pride Month (June)
 
 ## Third-party libraries
 

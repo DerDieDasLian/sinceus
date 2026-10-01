@@ -232,6 +232,8 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
 
             if (todays.isNotEmpty()) TodayBanner(todays)
 
+            if (LocalPrideMonth.current) PrideBanner()
+
             if (!future) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     StatTile(Modifier.weight(1f), formatNumber(together.totalMonths), stringResource(R.string.stat_months))
@@ -294,14 +296,46 @@ fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp) {
         animationSpec = infiniteRepeatable(tween(650), RepeatMode.Reverse),
         label = "beat",
     )
+    val pride = LocalPrideMonth.current
     Icon(
         Icons.Rounded.Favorite,
         contentDescription = null,
-        tint = Color(0xFFFF5C77),
+        tint = if (pride) Color.White else Color(0xFFFF5C77),
         modifier = modifier
             .size(size)
-            .scale(beat),
+            .scale(beat)
+            .then(if (pride) Modifier.rainbow() else Modifier),
     )
+}
+
+/** Gruß im Pride Month: Since Us ist für alle Paare da */
+@Composable
+private fun PrideBanner() {
+    Card(
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(6.dp)
+                .background(Brush.horizontalGradient(PrideColors)),
+        )
+        Column(Modifier.padding(20.dp)) {
+            Text(
+                stringResource(R.string.pride_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                stringResource(R.string.all_couples_text),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+    }
 }
 
 @Composable

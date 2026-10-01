@@ -8,7 +8,14 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
+import java.time.LocalDate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -100,3 +107,25 @@ val Presets = listOf(
     Preset(app.sinceus.R.string.preset_rose, listOf(Color(0xFF8C4A5A), Color(0xFFE8A0A8), Color(0xFFFBE3DA))),
     Preset(app.sinceus.R.string.preset_ocean, listOf(Color(0xFF062B3A), Color(0xFF1C6E8C), Color(0xFF8FD3D1))),
 )
+
+/** Im Juni (Pride Month) ist die App ein bisschen bunter: Herzen in Regenbogenfarben und ein Gruß */
+val LocalPrideMonth = staticCompositionLocalOf { false }
+
+fun isPrideMonth(day: LocalDate) = day.monthValue == 6
+
+/** Farben der Regenbogenflagge */
+val PrideColors = listOf(
+    Color(0xFFE40303),
+    Color(0xFFFF8C00),
+    Color(0xFFFFED00),
+    Color(0xFF008026),
+    Color(0xFF004DFF),
+    Color(0xFF750787),
+)
+
+/** Färbt den Inhalt (z. B. ein Herz-Icon) mit einem Regenbogenverlauf */
+fun Modifier.rainbow(): Modifier = graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+    .drawWithContent {
+        drawContent()
+        drawRect(Brush.linearGradient(PrideColors), blendMode = BlendMode.SrcIn)
+    }

@@ -247,4 +247,8 @@
     <string name="photo_own">Euer eigenes Foto</string>
     <string name="notify_off">Aus</string>
     <string name="notify_daily_at">An besonderen Tagen um %1$s</string>
+    <string name="all_couples">Für alle Paare</string>
+    <string name="all_couples_text">Since Us ist für alle Paare da, egal wer ihr seid und wen ihr liebt.</string>
+    <string name="pride_title">Happy Pride Month! 🏳️‍🌈</string>
+    <string name="credit_heart">Liebe</string>
 </resources>
