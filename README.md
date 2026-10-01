@@ -1,4 +1,4 @@
-# Since Us ❤
+# Since Us
 
 A privacy-friendly Android app for couples: counts how long you have been together and reminds you of every special day. Available in English and German.
 

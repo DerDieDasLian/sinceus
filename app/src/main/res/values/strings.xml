@@ -77,7 +77,7 @@
     <string name="together_for">Together for</string>
     <string name="starts_in">Starting in</string>
     <string name="today_word">today</string>
-    <string name="beginning">The beginning of everything ❤</string>
+    <string name="beginning">The beginning of everything</string>
     <string name="stat_months">Months</string>
     <string name="stat_weeks">Weeks</string>
     <string name="stat_hours">Hours</string>
@@ -89,7 +89,7 @@
     <string name="live_together">Together for</string>
     <string name="live_until">Still to go</string>
     <string name="share">Share</string>
-    <string name="share_text">%1$s have been together for %2$s ❤</string>
+    <string name="share_text">%1$s have been together for %2$s</string>
     <string name="live_hint">Tap a value to see the total.</string>
     <string name="your_photo">Your photo</string>
     <string name="editor_hint">Drag with one finger, pinch with two to zoom.</string>
@@ -250,7 +250,7 @@
     <string name="notify_daily_at">On special days at %1$s</string>
     <string name="all_couples">For every couple</string>
     <string name="all_couples_text">Since Us is for every couple, no matter who you are or whom you love.</string>
-    <string name="pride_title">Happy Pride Month! 🏳️‍🌈</string>
+    <string name="pride_title">Happy Pride Month!</string>
     <string name="credit_before" translatable="false">Built with</string>
     <string name="credit_heart">love</string>
     <string name="credit_after" translatable="false">by Lian</string>

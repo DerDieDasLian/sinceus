@@ -76,7 +76,7 @@
     <string name="together_for">Ihr seid zusammen seit</string>
     <string name="starts_in">Es geht los in</string>
     <string name="today_word">heute</string>
-    <string name="beginning">Der Anfang von allem ❤</string>
+    <string name="beginning">Der Anfang von allem</string>
     <string name="stat_months">Monate</string>
     <string name="stat_weeks">Wochen</string>
     <string name="stat_hours">Stunden</string>
@@ -88,7 +88,7 @@
     <string name="live_together">Schon zusammen</string>
     <string name="live_until">Noch</string>
     <string name="share">Teilen</string>
-    <string name="share_text">%1$s sind schon %2$s zusammen ❤</string>
+    <string name="share_text">%1$s sind schon %2$s zusammen</string>
     <string name="live_hint">Tippe auf einen Wert für die Gesamtzahl.</string>
     <string name="your_photo">Euer Foto</string>
     <string name="editor_hint">Mit einem Finger verschieben, mit zwei Fingern zoomen.</string>
@@ -249,6 +249,6 @@
     <string name="notify_daily_at">An besonderen Tagen um %1$s</string>
     <string name="all_couples">Für alle Paare</string>
     <string name="all_couples_text">Since Us ist für alle Paare da, egal wer ihr seid und wen ihr liebt.</string>
-    <string name="pride_title">Happy Pride Month! 🏳️‍🌈</string>
+    <string name="pride_title">Happy Pride Month!</string>
     <string name="credit_heart">Liebe</string>
 </resources>

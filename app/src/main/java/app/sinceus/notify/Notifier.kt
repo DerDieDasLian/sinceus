@@ -87,14 +87,14 @@ object Notifier {
         val lines = milestones.map { Texts.milestoneMessage(context, it) } +
             moments.map { (m, years) -> Texts.momentMessage(context, m, years) }
         if (lines.isEmpty() || !canNotify(context)) return
-        post(context, "${settings.names} ❤", lines.first(), lines.joinToString("\n"))
+        post(context, settings.names, lines.first(), lines.joinToString("\n"))
     }
 
     fun showTest(context: Context, settings: LoveSettings) {
         if (!canNotify(context)) return
         post(
             context,
-            "${settings.names} ❤",
+            settings.names,
             context.getString(R.string.test_notification),
             null,
         )

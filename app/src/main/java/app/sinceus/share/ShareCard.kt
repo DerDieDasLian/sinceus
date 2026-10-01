@@ -6,11 +6,13 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.LinearGradient
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
 import androidx.core.content.FileProvider
+import androidx.core.graphics.PathParser
 import app.sinceus.R
 import app.sinceus.data.LoveMath
 import app.sinceus.data.LoveSettings
@@ -71,8 +73,10 @@ object ShareCard {
             this.color = color
         }
 
-        // Kleiner Schriftzug oben
-        canvas.drawText("Since Us ❤", MARGIN, 120f, paint(40f, sansMedium, soft))
+        // Kleiner Schriftzug oben, mit gezeichnetem Herz statt Emoji
+        val brand = paint(40f, sansMedium, soft)
+        canvas.drawText("Since Us", MARGIN, 120f, brand)
+        drawHeart(canvas, MARGIN + brand.measureText("Since Us") + 12f, 120f - 30f, 34f, pink)
 
         val together = LoveMath.together(s.startDate, today)
         val future = s.startDate.isAfter(today)
@@ -100,13 +104,34 @@ object ShareCard {
         canvas.drawText(unit, unitX, y - 18f, fit(paint(52f, sans, soft), unit, w - MARGIN - unitX))
         y -= 250f
 
-        val names = "${s.name1} ❤ ${s.name2}"
-        canvas.drawText(names, MARGIN, y, fit(paint(92f, serifBold, white), names, maxWidth))
+        // Namen mit gezeichnetem Herz dazwischen; Platz fürs Herz wie zwei Leerzeichen plus Herzbreite
+        val namePaint = paint(92f, serifBold, white)
+        val heartSize = { namePaint.textSize * 0.62f }
+        val gap = { namePaint.textSize * 0.25f }
+        val nameWidth = { namePaint.measureText(s.name1) + namePaint.measureText(s.name2) + heartSize() + 2 * gap() }
+        while (nameWidth() > maxWidth && namePaint.textSize > 20f) namePaint.textSize -= 2f
+        canvas.drawText(s.name1, MARGIN, y, namePaint)
+        val heartX = MARGIN + namePaint.measureText(s.name1) + gap()
+        drawHeart(canvas, heartX, y - namePaint.textSize * 0.62f, heartSize(), pink)
+        canvas.drawText(s.name2, heartX + heartSize() + gap(), y, namePaint)
 
         // Dünne Akzentlinie über den Namen
         canvas.drawRoundRect(RectF(MARGIN, y - 150f, MARGIN + 96f, y - 140f), 5f, 5f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = pink })
         return out
     }
+
+    /** Herz (wie das Icon in der App) mit linker oberer Ecke bei [x], [y] und Breite [size] */
+    private fun drawHeart(canvas: Canvas, x: Float, y: Float, size: Float, color: Int) {
+        val path = PathParser.createPathFromPathData(HEART_PATH)
+        val scale = size / 20f
+        // Das Herz liegt im 24er-Raster bei x 2..22, y 3..21.35
+        path.transform(Matrix().apply { setTranslate(-2f, -3f); postScale(scale, scale); postTranslate(x, y) })
+        canvas.drawPath(path, Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color })
+    }
+
+    private const val HEART_PATH =
+        "M12,21.35l-1.45,-1.32C5.4,15.36 2,12.28 2,8.5 2,5.42 4.42,3 7.5,3c1.74,0 3.41,0.81 4.5,2.09" +
+            "C13.09,3.81 14.76,3 16.5,3 19.58,3 22,5.42 22,8.5c0,3.78 -3.4,6.86 -8.55,11.54L12,21.35z"
 
     /** Schrift verkleinern, bis der Text in [maxWidth] passt. */
     private fun fit(p: Paint, text: String, maxWidth: Float): Paint {
@@ -131,7 +156,7 @@ object ShareCard {
         )
     }
 
-    /** Begleittext: „Alex & Sam sind schon 5 Monate zusammen ❤“ */
+    /** Begleittext: „Alex & Sam sind schon 5 Monate zusammen“ */
     fun defaultText(context: Context, s: LoveSettings, today: LocalDate): String =
         context.getString(R.string.share_text, s.names, Texts.period(context, LoveMath.together(s.startDate, today).period))
 }

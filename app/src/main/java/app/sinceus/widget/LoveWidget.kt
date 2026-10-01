@@ -184,11 +184,17 @@ private fun CardContent(settings: LoveSettings) {
             modifier = GlanceModifier.fillMaxSize().padding(horizontal = 18.dp, vertical = if (flat) 10.dp else 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                "${settings.name1} ❤ ${settings.name2}",
-                style = TextStyle(color = soft, fontSize = 13.sp, fontFamily = FontFamily.Serif),
-                maxLines = 1,
-            )
+            // Gezeichnetes Herz statt Emoji
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val nameStyle = TextStyle(color = soft, fontSize = 13.sp, fontFamily = FontFamily.Serif)
+                Text(settings.name1, style = nameStyle, maxLines = 1)
+                Image(
+                    ImageProvider(R.drawable.ic_heart_small),
+                    contentDescription = null,
+                    modifier = GlanceModifier.padding(horizontal = 4.dp).size(12.dp),
+                )
+                Text(settings.name2, style = nameStyle, maxLines = 1)
+            }
             Spacer(GlanceModifier.height(if (flat) 0.dp else 4.dp))
             if (wide || flat) {
                 Row(verticalAlignment = Alignment.Bottom) {
