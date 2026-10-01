@@ -4,4 +4,5 @@
     <include domain="file" path="datastore/" />
     <include domain="file" path="photos/" />
     <include domain="file" path="moments/" />
+    <include domain="file" path="slides/" />
 </full-backup-content>

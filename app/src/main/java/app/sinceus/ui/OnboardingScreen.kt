@@ -90,6 +90,8 @@ fun OnboardingScreen(
     onStartTime: (LocalTime?) -> Unit,
     step: Int,
     onStep: (Int) -> Unit,
+    /** Daten aus einer Sicherungsdatei laden, z. B. auf einem neuen Handy */
+    onRestoreBackup: (() -> Unit)? = null,
 ) {
     var name1 by rememberSaveable { mutableStateOf(settings.name1) }
     var name2 by rememberSaveable { mutableStateOf(settings.name2) }
@@ -267,6 +269,9 @@ fun OnboardingScreen(
             // Namen und Datum sind Pflicht, nur das Foto kann warten
             if (step == 3) {
                 TextButton(onClick = { onStep(step + 1) }) { Text(stringResource(R.string.skip)) }
+            }
+            if (step == 0 && onRestoreBackup != null) {
+                TextButton(onClick = onRestoreBackup) { Text(stringResource(R.string.backup_restore_onboarding)) }
             }
             Spacer(Modifier.weight(1f))
             Button(

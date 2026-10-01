@@ -5,10 +5,12 @@
         <include domain="file" path="datastore/" />
         <include domain="file" path="photos/" />
         <include domain="file" path="moments/" />
+        <include domain="file" path="slides/" />
     </cloud-backup>
     <device-transfer>
         <include domain="file" path="datastore/" />
         <include domain="file" path="photos/" />
         <include domain="file" path="moments/" />
+        <include domain="file" path="slides/" />
     </device-transfer>
 </data-extraction-rules>

@@ -218,4 +218,27 @@
     <string name="live_show">Show live counter</string>
     <string name="live_show_summary">Counts your time together to the second</string>
     <string name="moments_show_summary">A timeline for important moments. Hiding it keeps your saved moments.</string>
+    <string name="slideshow">Slideshow</string>
+    <string name="slideshow_off">Off: only your main photo</string>
+    <plurals name="slideshow_count">
+        <item quantity="one">%s more photo</item>
+        <item quantity="other">%s more photos</item>
+    </plurals>
+    <string name="slideshow_hint">Your title picture switches between your main photo and these photos every few seconds.</string>
+    <string name="slideshow_empty">No photos yet. Add a few to start the slideshow.</string>
+    <string name="slideshow_add">Add photos</string>
+    <string name="slideshow_remove">Remove photo</string>
+    <string name="section_backup">Backup</string>
+    <string name="backup_export">Save backup</string>
+    <string name="backup_export_summary">All your data and photos in one file, e.g. for a new phone</string>
+    <string name="backup_import">Restore backup</string>
+    <string name="backup_import_summary">Load a saved backup file</string>
+    <string name="backup_import_question">Restore backup?</string>
+    <string name="backup_import_text">All current data on this device will be replaced by the data from the backup.</string>
+    <string name="backup_import_confirm">Restore</string>
+    <string name="backup_restore_onboarding">Restore backup</string>
+    <string name="backup_saved">Backup saved</string>
+    <string name="backup_save_failed">Backup could not be saved</string>
+    <string name="backup_restored">Backup restored</string>
+    <string name="backup_restore_failed">This file is not a valid Since Us backup</string>
 </resources>

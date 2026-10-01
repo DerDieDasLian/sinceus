@@ -35,6 +35,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.sinceus.data.Backup
+import app.sinceus.data.MAX_SLIDES
 import app.sinceus.notify.Notifier
 import app.sinceus.ui.HomeScreen
 import app.sinceus.ui.LicensesScreen
@@ -101,6 +103,26 @@ class MainActivity : ComponentActivity() {
                 }
                 fun pickPhoto() = photoPicker.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                )
+
+                // Weitere Fotos für die Diashow im Titelbild
+                val slidePicker = rememberLauncherForActivityResult(
+                    ActivityResultContracts.PickMultipleVisualMedia(MAX_SLIDES),
+                ) { uris -> if (uris.isNotEmpty()) vm.addSlides(uris) }
+                fun pickSlides() = slidePicker.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                )
+
+                // Sicherung als Datei über den Dateidialog von Android, ganz ohne Internet
+                val backupSaver = rememberLauncherForActivityResult(
+                    ActivityResultContracts.CreateDocument(Backup.MIME),
+                ) { uri -> if (uri != null) vm.exportBackup(uri) }
+                val backupLoader = rememberLauncherForActivityResult(
+                    ActivityResultContracts.OpenDocument(),
+                ) { uri -> if (uri != null) vm.importBackup(uri) }
+                fun saveBackup() = backupSaver.launch(Backup.fileName(today))
+                fun loadBackup() = backupLoader.launch(
+                    arrayOf(Backup.MIME, "application/x-zip-compressed", "application/octet-stream"),
                 )
 
                 BackHandler(enabled = showSettings || editingPhoto || editingMoment != null || showLicenses) {
@@ -184,6 +206,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 step = onboardingStep,
                                 onStep = { onboardingStep = it },
+                                onRestoreBackup = ::loadBackup,
                             )
                             "settings" -> SettingsScreen(
                                 settings = s,
@@ -218,6 +241,10 @@ class MainActivity : ComponentActivity() {
                                 onOpenUpdate = vm::installUpdate,
                                 updateProgress = updateProgress,
                                 onOpenLicenses = { showLicenses = true },
+                                onAddSlides = ::pickSlides,
+                                onRemoveSlide = vm::removeSlide,
+                                onExportBackup = ::saveBackup,
+                                onImportBackup = ::loadBackup,
                             )
                             else -> HomeScreen(
                                 s,

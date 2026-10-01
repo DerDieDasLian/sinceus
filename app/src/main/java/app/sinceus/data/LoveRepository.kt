@@ -16,9 +16,15 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 private val Context.dataStore by preferencesDataStore(name = "love")
 
@@ -57,6 +63,8 @@ data class LoveSettings(
     val showMoments: Boolean = true,
     /** Live-Zähler anzeigen (lässt sich ausblenden) */
     val showLive: Boolean = true,
+    /** Weitere Fotos für die Diashow im Titelbild (Pfade im App-Speicher, files/slides/) */
+    val slides: List<String> = emptyList(),
 ) {
     val names: String get() = "$name1 & $name2"
     val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
@@ -87,7 +95,11 @@ private object Keys {
     val moments = stringPreferencesKey("moments")
     val showMoments = booleanPreferencesKey("show_moments")
     val showLive = booleanPreferencesKey("show_live")
+    val slides = stringPreferencesKey("slides")
 }
+
+/** Höchstzahl weiterer Fotos in der Diashow */
+const val MAX_SLIDES = 20
 
 class LoveRepository(private val context: Context) {
 
@@ -119,6 +131,7 @@ class LoveRepository(private val context: Context) {
             moments = MomentCodec.decode(this[Keys.moments]).sortedBy { it.date },
             showMoments = this[Keys.showMoments] ?: d.showMoments,
             showLive = this[Keys.showLive] ?: d.showLive,
+            slides = PathListCodec.decode(this[Keys.slides]).filter { File(it).exists() },
         )
     }
 
@@ -175,10 +188,148 @@ class LoveRepository(private val context: Context) {
 
     private suspend fun deleteFile(path: String) = withContext(Dispatchers.IO) { File(path).delete() }
 
+    /** Fügt weitere Fotos für die Diashow hinzu (höchstens [MAX_SLIDES] insgesamt). */
+    suspend fun addSlides(uris: List<Uri>) {
+        val room = MAX_SLIDES - current().slides.size
+        if (room <= 0 || uris.isEmpty()) return
+        val stamp = System.currentTimeMillis()
+        val added = withContext(Dispatchers.IO) {
+            uris.take(room).mapIndexedNotNull { i, uri ->
+                val file = File(slideDir(), "slide_${stamp}_$i.jpg")
+                val copied = runCatching {
+                    context.contentResolver.openInputStream(uri)?.use { input ->
+                        file.outputStream().use { input.copyTo(it) }
+                    } != null
+                }.getOrDefault(false)
+                if (copied) {
+                    file.absolutePath
+                } else {
+                    file.delete()
+                    null
+                }
+            }
+        }
+        context.dataStore.edit { prefs ->
+            prefs[Keys.slides] = PathListCodec.encode(PathListCodec.decode(prefs[Keys.slides]) + added)
+        }
+    }
+
+    suspend fun removeSlide(path: String) {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.slides] = PathListCodec.encode(PathListCodec.decode(prefs[Keys.slides]) - path)
+        }
+        deleteFile(path)
+    }
+
+    private fun slideDir() = File(context.filesDir, "slides").apply { mkdirs() }
+
+    /**
+     * Schreibt alle Daten mit Fotos als ZIP-Datei in [out]: backup.json plus die Ordner
+     * photos/, slides/ und moments/. Der Stream wird danach geschlossen.
+     */
+    suspend fun exportBackup(out: OutputStream) {
+        val s = current()
+        withContext(Dispatchers.IO) {
+            ZipOutputStream(out.buffered()).use { zip ->
+                zip.putNextEntry(ZipEntry(Backup.JSON))
+                zip.write(BackupCodec.encode(s).toByteArray(Charsets.UTF_8))
+                zip.closeEntry()
+                val written = mutableSetOf<String>()
+                fun add(folder: String, path: String?) {
+                    val file = path?.let(::File)?.takeIf { it.isFile } ?: return
+                    val name = "$folder/${file.name}"
+                    if (!written.add(name)) return
+                    zip.putNextEntry(ZipEntry(name))
+                    file.inputStream().use { it.copyTo(zip) }
+                    zip.closeEntry()
+                }
+                add(Backup.PHOTOS, s.photoPath)
+                s.slides.forEach { add(Backup.SLIDES, it) }
+                s.moments.forEach { add(Backup.MOMENTS, it.photoPath) }
+            }
+        }
+    }
+
+    /**
+     * Stellt eine Sicherung aus [input] wieder her und ersetzt dabei alle bisherigen Daten.
+     * Ist die Datei keine gültige Sicherung, wird eine Exception geworfen und nichts verändert.
+     */
+    suspend fun importBackup(input: InputStream) {
+        val restore = File(context.cacheDir, "restore")
+        val data = withContext(Dispatchers.IO) {
+            restore.deleteRecursively()
+            var json: String? = null
+            ZipInputStream(input.buffered()).use { zip ->
+                while (true) {
+                    val entry = zip.nextEntry ?: break
+                    if (entry.isDirectory) continue
+                    val parts = entry.name.split('/')
+                    if (entry.name == Backup.JSON) {
+                        json = Backup.readLimited(zip).toString(Charsets.UTF_8)
+                    } else if (parts.size == 2 && parts[0] in Backup.FOLDERS && Backup.isSafeName(parts[1])) {
+                        // Nur einfache Dateinamen in den bekannten Ordnern, nie Pfade nach außerhalb
+                        val target = File(File(restore, parts[0]).apply { mkdirs() }, parts[1])
+                        target.outputStream().use { zip.copyTo(it) }
+                    }
+                }
+            }
+            BackupCodec.decode(json ?: throw IOException("backup.json missing"))
+        }
+
+        // Ab hier ist die Sicherung gültig: alte Dateien durch die aus der Sicherung ersetzen
+        val restored = withContext(Dispatchers.IO) {
+            fun move(folder: String, dir: File, name: String?): String? {
+                val source = name?.let { File(File(restore, folder), it) }?.takeIf { it.isFile } ?: return null
+                val target = File(dir, name)
+                source.copyTo(target, overwrite = true)
+                return target.absolutePath
+            }
+            deletePhotos()
+            slideDir().listFiles()?.forEach { it.delete() }
+            momentDir().listFiles()?.forEach { it.delete() }
+            val result = data.copy(
+                photoPath = move(Backup.PHOTOS, photoDir(), data.photoPath),
+                slides = data.slides.mapNotNull { move(Backup.SLIDES, slideDir(), it) },
+                moments = data.moments.map { it.copy(photoPath = move(Backup.MOMENTS, momentDir(), it.photoPath)) },
+            )
+            restore.deleteRecursively()
+            result
+        }
+
+        context.dataStore.edit { p ->
+            // Merker für schon verschickte Mitteilungen behalten, damit nichts doppelt kommt
+            val lastNotified = p[Keys.lastNotified]
+            p.clear()
+            lastNotified?.let { p[Keys.lastNotified] = it }
+            p[Keys.name1] = restored.name1
+            p[Keys.name2] = restored.name2
+            p[Keys.start] = restored.startDate.toEpochDay()
+            restored.startTime?.let { p[Keys.startTime] = it.toSecondOfDay() }
+            restored.photoPath?.let { p[Keys.photo] = it }
+            p[Keys.preset] = restored.presetIndex
+            p[Keys.notify] = restored.notificationsEnabled
+            p[Keys.notifyHour] = restored.notifyHour
+            p[Keys.notifyMinute] = restored.notifyMinute
+            p[Keys.focusX] = restored.focusX
+            p[Keys.focusY] = restored.focusY
+            p[Keys.zoom] = restored.zoom
+            p[Keys.onboardingDone] = true
+            p[Keys.homePage] = restored.homePage
+            p[Keys.updateCheck] = restored.updateCheck
+            p[Keys.moments] = MomentCodec.encode(restored.moments)
+            p[Keys.showMoments] = restored.showMoments
+            p[Keys.showLive] = restored.showLive
+            p[Keys.slides] = PathListCodec.encode(restored.slides)
+        }
+    }
+
     /** Löscht alle Daten und das Foto, danach startet die Einrichtung neu. */
     suspend fun resetAll() {
         deletePhotos()
-        withContext(Dispatchers.IO) { momentDir().listFiles()?.forEach { it.delete() } }
+        withContext(Dispatchers.IO) {
+            momentDir().listFiles()?.forEach { it.delete() }
+            slideDir().listFiles()?.forEach { it.delete() }
+        }
         context.dataStore.edit {
             it.clear()
         }

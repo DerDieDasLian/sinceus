@@ -2,6 +2,8 @@ package app.sinceus.ui
 
 import app.sinceus.R
 import androidx.compose.ui.res.stringResource
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +28,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +57,7 @@ import coil3.compose.AsyncImage
 import app.sinceus.data.DEFAULT_FOCUS_Y
 import app.sinceus.data.LoveSettings
 import java.io.File
+import kotlinx.coroutines.delay
 import kotlin.math.max
 
 /** Höhe des Titelbilds: 60 % des Bildschirms, damit Hochformat-Fotos gut passen. */
@@ -89,6 +94,48 @@ fun CouplePhoto(
             )
         } else {
             PresetBackground(Presets.getOrElse(settings.presetIndex) { Presets[0] }, Modifier.fillMaxSize())
+        }
+    }
+}
+
+/** Pause zwischen zwei Fotos der Diashow */
+private const val SLIDE_MS = 6_000L
+
+/**
+ * Titelbild: euer Foto (oder Motiv) und, falls gewählt, die weiteren Fotos der Diashow
+ * im sanften Wechsel. Ohne weitere Fotos steht einfach euer Foto da.
+ */
+@Composable
+fun HeroPhoto(settings: LoveSettings, modifier: Modifier = Modifier) {
+    val slides = settings.slides
+    val count = 1 + slides.size
+    var index by remember(slides) { mutableIntStateOf(0) }
+    if (count > 1) {
+        LaunchedEffect(slides) {
+            while (true) {
+                delay(SLIDE_MS)
+                index = (index + 1) % count
+            }
+        }
+    }
+    Crossfade(
+        targetState = index,
+        animationSpec = tween(1200),
+        label = "slideshow",
+        modifier = modifier.clipToBounds(),
+    ) { i ->
+        // Während des Überblendens kann die Liste schon kürzer geworden sein
+        val slide = slides.getOrNull(i - 1)
+        if (slide == null) {
+            CouplePhoto(settings, Modifier.fillMaxSize())
+        } else {
+            AsyncImage(
+                model = File(slide),
+                contentDescription = stringResource(R.string.your_photo),
+                contentScale = ContentScale.Crop,
+                alignment = BiasAlignment(0f, DEFAULT_FOCUS_Y),
+                modifier = Modifier.fillMaxSize(),
+            )
         }
     }
 }

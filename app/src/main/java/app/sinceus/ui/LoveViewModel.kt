@@ -19,7 +19,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class LoveViewModel(app: Application) : AndroidViewModel(app) {
@@ -66,6 +68,38 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun deleteMoment(id: String) = viewModelScope.launch { repo.deleteMoment(id) }
     fun setShowMoments(show: Boolean) = viewModelScope.launch { repo.setShowMoments(show) }
     fun setShowLive(show: Boolean) = viewModelScope.launch { repo.setShowLive(show) }
+    fun addSlides(uris: List<Uri>) = viewModelScope.launch { repo.addSlides(uris) }
+    fun removeSlide(path: String) = viewModelScope.launch { repo.removeSlide(path) }
+
+    /** Speichert alle Daten mit Fotos in die gewählte Datei. */
+    fun exportBackup(uri: Uri) = viewModelScope.launch {
+        val app = getApplication<Application>()
+        val ok = try {
+            val out = withContext(Dispatchers.IO) { app.contentResolver.openOutputStream(uri) }
+                ?: throw java.io.IOException("no output stream")
+            repo.exportBackup(out)
+            true
+        } catch (e: Exception) {
+            android.util.Log.w("SinceUs", "Sicherung fehlgeschlagen", e)
+            false
+        }
+        Toast.makeText(app, app.getString(if (ok) R.string.backup_saved else R.string.backup_save_failed), Toast.LENGTH_SHORT).show()
+    }
+
+    /** Ersetzt alle Daten durch die aus der gewählten Sicherungsdatei. */
+    fun importBackup(uri: Uri) = viewModelScope.launch {
+        val app = getApplication<Application>()
+        val ok = try {
+            val input = withContext(Dispatchers.IO) { app.contentResolver.openInputStream(uri) }
+                ?: throw java.io.IOException("no input stream")
+            input.use { repo.importBackup(it) }
+            true
+        } catch (e: Exception) {
+            android.util.Log.w("SinceUs", "Wiederherstellung fehlgeschlagen", e)
+            false
+        }
+        Toast.makeText(app, app.getString(if (ok) R.string.backup_restored else R.string.backup_restore_failed), Toast.LENGTH_LONG).show()
+    }
 
     fun setUpdateCheck(enabled: Boolean) = viewModelScope.launch { repo.setUpdateCheck(enabled) }
 

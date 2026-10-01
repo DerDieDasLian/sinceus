@@ -264,7 +264,7 @@ private fun Hero(settings: LoveSettings) {
             .fillMaxWidth()
             .height(heroHeight()),
     ) {
-        CouplePhoto(settings, Modifier.fillMaxSize())
+        HeroPhoto(settings, Modifier.fillMaxSize())
         Box(
             Modifier
                 .fillMaxSize()

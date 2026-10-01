@@ -88,6 +88,19 @@ import androidx.compose.material.icons.rounded.Update
 import app.sinceus.data.Texts
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.rounded.Backup
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.material.icons.rounded.Slideshow
+import app.sinceus.data.MAX_SLIDES
+import coil3.compose.AsyncImage
+import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,6 +130,10 @@ fun SettingsScreen(
     /** Download-Fortschritt eines Updates in Prozent (-1 = unbekannt), null = kein Download */
     updateProgress: Int? = null,
     onOpenLicenses: () -> Unit = {},
+    onAddSlides: () -> Unit = {},
+    onRemoveSlide: (String) -> Unit = {},
+    onExportBackup: () -> Unit = {},
+    onImportBackup: () -> Unit = {},
 ) {
     var dialog by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
@@ -169,6 +186,16 @@ fun SettingsScreen(
                     Divider()
                 }
                 Row(Icons.Rounded.Collections, stringResource(R.string.pick_preset), null) { dialog = "presets" }
+                Divider()
+                Row(
+                    Icons.Rounded.Slideshow,
+                    stringResource(R.string.slideshow),
+                    if (settings.slides.isEmpty()) {
+                        stringResource(R.string.slideshow_off)
+                    } else {
+                        pluralStringResource(R.plurals.slideshow_count, settings.slides.size, settings.slides.size.toString())
+                    },
+                ) { dialog = "slides" }
                 Divider()
                 Row(Icons.Rounded.RestartAlt, stringResource(R.string.reset_photo), null, onClick = onResetPhoto)
             }
@@ -242,6 +269,23 @@ fun SettingsScreen(
                     Divider()
                     Row(Icons.Rounded.Refresh, stringResource(R.string.update_check_now), null, onClick = onCheckUpdates)
                 }
+            }
+            Section(stringResource(R.string.section_backup)) {
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.backup_export)) },
+                    supportingContent = { Text(stringResource(R.string.backup_export_summary)) },
+                    leadingContent = { Icon(Icons.Rounded.Backup, null) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable(onClick = onExportBackup),
+                )
+                Divider()
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.backup_import)) },
+                    supportingContent = { Text(stringResource(R.string.backup_import_summary)) },
+                    leadingContent = { Icon(Icons.Rounded.Restore, null) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { dialog = "import" },
+                )
             }
             Section(stringResource(R.string.section_misc)) {
                 ListItem(
@@ -325,6 +369,25 @@ fun SettingsScreen(
             onPreset(it)
             dialog = null
         }
+        "slides" -> SlidesDialog(
+            slides = settings.slides,
+            onAdd = onAddSlides,
+            onRemove = onRemoveSlide,
+            onDismiss = { dialog = null },
+        )
+        "import" -> AlertDialog(
+            onDismissRequest = { dialog = null },
+            icon = { Icon(Icons.Rounded.Restore, null) },
+            title = { Text(stringResource(R.string.backup_import_question)) },
+            text = { Text(stringResource(R.string.backup_import_text)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    dialog = null
+                    onImportBackup()
+                }) { Text(stringResource(R.string.backup_import_confirm)) }
+            },
+            dismissButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.cancel)) } },
+        )
         "privacy" -> AlertDialog(
             onDismissRequest = { dialog = null },
             icon = { Icon(Icons.Rounded.Shield, null) },
@@ -504,5 +567,62 @@ internal fun PresetDialog(selected: Int, onDismiss: () -> Unit, onPick: (Int) ->
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) } },
+    )
+}
+
+/** Weitere Fotos für die Diashow im Titelbild: ansehen, hinzufügen, entfernen */
+@Composable
+private fun SlidesDialog(slides: List<String>, onAdd: () -> Unit, onRemove: (String) -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(Icons.Rounded.Slideshow, null) },
+        title = { Text(stringResource(R.string.slideshow)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(if (slides.isEmpty()) R.string.slideshow_empty else R.string.slideshow_hint))
+                if (slides.isNotEmpty()) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(slides, key = { it }) { path ->
+                            Box(
+                                Modifier
+                                    .aspectRatio(1f)
+                                    .clip(RoundedCornerShape(12.dp)),
+                            ) {
+                                AsyncImage(
+                                    model = File(path),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                                IconButton(
+                                    onClick = { onRemove(path) },
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(4.dp)
+                                        .size(28.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.Black.copy(alpha = 0.55f)),
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Close,
+                                        contentDescription = stringResource(R.string.slideshow_remove),
+                                        tint = Color.White,
+                                        modifier = Modifier.size(18.dp),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onAdd, enabled = slides.size < MAX_SLIDES) { Text(stringResource(R.string.slideshow_add)) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) } },
     )
 }

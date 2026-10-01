@@ -1,0 +1,3 @@
+• Slideshow: add more photos and your title picture gently switches between them.
+• Backup as a file: save all your data and photos and restore them, e.g. on a new phone. Works without internet. You can also restore a backup right at setup.
+• Updated libraries.

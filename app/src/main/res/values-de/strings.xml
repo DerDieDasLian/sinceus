@@ -217,4 +217,27 @@
     <string name="live_show">Live-Zähler anzeigen</string>
     <string name="live_show_summary">Zählt eure gemeinsame Zeit sekundengenau</string>
     <string name="moments_show_summary">Zeitleiste für wichtige Momente. Beim Ausblenden bleiben gespeicherte Momente erhalten.</string>
+    <string name="slideshow">Diashow</string>
+    <string name="slideshow_off">Aus: nur euer Hauptfoto</string>
+    <plurals name="slideshow_count">
+        <item quantity="one">%s weiteres Foto</item>
+        <item quantity="other">%s weitere Fotos</item>
+    </plurals>
+    <string name="slideshow_hint">Euer Titelbild wechselt alle paar Sekunden zwischen eurem Hauptfoto und diesen Fotos.</string>
+    <string name="slideshow_empty">Noch keine Fotos. Fügt ein paar hinzu, um die Diashow zu starten.</string>
+    <string name="slideshow_add">Fotos hinzufügen</string>
+    <string name="slideshow_remove">Foto entfernen</string>
+    <string name="section_backup">Sicherung</string>
+    <string name="backup_export">Sicherung speichern</string>
+    <string name="backup_export_summary">Alle Daten und Fotos in einer Datei, z. B. für ein neues Handy</string>
+    <string name="backup_import">Sicherung wiederherstellen</string>
+    <string name="backup_import_summary">Eine gespeicherte Sicherungsdatei laden</string>
+    <string name="backup_import_question">Sicherung wiederherstellen?</string>
+    <string name="backup_import_text">Alle aktuellen Daten auf diesem Gerät werden durch die Daten aus der Sicherung ersetzt.</string>
+    <string name="backup_import_confirm">Wiederherstellen</string>
+    <string name="backup_restore_onboarding">Sicherung laden</string>
+    <string name="backup_saved">Sicherung gespeichert</string>
+    <string name="backup_save_failed">Sicherung konnte nicht gespeichert werden</string>
+    <string name="backup_restored">Sicherung wiederhergestellt</string>
+    <string name="backup_restore_failed">Diese Datei ist keine gültige Sicherung von Since Us</string>
 </resources>
