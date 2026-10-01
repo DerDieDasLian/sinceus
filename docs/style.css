@@ -129,6 +129,7 @@ footer .links { display: flex; flex-wrap: wrap; gap: 18px; }
 /* Für jede Liebe: das ganze Jahr ein dezenter Regenbogenstreifen */
 :root { --rainbow: linear-gradient(90deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787); }
 section.love-all { padding-top: 0; }
+#features { padding-bottom: 48px; }
 .love-card { position: relative; overflow: hidden; max-width: 760px; margin: 0 auto; text-align: center; padding: 46px 32px 40px; }
 .love-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 6px; background: var(--rainbow); }
 .love-card h2 { font: 600 clamp(1.6rem, 3.5vw, 2.1rem)/1.2 var(--serif); margin: 0 0 12px; }
