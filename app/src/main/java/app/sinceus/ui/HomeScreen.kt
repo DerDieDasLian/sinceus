@@ -38,6 +38,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cake
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Celebration
 import androidx.compose.material.icons.rounded.Favorite
@@ -69,6 +70,7 @@ import app.sinceus.data.LoveMath
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.Milestone
 import app.sinceus.data.MilestoneKind
+import app.sinceus.data.MomentMath
 import app.sinceus.data.formatNumber
 import app.sinceus.data.Texts
 import app.sinceus.share.ShareCard
@@ -188,8 +190,12 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
     val start = settings.startDate
     val together = LoveMath.together(start, today)
     val future = start.isAfter(today)
-    val todays = LoveMath.milestonesOn(start, today)
-    val upcoming = LoveMath.upcoming(start, today, 4)
+    // Jahrestage der Momente erscheinen mit, solange die Momente nicht ausgeblendet sind
+    val moments = if (settings.showMoments) settings.moments else emptyList()
+    val todays = LoveMath.milestonesOn(start, today) + MomentMath.milestonesOn(moments, today)
+    val upcoming = (LoveMath.upcoming(start, today, 4) + MomentMath.upcoming(moments, today, 4))
+        .sortedBy { it.date }
+        .take(4)
     val context = LocalContext.current
     val share = { ShareCard.share(context, settings, today, ShareCard.defaultText(context, settings, today)) }
 
@@ -461,4 +467,5 @@ private fun MilestoneKind.icon(): ImageVector = when (this) {
     MilestoneKind.MONTHS -> Icons.Rounded.Favorite
     MilestoneKind.DAYS -> Icons.Rounded.Star
     MilestoneKind.WEEKS -> Icons.Rounded.CalendarMonth
+    MilestoneKind.MOMENT -> Icons.Rounded.AutoAwesome
 }

@@ -42,6 +42,10 @@ class WidgetRenderTest {
     fun days() = render(LoveWidget(), "days_2x2", DpSize(160.dp, 150.dp))
 
     @Test
+    @Config(qualifiers = "en-night-xxhdpi")
+    fun daysEnglish() = render(LoveWidget(), "days_2x2_en", DpSize(160.dp, 150.dp))
+
+    @Test
     fun card() = render(CardWidget(), "card_3x2", DpSize(250.dp, 150.dp))
 
     @Test
@@ -81,7 +85,8 @@ class WidgetRenderTest {
         parent.layout(0, 0, w, h)
         val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        canvas.drawColor(0xFF6E4A4E.toInt())
+        // Durchsichtiger Hintergrund, damit die runden Ecken auch auf der Website und als Vorschau sauber sind
+        canvas.drawColor(android.graphics.Color.TRANSPARENT)
         parent.draw(canvas)
         val dir = File("build/screenshots/widgets").apply { mkdirs() }
         File(dir, "$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }

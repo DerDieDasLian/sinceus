@@ -204,6 +204,7 @@
     <string name="moment_delete_text">The moment and its photo will be removed from this device.</string>
     <string name="delete">Delete</string>
     <string name="moment_next_anniversary">Next anniversary: %1$s</string>
+    <string name="moment_anniversary_title">%1$s (%2$s)</string>
     <string name="notify_moment">Today %1$s ago: %2$s</string>
     <plurals name="moments_count">
         <item quantity="one">%s moment</item>

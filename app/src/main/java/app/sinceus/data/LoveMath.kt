@@ -12,9 +12,10 @@ data class Together(
     val totalDays: Long,
 )
 
-enum class MilestoneKind { YEARS, MONTHS, DAYS, WEEKS }
+enum class MilestoneKind { YEARS, MONTHS, DAYS, WEEKS, MOMENT }
 
-data class Milestone(val kind: MilestoneKind, val value: Long, val date: LocalDate)
+/** Bei [MilestoneKind.MOMENT] ist [value] die Anzahl Jahre und [title] der Name des Moments. */
+data class Milestone(val kind: MilestoneKind, val value: Long, val date: LocalDate, val title: String? = null)
 
 object LoveMath {
 

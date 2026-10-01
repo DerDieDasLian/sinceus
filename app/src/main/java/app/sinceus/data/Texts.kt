@@ -39,6 +39,11 @@ object Texts {
         MilestoneKind.MONTHS -> count(context, R.plurals.months, m.value)
         MilestoneKind.DAYS -> count(context, R.plurals.days, m.value)
         MilestoneKind.WEEKS -> count(context, R.plurals.weeks, m.value)
+        MilestoneKind.MOMENT -> context.getString(
+            R.string.moment_anniversary_title,
+            m.title.orEmpty(),
+            count(context, R.plurals.years, m.value),
+        )
     }
 
     fun milestoneMessage(context: Context, m: Milestone): String = when (m.kind) {
@@ -48,6 +53,11 @@ object Texts {
             count(context, R.plurals.years_dative, m.value),
         )
         MilestoneKind.MONTHS -> context.getString(R.string.msg_exact, milestoneTitle(context, m))
+        MilestoneKind.MOMENT -> context.getString(
+            R.string.notify_moment,
+            count(context, R.plurals.years_dative, m.value),
+            m.title.orEmpty(),
+        )
         else -> context.getString(R.string.msg_together, milestoneTitle(context, m))
     }
 

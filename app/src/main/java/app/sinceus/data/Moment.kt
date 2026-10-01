@@ -74,6 +74,20 @@ object MomentMath {
         return next
     }
 
+    /** Jahrestage der Momente mit Erinnerung, die genau auf [day] fallen. */
+    fun milestonesOn(moments: List<Moment>, day: LocalDate): List<Milestone> =
+        remindersOn(moments, day).map { (m, years) -> Milestone(MilestoneKind.MOMENT, years.toLong(), day, m.title) }
+
+    /** Die nächsten Jahrestage der Momente mit Erinnerung nach [today] (exklusiv), nach Datum sortiert. */
+    fun upcoming(moments: List<Moment>, today: LocalDate, count: Int = 4): List<Milestone> =
+        moments.filter { it.yearlyReminder }
+            .map { m ->
+                val next = nextAnniversary(m, today.plusDays(1))
+                Milestone(MilestoneKind.MOMENT, (next.year - m.date.year).toLong(), next, m.title)
+            }
+            .sortedBy { it.date }
+            .take(count)
+
     /** Tage zwischen [m] und [today]: positiv = vergangen, negativ = in der Zukunft. */
     fun daysSince(m: Moment, today: LocalDate): Long = ChronoUnit.DAYS.between(m.date, today)
 }

@@ -203,6 +203,7 @@
     <string name="moment_delete_text">Der Moment und sein Foto werden von diesem Gerät entfernt.</string>
     <string name="delete">Löschen</string>
     <string name="moment_next_anniversary">Nächster Jahrestag: %1$s</string>
+    <string name="moment_anniversary_title">%1$s (%2$s)</string>
     <string name="notify_moment">Heute vor %1$s: %2$s</string>
     <plurals name="moments_count">
         <item quantity="one">%s Moment</item>

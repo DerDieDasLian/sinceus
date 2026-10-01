@@ -54,4 +54,24 @@ class MomentTest {
         assertEquals(LocalDate.of(2025, 5, 10), MomentMath.nextAnniversary(firstDate, LocalDate.of(2024, 6, 1)))
         assertTrue(MomentMath.nextAnniversary(leap, LocalDate.of(2025, 3, 1)) == LocalDate.of(2026, 2, 28))
     }
+
+    @Test
+    fun upcomingAnniversariesForOverview() {
+        val list = listOf(firstDate, leap, quiet)
+        val next = MomentMath.upcoming(list, LocalDate.of(2026, 1, 1))
+        // Ohne Erinnerung taucht nicht auf, Schaltjahr-Moment feiert am 28.02.
+        assertEquals(
+            listOf(
+                Milestone(MilestoneKind.MOMENT, 2, LocalDate.of(2026, 2, 28), "Schaltjahr"),
+                Milestone(MilestoneKind.MOMENT, 2, LocalDate.of(2026, 5, 10), "Erstes Date"),
+            ),
+            next,
+        )
+        // Heute zählt nicht als "nächster" Jahrestag, sondern steht im Heute-Hinweis
+        assertEquals(LocalDate.of(2027, 5, 10), MomentMath.upcoming(list, LocalDate.of(2026, 5, 10)).last().date)
+        assertEquals(
+            listOf(Milestone(MilestoneKind.MOMENT, 2, LocalDate.of(2026, 5, 10), "Erstes Date")),
+            MomentMath.milestonesOn(list, LocalDate.of(2026, 5, 10)),
+        )
+    }
 }

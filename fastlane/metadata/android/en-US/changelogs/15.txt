@@ -1,0 +1,2 @@
+• The overview now also shows the anniversaries of your moments under upcoming special days.
+• The love card now has a preview image in the widget picker.
