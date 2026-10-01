@@ -31,8 +31,7 @@
     <string name="delete_all">Alle Daten löschen</string>
     <string name="delete_all_summary">Setzt die App komplett zurück</string>
     <string name="delete_all_question">Alle Daten löschen?</string>
-    <string name="delete_all_text">Namen, Datum, Foto und alle Einstellungen werden von diesem Gerät gelöscht. Danach startet die Einrichtung neu. Das kann nicht rückgängig gemacht werden.</string>
-    <string name="delete_all_confirm">Alles löschen</string>
+    <string name="delete_all_text">Namen, Daten, Fotos, Momente und alle Einstellungen werden von diesem Gerät gelöscht. Danach startet die Einrichtung neu. Das kann nicht rückgängig gemacht werden.</string>
     <string name="ok">Okay</string>
     <string name="your_names">Eure Namen</string>
     <string name="name_1">Name 1</string>
@@ -61,7 +60,7 @@
     <string name="add_time_optional">Uhrzeit hinzufügen (optional)</string>
     <string name="time_label">Uhrzeit: %1$s</string>
     <string name="ob_photo_title">Euer Foto</string>
-    <string name="ob_photo_sub">Wählt ein Bild von euch beiden. Den Ausschnitt könnt ihr danach anpassen.</string>
+    <string name="ob_photo_sub">Wählt ein gemeinsames Bild von euch. Den Ausschnitt könnt ihr danach anpassen.</string>
     <string name="pick_photo">Foto auswählen</string>
     <string name="presets_short">Motive</string>
     <string name="adjust">Anpassen</string>
@@ -247,8 +246,19 @@
     <string name="photo_own">Euer eigenes Foto</string>
     <string name="notify_off">Aus</string>
     <string name="notify_daily_at">An besonderen Tagen um %1$s</string>
-    <string name="all_couples">Für alle Paare</string>
-    <string name="all_couples_text">Since Us ist für alle Paare da, egal wer ihr seid und wen ihr liebt.</string>
+    <string name="all_couples">Für jede Liebe</string>
+    <string name="all_couples_text">Since Us ist für alle da, die sich lieben, egal wer ihr seid, wen ihr liebt und wie viele ihr seid.</string>
     <string name="pride_title">Happy Pride Month!</string>
     <string name="credit_heart">Liebe</string>
+    <string name="reset_summary">Einrichtung wiederholen oder alles löschen</string>
+    <string name="reset_intro">Vorsicht: Hier werden eure Daten verändert oder gelöscht. Speichert vorher eine Sicherung, wenn ihr etwas behalten wollt.</string>
+    <string name="reset_backup_summary">Empfohlen, bevor ihr neu anfangt</string>
+    <string name="restart_setup_summary">Namen, Datum und Foto noch einmal durchgehen. Eure Daten bleiben erhalten.</string>
+    <string name="restart_setup_question">Einrichtung erneut starten?</string>
+    <string name="restart_setup_text">Ihr geht die Einrichtung noch einmal durch. Namen, Daten, Fotos und Momente bleiben erhalten, ihr könnt sie unterwegs ändern.</string>
+    <string name="restart_setup_confirm">Einrichtung starten</string>
+    <string name="delete_all_backup_first">Erst Sicherung speichern</string>
+    <string name="delete_all_hold">Gedrückt halten zum Löschen</string>
+    <string name="language">Sprache</string>
+    <string name="language_system">Wie am Handy</string>
 </resources>

@@ -5,4 +5,5 @@
     <include domain="file" path="photos/" />
     <include domain="file" path="moments/" />
     <include domain="file" path="slides/" />
+    <include domain="sharedpref" path="language.xml" />
 </full-backup-content>

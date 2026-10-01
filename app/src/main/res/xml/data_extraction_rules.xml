@@ -6,11 +6,13 @@
         <include domain="file" path="photos/" />
         <include domain="file" path="moments/" />
         <include domain="file" path="slides/" />
+        <include domain="sharedpref" path="language.xml" />
     </cloud-backup>
     <device-transfer>
         <include domain="file" path="datastore/" />
         <include domain="file" path="photos/" />
         <include domain="file" path="moments/" />
         <include domain="file" path="slides/" />
+        <include domain="sharedpref" path="language.xml" />
     </device-transfer>
 </data-extraction-rules>

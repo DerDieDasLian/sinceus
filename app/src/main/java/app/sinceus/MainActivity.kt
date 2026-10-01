@@ -55,6 +55,10 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private val vm: LoveViewModel by viewModels()
 
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(AppLanguage.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -250,6 +254,8 @@ class MainActivity : ComponentActivity() {
                                 onRemoveSlide = vm::removeSlide,
                                 onExportBackup = ::saveBackup,
                                 onImportBackup = ::loadBackup,
+                                language = remember { AppLanguage.current(this@MainActivity) },
+                                onLanguage = { AppLanguage.set(this@MainActivity, it) },
                             )
                             else -> HomeScreen(
                                 s,

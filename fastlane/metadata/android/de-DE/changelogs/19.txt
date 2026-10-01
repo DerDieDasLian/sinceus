@@ -1,0 +1,3 @@
+• Die Sprache lässt sich jetzt direkt in den Einstellungen wählen: wie am Handy, Deutsch oder English.
+• "Für jede Liebe" steht jetzt direkt in der Übersicht der Einstellungen.
+• "Neu anfangen" hat eine eigene Seite. Die Einrichtung startet erst nach einer Rückfrage, und zum Löschen aller Daten muss der Knopf drei Sekunden gedrückt werden. Vorher wird eine Sicherung angeboten.

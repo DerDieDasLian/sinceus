@@ -108,6 +108,26 @@ import androidx.compose.material.icons.rounded.Slideshow
 import app.sinceus.data.MAX_SLIDES
 import coil3.compose.AsyncImage
 import java.io.File
+import app.sinceus.AppLanguage
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -141,6 +161,9 @@ fun SettingsScreen(
     onRemoveSlide: (String) -> Unit = {},
     onExportBackup: () -> Unit = {},
     onImportBackup: () -> Unit = {},
+    /** Gewählte App-Sprache, "" = wie das Handy */
+    language: String = "",
+    onLanguage: (String) -> Unit = {},
     /** Geöffnete Unterseite beim Start (für Tests), null = Übersicht */
     initialPage: SettingsPage? = null,
 ) {
@@ -325,14 +348,7 @@ fun SettingsScreen(
                             }
                         }
                         Section(if (BuildConfig.UPDATE_CHECK) stringResource(R.string.settings_about) else null) {
-                            ListItem(
-                            headlineContent = { Text(stringResource(R.string.all_couples)) },
-                            supportingContent = { Text(stringResource(R.string.all_couples_text)) },
-                            leadingContent = { Icon(Icons.Rounded.Favorite, null, Modifier.rainbow()) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        )
-                        Divider()
-                        Row(Icons.Rounded.Shield, stringResource(R.string.privacy), null) { dialog = "privacy" }
+                            Row(Icons.Rounded.Shield, stringResource(R.string.privacy), null) { dialog = "privacy" }
                             Divider()
                             Row(Icons.Rounded.Description, stringResource(R.string.licenses), null, onClick = onOpenLicenses)
                             Divider()
@@ -344,20 +360,49 @@ fun SettingsScreen(
                         }
                     }
                 }
-                if (page == null) {
-                    Section(stringResource(R.string.section_reset)) {
-                        Row(Icons.Rounded.AutoAwesome, stringResource(R.string.restart_setup), null, onClick = onRestartOnboarding)
-                        Divider()
-                        ListItem(
-                            headlineContent = { Text(stringResource(R.string.delete_all), color = MaterialTheme.colorScheme.error) },
-                            supportingContent = { Text(stringResource(R.string.delete_all_summary)) },
-                            leadingContent = { Icon(Icons.Rounded.DeleteForever, null, tint = MaterialTheme.colorScheme.error) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { dialog = "reset" },
+                    SettingsPage.Reset -> {
+                        Text(
+                            stringResource(R.string.reset_intro),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         )
+                        Section(null) {
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.backup_export)) },
+                                supportingContent = { Text(stringResource(R.string.reset_backup_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.Backup, null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable(onClick = onExportBackup),
+                            )
+                        }
+                        Section(null) {
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.restart_setup)) },
+                                supportingContent = { Text(stringResource(R.string.restart_setup_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.AutoAwesome, null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { dialog = "restart" },
+                            )
+                            Divider()
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.delete_all), color = MaterialTheme.colorScheme.error) },
+                                supportingContent = { Text(stringResource(R.string.delete_all_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.DeleteForever, null, tint = MaterialTheme.colorScheme.error) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { dialog = "reset" },
+                            )
+                        }
                     }
                 }
-                if (page == null) Credit()
+                if (page == null) {
+                    Section(null) {
+                        Row(Icons.Rounded.Language, stringResource(R.string.language), languageLabel(language)) { dialog = "language" }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    RainbowCard(stringResource(R.string.all_couples), stringResource(R.string.all_couples_text))
+                    Credit()
+                }
                 Spacer(Modifier.height(24.dp))
             }
         }
@@ -392,9 +437,26 @@ fun SettingsScreen(
             onStartTime(it)
             dialog = null
         }
-        "reset" -> ResetDialog(onDismiss = { dialog = null }) {
+        "reset" -> ResetDialog(onDismiss = { dialog = null }, onBackup = onExportBackup) {
             dialog = null
             onResetAll()
+        }
+        "restart" -> AlertDialog(
+            onDismissRequest = { dialog = null },
+            icon = { Icon(Icons.Rounded.AutoAwesome, null) },
+            title = { Text(stringResource(R.string.restart_setup_question)) },
+            text = { Text(stringResource(R.string.restart_setup_text)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    dialog = null
+                    onRestartOnboarding()
+                }) { Text(stringResource(R.string.restart_setup_confirm)) }
+            },
+            dismissButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.cancel)) } },
+        )
+        "language" -> LanguageDialog(language, onDismiss = { dialog = null }) {
+            dialog = null
+            onLanguage(it)
         }
         "presets" -> PresetDialog(settings.presetIndex, onDismiss = { dialog = null }) {
             onPreset(it)
@@ -465,6 +527,7 @@ enum class SettingsPage(@androidx.annotation.StringRes val title: Int, val icon:
     Home(R.string.settings_home, Icons.Rounded.Dashboard),
     Backup(R.string.section_backup, Icons.Rounded.Backup),
     About(R.string.settings_about, Icons.Rounded.Info),
+    Reset(R.string.section_reset, Icons.Rounded.RestartAlt),
 }
 
 /** Startseite der Einstellungen: ein Eintrag pro Bereich mit kurzer Zusammenfassung */
@@ -498,6 +561,7 @@ private fun Overview(settings: LoveSettings, notificationsAllowed: Boolean, onOp
         },
         SettingsPage.Home to stringResource(R.string.settings_home_summary),
         SettingsPage.Backup to stringResource(R.string.settings_backup_summary),
+        SettingsPage.Reset to stringResource(R.string.reset_summary),
         SettingsPage.About to if (updateReady) {
             stringResource(R.string.update_available, settings.updateVersion.orEmpty())
         } else {
@@ -642,23 +706,120 @@ internal fun TimeDialog(
     )
 }
 
+/** Alles löschen: erst eine Sicherung anbieten, dann nur durch langes Drücken bestätigen */
 @Composable
-internal fun ResetDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+internal fun ResetDialog(onDismiss: () -> Unit, onBackup: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Rounded.DeleteForever, null) },
+        icon = { Icon(Icons.Rounded.DeleteForever, null, tint = MaterialTheme.colorScheme.error) },
         title = { Text(stringResource(R.string.delete_all_question)) },
         text = {
-            Text(stringResource(R.string.delete_all_text))
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text(stringResource(R.string.delete_all_text))
+                OutlinedButton(onClick = onBackup, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Rounded.Backup, null, Modifier.size(18.dp))
+                    Spacer(Modifier.size(8.dp))
+                    Text(stringResource(R.string.delete_all_backup_first))
+                }
+                HoldButton(stringResource(R.string.delete_all_hold), onConfirm)
+            }
         },
-        confirmButton = {
-            TextButton(
-                onClick = onConfirm,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            ) { Text(stringResource(R.string.delete_all_confirm)) }
-        },
+        confirmButton = {},
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
+}
+
+/** Wie lange der Löschen-Knopf gedrückt gehalten werden muss */
+internal const val HOLD_MS = 3000
+
+/** Knopf, der sich beim Gedrückthalten füllt und erst nach [HOLD_MS] auslöst */
+@Composable
+internal fun HoldButton(text: String, onConfirm: () -> Unit) {
+    val progress = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+    val haptic = LocalHapticFeedback.current
+    val confirm by rememberUpdatedState(onConfirm)
+    val shape = RoundedCornerShape(50)
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .clip(shape)
+            .background(MaterialTheme.colorScheme.errorContainer)
+            .semantics {
+                role = Role.Button
+                // Mit TalkBack ist ein Doppeltipp schon Bestätigung genug
+                onClick(label = text) {
+                    confirm()
+                    true
+                }
+            }
+            .pointerInput(Unit) {
+                detectTapGestures(onPress = {
+                    val hold = scope.launch {
+                        progress.animateTo(1f, tween(HOLD_MS, easing = LinearEasing))
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        confirm()
+                    }
+                    tryAwaitRelease()
+                    if (progress.value < 1f) {
+                        hold.cancel()
+                        scope.launch { progress.animateTo(0f, tween(250)) }
+                    }
+                })
+            }
+            .testTag("hold_button"),
+    ) {
+        Box(
+            Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(progress.value)
+                .background(MaterialTheme.colorScheme.error),
+        )
+        Text(
+            text,
+            color = if (progress.value > 0.5f) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onErrorContainer,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.align(Alignment.Center),
+        )
+    }
+}
+
+/** Auswahl der App-Sprache */
+@Composable
+private fun LanguageDialog(current: String, onDismiss: () -> Unit, onPick: (String) -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(Icons.Rounded.Language, null) },
+        title = { Text(stringResource(R.string.language)) },
+        text = {
+            Column {
+                AppLanguage.OPTIONS.forEach { tag ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { onPick(tag) }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(selected = tag == current, onClick = { onPick(tag) })
+                        Text(languageLabel(tag))
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+    )
+}
+
+/** Sprachen stehen immer in ihrer eigenen Sprache da, damit man sie auch in der falschen Sprache findet */
+@Composable
+private fun languageLabel(tag: String) = when (tag) {
+    "de" -> "Deutsch"
+    "en" -> "English"
+    else -> stringResource(R.string.language_system)
 }
 
 @Composable

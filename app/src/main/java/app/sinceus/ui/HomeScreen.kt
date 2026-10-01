@@ -232,7 +232,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate) {
 
             if (todays.isNotEmpty()) TodayBanner(todays)
 
-            if (LocalPrideMonth.current) PrideBanner()
+            if (LocalPrideMonth.current) RainbowCard(stringResource(R.string.pride_title), stringResource(R.string.all_couples_text))
 
             if (!future) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -308,9 +308,9 @@ fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp) {
     )
 }
 
-/** Gruß im Pride Month: Since Us ist für alle Paare da */
+/** Karte mit Regenbogenstreifen: Pride-Gruß auf der Startseite, "Für jede Liebe" in den Einstellungen */
 @Composable
-private fun PrideBanner() {
+internal fun RainbowCard(title: String, text: String) {
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
@@ -324,12 +324,12 @@ private fun PrideBanner() {
         )
         Column(Modifier.padding(20.dp)) {
             Text(
-                stringResource(R.string.pride_title),
+                title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                stringResource(R.string.all_couples_text),
+                text,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp),

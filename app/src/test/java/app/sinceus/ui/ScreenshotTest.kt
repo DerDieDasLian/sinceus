@@ -69,6 +69,14 @@ class ScreenshotTest {
     }
 
     @Test
+    fun settingsResetGerman() = shot("settings_reset", lang = "de") {
+        SettingsScreen(
+            settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {},
+            initialPage = SettingsPage.Reset,
+        )
+    }
+
+    @Test
     fun homePrideGerman() = shot("home_pride", lang = "de") {
         androidx.compose.runtime.CompositionLocalProvider(LocalPrideMonth provides true) {
             HomeScreen(settings, today, {}, {})

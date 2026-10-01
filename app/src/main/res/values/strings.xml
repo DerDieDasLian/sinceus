@@ -32,8 +32,7 @@
     <string name="delete_all">Delete all data</string>
     <string name="delete_all_summary">Completely resets the app</string>
     <string name="delete_all_question">Delete all data?</string>
-    <string name="delete_all_text">Names, date, photo and all settings will be deleted from this device and setup starts again. This cannot be undone.</string>
-    <string name="delete_all_confirm">Delete everything</string>
+    <string name="delete_all_text">Names, dates, photos, moments and all settings will be deleted from this device and setup starts again. This cannot be undone.</string>
     <string name="ok">OK</string>
     <string name="your_names">Your names</string>
     <string name="name_1">Name 1</string>
@@ -62,7 +61,7 @@
     <string name="add_time_optional">Add a time (optional)</string>
     <string name="time_label">Time: %1$s</string>
     <string name="ob_photo_title">Your photo</string>
-    <string name="ob_photo_sub">Choose a picture of the two of you. You can adjust the framing afterwards.</string>
+    <string name="ob_photo_sub">Choose a picture of you together. You can adjust the framing afterwards.</string>
     <string name="pick_photo">Choose photo</string>
     <string name="presets_short">Backgrounds</string>
     <string name="adjust">Adjust</string>
@@ -248,10 +247,21 @@
     <string name="photo_own">Your own photo</string>
     <string name="notify_off">Off</string>
     <string name="notify_daily_at">On special days at %1$s</string>
-    <string name="all_couples">For every couple</string>
-    <string name="all_couples_text">Since Us is for every couple, no matter who you are or whom you love.</string>
+    <string name="all_couples">For every kind of love</string>
+    <string name="all_couples_text">Since Us is for everyone in love, no matter who you are, whom you love or how many of you there are.</string>
     <string name="pride_title">Happy Pride Month!</string>
     <string name="credit_before" translatable="false">Built with</string>
     <string name="credit_heart">love</string>
     <string name="credit_after" translatable="false">by Lian</string>
+    <string name="reset_summary">Run setup again or delete everything</string>
+    <string name="reset_intro">Careful: these steps change or delete your data. Save a backup first if you want to keep anything.</string>
+    <string name="reset_backup_summary">Recommended before you start over</string>
+    <string name="restart_setup_summary">Go through names, date and photo again. Your data stays.</string>
+    <string name="restart_setup_question">Run setup again?</string>
+    <string name="restart_setup_text">You will go through the setup again. Your names, dates, photos and moments stay as they are, you can change them along the way.</string>
+    <string name="restart_setup_confirm">Start setup</string>
+    <string name="delete_all_backup_first">Save a backup first</string>
+    <string name="delete_all_hold">Hold to delete</string>
+    <string name="language">Language</string>
+    <string name="language_system">Same as phone</string>
 </resources>

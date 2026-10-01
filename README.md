@@ -18,9 +18,9 @@ A privacy-friendly Android app for couples: counts how long you have been togeth
 - Two home screen widgets: a love card with your names and days together, and a compact counter in Material You colors
 - Guided setup, optional start time, one-tap "delete all data"
 - Backup as a file (all data and photos) to move to a new phone, without internet
-- Light and dark mode, English and German (per-app language supported)
+- Light and dark mode, English and German, language can be changed right in the app
 - No account, no ads, no tracking, all data stays on the device
-- For every couple, no matter who you are or whom you love, with a little rainbow decoration in Pride Month (June)
+- For every kind of love, no matter who you are, whom you love or how many of you there are, with a little rainbow decoration in Pride Month (June)
 
 ## Third-party libraries
 
