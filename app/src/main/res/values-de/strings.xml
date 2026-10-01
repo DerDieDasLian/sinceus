@@ -8,7 +8,6 @@
     <string name="channel_description">Monatstage, Jahrestage und runde Tage</string>
     <string name="settings">Einstellungen</string>
     <string name="back">Zurück</string>
-    <string name="section_your_data">Eure Daten</string>
     <string name="names">Namen</string>
     <string name="together_since_date">Zusammen seit dem</string>
     <string name="start_time_optional">Uhrzeit (optional)</string>
@@ -25,7 +24,6 @@
     <string name="notify_time">Uhrzeit</string>
     <string name="time_value">%1$s Uhr</string>
     <string name="send_test">Testmitteilung senden</string>
-    <string name="section_misc">Verschiedenes</string>
     <string name="add_widget">Widget zum Startbildschirm hinzufügen</string>
     <string name="restart_setup">Einrichtung erneut starten</string>
     <string name="privacy">Datenschutz</string>
@@ -240,4 +238,13 @@
     <string name="backup_save_failed">Sicherung konnte nicht gespeichert werden</string>
     <string name="backup_restored">Sicherung wiederhergestellt</string>
     <string name="backup_restore_failed">Diese Datei ist keine gültige Sicherung von Since Us</string>
+    <string name="settings_couple">Ihr zwei</string>
+    <string name="settings_home">Startseite</string>
+    <string name="settings_home_summary">Momente, Live-Zähler und Widget</string>
+    <string name="settings_backup_summary">Alle Daten sichern und wiederherstellen</string>
+    <string name="settings_about">Über die App</string>
+    <string name="section_reset">Neu anfangen</string>
+    <string name="photo_own">Euer eigenes Foto</string>
+    <string name="notify_off">Aus</string>
+    <string name="notify_daily_at">An besonderen Tagen um %1$s</string>
 </resources>

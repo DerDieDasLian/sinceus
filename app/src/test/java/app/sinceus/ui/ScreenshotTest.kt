@@ -53,6 +53,22 @@ class ScreenshotTest {
     }
 
     @Test
+    fun settingsPhotoGerman() = shot("settings_photo", lang = "de") {
+        SettingsScreen(
+            settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {},
+            initialPage = SettingsPage.Photo,
+        )
+    }
+
+    @Test
+    fun settingsAbout() = shot("settings_about") {
+        SettingsScreen(
+            settings, true, {}, { _, _ -> }, {}, {}, {}, {}, {}, { _, _ -> }, {}, {}, {}, {}, {}, {},
+            initialPage = SettingsPage.About,
+        )
+    }
+
+    @Test
     fun liveFocusedGerman() = shot(
         "live_focused",
         lang = "de",

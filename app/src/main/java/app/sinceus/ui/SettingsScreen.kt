@@ -88,6 +88,12 @@ import androidx.compose.material.icons.rounded.Update
 import app.sinceus.data.Texts
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.activity.compose.BackHandler
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.Dashboard
+import androidx.compose.runtime.key
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.background
@@ -134,8 +140,12 @@ fun SettingsScreen(
     onRemoveSlide: (String) -> Unit = {},
     onExportBackup: () -> Unit = {},
     onImportBackup: () -> Unit = {},
+    /** Geöffnete Unterseite beim Start (für Tests), null = Übersicht */
+    initialPage: SettingsPage? = null,
 ) {
     var dialog by remember { mutableStateOf<String?>(null) }
+    var page by rememberSaveable { mutableStateOf(initialPage) }
+    BackHandler(enabled = page != null) { page = null }
     val context = LocalContext.current
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -143,9 +153,9 @@ fun SettingsScreen(
         modifier = Modifier.nestedScroll(scroll.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
-                title = { Text(stringResource(R.string.settings)) },
+                title = { Text(stringResource(page?.title ?: R.string.settings)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = { if (page != null) page = null else onBack() }) {
                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
@@ -153,182 +163,194 @@ fun SettingsScreen(
             )
         },
     ) { padding ->
-        Column(
-            Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(padding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Section(stringResource(R.string.section_your_data)) {
-                Row(Icons.Rounded.People, stringResource(R.string.names), settings.names) { dialog = "names" }
-                Divider()
-                Row(
-                    Icons.Rounded.CalendarMonth,
-                    stringResource(R.string.together_since_date),
-                    Texts.mediumDate(settings.startDate),
-                ) {
-                    dialog = "date"
-                }
-                Divider()
-                Row(
-                    Icons.Rounded.Schedule,
-                    stringResource(R.string.start_time_optional),
-                    settings.startTime?.let { Texts.time(context, it) } ?: stringResource(R.string.not_set),
-                ) { dialog = "startTime" }
-            }
-            Section(stringResource(R.string.section_photo)) {
-                Row(Icons.Rounded.AddPhotoAlternate, stringResource(R.string.pick_own_photo), null, onClick = onPickPhoto)
-                Divider()
-                if (settings.photoPath != null) {
-                    Row(Icons.Rounded.Crop, stringResource(R.string.adjust_crop), null, onClick = onAdjustPhoto)
-                    Divider()
-                }
-                Row(Icons.Rounded.Collections, stringResource(R.string.pick_preset), null) { dialog = "presets" }
-                Divider()
-                Row(
-                    Icons.Rounded.Slideshow,
-                    stringResource(R.string.slideshow),
-                    if (settings.slides.isEmpty()) {
-                        stringResource(R.string.slideshow_off)
-                    } else {
-                        pluralStringResource(R.plurals.slideshow_count, settings.slides.size, settings.slides.size.toString())
-                    },
-                ) { dialog = "slides" }
-                Divider()
-                Row(Icons.Rounded.RestartAlt, stringResource(R.string.reset_photo), null, onClick = onResetPhoto)
-            }
-            Section(stringResource(R.string.section_notifications)) {
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.notify_special)) },
-                    supportingContent = {
-                        Text(
-                            if (settings.notificationsEnabled && !notificationsAllowed) {
-                                stringResource(R.string.notify_blocked)
+        // Jede Seite startet oben
+        key(page) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(padding)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                when (page) {
+                    null -> Overview(settings, notificationsAllowed, onOpen = { page = it })
+                    SettingsPage.Couple -> Section(null) {
+                        Row(Icons.Rounded.People, stringResource(R.string.names), settings.names) { dialog = "names" }
+                        Divider()
+                        Row(
+                            Icons.Rounded.CalendarMonth,
+                            stringResource(R.string.together_since_date),
+                            Texts.mediumDate(settings.startDate),
+                        ) {
+                            dialog = "date"
+                        }
+                        Divider()
+                        Row(
+                            Icons.Rounded.Schedule,
+                            stringResource(R.string.start_time_optional),
+                            settings.startTime?.let { Texts.time(context, it) } ?: stringResource(R.string.not_set),
+                        ) { dialog = "startTime" }
+                    }
+                    SettingsPage.Photo -> Section(null) {
+                        Row(Icons.Rounded.AddPhotoAlternate, stringResource(R.string.pick_own_photo), null, onClick = onPickPhoto)
+                        Divider()
+                        if (settings.photoPath != null) {
+                            Row(Icons.Rounded.Crop, stringResource(R.string.adjust_crop), null, onClick = onAdjustPhoto)
+                            Divider()
+                        }
+                        Row(Icons.Rounded.Collections, stringResource(R.string.pick_preset), null) { dialog = "presets" }
+                        Divider()
+                        Row(
+                            Icons.Rounded.Slideshow,
+                            stringResource(R.string.slideshow),
+                            if (settings.slides.isEmpty()) {
+                                stringResource(R.string.slideshow_off)
                             } else {
-                                stringResource(R.string.notify_summary)
+                                pluralStringResource(R.plurals.slideshow_count, settings.slides.size, settings.slides.size.toString())
                             },
-                        )
-                    },
-                    leadingContent = { Icon(Icons.Rounded.NotificationsActive, null) },
-                    trailingContent = {
-                        Switch(checked = settings.notificationsEnabled, onCheckedChange = onNotifications)
-                    },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { onNotifications(!settings.notificationsEnabled) },
-                )
-                if (settings.notificationsEnabled) {
-                    Divider()
-                    Row(
-                        Icons.Rounded.Schedule,
-                        stringResource(R.string.notify_time),
-                        Texts.time(context, LocalTime.of(settings.notifyHour, settings.notifyMinute)),
-                    ) { dialog = "time" }
-                    Divider()
-                    Row(Icons.Rounded.Send, stringResource(R.string.send_test), null, onClick = onTestNotification)
-                }
-            }
-            if (BuildConfig.UPDATE_CHECK) {
-                Section(stringResource(R.string.section_updates)) {
-                    // Nach einem Update kann noch die alte Meldung gespeichert sein
-                    if (settings.updateVersion != null &&
-                        app.sinceus.update.UpdateChecker.isNewer(settings.updateVersion, BuildConfig.VERSION_NAME)
-                    ) {
+                        ) { dialog = "slides" }
+                        Divider()
+                        Row(Icons.Rounded.RestartAlt, stringResource(R.string.reset_photo), null, onClick = onResetPhoto)
+                    }
+                    SettingsPage.Notifications -> Section(null) {
                         ListItem(
-                            headlineContent = {
-                                Text(
-                                    stringResource(R.string.update_available, settings.updateVersion),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.SemiBold,
-                                )
-                            },
+                            headlineContent = { Text(stringResource(R.string.notify_special)) },
                             supportingContent = {
                                 Text(
-                                    when {
-                                        updateProgress == null -> stringResource(R.string.update_tap_to_open)
-                                        updateProgress < 0 -> stringResource(R.string.update_downloading)
-                                        else -> stringResource(R.string.update_downloading_percent, updateProgress)
+                                    if (settings.notificationsEnabled && !notificationsAllowed) {
+                                        stringResource(R.string.notify_blocked)
+                                    } else {
+                                        stringResource(R.string.notify_summary)
                                     },
                                 )
                             },
-                            leadingContent = { Icon(Icons.Rounded.SystemUpdate, null, tint = MaterialTheme.colorScheme.primary) },
+                            leadingContent = { Icon(Icons.Rounded.NotificationsActive, null) },
+                            trailingContent = {
+                                Switch(checked = settings.notificationsEnabled, onCheckedChange = onNotifications)
+                            },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable(enabled = updateProgress == null, onClick = onOpenUpdate),
+                            modifier = Modifier.clickable { onNotifications(!settings.notificationsEnabled) },
+                        )
+                        if (settings.notificationsEnabled) {
+                            Divider()
+                            Row(
+                                Icons.Rounded.Schedule,
+                                stringResource(R.string.notify_time),
+                                Texts.time(context, LocalTime.of(settings.notifyHour, settings.notifyMinute)),
+                            ) { dialog = "time" }
+                            Divider()
+                            Row(Icons.Rounded.Send, stringResource(R.string.send_test), null, onClick = onTestNotification)
+                        }
+                    }
+                    SettingsPage.Home -> Section(null) {
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.moments_show)) },
+                            supportingContent = { Text(stringResource(R.string.moments_show_summary)) },
+                            leadingContent = { Icon(Icons.Rounded.AutoStories, null) },
+                            trailingContent = { Switch(checked = settings.showMoments, onCheckedChange = onShowMoments) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { onShowMoments(!settings.showMoments) },
                         )
                         Divider()
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.live_show)) },
+                            supportingContent = { Text(stringResource(R.string.live_show_summary)) },
+                            leadingContent = { Icon(Icons.Rounded.Timer, null) },
+                            trailingContent = { Switch(checked = settings.showLive, onCheckedChange = onShowLive) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { onShowLive(!settings.showLive) },
+                        )
+                        Divider()
+                        Row(Icons.Rounded.Widgets, stringResource(R.string.add_widget), null, onClick = onAddWidget)
                     }
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.update_auto)) },
-                        supportingContent = { Text(stringResource(R.string.update_auto_summary)) },
-                        leadingContent = { Icon(Icons.Rounded.Update, null) },
-                        trailingContent = { Switch(checked = settings.updateCheck, onCheckedChange = onUpdateCheck) },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable { onUpdateCheck(!settings.updateCheck) },
-                    )
-                    Divider()
-                    Row(Icons.Rounded.Refresh, stringResource(R.string.update_check_now), null, onClick = onCheckUpdates)
+                    SettingsPage.Backup -> Section(null) {
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.backup_export)) },
+                            supportingContent = { Text(stringResource(R.string.backup_export_summary)) },
+                            leadingContent = { Icon(Icons.Rounded.Backup, null) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable(onClick = onExportBackup),
+                        )
+                        Divider()
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.backup_import)) },
+                            supportingContent = { Text(stringResource(R.string.backup_import_summary)) },
+                            leadingContent = { Icon(Icons.Rounded.Restore, null) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { dialog = "import" },
+                        )
+                    }
+                    SettingsPage.About -> {
+                        if (BuildConfig.UPDATE_CHECK) {
+                            Section(stringResource(R.string.section_updates)) {
+                            // Nach einem Update kann noch die alte Meldung gespeichert sein
+                            if (settings.updateVersion != null &&
+                                app.sinceus.update.UpdateChecker.isNewer(settings.updateVersion, BuildConfig.VERSION_NAME)
+                            ) {
+                                ListItem(
+                                    headlineContent = {
+                                        Text(
+                                            stringResource(R.string.update_available, settings.updateVersion),
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.SemiBold,
+                                        )
+                                    },
+                                    supportingContent = {
+                                        Text(
+                                            when {
+                                                updateProgress == null -> stringResource(R.string.update_tap_to_open)
+                                                updateProgress < 0 -> stringResource(R.string.update_downloading)
+                                                else -> stringResource(R.string.update_downloading_percent, updateProgress)
+                                            },
+                                        )
+                                    },
+                                    leadingContent = { Icon(Icons.Rounded.SystemUpdate, null, tint = MaterialTheme.colorScheme.primary) },
+                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                    modifier = Modifier.clickable(enabled = updateProgress == null, onClick = onOpenUpdate),
+                                )
+                                Divider()
+                            }
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.update_auto)) },
+                                supportingContent = { Text(stringResource(R.string.update_auto_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.Update, null) },
+                                trailingContent = { Switch(checked = settings.updateCheck, onCheckedChange = onUpdateCheck) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { onUpdateCheck(!settings.updateCheck) },
+                            )
+                            Divider()
+                            Row(Icons.Rounded.Refresh, stringResource(R.string.update_check_now), null, onClick = onCheckUpdates)
+                            }
+                        }
+                        Section(if (BuildConfig.UPDATE_CHECK) stringResource(R.string.settings_about) else null) {
+                            Row(Icons.Rounded.Shield, stringResource(R.string.privacy), null) { dialog = "privacy" }
+                            Divider()
+                            Row(Icons.Rounded.Description, stringResource(R.string.licenses), null, onClick = onOpenLicenses)
+                            Divider()
+                            Row(
+                                Icons.Rounded.Info,
+                                stringResource(R.string.version),
+                                stringResource(R.string.version_value, BuildConfig.VERSION_NAME, BuildConfig.FLAVOR),
+                            ) {}
+                        }
+                    }
                 }
+                if (page == null) {
+                    Section(stringResource(R.string.section_reset)) {
+                        Row(Icons.Rounded.AutoAwesome, stringResource(R.string.restart_setup), null, onClick = onRestartOnboarding)
+                        Divider()
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.delete_all), color = MaterialTheme.colorScheme.error) },
+                            supportingContent = { Text(stringResource(R.string.delete_all_summary)) },
+                            leadingContent = { Icon(Icons.Rounded.DeleteForever, null, tint = MaterialTheme.colorScheme.error) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { dialog = "reset" },
+                        )
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
             }
-            Section(stringResource(R.string.section_backup)) {
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.backup_export)) },
-                    supportingContent = { Text(stringResource(R.string.backup_export_summary)) },
-                    leadingContent = { Icon(Icons.Rounded.Backup, null) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable(onClick = onExportBackup),
-                )
-                Divider()
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.backup_import)) },
-                    supportingContent = { Text(stringResource(R.string.backup_import_summary)) },
-                    leadingContent = { Icon(Icons.Rounded.Restore, null) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { dialog = "import" },
-                )
-            }
-            Section(stringResource(R.string.section_misc)) {
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.moments_show)) },
-                    supportingContent = { Text(stringResource(R.string.moments_show_summary)) },
-                    leadingContent = { Icon(Icons.Rounded.AutoStories, null) },
-                    trailingContent = { Switch(checked = settings.showMoments, onCheckedChange = onShowMoments) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { onShowMoments(!settings.showMoments) },
-                )
-                Divider()
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.live_show)) },
-                    supportingContent = { Text(stringResource(R.string.live_show_summary)) },
-                    leadingContent = { Icon(Icons.Rounded.Timer, null) },
-                    trailingContent = { Switch(checked = settings.showLive, onCheckedChange = onShowLive) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { onShowLive(!settings.showLive) },
-                )
-                Divider()
-                Row(Icons.Rounded.Widgets, stringResource(R.string.add_widget), null, onClick = onAddWidget)
-                Divider()
-                Row(Icons.Rounded.AutoAwesome, stringResource(R.string.restart_setup), null, onClick = onRestartOnboarding)
-                Divider()
-                Row(Icons.Rounded.Shield, stringResource(R.string.privacy), null) { dialog = "privacy" }
-                Divider()
-                Row(Icons.Rounded.Description, stringResource(R.string.licenses), null, onClick = onOpenLicenses)
-                Divider()
-                Row(
-                    Icons.Rounded.Info,
-                    stringResource(R.string.version),
-                    stringResource(R.string.version_value, BuildConfig.VERSION_NAME, BuildConfig.FLAVOR),
-                ) {}
-                Divider()
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.delete_all), color = MaterialTheme.colorScheme.error) },
-                    supportingContent = { Text(stringResource(R.string.delete_all_summary)) },
-                    leadingContent = { Icon(Icons.Rounded.DeleteForever, null, tint = MaterialTheme.colorScheme.error) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { dialog = "reset" },
-                )
-            }
-            Spacer(Modifier.height(24.dp))
         }
     }
 
@@ -400,14 +422,88 @@ fun SettingsScreen(
     }
 }
 
+/** Unterseiten der Einstellungen */
+enum class SettingsPage(@androidx.annotation.StringRes val title: Int, val icon: ImageVector) {
+    Couple(R.string.settings_couple, Icons.Rounded.People),
+    Photo(R.string.section_photo, Icons.Rounded.AddPhotoAlternate),
+    Notifications(R.string.section_notifications, Icons.Rounded.NotificationsActive),
+    Home(R.string.settings_home, Icons.Rounded.Dashboard),
+    Backup(R.string.section_backup, Icons.Rounded.Backup),
+    About(R.string.settings_about, Icons.Rounded.Info),
+}
+
+/** Startseite der Einstellungen: ein Eintrag pro Bereich mit kurzer Zusammenfassung */
 @Composable
-private fun Section(title: String, content: @Composable () -> Unit) {
-    Text(
-        title.uppercase(),
-        style = LabelCaps,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp),
+private fun Overview(settings: LoveSettings, notificationsAllowed: Boolean, onOpen: (SettingsPage) -> Unit) {
+    val context = LocalContext.current
+    val updateReady = BuildConfig.UPDATE_CHECK && settings.updateVersion != null &&
+        app.sinceus.update.UpdateChecker.isNewer(settings.updateVersion, BuildConfig.VERSION_NAME)
+    val photo = buildList {
+        add(
+            if (settings.photoPath != null) {
+                stringResource(R.string.photo_own)
+            } else {
+                stringResource(Presets.getOrElse(settings.presetIndex) { Presets[0] }.name)
+            },
+        )
+        if (settings.slides.isNotEmpty()) {
+            add(pluralStringResource(R.plurals.slideshow_count, settings.slides.size, settings.slides.size.toString()))
+        }
+    }.joinToString(", ")
+    val summaries = mapOf(
+        SettingsPage.Couple to "${settings.names}, ${Texts.mediumDate(settings.startDate)}",
+        SettingsPage.Photo to photo,
+        SettingsPage.Notifications to when {
+            !settings.notificationsEnabled -> stringResource(R.string.notify_off)
+            !notificationsAllowed -> stringResource(R.string.notify_blocked)
+            else -> stringResource(
+                R.string.notify_daily_at,
+                Texts.time(context, LocalTime.of(settings.notifyHour, settings.notifyMinute)),
+            )
+        },
+        SettingsPage.Home to stringResource(R.string.settings_home_summary),
+        SettingsPage.Backup to stringResource(R.string.settings_backup_summary),
+        SettingsPage.About to if (updateReady) {
+            stringResource(R.string.update_available, settings.updateVersion.orEmpty())
+        } else {
+            stringResource(R.string.version_value, BuildConfig.VERSION_NAME, BuildConfig.FLAVOR)
+        },
     )
+    Section(null) {
+        SettingsPage.entries.forEachIndexed { i, p ->
+            if (i > 0) Divider()
+            val highlight = p == SettingsPage.About && updateReady
+            ListItem(
+                headlineContent = { Text(stringResource(p.title)) },
+                supportingContent = {
+                    Text(
+                        summaries.getValue(p),
+                        color = if (highlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
+                leadingContent = { Icon(p.icon, null) },
+                trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                modifier = Modifier.clickable { onOpen(p) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun Section(title: String?, content: @Composable () -> Unit) {
+    if (title != null) {
+        Text(
+            title.uppercase(),
+            style = LabelCaps,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp),
+        )
+    } else {
+        Spacer(Modifier.height(8.dp))
+    }
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
