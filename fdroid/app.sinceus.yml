@@ -19,9 +19,9 @@ Binaries:
   https://github.com/DerDieDasLian/sinceus/releases/download/v%v/SinceUs-v%v-fdroid.apk.bin
 
 Builds:
-  - versionName: 2.2.4
-    versionCode: 11
-    commit: c3e77058cdbaefc0e31559a56adbf29f20f3ba51
+  - versionName: 2.4.0
+    versionCode: 15
+    commit: 4a0fe90af44ed780c60477d2e592ee2a885961c2
     subdir: app
     gradle:
       - fdroid
@@ -30,5 +30,5 @@ AllowedAPKSigningKeys: 3912bc3b5859653b47dad00ad35bd934e361b4513871736544b9b8fa6
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 2.2.4
-CurrentVersionCode: 11
+CurrentVersion: 2.4.0
+CurrentVersionCode: 15
