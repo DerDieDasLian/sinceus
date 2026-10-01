@@ -87,7 +87,7 @@ section { padding: 88px 0; }
 .split h2 { font: 600 clamp(1.9rem, 4vw, 2.6rem)/1.15 var(--serif); margin: 0 0 16px; }
 .split p { color: var(--muted); font-size: 1.1rem; }
 .widget-demo { background: linear-gradient(160deg, #f6d6c9, #d9a3b0 55%, #8f5d7a); border-radius: 36px; padding: 48px 36px; }
-.widget-demo img { border-radius: 26px; box-shadow: 0 20px 40px rgba(60, 10, 20, .35); }
+.widget-demo img { filter: drop-shadow(0 20px 20px rgba(60, 10, 20, .35)); }
 
 .privacy { background: var(--surface-2); }
 .tint { background: linear-gradient(180deg, var(--surface-2), transparent); }
