@@ -4,7 +4,12 @@ import android.Manifest
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import androidx.core.content.IntentCompat
+import app.sinceus.ui.SyncActions
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -68,6 +73,7 @@ class MainActivity : ComponentActivity() {
                 val settings by vm.settings.collectAsStateWithLifecycle()
                 val today by vm.today.collectAsStateWithLifecycle()
                 val updateProgress by vm.updateProgress.collectAsStateWithLifecycle()
+                val pairing by vm.pairing.collectAsStateWithLifecycle()
                 val scope = rememberCoroutineScope()
                 var showSettings by rememberSaveable { mutableStateOf(false) }
                 var editingPhoto by rememberSaveable { mutableStateOf(false) }
@@ -127,6 +133,32 @@ class MainActivity : ComponentActivity() {
                 val backupLoader = rememberLauncherForActivityResult(
                     ActivityResultContracts.OpenDocument(),
                 ) { uri -> if (uri != null) vm.importBackup(uri) }
+                // Abgleich: QR-Code des anderen Handys scannen und Abgleich-Dateien von Hand öffnen
+                var scanningFor by rememberSaveable { mutableStateOf<String?>(null) }
+                val scanner = rememberLauncherForActivityResult(ScanContract()) { result ->
+                    if (result.contents != null) {
+                        val ok = vm.acceptPairing(result.contents, scanningFor)
+                        Toast.makeText(
+                            this@MainActivity,
+                            getString(if (ok) R.string.sync_paired_now else R.string.sync_bad_qr),
+                            Toast.LENGTH_LONG,
+                        ).show()
+                    }
+                }
+                fun scanPairing(me: String?) {
+                    scanningFor = me
+                    scanner.launch(
+                        ScanOptions()
+                            .setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                            .setPrompt(getString(R.string.sync_scan_prompt))
+                            .setBeepEnabled(false)
+                            .setOrientationLocked(false),
+                    )
+                }
+                val syncOpener = rememberLauncherForActivityResult(
+                    ActivityResultContracts.OpenDocument(),
+                ) { uri -> if (uri != null) vm.importSync(uri) }
+
                 fun saveBackup() = backupSaver.launch(Backup.fileName(today))
                 fun loadBackup() = backupLoader.launch(
                     arrayOf(Backup.MIME, "application/x-zip-compressed", "application/octet-stream"),
@@ -261,6 +293,15 @@ class MainActivity : ComponentActivity() {
                                 onDeleteRelationship = vm::deleteRelationship,
                                 onWidgetRelationship = vm::setWidgetRelationship,
                                 onDiscreet = vm::setDiscreet,
+                                pairing = pairing,
+                                sync = SyncActions(
+                                    onCreate = vm::createPairing,
+                                    onScan = ::scanPairing,
+                                    onMe = vm::setMe,
+                                    onUnpair = vm::unpair,
+                                    onSend = { vm.shareSync() },
+                                    onOpen = { syncOpener.launch(arrayOf("*/*")) },
+                                ),
                             )
                             else -> HomeScreen(
                                 s,
@@ -290,9 +331,17 @@ class MainActivity : ComponentActivity() {
         handleIntent(intent)
     }
 
-    /** Tipp auf die Update-Mitteilung: Update direkt laden und installieren */
+    /**
+     * Tipp auf die Update-Mitteilung: Update direkt laden und installieren.
+     * Geöffnete oder geteilte Abgleich-Datei: mit den eigenen Daten zusammenführen.
+     */
     private fun handleIntent(intent: Intent?) {
-        if (intent?.action == Notifier.ACTION_INSTALL_UPDATE) vm.installUpdate()
+        when (intent?.action) {
+            Notifier.ACTION_INSTALL_UPDATE -> vm.installUpdate()
+            Intent.ACTION_VIEW -> intent.data?.let(vm::importSync)
+            Intent.ACTION_SEND -> IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
+                ?.let(vm::importSync)
+        }
     }
 
     private fun pinWidget() {

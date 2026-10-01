@@ -41,7 +41,7 @@ Again, GitHub only receives the usual connection data.</p>
 
 <h2>What data the app uses</h2>
 <ul>
-  <li><strong>Names</strong> and a <strong>date (optionally with a time)</strong> that you enter to calculate your time together.</li>
+  <li><strong>Names</strong>, optionally <strong>pronouns</strong>, and for every relationship a <strong>date (optionally with a time)</strong> that you enter to calculate your time together.</li>
   <li><strong>One photo</strong> that you choose. Through the Android photo picker the app only receives this one picture
       and stores a copy in the app's private storage. The app has no access to your other photos.</li>
   <li><strong>Moments</strong> you save: title, date, note and optionally a photo. Photos are stored as a copy in the app's private storage.</li>
@@ -65,8 +65,16 @@ privacy policies. You can turn backup off in the Android settings.</p>
 You choose where the file is stored (for example in your downloads or a cloud folder of your choice).
 The app does not upload the file anywhere. Keep it safe, because it contains your names, dates and photos.</p>
 
+<h2>Sync between phones</h2>
+<p>Under <em>Settings → Sync</em> you can pair your phone with another phone. One phone shows a QR code, the other scans it with the camera.
+The app only asks for camera permission for this; camera images are not stored.
+The QR code contains a random key that is only stored on the paired phones (not in backups).</p>
+<p>When you tap <em>Send sync</em>, the app creates a file encrypted with this key (AES-256-GCM) containing names, relationships and moments with photos,
+and hands it to the app you choose in the share menu. Only paired phones can open it.
+The app itself uploads nothing and uses no server for this.</p>
+
 <h2>Deleting your data</h2>
-<p>In the app, <em>Settings → Delete all data</em> removes everything immediately.
+<p>In the app, <em>Settings → Start over → Delete all data</em> removes everything immediately.
 Uninstalling the app also deletes all data.</p>
 
 <h2>Children</h2>

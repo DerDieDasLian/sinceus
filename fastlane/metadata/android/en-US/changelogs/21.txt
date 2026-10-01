@@ -1,0 +1,3 @@
+• Sync between phones: pair your phones once with a QR code, then send each other an encrypted file. Tapping it opens Since Us and merges new moments, the newer change wins and deleted moments stay deleted. Only your paired phones can open the file.
+• Moments now show who added them.
+• "Delete all data" also removes the pairing.

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Keine Internet-Berechtigung (Ausnahme: GitHub-Variante, siehe src/github) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -24,7 +25,38 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Abgleich-Datei vom gekoppelten Handy: direkt in der App öffnen -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="application/vnd.sinceus.sync" />
+            </intent-filter>
+            <!-- Viele Dateimanager kennen den Typ nicht, erkennen die Datei aber an der Endung -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.sinceus" />
+                <data android:pathPattern=".*\\..*\\.sinceus" />
+                <data android:pathPattern=".*\\..*\\..*\\.sinceus" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/vnd.sinceus.sync" />
+            </intent-filter>
         </activity>
+
+        <!-- QR-Scanner für die Kopplung: auch im Hochformat -->
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="android:screenOrientation" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

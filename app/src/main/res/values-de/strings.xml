@@ -289,4 +289,34 @@
         <item quantity="one">%1$s Beziehung</item>
         <item quantity="other">%1$s Beziehungen</item>
     </plurals>
+    <string name="section_sync">Abgleich</string>
+    <string name="sync_summary">Momente zwischen euren Handys teilen</string>
+    <string name="sync_intro">Haltet eure Momente auf beiden Handys gleich, ganz ohne Cloud und Konto. Koppelt die Handys einmal per QR-Code und schickt dann eine Abgleich-Datei, zum Beispiel per Messenger. Nur eure gekoppelten Handys können sie öffnen.</string>
+    <string name="sync_intro_paired">Schickt eine Abgleich-Datei, wenn ihr etwas hinzugefügt habt. Das andere Handy öffnet sie direkt in Since Us und übernimmt, was neu ist. Fotos kommen mit.</string>
+    <string name="sync_who">Wer nutzt dieses Handy?</string>
+    <string name="sync_show_qr">QR-Code zeigen</string>
+    <string name="sync_show_qr_summary">Das andere Handy scannt ihn</string>
+    <string name="sync_scan">QR-Code scannen</string>
+    <string name="sync_scan_summary">Den Code vom anderen Handy scannen</string>
+    <string name="sync_scan_prompt">Scannt den QR-Code von Since Us auf dem anderen Handy</string>
+    <string name="sync_qr_text">Öffnet auf dem anderen Handy den Abgleich und tippt auf "QR-Code scannen". Zeigt diesen Code nur den Menschen, mit denen ihr koppelt.</string>
+    <string name="sync_paired">Gekoppelt</string>
+    <string name="sync_paired_since">Gekoppelt seit %1$s</string>
+    <string name="sync_last">Zuletzt abgeglichen am %1$s</string>
+    <string name="sync_paired_now">Gekoppelt. Ihr könnt jetzt Abgleich-Dateien schicken.</string>
+    <string name="sync_bad_qr">Das ist kein Kopplungscode von Since Us.</string>
+    <string name="sync_send">Abgleich senden</string>
+    <string name="sync_send_summary">Erstellt eine verschlüsselte Datei zum Teilen</string>
+    <string name="sync_send_failed">Die Abgleich-Datei konnte nicht erstellt werden.</string>
+    <string name="sync_open">Abgleich-Datei öffnen</string>
+    <string name="sync_open_summary">Falls sich Since Us beim Antippen der Datei nicht geöffnet hat</string>
+    <string name="sync_show_qr_again">Weiteres Handy koppeln</string>
+    <string name="sync_show_qr_again_summary">Zeigt den QR-Code noch einmal, z. B. für ein neues Handy</string>
+    <string name="sync_unpair">Kopplung aufheben</string>
+    <string name="sync_unpair_question">Kopplung aufheben?</string>
+    <string name="sync_unpair_text">Dieses Handy kann dann keine Abgleich-Dateien mehr öffnen. Eure Daten bleiben erhalten. Ihr könnt jederzeit neu koppeln.</string>
+    <string name="sync_not_paired">Koppelt zuerst die Handys: Einstellungen, Abgleich.</string>
+    <string name="sync_failed">Die Datei konnte nicht abgeglichen werden. Vielleicht gehört sie zu einer anderen Kopplung oder ist beschädigt.</string>
+    <string name="sync_done">Abgeglichen: %1$d neu, %2$d geändert, %3$d entfernt</string>
+    <string name="moment_added_by">Hinzugefügt von %1$s</string>
 </resources>

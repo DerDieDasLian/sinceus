@@ -1,0 +1,3 @@
+• Abgleich zwischen Handys: Koppelt eure Handys einmal per QR-Code und schickt euch dann eine verschlüsselte Datei. Ein Tippen darauf öffnet Since Us und übernimmt neue Momente, die jüngere Änderung gewinnt und gelöschte Momente bleiben gelöscht. Nur eure gekoppelten Handys können die Datei öffnen.
+• Momente zeigen jetzt, wer sie hinzugefügt hat.
+• "Alle Daten löschen" entfernt auch die Kopplung.

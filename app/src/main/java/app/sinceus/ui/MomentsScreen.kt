@@ -98,7 +98,11 @@ fun MomentsScreen(
     val moments = settings.visibleMoments
     val starts = if (settings.showAll) settings.relationships else listOf(settings.relationship)
     val entries = (
-        moments.map { TimelineEntry.Saved(it, who(it.relationshipId)) } +
+        moments.map { m ->
+            // Nach einem Abgleich steht dabei, wer den Moment angelegt hat
+            val by = m.addedBy?.let(settings::person)?.name?.let { context.getString(R.string.moment_added_by, it) }
+            TimelineEntry.Saved(m, listOfNotNull(who(m.relationshipId), by).joinToString(" · ").ifBlank { null })
+        } +
             starts.map { TimelineEntry.Start(it.startDate, who(it.id)) }
         )
         .sortedBy { it.date }

@@ -50,6 +50,7 @@ private val Libraries = listOf(
     Library("Kotlin, kotlinx.coroutines", "JetBrains", "https://kotlinlang.org"),
     Library("Compose Multiplatform", "JetBrains", "https://github.com/JetBrains/compose-multiplatform"),
     Library("Coil", "Coil Contributors", "https://coil-kt.github.io/coil/"),
+    Library("ZXing, ZXing Android Embedded", "ZXing authors, JourneyApps", "https://github.com/journeyapps/zxing-android-embedded"),
     Library("Okio", "Square, Inc.", "https://square.github.io/okio/"),
     Library("Guava ListenableFuture, Accompanist", "Google", "https://github.com/google/guava"),
     Library("JSpecify", "The JSpecify Authors", "https://jspecify.dev"),

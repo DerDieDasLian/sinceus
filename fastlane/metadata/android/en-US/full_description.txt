@@ -19,4 +19,4 @@ A love card with your names and days together, or a compact counter in your phon
 Since Us is for everyone in love, no matter who you are, whom you love or how many of you there are. In poly mode every relationship has its own date, and a discreet mode shows only initials. In June the app celebrates Pride Month.
 
 <b>Private</b>
-No account, no ads, no tracking. All data stays on your phone. Save a backup file to move everything to a new phone. English and German.
+No account, no ads, no tracking. All data stays on your phone. Save a backup file to move everything to a new phone. Sync your phones without a server: pair them once with a QR code, then send an encrypted file only your phones can open. English and German.

@@ -113,6 +113,8 @@ import app.sinceus.data.MAX_PEOPLE
 import app.sinceus.data.MAX_RELATIONSHIPS
 import app.sinceus.data.Names
 import app.sinceus.data.Person
+import app.sinceus.data.Pairing
+import androidx.compose.material.icons.rounded.Sync
 import app.sinceus.data.Relationship
 import app.sinceus.data.newId
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -181,6 +183,9 @@ fun SettingsScreen(
     onDeleteRelationship: (String) -> Unit = {},
     onWidgetRelationship: (String) -> Unit = {},
     onDiscreet: (Boolean) -> Unit = {},
+    /** Kopplung für den Abgleich, null = nicht gekoppelt */
+    pairing: Pairing? = null,
+    sync: SyncActions = SyncActions(),
     /** Geöffnete Unterseite beim Start (für Tests), null = Übersicht */
     initialPage: SettingsPage? = null,
 ) {
@@ -215,7 +220,7 @@ fun SettingsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 when (page) {
-                    null -> Overview(settings, notificationsAllowed, onOpen = { page = it })
+                    null -> Overview(settings, notificationsAllowed, pairing, onOpen = { page = it })
                     SettingsPage.Couple -> {
                         if (!settings.isPoly) {
                             Text(
@@ -348,6 +353,7 @@ fun SettingsScreen(
                         Divider()
                         Row(Icons.Rounded.Widgets, stringResource(R.string.add_widget), null, onClick = onAddWidget)
                     }
+                    SettingsPage.Sync -> SyncPage(settings, pairing, sync)
                     SettingsPage.Backup -> Section(null) {
                         ListItem(
                             headlineContent = { Text(stringResource(R.string.backup_export)) },
@@ -604,6 +610,7 @@ enum class SettingsPage(@androidx.annotation.StringRes val title: Int, val icon:
     Photo(R.string.section_photo, Icons.Rounded.AddPhotoAlternate),
     Notifications(R.string.section_notifications, Icons.Rounded.NotificationsActive),
     Home(R.string.settings_home, Icons.Rounded.Dashboard),
+    Sync(R.string.section_sync, Icons.Rounded.Sync),
     Backup(R.string.section_backup, Icons.Rounded.Backup),
     About(R.string.settings_about, Icons.Rounded.Info),
     Reset(R.string.section_reset, Icons.Rounded.RestartAlt),
@@ -611,7 +618,12 @@ enum class SettingsPage(@androidx.annotation.StringRes val title: Int, val icon:
 
 /** Startseite der Einstellungen: ein Eintrag pro Bereich mit kurzer Zusammenfassung */
 @Composable
-private fun Overview(settings: LoveSettings, notificationsAllowed: Boolean, onOpen: (SettingsPage) -> Unit) {
+private fun Overview(
+    settings: LoveSettings,
+    notificationsAllowed: Boolean,
+    pairing: Pairing?,
+    onOpen: (SettingsPage) -> Unit,
+) {
     val context = LocalContext.current
     val updateReady = BuildConfig.UPDATE_CHECK && settings.updateVersion != null &&
         app.sinceus.update.UpdateChecker.isNewer(settings.updateVersion, BuildConfig.VERSION_NAME)
@@ -645,6 +657,7 @@ private fun Overview(settings: LoveSettings, notificationsAllowed: Boolean, onOp
         },
         SettingsPage.Home to stringResource(R.string.settings_home_summary),
         SettingsPage.Backup to stringResource(R.string.settings_backup_summary),
+        SettingsPage.Sync to stringResource(if (pairing != null) R.string.sync_paired else R.string.sync_summary),
         SettingsPage.Reset to stringResource(R.string.reset_summary),
         SettingsPage.About to if (updateReady) {
             stringResource(R.string.update_available, settings.updateVersion.orEmpty())

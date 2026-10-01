@@ -19,4 +19,4 @@ Eine Liebeskarte mit euren Namen und Tagen oder ein kompakter Zähler in den Far
 Since Us ist für alle da, die sich lieben, egal wer ihr seid, wen ihr liebt und wie viele ihr seid. Im Poly-Modus hat jede Beziehung ihr eigenes Datum, und ein diskreter Modus zeigt nur Anfangsbuchstaben. Im Juni feiert die App den Pride Month.
 
 <b>Privat</b>
-Keine Anmeldung, keine Werbung, kein Tracking. Alle Daten bleiben auf eurem Handy. Mit einer Sicherungsdatei nehmt ihr alles auf ein neues Handy mit. Deutsch und Englisch.
+Keine Anmeldung, keine Werbung, kein Tracking. Alle Daten bleiben auf eurem Handy. Mit einer Sicherungsdatei nehmt ihr alles auf ein neues Handy mit. Eure Handys gleicht ihr ohne Server ab: einmal per QR-Code koppeln, dann eine verschlüsselte Datei schicken, die nur eure Handys öffnen können. Deutsch und Englisch.

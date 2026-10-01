@@ -292,4 +292,34 @@
         <item quantity="one">%1$s relationship</item>
         <item quantity="other">%1$s relationships</item>
     </plurals>
+    <string name="section_sync">Sync</string>
+    <string name="sync_summary">Share moments between your phones</string>
+    <string name="sync_intro">Keep your moments the same on your phones, without a cloud or account. Pair both phones once with a QR code, then send a sync file, for example through a messenger. Only your paired phones can open it.</string>
+    <string name="sync_intro_paired">Send a sync file whenever you have added something. The other phone opens it directly in Since Us and adds what is new. Photos come along.</string>
+    <string name="sync_who">Who uses this phone?</string>
+    <string name="sync_show_qr">Show QR code</string>
+    <string name="sync_show_qr_summary">The other phone scans it</string>
+    <string name="sync_scan">Scan QR code</string>
+    <string name="sync_scan_summary">Scan the code shown on the other phone</string>
+    <string name="sync_scan_prompt">Scan the QR code from Since Us on the other phone</string>
+    <string name="sync_qr_text">Open Sync on the other phone and tap "Scan QR code". Only show this code to the people you are pairing with.</string>
+    <string name="sync_paired">Paired</string>
+    <string name="sync_paired_since">Paired since %1$s</string>
+    <string name="sync_last">Last synced on %1$s</string>
+    <string name="sync_paired_now">Paired. You can now send sync files.</string>
+    <string name="sync_bad_qr">This is not a pairing code from Since Us.</string>
+    <string name="sync_send">Send sync</string>
+    <string name="sync_send_summary">Creates an encrypted file to share</string>
+    <string name="sync_send_failed">The sync file could not be created.</string>
+    <string name="sync_open">Open sync file</string>
+    <string name="sync_open_summary">If tapping the file did not open Since Us</string>
+    <string name="sync_show_qr_again">Pair another phone</string>
+    <string name="sync_show_qr_again_summary">Shows the QR code again, for example for a new phone</string>
+    <string name="sync_unpair">Unpair</string>
+    <string name="sync_unpair_question">Unpair?</string>
+    <string name="sync_unpair_text">This phone can no longer open sync files from the other phones. Your data stays. You can pair again any time.</string>
+    <string name="sync_not_paired">Pair your phones first: Settings, Sync.</string>
+    <string name="sync_failed">The file could not be synced. It may belong to a different pairing or be damaged.</string>
+    <string name="sync_done">Synced: %1$d new, %2$d changed, %3$d removed</string>
+    <string name="moment_added_by">Added by %1$s</string>
 </resources>

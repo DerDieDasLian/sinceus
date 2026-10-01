@@ -41,7 +41,7 @@ die Installation von Android. Auch dabei erhält GitHub nur die üblichen Verbin
 
 <h2>Welche Daten die App verarbeitet</h2>
 <ul>
-  <li><strong>Namen</strong> und <strong>Datum (optional mit Uhrzeit)</strong>, die du eingibst, um die gemeinsame Zeit zu berechnen.</li>
+  <li><strong>Namen</strong>, optional <strong>Pronomen</strong>, und für jede Beziehung ein <strong>Datum (optional mit Uhrzeit)</strong>, die du eingibst, um die gemeinsame Zeit zu berechnen.</li>
   <li><strong>Ein Foto</strong>, das du selbst auswählst. Die App erhält über die Android-Fotoauswahl nur dieses eine Bild
       und speichert eine Kopie im privaten Speicher der App. Auf deine übrigen Fotos hat die App keinen Zugriff.</li>
   <li><strong>Momente</strong>, die du festhältst: Titel, Datum, Notiz und optional ein Foto. Fotos werden als Kopie im privaten Speicher der App abgelegt.</li>
@@ -66,8 +66,16 @@ Du kannst die Sicherung in den Android-Einstellungen abschalten.</p>
 Wo die Datei landet, bestimmst du (zum Beispiel im Download-Ordner oder in einem Cloud-Ordner deiner Wahl).
 Die App lädt die Datei nirgendwo hoch. Bewahre sie gut auf, denn sie enthält eure Namen, Daten und Fotos.</p>
 
+<h2>Abgleich zwischen Handys</h2>
+<p>Unter <em>Einstellungen → Abgleich</em> kannst du dein Handy mit einem anderen Handy koppeln. Dazu zeigt ein Handy einen QR-Code,
+das andere scannt ihn mit der Kamera. Nur dafür fragt die App nach der Kamera-Berechtigung; Kamerabilder werden nicht gespeichert.
+Der QR-Code enthält einen zufälligen Schlüssel, der nur auf den gekoppelten Handys gespeichert wird (nicht in Sicherungen).</p>
+<p>Tippst du auf <em>Abgleich senden</em>, erstellt die App eine mit diesem Schlüssel verschlüsselte Datei (AES-256-GCM) mit Namen,
+Beziehungen und Momenten samt Fotos und übergibt sie an die App, die du im Teilen-Menü wählst. Nur gekoppelte Handys können sie öffnen.
+Die App selbst lädt nichts hoch und nutzt dafür keinen Server.</p>
+
 <h2>Löschen deiner Daten</h2>
-<p>In der App unter <em>Einstellungen → Alle Daten löschen</em> werden alle Daten sofort entfernt.
+<p>In der App unter <em>Einstellungen → Neu anfangen → Alle Daten löschen</em> werden alle Daten sofort entfernt.
 Beim Deinstallieren der App löscht Android ebenfalls alle Daten.</p>
 
 <h2>Kinder</h2>

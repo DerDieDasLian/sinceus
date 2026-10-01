@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -163,6 +164,7 @@ private object Keys {
     val selected = stringPreferencesKey("selected_relationship")
     val widgetRelationship = stringPreferencesKey("widget_relationship")
     val discreet = booleanPreferencesKey("discreet")
+    val deleted = stringPreferencesKey("deleted_moments")
 }
 
 /**
@@ -337,7 +339,11 @@ class LoveRepository(private val context: Context) {
             }
         }
         if (old?.photoPath != null && old.photoPath != photo) deleteFile(old.photoPath)
-        val saved = moment.copy(photoPath = photo)
+        val saved = moment.copy(
+            photoPath = photo,
+            updatedAt = System.currentTimeMillis(),
+            addedBy = old?.addedBy ?: moment.addedBy ?: PairingStore.load(context)?.me,
+        )
         context.dataStore.edit { prefs ->
             val list = MomentCodec.decode(prefs[Keys.moments]).filterNot { it.id == moment.id } + saved
             prefs[Keys.moments] = MomentCodec.encode(list)
@@ -353,8 +359,112 @@ class LoveRepository(private val context: Context) {
         old.photoPath?.let { deleteFile(it) }
         context.dataStore.edit { prefs ->
             prefs[Keys.moments] = MomentCodec.encode(MomentCodec.decode(prefs[Keys.moments]).filterNot { it.id == id })
+            // Merker fürs Löschen, damit der Abgleich den Moment nicht wiederbringt
+            prefs[Keys.deleted] = encodeDeleted(decodeDeleted(prefs[Keys.deleted]) + (id to System.currentTimeMillis()))
         }
     }
+
+    /**
+     * Schreibt eine verschlüsselte Abgleich-Datei für das gekoppelte Handy: Menschen, Beziehungen,
+     * Momente mit Fotos und gelöschte Momente. Der Stream wird danach geschlossen.
+     */
+    suspend fun exportSync(out: OutputStream, pairing: Pairing) {
+        val s = current()
+        val deleted = decodeDeleted(context.dataStore.data.first()[Keys.deleted])
+        withContext(Dispatchers.IO) {
+            val zipFile = File(context.cacheDir, "sync-out.zip")
+            try {
+                ZipOutputStream(zipFile.outputStream().buffered()).use { zip ->
+                    zip.putNextEntry(ZipEntry(SyncCodec.JSON))
+                    zip.write(
+                        SyncCodec.encode(SyncData(s.people, s.relationships, s.moments, deleted, pairing.me))
+                            .toByteArray(Charsets.UTF_8),
+                    )
+                    zip.closeEntry()
+                    val written = mutableSetOf<String>()
+                    s.moments.forEach { m ->
+                        val file = m.photoPath?.let(::File)?.takeIf { it.isFile } ?: return@forEach
+                        if (!written.add(file.name)) return@forEach
+                        zip.putNextEntry(ZipEntry("${Backup.MOMENTS}/${file.name}"))
+                        file.inputStream().use { it.copyTo(zip) }
+                        zip.closeEntry()
+                    }
+                }
+                out.buffered().use { o -> zipFile.inputStream().buffered().use { SyncCrypto.encrypt(it, o, pairing.key) } }
+            } finally {
+                zipFile.delete()
+            }
+        }
+    }
+
+    /**
+     * Übernimmt eine Abgleich-Datei vom gekoppelten Handy und führt sie mit den eigenen Daten
+     * zusammen. Gehört die Datei zu keiner Kopplung mit diesem Handy oder ist sie beschädigt,
+     * wird eine Exception geworfen und nichts verändert.
+     */
+    suspend fun importSync(input: InputStream, pairing: Pairing): MergeResult {
+        val dir = File(context.cacheDir, "sync-in")
+        val remote = withContext(Dispatchers.IO) {
+            dir.deleteRecursively()
+            dir.mkdirs()
+            val zipFile = File(dir, "sync.zip")
+            zipFile.outputStream().buffered().use { SyncCrypto.decrypt(input.buffered(), it, pairing.key) }
+            var json: String? = null
+            ZipInputStream(zipFile.inputStream().buffered()).use { zip ->
+                while (true) {
+                    val entry = zip.nextEntry ?: break
+                    if (entry.isDirectory) continue
+                    val parts = entry.name.split('/')
+                    if (entry.name == SyncCodec.JSON) {
+                        json = Backup.readLimited(zip).toString(Charsets.UTF_8)
+                    } else if (parts.size == 2 && parts[0] == Backup.MOMENTS && Backup.isSafeName(parts[1])) {
+                        File(File(dir, Backup.MOMENTS).apply { mkdirs() }, parts[1]).outputStream().use { zip.copyTo(it) }
+                    }
+                }
+            }
+            zipFile.delete()
+            SyncCodec.decode(json ?: throw IOException("sync.json missing"))
+        }
+
+        val local = current()
+        val result = SyncMerge.merge(
+            local.people,
+            local.relationships,
+            local.moments,
+            decodeDeleted(context.dataStore.data.first()[Keys.deleted]),
+            remote,
+        )
+        // Fotos der übernommenen Momente in den App-Speicher holen, alte Fotos aufräumen
+        val takenIds = result.taken.map { it.id }.toSet()
+        val moments = withContext(Dispatchers.IO) {
+            val merged = result.moments.map { m ->
+                if (m.id !in takenIds) return@map m
+                val source = m.photoPath?.let { File(File(dir, Backup.MOMENTS), it) }?.takeIf { it.isFile }
+                val target = source?.let { File(momentDir(), it.name) }
+                if (source != null && target != null) source.copyTo(target, overwrite = true)
+                m.copy(photoPath = target?.absolutePath)
+            }
+            val keep = merged.mapNotNull { it.photoPath }.toSet()
+            local.moments.mapNotNull { it.photoPath }.filter { it !in keep }.forEach { File(it).delete() }
+            dir.deleteRecursively()
+            merged
+        }
+        context.dataStore.edit { prefs ->
+            prefs.writeModel(result.people, result.relationships)
+            prefs[Keys.moments] = MomentCodec.encode(moments)
+            prefs[Keys.deleted] = encodeDeleted(result.deleted)
+        }
+        PairingStore.save(context, pairing.copy(lastSync = System.currentTimeMillis()))
+        return result
+    }
+
+    private fun decodeDeleted(json: String?): Map<String, Long> {
+        val o = json?.let { runCatching { JSONObject(it) }.getOrNull() } ?: return emptyMap()
+        return o.keys().asSequence().associateWith { o.optLong(it) }
+    }
+
+    private fun encodeDeleted(map: Map<String, Long>): String =
+        JSONObject().apply { map.forEach { (id, time) -> put(id, time) } }.toString()
 
     private fun momentDir() = File(context.filesDir, "moments").apply { mkdirs() }
 
@@ -505,6 +615,8 @@ class LoveRepository(private val context: Context) {
         context.dataStore.edit {
             it.clear()
         }
+        // Mit allen Daten verschwindet auch die Kopplung mit dem anderen Handy
+        PairingStore.clear(context)
     }
 
     suspend fun setNotifications(enabled: Boolean) = context.dataStore.edit {

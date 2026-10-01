@@ -10,6 +10,9 @@ import app.sinceus.data.LoveRepository
 import app.sinceus.update.UpdateChecker
 import app.sinceus.update.UpdateInstaller
 import app.sinceus.data.LoveSettings
+import app.sinceus.data.Pairing
+import app.sinceus.data.PairingStore
+import app.sinceus.data.SyncCodec
 import app.sinceus.notify.DailyScheduler
 import app.sinceus.notify.Notifier
 import app.sinceus.widget.LoveWidget
@@ -60,7 +63,10 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun setDiscreet(on: Boolean) = viewModelScope.launch { repo.setDiscreet(on) }
     fun setStartDate(date: LocalDate) = viewModelScope.launch { repo.setStartDate(date) }
     fun setStartTime(time: java.time.LocalTime?) = viewModelScope.launch { repo.setStartTime(time) }
-    fun resetAll() = viewModelScope.launch { repo.resetAll() }
+    fun resetAll() = viewModelScope.launch {
+        repo.resetAll()
+        _pairing.value = null
+    }
     fun setNotifications(enabled: Boolean) = viewModelScope.launch { repo.setNotifications(enabled) }
     fun setNotifyTime(h: Int, m: Int) = viewModelScope.launch { repo.setNotifyTime(h, m) }
     fun setPhoto(uri: Uri) = viewModelScope.launch { repo.setPhoto(uri) }
@@ -106,6 +112,84 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
             false
         }
         Toast.makeText(app, app.getString(if (ok) R.string.backup_restored else R.string.backup_restore_failed), Toast.LENGTH_LONG).show()
+    }
+
+    /** Kopplung mit dem Handy des anderen Menschen für den Abgleich, null = nicht gekoppelt */
+    private val _pairing = MutableStateFlow(PairingStore.load(app))
+    val pairing: StateFlow<Pairing?> = _pairing.asStateFlow()
+
+    /** Neue Kopplung anlegen, deren QR-Code dann gezeigt wird */
+    fun createPairing(me: String?) {
+        val p = Pairing.create(me)
+        PairingStore.save(getApplication(), p)
+        _pairing.value = p
+    }
+
+    /** Gescannten QR-Code übernehmen; false, wenn es kein Kopplungscode von Since Us war */
+    fun acceptPairing(qr: String?, me: String?): Boolean {
+        val key = Pairing.keyFromQr(qr) ?: return false
+        val p = Pairing(key, me, System.currentTimeMillis())
+        PairingStore.save(getApplication(), p)
+        _pairing.value = p
+        return true
+    }
+
+    /** Wer auf diesem Handy die App nutzt */
+    fun setMe(me: String?) {
+        val p = _pairing.value?.copy(me = me) ?: return
+        PairingStore.save(getApplication(), p)
+        _pairing.value = p
+    }
+
+    fun unpair() {
+        PairingStore.clear(getApplication())
+        _pairing.value = null
+    }
+
+    /** Abgleich-Datei erstellen und über das Teilen-Menü verschicken (z. B. per Messenger) */
+    fun shareSync() = viewModelScope.launch {
+        val app = getApplication<Application>()
+        val p = _pairing.value ?: return@launch
+        try {
+            val dir = java.io.File(app.cacheDir, "share").apply { mkdirs() }
+            dir.listFiles { f -> f.name.endsWith(".${SyncCodec.EXTENSION}") }?.forEach { it.delete() }
+            val file = java.io.File(dir, SyncCodec.fileName(today.value))
+            repo.exportSync(file.outputStream(), p)
+            val uri = androidx.core.content.FileProvider.getUriForFile(app, "${app.packageName}.fileprovider", file)
+            val send = android.content.Intent(android.content.Intent.ACTION_SEND)
+                .setType(SyncCodec.MIME)
+                .putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                .addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            send.clipData = android.content.ClipData.newRawUri(null, uri)
+            app.startActivity(
+                android.content.Intent.createChooser(send, app.getString(R.string.sync_send))
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+            )
+        } catch (e: Exception) {
+            android.util.Log.w("SinceUs", "Abgleich-Datei fehlgeschlagen", e)
+            Toast.makeText(app, app.getString(R.string.sync_send_failed), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /** Abgleich-Datei vom anderen Handy übernehmen */
+    fun importSync(uri: Uri) = viewModelScope.launch {
+        val app = getApplication<Application>()
+        val p = _pairing.value
+        if (p == null) {
+            Toast.makeText(app, app.getString(R.string.sync_not_paired), Toast.LENGTH_LONG).show()
+            return@launch
+        }
+        val message = try {
+            val input = withContext(Dispatchers.IO) { app.contentResolver.openInputStream(uri) }
+                ?: throw java.io.IOException("no input stream")
+            val result = input.use { repo.importSync(it, p) }
+            _pairing.value = PairingStore.load(app)
+            app.getString(R.string.sync_done, result.added, result.changed, result.removed)
+        } catch (e: Exception) {
+            android.util.Log.w("SinceUs", "Abgleich fehlgeschlagen", e)
+            app.getString(R.string.sync_failed)
+        }
+        Toast.makeText(app, message, Toast.LENGTH_LONG).show()
     }
 
     fun setUpdateCheck(enabled: Boolean) = viewModelScope.launch { repo.setUpdateCheck(enabled) }

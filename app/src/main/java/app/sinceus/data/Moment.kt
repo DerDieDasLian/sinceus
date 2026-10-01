@@ -17,6 +17,10 @@ data class Moment(
     val yearlyReminder: Boolean = true,
     /** Gehört zu dieser Beziehung, null = zu allen */
     val relationshipId: String? = null,
+    /** Letzte Änderung in Millisekunden, entscheidet beim Abgleich, welche Fassung gilt */
+    val updatedAt: Long = 0,
+    /** Wer den Moment angelegt hat (ID einer [Person]), null = unbekannt */
+    val addedBy: String? = null,
 )
 
 object MomentCodec {
@@ -30,7 +34,9 @@ object MomentCodec {
                     .put("note", m.note)
                     .put("photo", m.photoPath ?: JSONObject.NULL)
                     .put("remind", m.yearlyReminder)
-                    .put("rel", m.relationshipId ?: JSONObject.NULL),
+                    .put("rel", m.relationshipId ?: JSONObject.NULL)
+                    .put("updated", m.updatedAt)
+                    .put("by", m.addedBy ?: JSONObject.NULL),
             )
         }
     }.toString()
@@ -50,6 +56,8 @@ object MomentCodec {
                     photoPath = if (o.isNull("photo")) null else o.optString("photo").ifBlank { null },
                     yearlyReminder = o.optBoolean("remind", true),
                     relationshipId = if (o.isNull("rel")) null else o.optString("rel").ifBlank { null },
+                    updatedAt = o.optLong("updated", 0),
+                    addedBy = if (o.isNull("by")) null else o.optString("by").ifBlank { null },
                 )
             }.getOrNull()
         }
