@@ -14,6 +14,8 @@ import app.sinceus.update.UpdateChecker
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
+import android.graphics.Bitmap
 import app.sinceus.MainActivity
 import app.sinceus.R
 import app.sinceus.data.LoveSettings
@@ -100,6 +102,11 @@ object Notifier {
         )
     }
 
+    private fun heartIcon(context: Context): Bitmap? =
+        ContextCompat.getDrawable(context, R.drawable.ic_heart_small)?.toBitmap(HEART_PX, HEART_PX)
+
+    private const val HEART_PX = 128
+
     private fun post(context: Context, title: String, text: String, big: String?) {
         val open = PendingIntent.getActivity(
             context, 0,
@@ -110,6 +117,8 @@ object Notifier {
             .setSmallIcon(R.drawable.ic_notification)
             .setColor(ContextCompat.getColor(context, R.color.wine))
             .setContentTitle(title)
+            // Gezeichnetes rosa Herz rechts in der Mitteilung (Emojis sehen je nach Handy unschön aus)
+            .apply { heartIcon(context)?.let { setLargeIcon(it) } }
             .setContentText(text)
             .apply { if (big != null) setStyle(NotificationCompat.BigTextStyle().bigText(big)) }
             .setContentIntent(open)

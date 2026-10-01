@@ -1,3 +1,4 @@
 • Since Us is for every couple, no matter who you are or whom you love. In June the app celebrates Pride Month with rainbow hearts and a greeting.
 • At the very bottom of the settings it now says who built the app.
+• Notifications show a drawn pink heart instead of an emoji.
 • No more emoji hearts: names in the share picture and widget now use a drawn heart.
