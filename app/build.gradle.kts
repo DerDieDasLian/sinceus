@@ -19,8 +19,8 @@ android {
         applicationId = "app.sinceus"
         minSdk = 26
         targetSdk = 36
-        versionCode = 28
-        versionName = "2.9.2"
+        versionCode = 29
+        versionName = "2.9.3"
         // Repository, in dem die GitHub-Version nach neuen Releases sucht
         val githubRepo = providers.gradleProperty("githubRepo").getOrElse("DerDieDasLian/sinceus")
         buildConfigField("String", "GITHUB_REPO", "\"$githubRepo\"")
