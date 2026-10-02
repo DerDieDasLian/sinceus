@@ -1,0 +1,1 @@
+• Fixed: the love card on the home screen sometimes switched to the look of the counter widget and back.

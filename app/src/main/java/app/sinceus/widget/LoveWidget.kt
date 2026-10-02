@@ -1,5 +1,7 @@
 package app.sinceus.widget
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -18,7 +20,7 @@ import androidx.glance.appwidget.LinearProgressIndicator
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
-import androidx.glance.appwidget.updateAll
+import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
@@ -59,10 +61,24 @@ class LoveWidget : GlanceAppWidget() {
     }
 
     companion object {
-        /** Aktualisiert alle Widgets der App. */
+        /**
+         * Aktualisiert alle Widgets der App.
+         *
+         * Bewusst nicht über updateAll(): Glance merkt sich dafür, welcher Receiver zu welcher
+         * Widget-Klasse gehört, und zwar über den Klassennamen. Den verkürzt R8 in der fertigen App,
+         * und nach einem Update können die Kurznamen vertauscht sein. Dann zeichnete updateAll() die
+         * Liebeskarte als Zähler-Widget und die nächste Aktualisierung wieder richtig, das Widget
+         * sprang hin und her. Hier geht es direkt über die Widget-IDs des jeweiligen Receivers.
+         */
         suspend fun refresh(context: Context) {
-            LoveWidget().updateAll(context)
-            CardWidget().updateAll(context)
+            update(context, LoveWidgetReceiver::class.java, LoveWidget())
+            update(context, PhotoWidgetReceiver::class.java, CardWidget())
+        }
+
+        private suspend fun update(context: Context, receiver: Class<*>, widget: GlanceAppWidget) {
+            val ids = AppWidgetManager.getInstance(context).getAppWidgetIds(ComponentName(context, receiver))
+            val glance = GlanceAppWidgetManager(context)
+            ids.forEach { id -> runCatching { widget.update(context, glance.getGlanceIdBy(id)) } }
         }
     }
 }

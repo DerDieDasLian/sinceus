@@ -1,0 +1,1 @@
+• Behoben: Die Liebeskarte auf dem Startbildschirm sprang manchmal zum Aussehen des Zähler-Widgets und zurück.
