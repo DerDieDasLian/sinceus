@@ -1,5 +1,7 @@
 package app.sinceus.ui
 
+import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.material3.OutlinedButton
 import app.sinceus.R
 import app.sinceus.data.Texts
 import androidx.compose.ui.platform.LocalContext
@@ -291,6 +293,18 @@ fun OnboardingScreen(
             }
         }
 
+        // Neues Handy oder neu installiert: gut sichtbar alles aus einer Sicherung zurückholen
+        if (step == 0 && onRestoreBackup != null) {
+            OutlinedButton(
+                onClick = onRestoreBackup,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp, top = 8.dp),
+            ) {
+                Icon(Icons.Rounded.Restore, null)
+                Text(stringResource(R.string.backup_restore_onboarding), Modifier.padding(start = 8.dp))
+            }
+        }
         Row(
             Modifier
                 .fillMaxWidth()
@@ -300,9 +314,6 @@ fun OnboardingScreen(
             // Namen und Datum sind Pflicht, nur das Foto kann warten
             if (step == 3) {
                 TextButton(onClick = { onStep(step + 1) }) { Text(stringResource(R.string.skip)) }
-            }
-            if (step == 0 && onRestoreBackup != null) {
-                TextButton(onClick = onRestoreBackup) { Text(stringResource(R.string.backup_restore_onboarding)) }
             }
             Spacer(Modifier.weight(1f))
             Button(

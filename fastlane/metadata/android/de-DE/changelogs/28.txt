@@ -1,0 +1,1 @@
+• Beim Einrichten gibt es jetzt einen gut sichtbaren Knopf „Sicherung wiederherstellen“. Außerdem zeigt die Dateiauswahl alle Dateien, damit deine Sicherung sicher auftaucht.

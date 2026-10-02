@@ -227,9 +227,9 @@ class MainActivity : ComponentActivity() {
                 ) { uri -> if (uri != null) vm.importSync(uri) }
 
                 fun saveBackup() = backupSaver.launch(Backup.fileName(today))
-                fun loadBackup() = backupLoader.launch(
-                    arrayOf(Backup.MIME, "application/x-zip-compressed", "application/octet-stream"),
-                )
+                // Alle Dateien zeigen: manche Dateimanager melden ZIP-Dateien mit seltsamem Typ,
+                // ob es wirklich eine Sicherung ist, prüft die App beim Laden selbst
+                fun loadBackup() = backupLoader.launch(arrayOf("*/*"))
 
                 BackHandler(enabled = showSettings || editingPhoto || editingMoment != null || showLicenses) {
                     when {

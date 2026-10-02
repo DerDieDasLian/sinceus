@@ -231,7 +231,7 @@
     <string name="backup_import_question">Restore backup?</string>
     <string name="backup_import_text">All current data on this device will be replaced by the data from the backup.</string>
     <string name="backup_import_confirm">Restore</string>
-    <string name="backup_restore_onboarding">Restore backup</string>
+    <string name="backup_restore_onboarding">Restore a backup</string>
     <string name="backup_saved">Backup saved</string>
     <string name="backup_save_failed">Backup could not be saved</string>
     <string name="backup_restored">Backup restored</string>

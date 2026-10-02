@@ -230,7 +230,7 @@
     <string name="backup_import_question">Sicherung wiederherstellen?</string>
     <string name="backup_import_text">Alle aktuellen Daten auf diesem Gerät werden durch die Daten aus der Sicherung ersetzt.</string>
     <string name="backup_import_confirm">Wiederherstellen</string>
-    <string name="backup_restore_onboarding">Sicherung laden</string>
+    <string name="backup_restore_onboarding">Sicherung wiederherstellen</string>
     <string name="backup_saved">Sicherung gespeichert</string>
     <string name="backup_save_failed">Sicherung konnte nicht gespeichert werden</string>
     <string name="backup_restored">Sicherung wiederhergestellt</string>

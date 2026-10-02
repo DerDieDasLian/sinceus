@@ -1,0 +1,1 @@
+• Setup now has a clearly visible "Restore a backup" button. The file picker also shows all files, so your backup always shows up.
