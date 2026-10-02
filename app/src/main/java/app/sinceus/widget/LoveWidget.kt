@@ -33,7 +33,6 @@ import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
-import androidx.glance.text.FontFamily
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
@@ -173,8 +172,6 @@ private fun CardContent(settings: LoveSettings) {
     // Flache Karte (z. B. 4x1): nur Namen und Zahl, ab mittlerer Höhe auch der nächste besondere Tag
     val flat = size.height < 110.dp
     val tall = size.height >= 140.dp
-    val white = ColorProvider(Color.White)
-    val soft = ColorProvider(Color(0xD9FFE3E7))
     val pink = ColorProvider(Color(0xFFFFB2B9))
     val label = if (future) {
         context.getString(R.string.widget_days_until)
@@ -201,48 +198,53 @@ private fun CardContent(settings: LoveSettings) {
             modifier = GlanceModifier.fillMaxSize().padding(horizontal = 18.dp, vertical = if (flat) 10.dp else 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // Text in der App-Schrift als Bild, Widgets können selbst keine eigenen Schriften
+            val heading = WidgetText.typeface(context, settings.font, heading = true)
+            val body = WidgetText.typeface(context, settings.font, heading = false)
+            val room = size.width.value - 36f
             // Gezeichnetes Herz statt Emoji
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val nameStyle = TextStyle(color = soft, fontSize = 13.sp, fontFamily = FontFamily.Serif)
                 // Im diskreten Modus nur Anfangsbuchstaben; ab vier Menschen als eine Zeile ohne Herzen
-                val names = settings.shownNames()
-                if (names.size > 3) {
-                    Text(Names.join(names), style = nameStyle, maxLines = 1)
-                } else {
-                    names.forEachIndexed { i, name ->
-                        if (i > 0) {
-                            Image(
-                                ImageProvider(R.drawable.ic_heart_small),
-                                contentDescription = null,
-                                modifier = GlanceModifier.padding(horizontal = 4.dp).size(12.dp),
-                            )
-                        }
-                        Text(name, style = nameStyle, maxLines = 1)
+                val names = settings.shownNames().let { if (it.size > 3) listOf(Names.join(it)) else it }
+                var lines = names.map { WidgetText.render(context, it, heading, 13f, SOFT) }
+                // Zu lange Namen verkleinern statt abschneiden
+                val total = lines.sumOf { it.widthDp.toDouble() } + (names.size - 1) * 20
+                if (total > room) {
+                    val scale = (room / total).toFloat().coerceAtLeast(0.6f)
+                    lines = names.map { WidgetText.render(context, it, heading, 13f, SOFT, scale = scale) }
+                }
+                lines.forEachIndexed { i, line ->
+                    if (i > 0) {
+                        Image(
+                            ImageProvider(R.drawable.ic_heart_small),
+                            contentDescription = null,
+                            modifier = GlanceModifier.padding(horizontal = 4.dp).size(12.dp),
+                        )
                     }
+                    TextImage(line, names[i])
                 }
             }
-            Spacer(GlanceModifier.height(if (flat) 0.dp else 4.dp))
+            Spacer(GlanceModifier.height(if (flat) 4.dp else 6.dp))
+            val number = WidgetText.render(
+                context,
+                formatNumber(days),
+                heading,
+                if (flat) 30f else if (wide) 40f else 34f,
+                WHITE,
+                weight = 700,
+                tight = true,
+            )
             if (wide || flat) {
                 Row(verticalAlignment = Alignment.Bottom) {
-                    Text(
-                        formatNumber(days),
-                        style = TextStyle(color = white, fontSize = if (flat) 32.sp else 40.sp, fontWeight = FontWeight.Bold),
-                    )
+                    TextImage(number, formatNumber(days))
                     Spacer(GlanceModifier.width(8.dp))
-                    Text(
-                        label,
-                        style = TextStyle(color = soft, fontSize = 14.sp),
-                        maxLines = 1,
-                        modifier = GlanceModifier.padding(bottom = if (flat) 5.dp else 7.dp),
-                    )
+                    TextImage(WidgetText.render(context, label, body, 14f, SOFT), label)
                 }
             } else {
                 // Schmale Karte: Beschriftung unter die Zahl
-                Text(
-                    formatNumber(days),
-                    style = TextStyle(color = white, fontSize = 34.sp, fontWeight = FontWeight.Bold),
-                )
-                Text(label, style = TextStyle(color = soft, fontSize = 13.sp), maxLines = 1)
+                TextImage(number, formatNumber(days))
+                Spacer(GlanceModifier.height(4.dp))
+                TextImage(WidgetText.render(context, label, body, 13f, SOFT), label)
             }
             if (tall && next != null && !future) {
                 // Fortschritt vom letzten bis zum nächsten besonderen Tag
@@ -257,14 +259,24 @@ private fun CardContent(settings: LoveSettings) {
                     backgroundColor = ColorProvider(Color(0x33FFFFFF)),
                 )
                 Spacer(GlanceModifier.height(5.dp))
-                Text(
-                    context.getString(R.string.widget_next, Texts.milestoneTitle(context, next)),
-                    style = TextStyle(color = soft, fontSize = 11.sp),
-                    maxLines = 1,
-                )
+                val nextText = context.getString(R.string.widget_next, Texts.milestoneTitle(context, next))
+                TextImage(WidgetText.render(context, nextText, body, 11f, SOFT), nextText)
             }
         }
     }
+}
+
+private const val WHITE = 0xFFFFFFFF.toInt()
+private const val SOFT = 0xD9FFE3E7.toInt()
+
+/** Ein als Bild gezeichneter Text, für Bildschirmleser mit dem Text als Beschreibung */
+@androidx.compose.runtime.Composable
+private fun TextImage(line: WidgetText.Line, description: String) {
+    Image(
+        ImageProvider(line.bitmap),
+        contentDescription = description,
+        modifier = GlanceModifier.width(line.widthDp.dp).height(line.heightDp.dp),
+    )
 }
 
 class LoveWidgetReceiver : GlanceAppWidgetReceiver() {

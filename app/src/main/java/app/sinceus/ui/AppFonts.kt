@@ -111,6 +111,53 @@ object AppFonts {
         )
     }
 
+    /**
+     * Schriftdateien für die Widgets (Überschrift, Text), die nur Bilder statt Compose-Schriften kennen.
+     * null = Systemschrift.
+     */
+    private val files: Map<String, Pair<Int?, Int?>> = mapOf(
+            CLASSIC_ID to (null to null),
+            "quicksand" to (R.font.quicksand to R.font.quicksand),
+            "nunito" to (R.font.nunito to R.font.nunito),
+            "comfortaa" to (R.font.comfortaa to R.font.comfortaa),
+            "fredoka" to (R.font.fredoka to R.font.fredoka),
+            "varela_round" to (R.font.varela_round to R.font.varela_round),
+            "baloo2" to (R.font.baloo2 to R.font.baloo2),
+            "rubik" to (R.font.rubik to R.font.rubik),
+            "funnel" to (R.font.funnel_display to R.font.funnel_sans),
+            "outfit" to (R.font.outfit to R.font.outfit),
+            "poppins" to (R.font.poppins_semibold to R.font.poppins_regular),
+            "lexend" to (R.font.lexend to R.font.lexend),
+            "montserrat" to (R.font.montserrat to R.font.montserrat),
+            "raleway" to (R.font.raleway to R.font.raleway),
+            "josefin_sans" to (R.font.josefin_sans to R.font.josefin_sans),
+            "urbanist" to (R.font.urbanist to R.font.urbanist),
+            "plus_jakarta_sans" to (R.font.plus_jakarta_sans to R.font.plus_jakarta_sans),
+            "sora" to (R.font.sora to R.font.sora),
+            "space_grotesk" to (R.font.space_grotesk to R.font.space_grotesk),
+            "familjen_grotesk" to (R.font.familjen_grotesk to R.font.familjen_grotesk),
+            "bricolage_grotesque" to (R.font.bricolage_grotesque to R.font.bricolage_grotesque),
+            "schibsted_grotesk" to (R.font.schibsted_grotesk to R.font.schibsted_grotesk),
+            "host_grotesk" to (R.font.host_grotesk to R.font.host_grotesk),
+            "fraunces" to (R.font.fraunces to R.font.nunito),
+            "playfair" to (R.font.playfair to R.font.nunito_sans),
+            "lora" to (R.font.lora to R.font.nunito),
+            "cormorant" to (R.font.cormorant_garamond to R.font.nunito),
+            "young_serif" to (R.font.young_serif to R.font.nunito),
+            "gloock" to (R.font.gloock to R.font.nunito),
+            "abril_fatface" to (R.font.abril_fatface to R.font.nunito),
+            "italiana" to (R.font.italiana to R.font.raleway),
+            "caveat" to (R.font.caveat to R.font.quicksand),
+            "pacifico" to (R.font.pacifico to R.font.nunito),
+            "dancing_script" to (R.font.dancing_script to R.font.nunito),
+            "great_vibes" to (R.font.great_vibes to R.font.quicksand),
+            "sacramento" to (R.font.sacramento to R.font.quicksand),
+            "kalam" to (R.font.kalam to R.font.nunito),
+            "patrick_hand" to (R.font.patrick_hand to R.font.patrick_hand),
+    )
+
+    fun files(font: AppFont): Pair<Int?, Int?> = files[font.id] ?: (null to null)
+
     /** Die Schrift zur gespeicherten ID; leer oder unbekannt = Standard */
     fun find(id: String): AppFont {
         val wanted = id.ifEmpty { DEFAULT_ID }

@@ -130,6 +130,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Gavel
+import androidx.compose.material.icons.rounded.Public
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.FilterChip
@@ -213,6 +216,7 @@ fun SettingsScreen(
     var page by rememberSaveable { mutableStateOf(initialPage) }
     BackHandler(enabled = page != null) { page = null }
     val context = LocalContext.current
+    val uri = androidx.compose.ui.platform.LocalUriHandler.current
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
@@ -240,7 +244,15 @@ fun SettingsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 when (page) {
-                    null -> Overview(settings, notificationsAllowed, pairing, onOpen = { page = it })
+                    null -> Overview(
+                        settings,
+                        notificationsAllowed,
+                        pairing,
+                        appLock = appLock,
+                        languageLabel = languageLabel(language),
+                        onLanguage = { dialog = "language" },
+                        onOpen = { page = it },
+                    )
                     SettingsPage.Couple -> {
                         if (!settings.isPoly) {
                             Text(
@@ -291,25 +303,6 @@ fun SettingsScreen(
                                 Row(Icons.Rounded.Add, stringResource(R.string.add_relationship), null) { dialog = "rel:" }
                             }
                         }
-                        Section(null) {
-                            ListItem(
-                                headlineContent = { Text(stringResource(R.string.discreet)) },
-                                supportingContent = { Text(stringResource(R.string.discreet_summary)) },
-                                leadingContent = { Icon(Icons.Rounded.VisibilityOff, null) },
-                                trailingContent = { Switch(checked = settings.discreet, onCheckedChange = onDiscreet) },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable { onDiscreet(!settings.discreet) },
-                            )
-                            Divider()
-                            ListItem(
-                                headlineContent = { Text(stringResource(R.string.app_lock)) },
-                                supportingContent = { Text(stringResource(R.string.app_lock_summary)) },
-                                leadingContent = { Icon(Icons.Rounded.Lock, null) },
-                                trailingContent = { Switch(checked = appLock, onCheckedChange = onAppLock) },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable { onAppLock(!appLock) },
-                            )
-                        }
                     }
                     SettingsPage.Photo -> Section(null) {
                         Row(Icons.Rounded.AddPhotoAlternate, stringResource(R.string.pick_own_photo), null, onClick = onPickPhoto)
@@ -333,6 +326,25 @@ fun SettingsScreen(
                         Row(Icons.Rounded.RestartAlt, stringResource(R.string.reset_photo), null, onClick = onResetPhoto)
                         Divider()
                         Row(Icons.Rounded.TextFields, stringResource(R.string.font_title), AppFonts.find(settings.font).label()) { dialog = "font" }
+                    }
+                    SettingsPage.Privacy -> Section(null) {
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.discreet)) },
+                            supportingContent = { Text(stringResource(R.string.discreet_summary)) },
+                            leadingContent = { Icon(Icons.Rounded.VisibilityOff, null) },
+                            trailingContent = { Switch(checked = settings.discreet, onCheckedChange = onDiscreet) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { onDiscreet(!settings.discreet) },
+                        )
+                        Divider()
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.app_lock)) },
+                            supportingContent = { Text(stringResource(R.string.app_lock_summary)) },
+                            leadingContent = { Icon(Icons.Rounded.Lock, null) },
+                            trailingContent = { Switch(checked = appLock, onCheckedChange = onAppLock) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { onAppLock(!appLock) },
+                        )
                     }
                     SettingsPage.Notifications -> Section(null) {
                         ListItem(
@@ -484,7 +496,11 @@ fun SettingsScreen(
                                 modifier = Modifier.clickable { onShowChangelog(!settings.showChangelog) },
                             )
                             Divider()
+                            Row(Icons.Rounded.Public, stringResource(R.string.website), null) { uri.openUri(Web.page("index", context)) }
+                            Divider()
                             Row(Icons.Rounded.Shield, stringResource(R.string.privacy), null) { dialog = "privacy" }
+                            Divider()
+                            Row(Icons.Rounded.Gavel, stringResource(R.string.imprint), null) { uri.openUri(Web.page("imprint", context)) }
                             Divider()
                             Row(Icons.Rounded.Description, stringResource(R.string.licenses), null, onClick = onOpenLicenses)
                             Divider()
@@ -532,9 +548,6 @@ fun SettingsScreen(
                     }
                 }
                 if (page == null) {
-                    Section(null) {
-                        Row(Icons.Rounded.Language, stringResource(R.string.language), languageLabel(language)) { dialog = "language" }
-                    }
                     Spacer(Modifier.height(8.dp))
                     RainbowCard(stringResource(R.string.all_couples), stringResource(R.string.all_couples_text))
                     Credit()
@@ -671,6 +684,9 @@ fun SettingsScreen(
                 Text(stringResource(R.string.privacy_text))
             },
             confirmButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.ok)) } },
+            dismissButton = {
+                TextButton(onClick = { uri.openUri(Web.page("privacy", context)) }) { Text(stringResource(R.string.privacy_full)) }
+            },
         )
     }
 }
@@ -702,15 +718,21 @@ private fun Credit() {
 }
 
 /** Unterseiten der Einstellungen */
-enum class SettingsPage(@androidx.annotation.StringRes val title: Int, val icon: ImageVector) {
-    Couple(R.string.settings_couple, Icons.Rounded.People),
-    Photo(R.string.section_photo, Icons.Rounded.AddPhotoAlternate),
-    Notifications(R.string.section_notifications, Icons.Rounded.NotificationsActive),
-    Home(R.string.settings_home, Icons.Rounded.Dashboard),
-    Sync(R.string.section_sync, Icons.Rounded.Sync),
-    Backup(R.string.section_backup, Icons.Rounded.Backup),
-    About(R.string.settings_about, Icons.Rounded.Info),
-    Reset(R.string.section_reset, Icons.Rounded.RestartAlt),
+/** Bereiche der Einstellungen, auf der Übersicht in Gruppen sortiert (Reihenfolge = Anzeige) */
+enum class SettingsPage(
+    @androidx.annotation.StringRes val title: Int,
+    val icon: ImageVector,
+    @androidx.annotation.StringRes val group: Int,
+) {
+    Couple(R.string.settings_couple, Icons.Rounded.People, R.string.settings_group_love),
+    Notifications(R.string.section_notifications, Icons.Rounded.NotificationsActive, R.string.settings_group_love),
+    Photo(R.string.section_photo, Icons.Rounded.Palette, R.string.settings_group_app),
+    Home(R.string.settings_home, Icons.Rounded.Dashboard, R.string.settings_group_app),
+    Privacy(R.string.section_privacy, Icons.Rounded.Lock, R.string.settings_group_app),
+    Backup(R.string.section_backup, Icons.Rounded.Backup, R.string.settings_group_data),
+    Sync(R.string.section_sync, Icons.Rounded.Sync, R.string.settings_group_data),
+    Reset(R.string.section_reset, Icons.Rounded.RestartAlt, R.string.settings_group_data),
+    About(R.string.settings_about, Icons.Rounded.Info, R.string.settings_group_info),
 }
 
 /** Startseite der Einstellungen: ein Eintrag pro Bereich mit kurzer Zusammenfassung */
@@ -719,6 +741,9 @@ private fun Overview(
     settings: LoveSettings,
     notificationsAllowed: Boolean,
     pairing: Pairing?,
+    appLock: Boolean,
+    languageLabel: String,
+    onLanguage: () -> Unit,
     onOpen: (SettingsPage) -> Unit,
 ) {
     val context = LocalContext.current
@@ -743,7 +768,11 @@ private fun Overview(
         } else {
             "${settings.names}, ${Texts.mediumDate(settings.startDate)}"
         },
-        SettingsPage.Photo to photo,
+        SettingsPage.Photo to photo + ", " + AppFonts.find(settings.font).label(),
+        SettingsPage.Privacy to listOfNotNull(
+            stringResource(if (appLock) R.string.app_lock_on else R.string.app_lock_off),
+            if (settings.discreet) stringResource(R.string.discreet) else null,
+        ).joinToString(", "),
         SettingsPage.Notifications to when {
             !settings.notificationsEnabled -> stringResource(R.string.notify_off)
             !notificationsAllowed -> stringResource(R.string.notify_blocked)
@@ -762,8 +791,9 @@ private fun Overview(
             stringResource(R.string.version_value, BuildConfig.VERSION_NAME, BuildConfig.FLAVOR)
         },
     )
-    Section(null) {
-        SettingsPage.entries.forEachIndexed { i, p ->
+    SettingsPage.entries.groupBy { it.group }.forEach { (group, pages) ->
+      Section(stringResource(group)) {
+        pages.forEachIndexed { i, p ->
             if (i > 0) Divider()
             val highlight = p == SettingsPage.About && updateReady
             ListItem(
@@ -782,6 +812,18 @@ private fun Overview(
                 modifier = Modifier.clickable { onOpen(p) },
             )
         }
+        // Sprache direkt hier, ohne eigene Unterseite
+        if (group == R.string.settings_group_app) {
+            Divider()
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.language)) },
+                supportingContent = { Text(languageLabel, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                leadingContent = { Icon(Icons.Rounded.Language, null) },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                modifier = Modifier.clickable(onClick = onLanguage),
+            )
+        }
+      }
     }
 }
 
@@ -1321,4 +1363,18 @@ private fun remindLabel(days: Int): Int = when (days) {
     1 -> R.string.remind_day
     7 -> R.string.remind_week
     else -> R.string.remind_off
+}
+
+/** Seiten der Website, auf Deutsch oder Englisch passend zur App-Sprache */
+private object Web {
+    private const val BASE = "https://derdiedaslian.github.io/sinceus/"
+
+    fun page(name: String, context: android.content.Context): String {
+        val de = context.resources.configuration.locales[0].language == "de"
+        return BASE + when (name) {
+            "privacy" -> if (de) "privacy-de.html" else "privacy-en.html"
+            "imprint" -> if (de) "impressum.html" else "legal-notice.html"
+            else -> if (de) "index-de.html" else ""
+        }
+    }
 }

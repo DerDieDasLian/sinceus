@@ -1,0 +1,3 @@
+• Das Liebeskarten-Widget nutzt jetzt deine gewählte Schrift, und die Zahl wird nicht mehr abgeschnitten.
+• Einstellungen neu sortiert (Ihr, App, Daten, Info) mit einer neuen Seite Privatsphäre für App-Sperre und diskreten Modus.
+• Unter Über die App gibt es jetzt Links zur Website, zur Datenschutzerklärung und zum Impressum.

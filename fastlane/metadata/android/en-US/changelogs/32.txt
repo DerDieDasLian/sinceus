@@ -1,0 +1,3 @@
+• The love card widget now uses your chosen font, and the number is no longer cut off.
+• Settings are sorted anew (You two, App, Data, Info) with a new Privacy page for app lock and discreet mode.
+• About now links to the website, the privacy policy and the legal notice.
