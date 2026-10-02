@@ -1,0 +1,6 @@
+• Geburtstage: Bei jedem Menschen kann freiwillig ein Geburtstag stehen, mit Anzeige unter "Demnächst" und Mitteilung am Tag.
+• Ab 8 Momenten gibt es eine Suche und Filter nach Jahr (und Beziehung).
+• Lange aufs App-Icon drücken: direkt neuer Moment oder Live-Zähler.
+• Das Zähler-Widget hat jetzt ein Vorschaubild in der Widget-Auswahl.
+• Besser mit Bildschirmlesern und großer Schrift nutzbar.
+• Der Datenschutz-Hinweis erklärt jetzt auch Sicherung und Abgleich.

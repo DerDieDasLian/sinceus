@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Farben der Vorschau des Zähler-Widgets in der Widget-Auswahl, ähnlich den Systemfarben des echten Widgets -->
+<resources>
+    <color name="widget_preview_bg">#FF2A2022</color>
+    <color name="widget_preview_text">#FFF0DEDF</color>
+    <color name="widget_preview_text_soft">#FFD7C1C3</color>
+    <color name="widget_preview_accent">#FFFFB2B9</color>
+    <color name="widget_preview_track">#FF524345</color>
+</resources>

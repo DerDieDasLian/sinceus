@@ -74,4 +74,20 @@ class MomentTest {
             MomentMath.milestonesOn(list, LocalDate.of(2026, 5, 10)),
         )
     }
+
+    @Test
+    fun filterBySearchYearAndRelationship() {
+        val forR1 = firstDate.copy(id = "d", relationshipId = "r1")
+        val forR2 = quiet.copy(id = "e", date = LocalDate.of(2025, 1, 2), relationshipId = "r2")
+        assertTrue(MomentFilter.matches(firstDate, "kino"))
+        assertTrue(MomentFilter.matches(firstDate, " erstes "))
+        assertTrue(!MomentFilter.matches(firstDate, "Urlaub"))
+        assertTrue(MomentFilter.matches(leap, "", year = 2024))
+        assertTrue(!MomentFilter.matches(forR2, "", year = 2024))
+        assertTrue(MomentFilter.matches(forR1, "", relationshipId = "r1"))
+        assertTrue(!MomentFilter.matches(forR2, "", relationshipId = "r1"))
+        // Momente für alle Beziehungen passen überall
+        assertTrue(MomentFilter.matches(firstDate, "", relationshipId = "r2"))
+        assertEquals(listOf(2025, 2024), MomentFilter.years(listOf(firstDate, leap, forR2)))
+    }
 }

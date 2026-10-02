@@ -103,3 +103,23 @@ object MomentMath {
     /** Tage zwischen [m] und [today]: positiv = vergangen, negativ = in der Zukunft. */
     fun daysSince(m: Moment, today: LocalDate): Long = ChronoUnit.DAYS.between(m.date, today)
 }
+
+/** Suche und Filter in der Zeitleiste, erst sinnvoll ab einigen Momenten */
+object MomentFilter {
+    const val MIN_MOMENTS = 8
+
+    /**
+     * Passt [m] zu Suchtext, Jahr und Beziehung? Leerer Text und null bedeuten jeweils „alles“.
+     * Momente für alle Beziehungen passen zu jeder Beziehung.
+     */
+    fun matches(m: Moment, query: String, year: Int? = null, relationshipId: String? = null): Boolean {
+        val q = query.trim()
+        if (q.isNotEmpty() && !m.title.contains(q, ignoreCase = true) && !m.note.contains(q, ignoreCase = true)) return false
+        if (year != null && m.date.year != year) return false
+        if (relationshipId != null && m.relationshipId != null && m.relationshipId != relationshipId) return false
+        return true
+    }
+
+    /** Jahre mit Momenten, das neueste zuerst */
+    fun years(moments: List<Moment>): List<Int> = moments.map { it.date.year }.distinct().sortedDescending()
+}

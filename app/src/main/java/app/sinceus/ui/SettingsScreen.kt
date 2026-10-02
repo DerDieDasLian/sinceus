@@ -98,11 +98,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.background
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.rounded.Backup
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.CardGiftcard
 import androidx.compose.material.icons.rounded.Restore
 import androidx.compose.material.icons.rounded.Slideshow
 import app.sinceus.data.MAX_SLIDES
@@ -235,7 +237,8 @@ fun SettingsScreen(
                                 if (i > 0) Divider()
                                 ListItem(
                                     headlineContent = { Text(p.name.ifBlank { "?" }) },
-                                    supportingContent = p.pronouns.ifBlank { null }?.let { { Text(it) } },
+                                    supportingContent = listOfNotNull(p.pronouns.ifBlank { null }, p.birthday?.let(Texts::mediumDate))
+                                        .joinToString(" · ").ifBlank { null }?.let { { Text(it) } },
                                     leadingContent = { Avatar(p.name) },
                                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                     modifier = Modifier.clickable { dialog = "person:${p.id}" },
@@ -742,7 +745,7 @@ private fun Avatar(name: String) {
     }
 }
 
-/** Name und Pronomen eines Menschen bearbeiten */
+/** Name, Pronomen und Geburtstag eines Menschen bearbeiten */
 @Composable
 private fun PersonDialog(
     person: Person,
@@ -754,6 +757,8 @@ private fun PersonDialog(
 ) {
     var name by rememberSaveable { mutableStateOf(person.name) }
     var pronouns by rememberSaveable { mutableStateOf(person.pronouns) }
+    var birthday by rememberSaveable { mutableStateOf(person.birthday?.toEpochDay()) }
+    var pickBirthday by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
     val caps = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
     AlertDialog(
@@ -773,6 +778,26 @@ private fun PersonDialog(
                     placeholder = { Text(stringResource(R.string.pronouns_hint)) },
                     singleLine = true,
                 )
+                // Geburtstag ist freiwillig und wird nur hier gefragt, nicht beim Einrichten
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.birthday_optional)) },
+                    supportingContent = {
+                        Text(
+                            birthday?.let { Texts.mediumDate(LocalDate.ofEpochDay(it)) } ?: stringResource(R.string.not_set),
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    },
+                    leadingContent = { Icon(Icons.Rounded.CardGiftcard, null) },
+                    trailingContent = birthday?.let {
+                        {
+                            IconButton(onClick = { birthday = null }) {
+                                Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.birthday_remove))
+                            }
+                        }
+                    },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { pickBirthday = true },
+                )
                 if (canDelete) {
                     TextButton(
                         onClick = { if (confirmDelete) onDelete() else confirmDelete = true },
@@ -785,12 +810,22 @@ private fun PersonDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = { onSave(person.copy(name = name, pronouns = pronouns)) },
+                onClick = { onSave(person.copy(name = name, pronouns = pronouns, birthday = birthday?.let(LocalDate::ofEpochDay))) },
                 enabled = name.isNotBlank(),
             ) { Text(stringResource(R.string.save)) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
+    if (pickBirthday) {
+        DateDialog(
+            birthday?.let(LocalDate::ofEpochDay) ?: LocalDate.now().minusYears(25),
+            onDismiss = { pickBirthday = false },
+            title = R.string.birthday,
+        ) {
+            birthday = it.toEpochDay()
+            pickBirthday = false
+        }
+    }
 }
 
 /** Wer gehört zur Beziehung, seit wann, wie heißt sie und gibt es Mitteilungen */
@@ -1109,7 +1144,7 @@ internal fun PresetDialog(selected: Int, onDismiss: () -> Unit, onPick: (Int) ->
                         modifier = Modifier
                             .aspectRatio(0.8f)
                             .clip(RoundedCornerShape(16.dp))
-                            .clickable { onPick(i) },
+                            .selectable(selected = i == selected, role = Role.RadioButton) { onPick(i) },
                     ) {
                         Box {
                             PresetBackground(p, Modifier.fillMaxSize())

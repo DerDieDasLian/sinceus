@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Farben der Vorschau des Zähler-Widgets in der Widget-Auswahl, ähnlich den Systemfarben des echten Widgets -->
+<resources>
+    <color name="widget_preview_bg">@android:color/system_accent2_50</color>
+    <color name="widget_preview_text">@android:color/system_neutral1_900</color>
+    <color name="widget_preview_text_soft">@android:color/system_neutral2_700</color>
+    <color name="widget_preview_accent">@android:color/system_accent1_600</color>
+    <color name="widget_preview_track">@android:color/system_neutral2_100</color>
+</resources>

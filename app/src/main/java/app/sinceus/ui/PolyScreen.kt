@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import app.sinceus.R
 import app.sinceus.data.ALL_RELATIONSHIPS
+import app.sinceus.data.BirthdayMath
 import app.sinceus.data.LoveMath
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.MomentMath
@@ -133,10 +134,12 @@ internal fun PolyOverview(settings: LoveSettings, today: LocalDate, onSelect: (S
     val moments = if (settings.showMoments) settings.moments else emptyList()
     val todays = settings.relationships.flatMap { r ->
         LoveMath.milestonesOn(r.startDate, today).map { "${settings.namesOf(r)}: ${Texts.milestoneMessage(context, it)}" }
-    } + MomentMath.milestonesOn(moments, today).map { Texts.milestoneMessage(context, it) }
+    } + (MomentMath.milestonesOn(moments, today) + BirthdayMath.milestonesOn(settings.people, today))
+        .map { Texts.milestoneMessage(context, it) }
     val upcoming = (
         settings.relationships.flatMap { r -> LoveMath.upcoming(r.startDate, today, 3).map { it to settings.namesOf(r) } } +
-            MomentMath.upcoming(moments, today, 3).map { it to null }
+            MomentMath.upcoming(moments, today, 3).map { it to null } +
+            BirthdayMath.upcoming(settings.people, today, 3).map { it to null }
         )
         .sortedBy { it.first.date }
         .take(6)

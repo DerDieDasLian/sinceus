@@ -22,7 +22,7 @@ class PeopleTest {
     private val context: Context get() = ApplicationProvider.getApplicationContext()
 
     private val poly = LoveSettings(
-        people = listOf(Person("a", "Alex"), Person("s", "Sam", "they/them"), Person("k", "Kim")),
+        people = listOf(Person("a", "Alex"), Person("s", "Sam", "they/them", LocalDate.of(1998, 8, 20)), Person("k", "Kim")),
         relationships = listOf(
             Relationship("r1", listOf("a", "s"), LocalDate.of(2025, 3, 15), LocalTime.of(20, 0)),
             Relationship("r2", listOf("a", "k"), LocalDate.of(2024, 6, 1), label = "Nesting", notify = false),
@@ -139,5 +139,33 @@ class PeopleTest {
         val one = s.copy(relationships = listOf(s.relationships[0], s.relationships[1].copy(notify = false)))
         assertEquals("Alex & Sam", Notifier.dueToday(context, one, LocalDate.of(2025, 5, 15))!!.first)
         assertNull(Notifier.dueToday(context, s, LocalDate.of(2025, 5, 16)))
+    }
+
+    @Test
+    fun birthdays() {
+        val leap = Person("l", "Lou", birthday = LocalDate.of(2000, 2, 29))
+        val sam = poly.people[1]
+        // Am 29.02. Geborene feiern in anderen Jahren am 28.02.
+        assertEquals(LocalDate.of(2025, 2, 28), BirthdayMath.next(leap.birthday!!, LocalDate.of(2025, 1, 1)))
+        assertEquals(LocalDate.of(2028, 2, 29), BirthdayMath.next(leap.birthday!!, LocalDate.of(2028, 1, 1)))
+        val today = BirthdayMath.milestonesOn(listOf(leap, sam), LocalDate.of(2025, 2, 28)).single()
+        assertEquals(MilestoneKind.BIRTHDAY, today.kind)
+        assertEquals("Lou", today.title)
+        assertEquals(25L, today.value)
+        // Am Tag der Geburt selbst und ohne Datum gibt es nichts zu feiern
+        assertTrue(BirthdayMath.milestonesOn(listOf(leap, poly.people[0]), LocalDate.of(2000, 2, 29)).isEmpty())
+
+        val next = BirthdayMath.upcoming(listOf(leap, sam, poly.people[0]), LocalDate.of(2025, 3, 1))
+        assertEquals(listOf("Sam", "Lou"), next.map { it.title })
+        assertEquals(LocalDate.of(2025, 8, 20), next[0].date)
+
+        // Mitteilung, im diskreten Modus nur mit Anfangsbuchstaben
+        val s = poly.copy(moments = emptyList())
+        val (_, lines) = Notifier.dueToday(context, s, LocalDate.of(2025, 8, 20))!!
+        assertEquals(listOf("Heute hat S. Geburtstag."), lines)
+        assertEquals("Geburtstag von Sam", Texts.milestoneTitle(context, next[0]))
+        // Keine Mitteilung, wenn alle Beziehungen dieses Menschen stumm sind
+        val quiet = s.copy(relationships = s.relationships.map { it.copy(notify = false) })
+        assertNull(Notifier.dueToday(context, quiet, LocalDate.of(2025, 8, 20)))
     }
 }

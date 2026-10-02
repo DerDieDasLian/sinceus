@@ -49,6 +49,9 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** Gewünschter Sprung von einer App-Abkürzung: "moment" oder "live", null = keiner */
+    val jump = MutableStateFlow<String?>(null)
+
     fun refreshToday() {
         _today.value = LocalDate.now()
     }

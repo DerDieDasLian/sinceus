@@ -1,0 +1,6 @@
+• Birthdays: you can optionally add a birthday for each person. It shows up under "Upcoming" and you get a notification on the day.
+• From 8 moments on there is a search and a filter by year (and relationship).
+• Long press the app icon to add a new moment or open the live counter right away.
+• The counter widget now has a preview in the widget picker.
+• Works better with screen readers and large text.
+• The privacy note now also explains backups and sync.

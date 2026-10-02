@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="privacy_text">Your names, date, photos and moments are stored only on this device and are never sent anywhere. This version only connects to GitHub to check for new versions (can be turned off in the settings). No tracking, no ads.</string>
+    <string name="privacy_text">Your names, date, photos and moments are stored on this device. This version only connects to GitHub to check for new versions (can be turned off in the settings). No tracking, no ads. Your data only leaves the phone if you save a backup, send a sync file to your paired phone, or use the Android backup (Google backup).</string>
 </resources>

@@ -13,6 +13,8 @@ data class Person(
     val name: String,
     /** Freitext, leer = keine Angabe */
     val pronouns: String = "",
+    /** Geburtstag, null = keine Angabe */
+    val birthday: LocalDate? = null,
 )
 
 /**
@@ -64,7 +66,15 @@ object Names {
 /** Speichert Menschen und Beziehungen als JSON-Text. */
 object PeopleCodec {
     fun encodePeople(people: List<Person>): String = JSONArray().apply {
-        people.forEach { put(JSONObject().put("id", it.id).put("name", it.name).put("pronouns", it.pronouns)) }
+        people.forEach {
+            put(
+                JSONObject()
+                    .put("id", it.id)
+                    .put("name", it.name)
+                    .put("pronouns", it.pronouns)
+                    .put("birthday", it.birthday?.toEpochDay() ?: JSONObject.NULL),
+            )
+        }
     }.toString()
 
     /** null, wenn nichts gespeichert ist; unlesbare Einträge werden übersprungen */
@@ -77,6 +87,7 @@ object PeopleCodec {
                     id = o.getString("id").take(64),
                     name = o.getString("name").trim().take(MAX_NAME),
                     pronouns = o.optString("pronouns", "").trim().take(MAX_NAME),
+                    birthday = if (o.isNull("birthday")) null else LocalDate.ofEpochDay(o.getLong("birthday")),
                 )
             }.getOrNull()
         }.distinctBy { it.id }
@@ -141,4 +152,33 @@ object PeopleCodec {
     const val MAIN_ID = "main"
     const val FIRST_ID = "a"
     const val SECOND_ID = "b"
+}
+
+object BirthdayMath {
+    /** Nächster Geburtstag ab [from] (einschließlich). Wer am 29.02. geboren ist, feiert sonst am 28.02. */
+    fun next(birthday: LocalDate, from: LocalDate): LocalDate {
+        var years = maxOf(0, from.year - birthday.year).toLong()
+        var next = birthday.plusYears(years)
+        while (next.isBefore(from)) next = birthday.plusYears(++years)
+        return next
+    }
+
+    /** Geburtstage, die genau auf [day] fallen; [title] ist der Name, [value] das neue Alter. */
+    fun milestonesOn(people: List<Person>, day: LocalDate, name: (Person) -> String = { it.name }): List<Milestone> =
+        people.mapNotNull { p ->
+            val b = p.birthday ?: return@mapNotNull null
+            if (!day.isAfter(b) || next(b, day) != day) return@mapNotNull null
+            Milestone(MilestoneKind.BIRTHDAY, (day.year - b.year).toLong(), day, name(p))
+        }
+
+    /** Die nächsten Geburtstage nach [today] (exklusiv), nach Datum sortiert. */
+    fun upcoming(people: List<Person>, today: LocalDate, count: Int = 4, name: (Person) -> String = { it.name }): List<Milestone> =
+        people.mapNotNull { p ->
+            val b = p.birthday ?: return@mapNotNull null
+            val next = next(b, today.plusDays(1))
+            if (next == b) return@mapNotNull null
+            Milestone(MilestoneKind.BIRTHDAY, (next.year - b.year).toLong(), next, name(p))
+        }
+            .sortedBy { it.date }
+            .take(count)
 }

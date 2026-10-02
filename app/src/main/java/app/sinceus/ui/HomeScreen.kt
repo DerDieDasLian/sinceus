@@ -6,6 +6,10 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -41,6 +45,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cake
+import androidx.compose.material.icons.rounded.CardGiftcard
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Celebration
@@ -71,6 +76,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.sinceus.data.LoveMath
 import app.sinceus.data.LoveSettings
+import app.sinceus.data.BirthdayMath
 import app.sinceus.data.Milestone
 import app.sinceus.data.MilestoneKind
 import app.sinceus.data.MomentMath
@@ -96,6 +102,9 @@ fun HomeScreen(
     onOpenMoment: (app.sinceus.data.Moment) -> Unit = {},
     /** Andere Beziehung zeigen (Poly-Modus), [app.sinceus.data.ALL_RELATIONSHIPS] = alle */
     onSelect: (String) -> Unit = {},
+    /** Von einer App-Abkürzung: "live" springt zum Live-Zähler */
+    jumpTo: String? = null,
+    onJumped: () -> Unit = {},
 ) {
     // Live und Momente lassen sich in den Einstellungen ausblenden
     val pages = listOfNotNull(
@@ -108,6 +117,12 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     LaunchedEffect(pager) {
         snapshotFlow { pager.settledPage }.drop(1).collect(onPageChange)
+    }
+    LaunchedEffect(jumpTo) {
+        if (jumpTo == null) return@LaunchedEffect
+        val index = if (jumpTo == "live") pages.indexOf(HomePage.Live) else -1
+        if (index >= 0) pager.scrollToPage(index)
+        onJumped()
     }
     Box(
         Modifier
@@ -175,12 +190,13 @@ private fun ModeSwitch(selected: Int, pages: List<HomePage>, onSelect: (Int) -> 
     Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
         pages.map { stringResource(it.label) }.forEachIndexed { i, label ->
             val active = i == selected
+            // Als Reiter vorgelesen, mit "ausgewählt"; bei großer Schrift wächst der Knopf mit
             Box(
                 Modifier
-                    .height(BarItemHeight)
+                    .heightIn(min = BarItemHeight)
                     .clip(CircleShape)
                     .background(if (active) Color.White else Color.Transparent)
-                    .clickable { onSelect(i) }
+                    .selectable(selected = active, role = Role.Tab) { onSelect(i) }
                     .padding(horizontal = 18.dp),
                 contentAlignment = Alignment.Center,
             ) {
@@ -201,8 +217,12 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
     val future = start.isAfter(today)
     // Jahrestage der Momente erscheinen mit, solange die Momente nicht ausgeblendet sind
     val moments = if (settings.showMoments) settings.visibleMoments else emptyList()
-    val todays = LoveMath.milestonesOn(start, today) + MomentMath.milestonesOn(moments, today)
-    val upcoming = (LoveMath.upcoming(start, today, 4) + MomentMath.upcoming(moments, today, 4))
+    val members = settings.members()
+    val todays = LoveMath.milestonesOn(start, today) + MomentMath.milestonesOn(moments, today) +
+        BirthdayMath.milestonesOn(members, today)
+    val upcoming = (
+        LoveMath.upcoming(start, today, 4) + MomentMath.upcoming(moments, today, 4) + BirthdayMath.upcoming(members, today, 4)
+        )
         .sortedBy { it.date }
         .take(4)
         .map { it to (null as String?) }
@@ -471,9 +491,11 @@ internal fun UpcomingCard(upcoming: List<Pair<Milestone, String?>>, today: Local
             )
             upcoming.forEach { (m, who) ->
                 val inDays = ChronoUnit.DAYS.between(today, m.date)
+                // Bildschirmleser lesen Anlass, Datum und Abstand als eine Zeile vor
                 Row(
                     Modifier
                         .fillMaxWidth()
+                        .semantics(mergeDescendants = true) {}
                         .padding(horizontal = 20.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -524,4 +546,5 @@ private fun MilestoneKind.icon(): ImageVector = when (this) {
     MilestoneKind.DAYS -> Icons.Rounded.Star
     MilestoneKind.WEEKS -> Icons.Rounded.CalendarMonth
     MilestoneKind.MOMENT -> Icons.Rounded.AutoAwesome
+    MilestoneKind.BIRTHDAY -> Icons.Rounded.CardGiftcard
 }

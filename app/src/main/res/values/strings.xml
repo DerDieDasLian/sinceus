@@ -28,7 +28,7 @@
     <string name="add_widget">Add widget to home screen</string>
     <string name="restart_setup">Run setup again</string>
     <string name="privacy">Privacy</string>
-    <string name="privacy_text">Your names, date, photos and moments are stored only on this device. The app has no internet access, sends no data and contains no tracking or ads.</string>
+    <string name="privacy_text">Your names, date, photos and moments are stored on this device. The app has no internet access and contains no tracking or ads. Your data only leaves the phone if you save a backup, send a sync file to your paired phone, or use the Android backup (Google backup).</string>
     <string name="delete_all">Delete all data</string>
     <string name="delete_all_summary">Completely resets the app</string>
     <string name="delete_all_question">Delete all data?</string>
@@ -322,4 +322,24 @@
     <string name="sync_failed">The file could not be synced. It may belong to a different pairing or be damaged.</string>
     <string name="sync_done">Synced: %1$d new, %2$d changed, %3$d removed</string>
     <string name="moment_added_by">Added by %1$s</string>
+
+    <!-- Geburtstage -->
+    <string name="birthday">Birthday</string>
+    <string name="birthday_optional">Birthday (optional)</string>
+    <string name="birthday_remove">Remove birthday</string>
+    <string name="birthday_title">%1$s\'s birthday</string>
+    <string name="msg_birthday">Today is %1$s\'s birthday.</string>
+    <!-- Suche in den Momenten -->
+    <string name="moments_search">Search moments</string>
+    <string name="moments_search_clear">Clear search</string>
+    <string name="moments_no_results">No moments found</string>
+    <!-- App-Abkürzungen -->
+    <string name="shortcut_moment">New moment</string>
+    <string name="shortcut_moment_long">Add a new moment</string>
+    <string name="shortcut_live">Live</string>
+    <string name="shortcut_live_long">Open the live counter</string>
+    <!-- Vorschau des Zähler-Widgets -->
+    <string name="widget_preview_number" translatable="false">153</string>
+    <string name="widget_preview_label">days together</string>
+    <string name="widget_preview_next">Next: 6 months</string>
 </resources>

@@ -34,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.CompositionLocalProvider
 import app.sinceus.ui.LocalPrideMonth
 import app.sinceus.ui.isPrideMonth
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -91,6 +92,29 @@ class MainActivity : ComponentActivity() {
                     onPauseOrDispose { }
                 }
                 val allowed = remember(resumeCount) { Notifier.canNotify(this@MainActivity) }
+
+                // App-Abkürzungen passend zu den eingeschalteten Bereichen (und in der gewählten Sprache)
+                LaunchedEffect(settings?.onboardingDone, settings?.showMoments, settings?.showLive) {
+                    settings?.let { Shortcuts.publish(this@MainActivity, it) }
+                }
+                // Tipp auf eine Abkürzung: neuen Moment anlegen oder zum Live-Zähler
+                val jump by vm.jump.collectAsStateWithLifecycle()
+                var homeJump by remember { mutableStateOf<String?>(null) }
+                LaunchedEffect(jump, settings?.onboardingDone) {
+                    val target = jump ?: return@LaunchedEffect
+                    if (settings?.onboardingDone != true) return@LaunchedEffect
+                    vm.jump.value = null
+                    showSettings = false
+                    showLicenses = false
+                    editingPhoto = false
+                    if (target == "moment") {
+                        momentSuggestion = null
+                        editingMoment = ""
+                    } else {
+                        editingMoment = null
+                        homeJump = target
+                    }
+                }
 
                 val permission = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestPermission(),
@@ -317,6 +341,8 @@ class MainActivity : ComponentActivity() {
                                     editingMoment = it.id
                                 },
                                 onSelect = vm::setSelected,
+                                jumpTo = homeJump,
+                                onJumped = { homeJump = null },
                             )
                         }
                     }
@@ -334,10 +360,13 @@ class MainActivity : ComponentActivity() {
     /**
      * Tipp auf die Update-Mitteilung: Update direkt laden und installieren.
      * Geöffnete oder geteilte Abgleich-Datei: mit den eigenen Daten zusammenführen.
+     * App-Abkürzung: neuer Moment oder Live-Zähler.
      */
     private fun handleIntent(intent: Intent?) {
         when (intent?.action) {
             Notifier.ACTION_INSTALL_UPDATE -> vm.installUpdate()
+            Shortcuts.ACTION_ADD_MOMENT -> vm.jump.value = "moment"
+            Shortcuts.ACTION_LIVE -> vm.jump.value = "live"
             Intent.ACTION_VIEW -> intent.data?.let(vm::importSync)
             Intent.ACTION_SEND -> IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
                 ?.let(vm::importSync)

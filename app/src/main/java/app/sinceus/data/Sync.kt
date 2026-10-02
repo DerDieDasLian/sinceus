@@ -288,7 +288,11 @@ object SyncMerge {
                 removed++
             }
         }
-        val mergedPeople = (people + remote.people.filter { r -> people.none { it.id == r.id } }).take(MAX_PEOPLE)
+        // Bekannte Menschen bleiben wie hier eingetragen, nur ein fehlender Geburtstag kommt vom anderen Handy
+        val mergedPeople = (
+            people.map { p -> p.copy(birthday = p.birthday ?: remote.people.firstOrNull { it.id == p.id }?.birthday) } +
+                remote.people.filter { r -> people.none { it.id == r.id } }
+            ).take(MAX_PEOPLE)
         val mergedRelationships = (relationships + remote.relationships.filter { r -> relationships.none { it.id == r.id } })
             .take(MAX_RELATIONSHIPS)
         return MergeResult(

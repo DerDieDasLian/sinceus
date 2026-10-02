@@ -27,7 +27,7 @@
     <string name="add_widget">Widget zum Startbildschirm hinzufügen</string>
     <string name="restart_setup">Einrichtung erneut starten</string>
     <string name="privacy">Datenschutz</string>
-    <string name="privacy_text">Namen, Datum, Fotos und Momente werden ausschließlich auf diesem Gerät gespeichert. Die App hat keinen Internetzugriff, sendet keine Daten und enthält kein Tracking und keine Werbung.</string>
+    <string name="privacy_text">Namen, Datum, Fotos und Momente werden auf diesem Gerät gespeichert. Die App hat keinen Internetzugriff und enthält kein Tracking und keine Werbung. Deine Daten verlassen das Handy nur, wenn du selbst eine Sicherung speicherst, eine Abgleich-Datei an dein gekoppeltes Handy schickst oder die Android-Datensicherung (Google-Sicherung) nutzt.</string>
     <string name="delete_all">Alle Daten löschen</string>
     <string name="delete_all_summary">Setzt die App komplett zurück</string>
     <string name="delete_all_question">Alle Daten löschen?</string>
@@ -319,4 +319,23 @@
     <string name="sync_failed">Die Datei konnte nicht abgeglichen werden. Vielleicht gehört sie zu einer anderen Kopplung oder ist beschädigt.</string>
     <string name="sync_done">Abgeglichen: %1$d neu, %2$d geändert, %3$d entfernt</string>
     <string name="moment_added_by">Hinzugefügt von %1$s</string>
+
+    <!-- Geburtstage -->
+    <string name="birthday">Geburtstag</string>
+    <string name="birthday_optional">Geburtstag (optional)</string>
+    <string name="birthday_remove">Geburtstag entfernen</string>
+    <string name="birthday_title">Geburtstag von %1$s</string>
+    <string name="msg_birthday">Heute hat %1$s Geburtstag.</string>
+    <!-- Suche in den Momenten -->
+    <string name="moments_search">Momente durchsuchen</string>
+    <string name="moments_search_clear">Suche leeren</string>
+    <string name="moments_no_results">Keine Momente gefunden</string>
+    <!-- App-Abkürzungen -->
+    <string name="shortcut_moment">Neuer Moment</string>
+    <string name="shortcut_moment_long">Neuen Moment hinzufügen</string>
+    <string name="shortcut_live">Live</string>
+    <string name="shortcut_live_long">Live-Zähler öffnen</string>
+    <!-- Vorschau des Zähler-Widgets -->
+    <string name="widget_preview_label">Tage zusammen</string>
+    <string name="widget_preview_next">Als Nächstes: 6 Monate</string>
 </resources>

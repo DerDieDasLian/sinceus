@@ -19,6 +19,7 @@ import android.graphics.Bitmap
 import app.sinceus.MainActivity
 import app.sinceus.R
 import app.sinceus.data.LoveSettings
+import app.sinceus.data.BirthdayMath
 import app.sinceus.data.LoveMath
 import app.sinceus.data.MomentMath
 import app.sinceus.data.Names
@@ -103,6 +104,12 @@ object Notifier {
                 lines += (if (multi && r != null) "${shown(r)}: " else "") + Texts.momentMessage(context, m, years)
             }
         }
+        // Geburtstage, außer alle Beziehungen dieses Menschen haben die Mitteilungen aus
+        val celebrating = settings.people.filter { p ->
+            settings.relationships.none { p.id in it.members } || settings.relationships.any { it.notify && p.id in it.members }
+        }
+        BirthdayMath.milestonesOn(celebrating, today) { if (settings.discreet) Names.initial(it.name) else it.name }
+            .forEach { lines += Texts.milestoneMessage(context, it) }
         if (lines.isEmpty()) return null
         val title = when {
             involved.size == 1 -> shown(involved.first())

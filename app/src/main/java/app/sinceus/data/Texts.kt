@@ -44,6 +44,7 @@ object Texts {
             m.title.orEmpty(),
             count(context, R.plurals.years, m.value),
         )
+        MilestoneKind.BIRTHDAY -> context.getString(R.string.birthday_title, m.title.orEmpty())
     }
 
     fun milestoneMessage(context: Context, m: Milestone): String = when (m.kind) {
@@ -58,6 +59,7 @@ object Texts {
             count(context, R.plurals.years_dative, m.value),
             m.title.orEmpty(),
         )
+        MilestoneKind.BIRTHDAY -> context.getString(R.string.msg_birthday, m.title.orEmpty())
         else -> context.getString(R.string.msg_together, milestoneTitle(context, m))
     }
 

@@ -2,6 +2,17 @@ package app.sinceus.ui
 
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import app.sinceus.data.MomentFilter
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -96,9 +107,25 @@ fun MomentsScreen(
     val multi = settings.relationships.size > 1
     fun who(id: String?) = settings.relationships.firstOrNull { it.id == id }?.takeIf { multi }?.let(settings::namesOf)
     val moments = settings.visibleMoments
-    val starts = if (settings.showAll) settings.relationships else listOf(settings.relationship)
+    // Suche und Filter erst, wenn sich genug Momente angesammelt haben
+    val searchable = moments.size >= MomentFilter.MIN_MOMENTS
+    var query by rememberSaveable { mutableStateOf("") }
+    var year by rememberSaveable { mutableStateOf<Int?>(null) }
+    var relationship by rememberSaveable { mutableStateOf<String?>(null) }
+    val filterRelationships = multi && settings.showAll
+    val filtering = searchable && (query.isNotBlank() || year != null || (filterRelationships && relationship != null))
+    val shown = if (filtering) {
+        moments.filter { MomentFilter.matches(it, query, year, relationship.takeIf { filterRelationships }) }
+    } else {
+        moments
+    }
+    val starts = when {
+        filtering -> emptyList()
+        settings.showAll -> settings.relationships
+        else -> listOf(settings.relationship)
+    }
     val entries = (
-        moments.map { m ->
+        shown.map { m ->
             // Nach einem Abgleich steht dabei, wer den Moment angelegt hat
             val by = m.addedBy?.let(settings::person)?.name?.let { context.getString(R.string.moment_added_by, it) }
             TimelineEntry.Saved(m, listOfNotNull(who(m.relationshipId), by).joinToString(" · ").ifBlank { null })
@@ -182,6 +209,62 @@ fun MomentsScreen(
         ) {
             Icon(Icons.Rounded.Add, null)
             Text(stringResource(R.string.moment_add), Modifier.padding(start = 8.dp))
+        }
+
+        if (searchable) {
+            OutlinedTextField(
+                query,
+                { query = it },
+                placeholder = { Text(stringResource(R.string.moments_search)) },
+                leadingIcon = { Icon(Icons.Rounded.Search, null) },
+                trailingIcon = if (query.isNotEmpty()) {
+                    {
+                        IconButton(onClick = { query = "" }) {
+                            Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.moments_search_clear))
+                        }
+                    }
+                } else {
+                    null
+                },
+                singleLine = true,
+                shape = CircleShape,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(top = 8.dp, bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (filterRelationships) {
+                    settings.relationships.forEach { r ->
+                        FilterChip(
+                            selected = relationship == r.id,
+                            onClick = { relationship = if (relationship == r.id) null else r.id },
+                            label = { Text(settings.namesOf(r)) },
+                        )
+                    }
+                }
+                MomentFilter.years(moments).forEach { y ->
+                    FilterChip(
+                        selected = year == y,
+                        onClick = { year = if (year == y) null else y },
+                        label = { Text(y.toString()) },
+                    )
+                }
+            }
+            if (filtering && shown.isEmpty()) {
+                Text(
+                    stringResource(R.string.moments_no_results),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp),
+                )
+            }
         }
 
         entries.forEachIndexed { index, entry ->
