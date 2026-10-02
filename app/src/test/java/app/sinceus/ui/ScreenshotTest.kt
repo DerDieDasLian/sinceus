@@ -188,6 +188,13 @@ class ScreenshotTest {
     fun moments() = shot("moments", lang = "de") { MomentsScreen(withMoments, today, {}, {}) }
 
     @Test
+    fun momentsCalendar() = shot(
+        "moments_calendar",
+        lang = "de",
+        before = { compose.onNodeWithText("Kalender").performClick() },
+    ) { MomentsScreen(withMoments, today.withDayOfMonth(20).minusMonths(5), {}, {}) }
+
+    @Test
     fun momentsEnglish() = shot("moments") {
         MomentsScreen(
             settings.copy(

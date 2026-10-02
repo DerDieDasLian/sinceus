@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Vorschau des Countdown-Widgets in der Widget-Auswahl (ab Android 12), sieht aus wie das echte Widget -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_card_bg"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingHorizontal="18dp"
+    android:paddingVertical="14dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:text="@string/widget_countdown_preview_title"
+        android:textColor="#D9FFE3E7"
+        android:textSize="13sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:baselineAligned="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/widget_countdown_preview_number"
+            android:textColor="#FFFFFFFF"
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:maxLines="1"
+            android:text="@string/widget_countdown_preview_label"
+            android:textColor="#D9FFE3E7"
+            android:textSize="14sp" />
+    </LinearLayout>
+</LinearLayout>

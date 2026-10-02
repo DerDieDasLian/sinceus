@@ -342,6 +342,24 @@
     <string name="widget_preview_number" translatable="false">153</string>
     <string name="widget_preview_label">days together</string>
     <string name="widget_preview_next">Next: 6 months</string>
+    <string name="widget_countdown_name">Countdown</string>
+    <string name="moments_view_list">List</string>
+    <string name="moments_view_calendar">Calendar</string>
+    <string name="calendar_previous">Previous month</string>
+    <string name="calendar_next">Next month</string>
+    <string name="calendar_anniversaries">Anniversaries this month</string>
+    <string name="calendar_empty">No moments this month</string>
+    <string name="widget_countdown_description">Days until your next planned moment</string>
+    <string name="widget_countdown_empty">Nothing planned yet</string>
+    <string name="widget_countdown_empty_hint">Add a moment in the future</string>
+    <string name="widget_today">Today</string>
+    <string name="widget_countdown_preview_title">Holiday by the sea</string>
+    <string name="widget_countdown_preview_number" translatable="false">12</string>
+    <string name="widget_countdown_preview_label">days to go</string>
+    <plurals name="widget_countdown_days">
+        <item quantity="one">day to go</item>
+        <item quantity="other">days to go</item>
+    </plurals>
     <!-- Geplante Momente, Vorab-Erinnerung -->
     <string name="msg_planned">Today\'s the day: %1$s</string>
     <string name="remind_before">Remind me early</string>

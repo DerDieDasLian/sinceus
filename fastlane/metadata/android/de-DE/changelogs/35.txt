@@ -1,0 +1,2 @@
+• Neues Widget: Countdown bis zu eurem nächsten geplanten Moment.
+• Momente lassen sich jetzt auch als Kalender anzeigen, Monat für Monat mit allen Jahrestagen. Oben einfach zwischen Liste und Kalender wechseln.

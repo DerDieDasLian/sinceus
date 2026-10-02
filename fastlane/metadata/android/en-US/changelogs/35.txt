@@ -1,0 +1,2 @@
+• New widget: a countdown to your next planned moment.
+• Moments can now be shown as a calendar, month by month with all anniversaries. Switch between list and calendar at the top.

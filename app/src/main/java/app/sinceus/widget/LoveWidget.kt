@@ -72,6 +72,7 @@ class LoveWidget : GlanceAppWidget() {
         suspend fun refresh(context: Context) {
             update(context, LoveWidgetReceiver::class.java, LoveWidget())
             update(context, PhotoWidgetReceiver::class.java, CardWidget())
+            update(context, CountdownWidgetReceiver::class.java, CountdownWidget())
         }
 
         private suspend fun update(context: Context, receiver: Class<*>, widget: GlanceAppWidget) {
@@ -269,12 +270,12 @@ private fun CardContent(settings: LoveSettings) {
     }
 }
 
-private const val WHITE = 0xFFFFFFFF.toInt()
-private const val SOFT = 0xD9FFE3E7.toInt()
+internal const val WHITE = 0xFFFFFFFF.toInt()
+internal const val SOFT = 0xD9FFE3E7.toInt()
 
 /** Ein als Bild gezeichneter Text, für Bildschirmleser mit dem Text als Beschreibung */
 @androidx.compose.runtime.Composable
-private fun TextImage(line: WidgetText.Line, description: String) {
+internal fun TextImage(line: WidgetText.Line, description: String) {
     Image(
         ImageProvider(line.bitmap),
         contentDescription = description,

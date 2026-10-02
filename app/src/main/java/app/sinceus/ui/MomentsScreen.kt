@@ -13,6 +13,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import app.sinceus.data.MomentFilter
+import app.sinceus.data.MomentCalendar
+import androidx.compose.foundation.border
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.ViewList
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.ui.platform.LocalConfiguration
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
+import java.time.temporal.WeekFields
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -94,7 +107,7 @@ private sealed interface TimelineEntry {
     data class Start(override val date: LocalDate, override val who: String? = null) : TimelineEntry
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun MomentsScreen(
     settings: LoveSettings,
@@ -113,6 +126,9 @@ fun MomentsScreen(
     var year by rememberSaveable { mutableStateOf<Int?>(null) }
     var relationship by rememberSaveable { mutableStateOf<String?>(null) }
     val filterRelationships = multi && settings.showAll
+    // Ansicht: Zeitleiste oder Kalender
+    var calendar by rememberSaveable { mutableStateOf(false) }
+    var monthIndex by rememberSaveable { mutableStateOf(today.year * 12 + today.monthValue - 1) }
     val filtering = searchable && (query.isNotBlank() || year != null || (filterRelationships && relationship != null))
     val shown = if (filtering) {
         moments.filter { MomentFilter.matches(it, query, year, relationship.takeIf { filterRelationships }) }
@@ -211,6 +227,31 @@ fun MomentsScreen(
             Text(stringResource(R.string.moment_add), Modifier.padding(start = 8.dp))
         }
 
+        if (moments.isNotEmpty()) {
+            SingleChoiceSegmentedButtonRow(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+            ) {
+                listOf(false to R.string.moments_view_list, true to R.string.moments_view_calendar).forEachIndexed { i, (value, label) ->
+                    SegmentedButton(
+                        selected = calendar == value,
+                        onClick = { calendar = value },
+                        shape = SegmentedButtonDefaults.itemShape(i, 2),
+                        icon = {
+                            SegmentedButtonDefaults.Icon(calendar == value) {
+                                Icon(
+                                    if (value) Icons.Rounded.CalendarMonth else Icons.AutoMirrored.Rounded.ViewList,
+                                    null,
+                                    modifier = Modifier.size(SegmentedButtonDefaults.IconSize),
+                                )
+                            }
+                        },
+                    ) { Text(stringResource(label)) }
+                }
+            }
+        }
+
         if (searchable) {
             OutlinedTextField(
                 query,
@@ -267,20 +308,208 @@ fun MomentsScreen(
             }
         }
 
-        entries.forEachIndexed { index, entry ->
-            TimelineItem(
-                entry = entry,
+        if (calendar && moments.isNotEmpty()) {
+            val month = YearMonth.of(monthIndex / 12, monthIndex % 12 + 1)
+            CalendarView(
+                month = month,
                 today = today,
-                isFirst = index == 0,
-                isLast = index == entries.lastIndex,
-                onClick = (entry as? TimelineEntry.Saved)?.let { { onOpen(it.moment) } },
-                relative = relativeText(context, entry.date, today),
+                entries = entries,
+                anniversaries = MomentCalendar.anniversaries(shown, month),
+                onMonth = { monthIndex += it },
+                onToday = { monthIndex = today.year * 12 + today.monthValue - 1 },
+                onOpen = onOpen,
             )
+        } else {
+            entries.forEachIndexed { index, entry ->
+                TimelineItem(
+                    entry = entry,
+                    today = today,
+                    isFirst = index == 0,
+                    isLast = index == entries.lastIndex,
+                    onClick = (entry as? TimelineEntry.Saved)?.let { { onOpen(it.moment) } },
+                    relative = relativeText(context, entry.date, today),
+                )
+            }
         }
 
         // Platz für die schwebende Leiste
         Spacer(Modifier.height(96.dp))
         Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+    }
+}
+
+/** Monatskalender: Tage mit Momenten sind gefüllt, Jahrestage haben einen Punkt, darunter die Einträge des Monats */
+@Composable
+private fun CalendarView(
+    month: YearMonth,
+    today: LocalDate,
+    entries: List<TimelineEntry>,
+    anniversaries: List<MomentCalendar.Anniversary>,
+    onMonth: (Int) -> Unit,
+    onToday: () -> Unit,
+    onOpen: (Moment) -> Unit,
+) {
+    val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
+    val inMonth = entries.filter { YearMonth.from(it.date) == month }
+    val byDay = inMonth.groupBy { it.date }
+    val anniversaryDays = anniversaries.map { it.date }.toSet()
+    val colors = MaterialTheme.colorScheme
+
+    Card(
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = colors.surfaceContainerLow),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+    ) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = { onMonth(-1) }) {
+                    Icon(Icons.AutoMirrored.Rounded.KeyboardArrowLeft, stringResource(R.string.calendar_previous))
+                }
+                val title = month.format(DateTimeFormatter.ofPattern("LLLL yyyy", locale))
+                    .replaceFirstChar { it.titlecase(locale) }
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(CircleShape)
+                        .clickable(onClick = onToday)
+                        .padding(vertical = 8.dp),
+                )
+                IconButton(onClick = { onMonth(1) }) {
+                    Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, stringResource(R.string.calendar_next))
+                }
+            }
+            val firstDay = WeekFields.of(locale).firstDayOfWeek
+            Row(Modifier.padding(top = 4.dp)) {
+                (0L until 7L).forEach { i ->
+                    Text(
+                        firstDay.plus(i).getDisplayName(java.time.format.TextStyle.NARROW, locale),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = colors.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+            MomentCalendar.cells(month, firstDay).chunked(7).forEach { week ->
+                Row(Modifier.padding(top = 4.dp)) {
+                    week.forEach { day ->
+                        Box(
+                            Modifier
+                                .weight(1f)
+                                .aspectRatio(1f),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            if (day != null) {
+                                val saved = byDay[day].orEmpty()
+                                val filled = saved.isNotEmpty()
+                                val first = saved.firstNotNullOfOrNull { (it as? TimelineEntry.Saved)?.moment }
+                                Box(
+                                    Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            when {
+                                                saved.any { it is TimelineEntry.Start } -> colors.primary
+                                                filled -> colors.primaryContainer
+                                                else -> androidx.compose.ui.graphics.Color.Transparent
+                                            },
+                                        )
+                                        .then(
+                                            if (day == today) Modifier.border(2.dp, colors.primary, CircleShape) else Modifier,
+                                        )
+                                        .then(if (first != null) Modifier.clickable { onOpen(first) } else Modifier),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Text(
+                                        day.dayOfMonth.toString(),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = if (filled || day == today) FontWeight.Bold else FontWeight.Normal,
+                                        color = when {
+                                            saved.any { it is TimelineEntry.Start } -> colors.onPrimary
+                                            filled -> colors.onPrimaryContainer
+                                            else -> colors.onSurface
+                                        },
+                                    )
+                                    if (day in anniversaryDays) {
+                                        Box(
+                                            Modifier
+                                                .align(Alignment.BottomCenter)
+                                                .padding(bottom = 4.dp)
+                                                .size(5.dp)
+                                                .clip(CircleShape)
+                                                .background(colors.primary),
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (anniversaries.isNotEmpty()) {
+        Text(
+            stringResource(R.string.calendar_anniversaries).uppercase(),
+            style = LabelCaps,
+            color = colors.primary,
+            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp),
+        )
+        anniversaries.forEach { a ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(colors.surfaceContainerLow)
+                    .clickable { onOpen(a.moment) }
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+            ) {
+                Icon(Icons.Rounded.NotificationsActive, null, tint = colors.primary, modifier = Modifier.size(18.dp))
+                Column(Modifier.padding(start = 12.dp)) {
+                    Text(
+                        stringResource(
+                            R.string.moment_anniversary_title,
+                            a.moment.title,
+                            context.resources.getQuantityString(R.plurals.years, a.years, formatNumber(a.years.toLong())),
+                        ),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Text(Texts.dateWithWeekday(a.date), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                }
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+    }
+
+    if (inMonth.isEmpty() && anniversaries.isEmpty()) {
+        Text(
+            stringResource(R.string.calendar_empty),
+            style = MaterialTheme.typography.bodyLarge,
+            color = colors.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+        )
+    }
+    inMonth.forEachIndexed { index, entry ->
+        TimelineItem(
+            entry = entry,
+            today = today,
+            isFirst = index == 0,
+            isLast = index == inMonth.lastIndex,
+            onClick = (entry as? TimelineEntry.Saved)?.let { { onOpen(it.moment) } },
+            relative = relativeText(context, entry.date, today),
+        )
     }
 }
 

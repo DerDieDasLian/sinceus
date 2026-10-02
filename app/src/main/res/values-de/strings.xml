@@ -338,6 +338,23 @@
     <!-- Vorschau des Zähler-Widgets -->
     <string name="widget_preview_label">Tage zusammen</string>
     <string name="widget_preview_next">Als Nächstes: 6 Monate</string>
+    <string name="widget_countdown_name">Countdown</string>
+    <string name="moments_view_list">Liste</string>
+    <string name="moments_view_calendar">Kalender</string>
+    <string name="calendar_previous">Vorheriger Monat</string>
+    <string name="calendar_next">Nächster Monat</string>
+    <string name="calendar_anniversaries">Jahrestage in diesem Monat</string>
+    <string name="calendar_empty">In diesem Monat keine Momente</string>
+    <string name="widget_countdown_description">Tage bis zu eurem nächsten geplanten Moment</string>
+    <string name="widget_countdown_empty">Noch nichts geplant</string>
+    <string name="widget_countdown_empty_hint">Tragt einen Moment in der Zukunft ein</string>
+    <string name="widget_today">Heute</string>
+    <string name="widget_countdown_preview_title">Urlaub am Meer</string>
+    <string name="widget_countdown_preview_label">Tage bis dahin</string>
+    <plurals name="widget_countdown_days">
+        <item quantity="one">Tag bis dahin</item>
+        <item quantity="other">Tage bis dahin</item>
+    </plurals>
     <!-- Geplante Momente, Vorab-Erinnerung -->
     <string name="msg_planned">Heute ist es so weit: %1$s</string>
     <string name="remind_before">Vorab erinnern</string>
