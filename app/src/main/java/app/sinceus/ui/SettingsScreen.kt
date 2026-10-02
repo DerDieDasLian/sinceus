@@ -130,6 +130,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.FilterChip
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -198,6 +199,7 @@ fun SettingsScreen(
     onDeleteRelationship: (String) -> Unit = {},
     onWidgetRelationship: (String) -> Unit = {},
     onDiscreet: (Boolean) -> Unit = {},
+    onFont: (String) -> Unit = {},
     /** App-Sperre mit Fingerabdruck, Gesicht oder PIN */
     appLock: Boolean = false,
     onAppLock: (Boolean) -> Unit = {},
@@ -329,6 +331,8 @@ fun SettingsScreen(
                         ) { dialog = "slides" }
                         Divider()
                         Row(Icons.Rounded.RestartAlt, stringResource(R.string.reset_photo), null, onClick = onResetPhoto)
+                        Divider()
+                        Row(Icons.Rounded.TextFields, stringResource(R.string.font_title), AppFonts.find(settings.font).name) { dialog = "font" }
                     }
                     SettingsPage.Notifications -> Section(null) {
                         ListItem(
@@ -635,6 +639,7 @@ fun SettingsScreen(
             dialog = null
             onLanguage(it)
         }
+        "font" -> FontDialog(settings.font, onSelect = onFont, onDismiss = { dialog = null })
         "presets" -> PresetDialog(settings.presetIndex, onDismiss = { dialog = null }) {
             onPreset(it)
             dialog = null

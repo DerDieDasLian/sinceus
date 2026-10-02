@@ -1,8 +1,8 @@
 package app.sinceus.ui
 
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.LocalContentColor
@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import java.time.LocalDate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
@@ -70,25 +69,13 @@ private val Dark = darkColorScheme(
     outlineVariant = Color(0xFF524344),
 )
 
-private val base = Typography()
-private val serif = FontFamily.Serif
-
-private val LoveTypography = base.copy(
-    displayLarge = base.displayLarge.copy(fontFamily = serif, fontWeight = FontWeight.SemiBold),
-    displayMedium = base.displayMedium.copy(fontFamily = serif, fontWeight = FontWeight.SemiBold),
-    displaySmall = base.displaySmall.copy(fontFamily = serif),
-    headlineLarge = base.headlineLarge.copy(fontFamily = serif),
-    headlineMedium = base.headlineMedium.copy(fontFamily = serif),
-    headlineSmall = base.headlineSmall.copy(fontFamily = serif),
-    titleLarge = base.titleLarge.copy(fontFamily = serif),
-)
-
 val LabelCaps = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.4.sp)
 
 @Composable
-fun LoveTheme(content: @Composable () -> Unit) {
+fun LoveTheme(font: String = "", content: @Composable () -> Unit) {
     val colors = if (isSystemInDarkTheme()) Dark else Light
-    MaterialTheme(colorScheme = colors, typography = LoveTypography) {
+    val typography = remember(font) { AppFonts.typography(AppFonts.find(font)) }
+    MaterialTheme(colorScheme = colors, typography = typography) {
         // Standard-Textfarbe passend zum Hintergrund, sonst ist Text ohne eigene Farbe im Dunkelmodus schwarz
         CompositionLocalProvider(LocalContentColor provides colors.onBackground, content = content)
     }

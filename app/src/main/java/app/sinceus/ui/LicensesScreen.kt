@@ -63,6 +63,10 @@ fun LicensesScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val uri = LocalUriHandler.current
     var showText by rememberSaveable { mutableStateOf(false) }
+    var showFonts by rememberSaveable { mutableStateOf(false) }
+    val fontText = remember {
+        context.resources.openRawResource(R.raw.ofl_fonts).bufferedReader().use { it.readText() }
+    }
     val apacheText = remember {
         context.resources.openRawResource(R.raw.apache_license_2_0).bufferedReader().use { it.readText() }
     }
@@ -129,6 +133,24 @@ fun LicensesScreen(onBack: () -> Unit) {
             if (showText) {
                 Text(
                     apacheText,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 11.sp,
+                    lineHeight = 15.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Text(
+                stringResource(R.string.licenses_fonts),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 12.dp),
+            )
+            Text(stringResource(R.string.licenses_fonts_text), style = MaterialTheme.typography.bodyMedium)
+            OutlinedButton(onClick = { showFonts = !showFonts }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(if (showFonts) R.string.licenses_hide_text else R.string.licenses_fonts_show))
+            }
+            if (showFonts) {
+                Text(
+                    fontText,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,
                     lineHeight = 15.sp,

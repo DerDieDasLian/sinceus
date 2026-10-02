@@ -67,6 +67,7 @@ object BackupCodec {
         .put("notifyHour", s.notifyHour)
         .put("notifyMinute", s.notifyMinute)
         .put("remindBefore", s.remindBefore)
+        .put("font", s.font)
         .put("homePage", s.homePage)
         .put("updateCheck", s.updateCheck)
         .put("showMoments", s.showMoments)
@@ -124,6 +125,7 @@ object BackupCodec {
             notifyHour = o.optInt("notifyHour", d.notifyHour).coerceIn(0, 23),
             notifyMinute = o.optInt("notifyMinute", d.notifyMinute).coerceIn(0, 59),
             remindBefore = o.optInt("remindBefore", d.remindBefore).takeIf { it in REMIND_OPTIONS } ?: 0,
+            font = o.optString("font", d.font).take(40),
             focusX = o.optDouble("focusX", d.focusX.toDouble()).toFloat().coerceIn(-1f, 1f),
             focusY = o.optDouble("focusY", d.focusY.toDouble()).toFloat().coerceIn(-1f, 1f),
             zoom = o.optDouble("zoom", d.zoom.toDouble()).toFloat().coerceIn(1f, 4f),

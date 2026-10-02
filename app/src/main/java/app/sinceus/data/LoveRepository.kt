@@ -58,6 +58,8 @@ data class LoveSettings(
     val notifyMinute: Int = 0,
     /** Zusätzlich so viele Tage vorher erinnern (1 oder 7), 0 = nur am Tag selbst */
     val remindBefore: Int = 0,
+    /** Gewählte Schrift (ID aus AppFonts), "" = Standardschrift der App */
+    val font: String = "",
     /** Bildausschnitt: Fokuspunkt (-1..1) und Zoom (1..4) */
     val focusX: Float = 0f,
     val focusY: Float = DEFAULT_FOCUS_Y,
@@ -154,6 +156,7 @@ private object Keys {
     val notifyHour = intPreferencesKey("notify_hour")
     val notifyMinute = intPreferencesKey("notify_minute")
     val remindBefore = intPreferencesKey("remind_before")
+    val font = stringPreferencesKey("font")
     val changelogSeen = intPreferencesKey("changelog_seen")
     val showChangelog = booleanPreferencesKey("show_changelog")
     val lastNotified = longPreferencesKey("last_notified_epoch_day")
@@ -238,6 +241,7 @@ class LoveRepository(private val context: Context) {
             notifyHour = this[Keys.notifyHour] ?: d.notifyHour,
             notifyMinute = this[Keys.notifyMinute] ?: d.notifyMinute,
             remindBefore = this[Keys.remindBefore] ?: d.remindBefore,
+            font = this[Keys.font] ?: d.font,
             focusX = this[Keys.focusX] ?: d.focusX,
             focusY = this[Keys.focusY] ?: d.focusY,
             zoom = this[Keys.zoom] ?: d.zoom,
@@ -597,6 +601,7 @@ class LoveRepository(private val context: Context) {
             p[Keys.notifyHour] = restored.notifyHour
             p[Keys.notifyMinute] = restored.notifyMinute
             p[Keys.remindBefore] = restored.remindBefore
+            p[Keys.font] = restored.font
             p[Keys.focusX] = restored.focusX
             p[Keys.focusY] = restored.focusY
             p[Keys.zoom] = restored.zoom
@@ -710,6 +715,8 @@ class LoveRepository(private val context: Context) {
     }
 
     suspend fun setRemindBefore(days: Int) = context.dataStore.edit { it[Keys.remindBefore] = days }
+
+    suspend fun setFont(id: String) = context.dataStore.edit { it[Keys.font] = id }
 
     suspend fun setHomePage(page: Int) = context.dataStore.edit { it[Keys.homePage] = page }
 

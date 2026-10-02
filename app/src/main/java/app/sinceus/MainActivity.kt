@@ -91,8 +91,8 @@ class MainActivity : ComponentActivity() {
         AppLock.hideInRecents(this, lockOn)
         if (savedInstanceState == null) handleIntent(intent)
         setContent {
-            LoveTheme {
-                val settings by vm.settings.collectAsStateWithLifecycle()
+            val settings by vm.settings.collectAsStateWithLifecycle()
+            LoveTheme(font = settings?.font.orEmpty()) {
                 val today by vm.today.collectAsStateWithLifecycle()
                 val updateProgress by vm.updateProgress.collectAsStateWithLifecycle()
                 val pairing by vm.pairing.collectAsStateWithLifecycle()
@@ -332,6 +332,7 @@ class MainActivity : ComponentActivity() {
                                     onNotifications = ::setNotifications,
                                     onNotifyTime = vm::setNotifyTime,
                                     onRemindBefore = vm::setRemindBefore,
+                                onFont = vm::setFont,
                                     onTestNotification = {
                                         if (allowed) vm.sendTestNotification() else askPermission()
                                     },
