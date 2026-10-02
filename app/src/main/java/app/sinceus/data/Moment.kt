@@ -2,7 +2,9 @@ package app.sinceus.data
 
 import org.json.JSONArray
 import org.json.JSONObject
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 /** Ein wichtiger Moment der Beziehung, z. B. „Erstes Date“. */
@@ -100,6 +102,22 @@ object MomentMath {
             .sortedBy { it.date }
             .take(count)
 
+    /** Geplante Momente nach [today] (exklusiv), die nächsten zuerst. */
+    fun planned(moments: List<Moment>, today: LocalDate, count: Int = 4): List<Milestone> =
+        moments.filter { it.date.isAfter(today) }
+            .sortedBy { it.date }
+            .take(count)
+            .map { Milestone(MilestoneKind.PLANNED, 0, it.date, it.title) }
+
+    /**
+     * Momente auf [day], die schon vorher eingetragen wurden, also wirklich geplant waren.
+     * Ein Moment, den man am selben Tag nachträgt, ist keine Überraschung mehr.
+     */
+    fun plannedOn(moments: List<Moment>, day: LocalDate, zone: ZoneId = ZoneId.systemDefault()): List<Moment> =
+        moments.filter { m ->
+            m.date == day && m.updatedAt > 0 && Instant.ofEpochMilli(m.updatedAt).atZone(zone).toLocalDate().isBefore(day)
+        }
+
     /** Tage zwischen [m] und [today]: positiv = vergangen, negativ = in der Zukunft. */
     fun daysSince(m: Moment, today: LocalDate): Long = ChronoUnit.DAYS.between(m.date, today)
 }
@@ -122,4 +140,25 @@ object MomentFilter {
 
     /** Jahre mit Momenten, das neueste zuerst */
     fun years(moments: List<Moment>): List<Int> = moments.map { it.date.year }.distinct().sortedDescending()
+}
+
+/** Rückblick auf ein Beziehungsjahr: Nummer des Jahres, Zeitraum und die Momente darin */
+data class YearReview(val year: Int, val from: LocalDate, val to: LocalDate, val moments: List<Moment>)
+
+object YearReviewMath {
+    /** So viele Tage ab dem Jahrestag ist der Rückblick zu sehen */
+    const val DAYS_SHOWN = 7
+
+    /** Rückblick am Jahrestag und in der Woche danach, sonst null */
+    fun reviewFor(start: LocalDate, today: LocalDate, moments: List<Moment>): YearReview? {
+        var years = today.year - start.year
+        // plusYears klemmt den 29.02. auf den 28.02., so wie die Jahrestage in der App
+        if (start.plusYears(years.toLong()).isAfter(today)) years--
+        if (years < 1) return null
+        val anniversary = start.plusYears(years.toLong())
+        if (ChronoUnit.DAYS.between(anniversary, today) >= DAYS_SHOWN) return null
+        val from = start.plusYears(years - 1L)
+        val inYear = moments.filter { !it.date.isBefore(from) && it.date.isBefore(anniversary) }.sortedBy { it.date }
+        return YearReview(years, from, anniversary.minusDays(1), inYear)
+    }
 }

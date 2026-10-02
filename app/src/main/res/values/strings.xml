@@ -342,4 +342,26 @@
     <string name="widget_preview_number" translatable="false">153</string>
     <string name="widget_preview_label">days together</string>
     <string name="widget_preview_next">Next: 6 months</string>
+    <!-- Geplante Momente, Vorab-Erinnerung -->
+    <string name="msg_planned">Today\'s the day: %1$s</string>
+    <string name="remind_before">Remind me early</string>
+    <string name="remind_off">Only on the day</string>
+    <string name="remind_day">Also 1 day before</string>
+    <string name="remind_week">Also 1 week before</string>
+    <string name="remind_tomorrow">Tomorrow: %1$s</string>
+    <string name="remind_in_week">In one week: %1$s</string>
+    <!-- Automatische Sicherung -->
+    <string name="backup_auto">Back up automatically</string>
+    <string name="backup_auto_summary">A backup to a folder of your choice every week, without internet</string>
+    <string name="backup_auto_folder">Folder: %1$s</string>
+    <string name="backup_auto_last">Folder: %1$s, last backup on %2$s</string>
+    <!-- Teilen und Jahresrückblick -->
+    <string name="moment_share">Share moment</string>
+    <string name="year_review_title">Year %1$s together</string>
+    <string name="year_review_range">%1$s to %2$s</string>
+    <string name="year_review_share">Share your year</string>
+    <plurals name="year_review_moments">
+        <item quantity="one">%1$s moment this year</item>
+        <item quantity="other">%1$s moments this year</item>
+    </plurals>
 </resources>

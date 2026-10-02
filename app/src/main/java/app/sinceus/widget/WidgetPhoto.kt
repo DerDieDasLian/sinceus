@@ -40,6 +40,10 @@ object WidgetPhoto {
         return crop(source, w, h, s.focusX, s.focusY, s.zoom)
     }
 
+    /** Beliebiges Foto (z. B. eines Moments) mittig zugeschnitten auf [w] x [h], null = nicht lesbar */
+    fun photo(path: String, w: Int, h: Int, focusY: Float = 0f): Bitmap? =
+        decode(File(path), max(w, h))?.let { crop(it, w, h, 0f, focusY, 1f) }
+
     private fun decode(file: File, targetSide: Int): Bitmap? {
         if (Build.VERSION.SDK_INT >= 28) {
             try {

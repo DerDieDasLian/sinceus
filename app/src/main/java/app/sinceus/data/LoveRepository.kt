@@ -30,6 +30,9 @@ import java.util.zip.ZipOutputStream
 
 private val Context.dataStore by preferencesDataStore(name = "love")
 
+/** Mögliche Vorab-Erinnerungen in Tagen, 0 = aus */
+val REMIND_OPTIONS = listOf(0, 1, 7)
+
 /** Die meisten Paarfotos haben die Gesichter im oberen Bilddrittel */
 const val DEFAULT_FOCUS_Y = -0.6f
 
@@ -52,6 +55,8 @@ data class LoveSettings(
     val notificationsEnabled: Boolean = true,
     val notifyHour: Int = 9,
     val notifyMinute: Int = 0,
+    /** Zusätzlich so viele Tage vorher erinnern (1 oder 7), 0 = nur am Tag selbst */
+    val remindBefore: Int = 0,
     /** Bildausschnitt: Fokuspunkt (-1..1) und Zoom (1..4) */
     val focusX: Float = 0f,
     val focusY: Float = DEFAULT_FOCUS_Y,
@@ -143,6 +148,7 @@ private object Keys {
     val notify = booleanPreferencesKey("notify")
     val notifyHour = intPreferencesKey("notify_hour")
     val notifyMinute = intPreferencesKey("notify_minute")
+    val remindBefore = intPreferencesKey("remind_before")
     val lastNotified = longPreferencesKey("last_notified_epoch_day")
     val focusX = floatPreferencesKey("focus_x")
     val focusY = floatPreferencesKey("focus_y")
@@ -224,6 +230,7 @@ class LoveRepository(private val context: Context) {
             notificationsEnabled = this[Keys.notify] ?: d.notificationsEnabled,
             notifyHour = this[Keys.notifyHour] ?: d.notifyHour,
             notifyMinute = this[Keys.notifyMinute] ?: d.notifyMinute,
+            remindBefore = this[Keys.remindBefore] ?: d.remindBefore,
             focusX = this[Keys.focusX] ?: d.focusX,
             focusY = this[Keys.focusY] ?: d.focusY,
             zoom = this[Keys.zoom] ?: d.zoom,
@@ -592,6 +599,7 @@ class LoveRepository(private val context: Context) {
             p[Keys.notify] = restored.notificationsEnabled
             p[Keys.notifyHour] = restored.notifyHour
             p[Keys.notifyMinute] = restored.notifyMinute
+            p[Keys.remindBefore] = restored.remindBefore
             p[Keys.focusX] = restored.focusX
             p[Keys.focusY] = restored.focusY
             p[Keys.zoom] = restored.zoom
@@ -615,8 +623,9 @@ class LoveRepository(private val context: Context) {
         context.dataStore.edit {
             it.clear()
         }
-        // Mit allen Daten verschwindet auch die Kopplung mit dem anderen Handy
+        // Mit allen Daten verschwindet auch die Kopplung mit dem anderen Handy und die automatische Sicherung
         PairingStore.clear(context)
+        AutoBackup.disable(context)
     }
 
     suspend fun setNotifications(enabled: Boolean) = context.dataStore.edit {
@@ -695,6 +704,8 @@ class LoveRepository(private val context: Context) {
         }
         return fresh
     }
+
+    suspend fun setRemindBefore(days: Int) = context.dataStore.edit { it[Keys.remindBefore] = days }
 
     suspend fun setHomePage(page: Int) = context.dataStore.edit { it[Keys.homePage] = page }
 

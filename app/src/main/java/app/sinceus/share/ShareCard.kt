@@ -8,6 +8,7 @@ import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
@@ -15,12 +16,17 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.PathParser
 import app.sinceus.R
 import app.sinceus.data.LoveMath
+import app.sinceus.data.DEFAULT_FOCUS_Y
 import app.sinceus.data.LoveSettings
+import app.sinceus.data.Moment
+import app.sinceus.data.Names
 import app.sinceus.data.Texts
+import app.sinceus.data.YearReview
 import app.sinceus.data.formatNumber
 import app.sinceus.widget.WidgetPhoto
 import java.io.File
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 /**
  * Teilen als Bild: euer Foto mit Namen, Tagen und gemeinsamer Zeit im Hochformat (4:5),
@@ -147,10 +153,21 @@ object ShareCard {
     }
 
     /** Bild erzeugen und über das Android-Teilen-Menü anbieten. [text] kommt als Begleittext mit. */
-    fun share(context: Context, s: LoveSettings, today: LocalDate, text: String) {
+    fun share(context: Context, s: LoveSettings, today: LocalDate, text: String) =
+        send(context, render(context, s, today), text)
+
+    /** Einen Moment als Bild teilen */
+    fun shareMoment(context: Context, s: LoveSettings, m: Moment, today: LocalDate) =
+        send(context, renderMoment(context, s, m, today), m.title)
+
+    /** Den Jahresrückblick als Bild teilen */
+    fun shareYear(context: Context, s: LoveSettings, review: YearReview) =
+        send(context, renderYear(context, s, review), context.getString(R.string.year_review_title, review.year.toString()))
+
+    private fun send(context: Context, bitmap: Bitmap, text: String) {
         val dir = File(context.cacheDir, "share").apply { mkdirs() }
         val file = File(dir, "since-us.png")
-        file.outputStream().use { render(context, s, today).compress(Bitmap.CompressFormat.PNG, 100, it) }
+        file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
         val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
         val send = Intent(Intent.ACTION_SEND)
             .setType("image/png")
@@ -161,6 +178,171 @@ object ShareCard {
         context.startActivity(
             Intent.createChooser(send, context.getString(R.string.share)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
         )
+    }
+
+    /** Leeres Bild mit Hintergrund ([background] oder euer Foto bzw. Farbverlauf) und Abdunklung für die Schrift */
+    private fun canvasWith(context: Context, s: LoveSettings, background: Bitmap?): Pair<Bitmap, Canvas> {
+        val out = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(out)
+        val w = WIDTH.toFloat()
+        val h = HEIGHT.toFloat()
+        (background ?: WidgetPhoto.render(context, s, w, h, maxSide = h))?.let {
+            canvas.drawBitmap(it, null, RectF(0f, 0f, w, h), Paint(Paint.FILTER_BITMAP_FLAG))
+        }
+        shade(canvas, w, h)
+        return out to canvas
+    }
+
+    private fun shade(canvas: Canvas, w: Float, h: Float) {
+        canvas.drawRect(
+            0f, 0f, w, h,
+            Paint().apply {
+                shader = LinearGradient(
+                    0f, h * 0.30f, 0f, h,
+                    intArrayOf(0x00000000, 0xB32A0710.toInt(), 0xF23A0712.toInt()),
+                    floatArrayOf(0f, 0.55f, 1f),
+                    Shader.TileMode.CLAMP,
+                )
+            },
+        )
+        canvas.drawRect(
+            0f, 0f, w, h * 0.18f,
+            Paint().apply {
+                shader = LinearGradient(0f, 0f, 0f, h * 0.18f, 0x66000000, 0x00000000, Shader.TileMode.CLAMP)
+            },
+        )
+    }
+
+    private fun paint(size: Float, face: Typeface, color: Int) = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textSize = size
+        typeface = face
+        this.color = color
+    }
+
+    private val serifBold get() = Typeface.create(Typeface.SERIF, Typeface.BOLD)
+    private val sans get() = Typeface.create("sans-serif", Typeface.NORMAL)
+    private val sansMedium get() = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+    private val WHITE = 0xFFFFFFFF.toInt()
+    private val SOFT = 0xE6FFE3E7.toInt()
+    private val PINK = 0xFFFF8FA3.toInt()
+
+    /** Schriftzug „Since Us“ mit Herz oben links */
+    private fun brand(canvas: Canvas) {
+        val brand = paint(40f, sansMedium, SOFT)
+        canvas.drawText("Since Us", MARGIN, 120f, brand)
+        drawHeart(canvas, MARGIN + brand.measureText("Since Us") + 12f, 120f - 30f, 34f, PINK)
+    }
+
+    /** Text in höchstens [maxLines] Zeilen umbrechen; was nicht passt, wird mit „…“ gekürzt */
+    internal fun wrap(text: String, maxLines: Int, fits: (String) -> Boolean): List<String> {
+        val lines = mutableListOf<String>()
+        var rest = text.trim()
+        while (rest.isNotEmpty() && lines.size < maxLines) {
+            if (fits(rest)) {
+                lines += rest
+                rest = ""
+                break
+            }
+            val words = rest.split(" ")
+            var line = words[0]
+            var i = 1
+            while (i < words.size && fits(line + " " + words[i])) line += " " + words[i++]
+            if (lines.size == maxLines - 1 || !fits(line)) {
+                // Letzte Zeile oder ein einzelnes zu langes Wort: kürzen
+                var cut = rest
+                while (cut.length > 1 && !fits("$cut…")) cut = cut.dropLast(1)
+                lines += if (cut == rest) cut else "${cut.trimEnd()}…"
+                rest = ""
+                break
+            }
+            lines += line
+            rest = words.drop(i).joinToString(" ")
+        }
+        return lines
+    }
+
+    /** Ein Moment: Foto (sonst euer Hintergrund), Titel, Datum und wie lange es her ist */
+    fun renderMoment(context: Context, s: LoveSettings, m: Moment, today: LocalDate): Bitmap {
+        val photo = m.photoPath?.let { WidgetPhoto.photo(it, WIDTH, HEIGHT, DEFAULT_FOCUS_Y / 2) }
+        val (out, canvas) = canvasWith(context, s, photo)
+        val w = WIDTH.toFloat()
+        val maxWidth = w - 2 * MARGIN
+        brand(canvas)
+        var y = HEIGHT - MARGIN
+
+        val days = ChronoUnit.DAYS.between(m.date, today)
+        val relative = when {
+            days == 0L -> context.getString(R.string.today_word)
+            days > 0 -> context.resources.getQuantityString(R.plurals.days_ago, days.toInt(), formatNumber(days))
+            else -> context.resources.getQuantityString(R.plurals.in_days, (-days).toInt(), formatNumber(-days))
+        }
+        val dateLine = Texts.longDate(m.date) + " · " + relative
+        canvas.drawText(dateLine, MARGIN, y, fit(paint(38f, sans, SOFT), dateLine, maxWidth))
+        y -= 90f
+
+        val titlePaint = paint(104f, serifBold, WHITE)
+        val lines = wrap(m.title, 3) { titlePaint.measureText(it) <= maxWidth }
+        lines.asReversed().forEach { line ->
+            canvas.drawText(line, MARGIN, y, titlePaint)
+            y -= titlePaint.textSize * 1.12f
+        }
+
+        // Zu wem der Moment gehört, darüber die Akzentlinie
+        val relation = s.relationships.firstOrNull { it.id == m.relationshipId } ?: s.relationship
+        val names = Names.join(s.memberNames(relation))
+        y -= 8f
+        canvas.drawText(names, MARGIN, y, fit(paint(44f, sansMedium, SOFT), names, maxWidth))
+        canvas.drawRoundRect(RectF(MARGIN, y - 92f, MARGIN + 96f, y - 82f), 5f, 5f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = PINK })
+        return out
+    }
+
+    /** Jahresrückblick: bis zu vier Fotos des Jahres, die Zahl der Momente und das Jahr */
+    fun renderYear(context: Context, s: LoveSettings, review: YearReview): Bitmap {
+        val photos = review.moments.mapNotNull { it.photoPath }.take(4)
+        val collage = if (photos.isEmpty()) null else collage(photos)
+        val (out, canvas) = canvasWith(context, s, collage)
+        val w = WIDTH.toFloat()
+        val maxWidth = w - 2 * MARGIN
+        brand(canvas)
+        var y = HEIGHT - MARGIN
+
+        val range = context.getString(R.string.year_review_range, Texts.longDate(review.from), Texts.longDate(review.to))
+        canvas.drawText(range, MARGIN, y, fit(paint(36f, sans, SOFT), range, maxWidth))
+        y -= 72f
+        val count = context.resources.getQuantityString(
+            R.plurals.year_review_moments, review.moments.size, formatNumber(review.moments.size.toLong()),
+        )
+        canvas.drawText(count, MARGIN, y, fit(paint(50f, sansMedium, WHITE), count, maxWidth))
+        y -= 100f
+        val title = context.getString(R.string.year_review_title, review.year.toString())
+        canvas.drawText(title, MARGIN, y, fit(paint(120f, serifBold, WHITE), title, maxWidth))
+        y -= 150f
+        val names = Names.join(s.memberNames())
+        canvas.drawText(names, MARGIN, y, fit(paint(48f, sansMedium, SOFT), names, maxWidth))
+        canvas.drawRoundRect(RectF(MARGIN, y - 96f, MARGIN + 96f, y - 86f), 5f, 5f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = PINK })
+        return out
+    }
+
+    /** Ein bis vier Fotos als Raster über das ganze Bild */
+    private fun collage(paths: List<String>): Bitmap? {
+        val out = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(out)
+        val cells = when (paths.size) {
+            1 -> listOf(Rect(0, 0, WIDTH, HEIGHT))
+            2 -> listOf(Rect(0, 0, WIDTH, HEIGHT / 2), Rect(0, HEIGHT / 2, WIDTH, HEIGHT))
+            3 -> listOf(Rect(0, 0, WIDTH, HEIGHT / 2), Rect(0, HEIGHT / 2, WIDTH / 2, HEIGHT), Rect(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT))
+            else -> listOf(
+                Rect(0, 0, WIDTH / 2, HEIGHT / 2), Rect(WIDTH / 2, 0, WIDTH, HEIGHT / 2),
+                Rect(0, HEIGHT / 2, WIDTH / 2, HEIGHT), Rect(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT),
+            )
+        }
+        var drawn = 0
+        paths.zip(cells).forEach { (path, cell) ->
+            val bmp = WidgetPhoto.photo(path, cell.width(), cell.height()) ?: return@forEach
+            canvas.drawBitmap(bmp, null, cell, Paint(Paint.FILTER_BITMAP_FLAG))
+            drawn++
+        }
+        return out.takeIf { drawn > 0 }
     }
 
     /** Begleittext: „Alex & Sam sind schon 5 Monate zusammen“ */

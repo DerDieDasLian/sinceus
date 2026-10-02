@@ -1,0 +1,5 @@
+• Planned moments (like a trip) now show up under "Upcoming" with a countdown, and you get a notification on the day.
+• Remind me early: optionally also 1 day or 1 week before special days.
+• Back up automatically: pick a folder once and get a backup there every week, without internet.
+• Share a moment as a nice picture.
+• A look back at your year on your anniversary, ready to share.

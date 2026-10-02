@@ -90,4 +90,45 @@ class MomentTest {
         assertTrue(MomentFilter.matches(firstDate, "", relationshipId = "r2"))
         assertEquals(listOf(2025, 2024), MomentFilter.years(listOf(firstDate, leap, forR2)))
     }
+
+    @Test
+    fun plannedMoments() {
+        val today = LocalDate.of(2026, 5, 1)
+        val zone = java.time.ZoneOffset.UTC
+        val millis = { d: LocalDate -> d.atStartOfDay(zone).toInstant().toEpochMilli() }
+        val trip = Moment("t", "Urlaub", LocalDate.of(2026, 5, 20), updatedAt = millis(LocalDate.of(2026, 4, 1)))
+        val party = Moment("p", "Party", LocalDate.of(2026, 5, 3), updatedAt = millis(LocalDate.of(2026, 4, 2)))
+        val list = MomentMath.planned(listOf(firstDate, trip, party), today)
+        assertEquals(listOf("Party", "Urlaub"), list.map { it.title })
+        assertEquals(MilestoneKind.PLANNED, list[0].kind)
+        // Am Tag selbst nur, wenn der Moment vorher eingetragen wurde
+        assertEquals(listOf(trip), MomentMath.plannedOn(listOf(trip), trip.date, zone))
+        val sameDay = trip.copy(updatedAt = millis(trip.date) + 3_600_000)
+        assertTrue(MomentMath.plannedOn(listOf(sameDay), trip.date, zone).isEmpty())
+    }
+
+    @Test
+    fun yearReview() {
+        val start = LocalDate.of(2024, 3, 15)
+        val inFirstYear = Moment("a", "Erstes Date", LocalDate.of(2024, 5, 10))
+        val inSecondYear = Moment("b", "Umzug", LocalDate.of(2025, 4, 1))
+        val moments = listOf(inSecondYear, inFirstYear)
+        val review = YearReviewMath.reviewFor(start, LocalDate.of(2025, 3, 15), moments)!!
+        assertEquals(1, review.year)
+        assertEquals(listOf(inFirstYear), review.moments)
+        assertEquals(LocalDate.of(2025, 3, 14), review.to)
+        // Noch eine Woche lang zu sehen, danach nicht mehr
+        assertEquals(1, YearReviewMath.reviewFor(start, LocalDate.of(2025, 3, 21), moments)?.year)
+        assertNull(YearReviewMath.reviewFor(start, LocalDate.of(2025, 3, 22), moments))
+        assertNull(YearReviewMath.reviewFor(start, LocalDate.of(2024, 3, 20), moments))
+        // Start am 29.02.: Jahrestag am 28.02.
+        assertEquals(1, YearReviewMath.reviewFor(LocalDate.of(2024, 2, 29), LocalDate.of(2025, 2, 28), moments)?.year)
+    }
+
+    @Test
+    fun autoBackupKeepsNewestThree() {
+        val names = listOf("since-us-auto-2026-09-01.zip", "since-us-auto-2026-09-22.zip", "since-us-auto-2026-09-08.zip", "since-us-auto-2026-09-15.zip")
+        assertEquals(listOf("since-us-auto-2026-09-01.zip"), AutoBackup.oldOnes(names))
+        assertTrue(AutoBackup.oldOnes(names.take(3)).isEmpty())
+    }
 }

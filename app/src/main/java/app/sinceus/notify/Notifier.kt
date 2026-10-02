@@ -21,6 +21,9 @@ import app.sinceus.R
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.BirthdayMath
 import app.sinceus.data.LoveMath
+import app.sinceus.data.Milestone
+import app.sinceus.data.MilestoneKind
+import app.sinceus.data.Moment
 import app.sinceus.data.MomentMath
 import app.sinceus.data.Names
 import app.sinceus.data.Relationship
@@ -84,32 +87,26 @@ object Notifier {
             PackageManager.PERMISSION_GRANTED) &&
             NotificationManagerCompat.from(context).areNotificationsEnabled()
 
-    /** Titel und Zeilen der Mitteilung für [today], null = heute ist nichts Besonderes */
+    /**
+     * Titel und Zeilen der Mitteilung für [today], null = heute ist nichts Besonderes.
+     * Mit Vorab-Erinnerung kommen die Anlässe in 1 oder 7 Tagen als eigene Zeilen dazu.
+     */
     fun dueToday(context: Context, settings: LoveSettings, today: LocalDate): Pair<String, List<String>>? {
         val multi = settings.relationships.size > 1
         fun shown(r: Relationship) = Names.join(settings.shownNames(r))
         val involved = mutableSetOf<Relationship>()
-        val lines = mutableListOf<String>()
-        settings.relationships.filter { it.notify }.forEach { r ->
-            LoveMath.milestonesOn(r.startDate, today).forEach { m ->
-                involved += r
-                lines += (if (multi) "${shown(r)}: " else "") + Texts.milestoneMessage(context, m)
+        fun line(r: Relationship?, text: String): String {
+            r?.let { involved += it }
+            return (if (multi && r != null) "${shown(r)}: " else "") + text
+        }
+        val lines = eventsOn(settings, today).map { (r, m) -> line(r, Texts.milestoneMessage(context, m)) }.toMutableList()
+        val before = settings.remindBefore
+        if (before > 0) {
+            val res = if (before == 1) R.string.remind_tomorrow else R.string.remind_in_week
+            eventsOn(settings, today.plusDays(before.toLong())).forEach { (r, m) ->
+                lines += line(r, context.getString(res, Texts.milestoneTitle(context, m)))
             }
         }
-        if (settings.showMoments) {
-            MomentMath.remindersOn(settings.moments, today).forEach { (m, years) ->
-                val r = settings.relationships.firstOrNull { it.id == m.relationshipId }
-                if (r != null && !r.notify) return@forEach
-                r?.let { involved += it }
-                lines += (if (multi && r != null) "${shown(r)}: " else "") + Texts.momentMessage(context, m, years)
-            }
-        }
-        // Geburtstage, außer alle Beziehungen dieses Menschen haben die Mitteilungen aus
-        val celebrating = settings.people.filter { p ->
-            settings.relationships.none { p.id in it.members } || settings.relationships.any { it.notify && p.id in it.members }
-        }
-        BirthdayMath.milestonesOn(celebrating, today) { if (settings.discreet) Names.initial(it.name) else it.name }
-            .forEach { lines += Texts.milestoneMessage(context, it) }
         if (lines.isEmpty()) return null
         val title = when {
             involved.size == 1 -> shown(involved.first())
@@ -117,6 +114,29 @@ object Notifier {
             else -> shown(settings.relationships.first())
         }
         return title to lines
+    }
+
+    /** Alle Anlässe mit Mitteilung an [day], jeweils mit ihrer Beziehung (null = alle bzw. ein Mensch) */
+    private fun eventsOn(settings: LoveSettings, day: LocalDate): List<Pair<Relationship?, Milestone>> = buildList {
+        settings.relationships.filter { it.notify }.forEach { r ->
+            LoveMath.milestonesOn(r.startDate, day).forEach { add(r to it) }
+        }
+        if (settings.showMoments) {
+            fun relationOf(m: Moment) = settings.relationships.firstOrNull { it.id == m.relationshipId }
+            fun allowed(m: Moment) = relationOf(m)?.notify != false
+            MomentMath.remindersOn(settings.moments, day).filter { allowed(it.first) }.forEach { (m, years) ->
+                add(relationOf(m) to Milestone(MilestoneKind.MOMENT, years.toLong(), day, m.title))
+            }
+            MomentMath.plannedOn(settings.moments, day).filter(::allowed).forEach { m ->
+                add(relationOf(m) to Milestone(MilestoneKind.PLANNED, 0, day, m.title))
+            }
+        }
+        // Geburtstage, außer alle Beziehungen dieses Menschen haben die Mitteilungen aus
+        val celebrating = settings.people.filter { p ->
+            settings.relationships.none { p.id in it.members } || settings.relationships.any { it.notify && p.id in it.members }
+        }
+        BirthdayMath.milestonesOn(celebrating, day) { if (settings.discreet) Names.initial(it.name) else it.name }
+            .forEach { add(null to it) }
     }
 
     fun show(context: Context, title: String, lines: List<String>) {

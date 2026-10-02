@@ -1,0 +1,5 @@
+• Geplante Momente (z. B. ein Urlaub) stehen jetzt unter "Demnächst" mit Countdown, am Tag selbst gibt es eine Mitteilung.
+• Vorab erinnern: auf Wunsch auch 1 Tag oder 1 Woche vor besonderen Tagen.
+• Automatisch sichern: einmal einen Ordner wählen, dann jede Woche eine Sicherung, ohne Internet.
+• Momente als schönes Bild teilen.
+• Jahresrückblick am Jahrestag, auch zum Teilen.

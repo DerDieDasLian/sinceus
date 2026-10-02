@@ -3,6 +3,7 @@ package app.sinceus.notify
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import app.sinceus.data.AutoBackup
 import app.sinceus.data.LoveRepository
 import app.sinceus.update.UpdateChecker
 import app.sinceus.widget.LoveWidget
@@ -29,6 +30,8 @@ class DailyReceiver : BroadcastReceiver() {
                     }
                 }
                 LoveWidget.refresh(app)
+                // Wöchentliche automatische Sicherung, falls ein Ordner gewählt ist
+                if (settings.onboardingDone) runCatching { AutoBackup.runIfDue(app) }
                 if (intent.action == DailyScheduler.ACTION_MIDNIGHT) {
                     runCatching { UpdateChecker.checkIfDue(app) }
                 }

@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.sinceus.data.Backup
 import app.sinceus.data.MAX_SLIDES
 import app.sinceus.notify.Notifier
+import app.sinceus.share.ShareCard
 import app.sinceus.ui.HomeScreen
 import app.sinceus.ui.LicensesScreen
 import app.sinceus.ui.MomentEditorScreen
@@ -75,6 +76,7 @@ class MainActivity : ComponentActivity() {
                 val today by vm.today.collectAsStateWithLifecycle()
                 val updateProgress by vm.updateProgress.collectAsStateWithLifecycle()
                 val pairing by vm.pairing.collectAsStateWithLifecycle()
+                val autoBackup by vm.autoBackup.collectAsStateWithLifecycle()
                 val scope = rememberCoroutineScope()
                 var showSettings by rememberSaveable { mutableStateOf(false) }
                 var editingPhoto by rememberSaveable { mutableStateOf(false) }
@@ -179,6 +181,10 @@ class MainActivity : ComponentActivity() {
                             .setOrientationLocked(false),
                     )
                 }
+                // Ordner für die automatische Sicherung
+                val folderPicker = rememberLauncherForActivityResult(
+                    ActivityResultContracts.OpenDocumentTree(),
+                ) { uri -> if (uri != null) vm.enableAutoBackup(uri) }
                 val syncOpener = rememberLauncherForActivityResult(
                     ActivityResultContracts.OpenDocument(),
                 ) { uri -> if (uri != null) vm.importSync(uri) }
@@ -246,6 +252,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 relationships = s.relationships.map { it.id to s.namesOf(it) },
                                 defaultRelationship = if (s.showAll) null else s.relationship.id,
+                                onShare = { ShareCard.shareMoment(this@MainActivity, s, it, today) },
                             )
                             "editor" -> PhotoEditorScreen(
                                 settings = s,
@@ -284,6 +291,7 @@ class MainActivity : ComponentActivity() {
                                 onResetPhoto = vm::resetPhoto,
                                 onNotifications = ::setNotifications,
                                 onNotifyTime = vm::setNotifyTime,
+                                onRemindBefore = vm::setRemindBefore,
                                 onTestNotification = {
                                     if (allowed) vm.sendTestNotification() else askPermission()
                                 },
@@ -309,6 +317,8 @@ class MainActivity : ComponentActivity() {
                                 onRemoveSlide = vm::removeSlide,
                                 onExportBackup = ::saveBackup,
                                 onImportBackup = ::loadBackup,
+                                autoBackup = autoBackup,
+                                onAutoBackup = { on -> if (on) folderPicker.launch(null) else vm.disableAutoBackup() },
                                 language = remember { AppLanguage.current(this@MainActivity) },
                                 onLanguage = { AppLanguage.set(this@MainActivity, it) },
                                 onSavePerson = vm::savePerson,

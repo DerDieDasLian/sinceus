@@ -6,6 +6,15 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.layout.aspectRatio
+import coil3.compose.AsyncImage
+import java.io.File
+import app.sinceus.data.YearReview
+import app.sinceus.data.YearReviewMath
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.selection.selectable
@@ -46,6 +55,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cake
 import androidx.compose.material.icons.rounded.CardGiftcard
+import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Celebration
@@ -219,15 +229,19 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
     val moments = if (settings.showMoments) settings.visibleMoments else emptyList()
     val members = settings.members()
     val todays = LoveMath.milestonesOn(start, today) + MomentMath.milestonesOn(moments, today) +
-        BirthdayMath.milestonesOn(members, today)
+        BirthdayMath.milestonesOn(members, today) +
+        MomentMath.plannedOn(moments, today).map { Milestone(MilestoneKind.PLANNED, 0, today, it.title) }
     val upcoming = (
-        LoveMath.upcoming(start, today, 4) + MomentMath.upcoming(moments, today, 4) + BirthdayMath.upcoming(members, today, 4)
+        LoveMath.upcoming(start, today, 4) + MomentMath.upcoming(moments, today, 4) + BirthdayMath.upcoming(members, today, 4) +
+            MomentMath.planned(moments, today, 4)
         )
         .sortedBy { it.date }
         .take(4)
         .map { it to (null as String?) }
     val context = LocalContext.current
     val share = { ShareCard.share(context, settings, today, ShareCard.defaultText(context, settings, today)) }
+    // Rückblick am Jahrestag und in der Woche danach
+    val review = if (settings.showMoments) YearReviewMath.reviewFor(start, today, settings.visibleMoments) else null
 
     Column(
         Modifier
@@ -261,6 +275,8 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
             }
 
             if (todays.isNotEmpty()) TodayBanner(todays.map { Texts.milestoneMessage(context, it) })
+
+            review?.let { YearReviewCard(it) { ShareCard.shareYear(context, settings, it) } }
 
             if (LocalPrideMonth.current) RainbowCard(stringResource(R.string.pride_title), stringResource(R.string.all_couples_text))
 
@@ -473,6 +489,63 @@ internal fun TodayBanner(lines: List<String>) {
     }
 }
 
+/** Rückblick auf das vergangene Jahr mit ein paar Fotos und dem Knopf zum Teilen */
+@Composable
+private fun YearReviewCard(review: YearReview, onShare: () -> Unit) {
+    val photos = review.moments.mapNotNull { it.photoPath }.take(3)
+    Card(
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(Modifier.padding(20.dp)) {
+            Text(
+                stringResource(R.string.year_review_title, review.year.toString()),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                pluralStringResource(R.plurals.year_review_moments, review.moments.size, formatNumber(review.moments.size.toLong())),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (photos.isNotEmpty()) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    photos.forEach { path ->
+                        AsyncImage(
+                            model = File(path),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                                .clip(RoundedCornerShape(12.dp)),
+                        )
+                    }
+                }
+            }
+            review.moments.takeLast(3).forEach {
+                Text(
+                    it.title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 6.dp),
+                )
+            }
+            FilledTonalButton(onClick = onShare, modifier = Modifier.padding(top = 12.dp)) {
+                Icon(Icons.Rounded.Share, null)
+                Text(stringResource(R.string.year_review_share), Modifier.padding(start = 8.dp))
+            }
+        }
+    }
+}
+
 /** Die nächsten besonderen Tage, jeweils mit den Namen der Beziehung, wenn es mehrere gibt */
 @Composable
 internal fun UpcomingCard(upcoming: List<Pair<Milestone, String?>>, today: LocalDate) {
@@ -547,4 +620,5 @@ private fun MilestoneKind.icon(): ImageVector = when (this) {
     MilestoneKind.WEEKS -> Icons.Rounded.CalendarMonth
     MilestoneKind.MOMENT -> Icons.Rounded.AutoAwesome
     MilestoneKind.BIRTHDAY -> Icons.Rounded.CardGiftcard
+    MilestoneKind.PLANNED -> Icons.Rounded.Event
 }

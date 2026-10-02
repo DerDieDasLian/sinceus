@@ -338,4 +338,26 @@
     <!-- Vorschau des Zähler-Widgets -->
     <string name="widget_preview_label">Tage zusammen</string>
     <string name="widget_preview_next">Als Nächstes: 6 Monate</string>
+    <!-- Geplante Momente, Vorab-Erinnerung -->
+    <string name="msg_planned">Heute ist es so weit: %1$s</string>
+    <string name="remind_before">Vorab erinnern</string>
+    <string name="remind_off">Nur am Tag selbst</string>
+    <string name="remind_day">Auch 1 Tag vorher</string>
+    <string name="remind_week">Auch 1 Woche vorher</string>
+    <string name="remind_tomorrow">Morgen: %1$s</string>
+    <string name="remind_in_week">In einer Woche: %1$s</string>
+    <!-- Automatische Sicherung -->
+    <string name="backup_auto">Automatisch sichern</string>
+    <string name="backup_auto_summary">Jede Woche eine Sicherung in einen Ordner deiner Wahl, ohne Internet</string>
+    <string name="backup_auto_folder">Ordner: %1$s</string>
+    <string name="backup_auto_last">Ordner: %1$s, zuletzt am %2$s</string>
+    <!-- Teilen und Jahresrückblick -->
+    <string name="moment_share">Moment teilen</string>
+    <string name="year_review_title">Euer %1$s. Jahr</string>
+    <string name="year_review_range">%1$s bis %2$s</string>
+    <string name="year_review_share">Rückblick teilen</string>
+    <plurals name="year_review_moments">
+        <item quantity="one">%1$s Moment in diesem Jahr</item>
+        <item quantity="other">%1$s Momente in diesem Jahr</item>
+    </plurals>
 </resources>

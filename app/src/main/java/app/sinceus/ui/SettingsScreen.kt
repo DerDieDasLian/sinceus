@@ -105,6 +105,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.rounded.Backup
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.CardGiftcard
+import app.sinceus.data.REMIND_OPTIONS
+import app.sinceus.data.AutoBackup
+import androidx.compose.material.icons.rounded.EventRepeat
+import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Restore
 import androidx.compose.material.icons.rounded.Slideshow
 import app.sinceus.data.MAX_SLIDES
@@ -159,6 +163,7 @@ fun SettingsScreen(
     onResetPhoto: () -> Unit = {},
     onNotifications: (Boolean) -> Unit = {},
     onNotifyTime: (Int, Int) -> Unit = { _, _ -> },
+    onRemindBefore: (Int) -> Unit = {},
     onTestNotification: () -> Unit = {},
     onAddWidget: () -> Unit = {},
     onAdjustPhoto: () -> Unit = {},
@@ -176,6 +181,9 @@ fun SettingsScreen(
     onRemoveSlide: (String) -> Unit = {},
     onExportBackup: () -> Unit = {},
     onImportBackup: () -> Unit = {},
+    /** Automatische Sicherung, null = aus */
+    autoBackup: AutoBackup.State? = null,
+    onAutoBackup: (Boolean) -> Unit = {},
     /** Gewählte App-Sprache, "" = wie das Handy */
     language: String = "",
     onLanguage: (String) -> Unit = {},
@@ -332,6 +340,12 @@ fun SettingsScreen(
                                 Texts.time(context, LocalTime.of(settings.notifyHour, settings.notifyMinute)),
                             ) { dialog = "time" }
                             Divider()
+                            Row(
+                                Icons.Rounded.Alarm,
+                                stringResource(R.string.remind_before),
+                                stringResource(remindLabel(settings.remindBefore)),
+                            ) { dialog = "remind" }
+                            Divider()
                             Row(Icons.Rounded.Send, stringResource(R.string.send_test), null, onClick = onTestNotification)
                         }
                     }
@@ -372,6 +386,29 @@ fun SettingsScreen(
                             leadingContent = { Icon(Icons.Rounded.Restore, null) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                             modifier = Modifier.clickable { dialog = "import" },
+                        )
+                        Divider()
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.backup_auto)) },
+                            supportingContent = {
+                                Text(
+                                    when {
+                                        autoBackup == null -> stringResource(R.string.backup_auto_summary)
+                                        autoBackup.last > 0 -> stringResource(
+                                            R.string.backup_auto_last,
+                                            autoBackup.folderName,
+                                            Texts.mediumDate(
+                                                java.time.Instant.ofEpochMilli(autoBackup.last).atZone(java.time.ZoneId.systemDefault()).toLocalDate(),
+                                            ),
+                                        )
+                                        else -> stringResource(R.string.backup_auto_folder, autoBackup.folderName)
+                                    },
+                                )
+                            },
+                            leadingContent = { Icon(Icons.Rounded.EventRepeat, null) },
+                            trailingContent = { Switch(checked = autoBackup != null, onCheckedChange = onAutoBackup) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { onAutoBackup(autoBackup == null) },
                         )
                     }
                     SettingsPage.About -> {
@@ -517,6 +554,31 @@ fun SettingsScreen(
         }
     }
     when (current) {
+        "remind" -> AlertDialog(
+            onDismissRequest = { dialog = null },
+            icon = { Icon(Icons.Rounded.Alarm, null) },
+            title = { Text(stringResource(R.string.remind_before)) },
+            text = {
+                Column {
+                    REMIND_OPTIONS.forEach { days ->
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .selectable(selected = settings.remindBefore == days, role = Role.RadioButton) {
+                                    onRemindBefore(days)
+                                    dialog = null
+                                }
+                                .padding(vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(selected = settings.remindBefore == days, onClick = null)
+                            Text(stringResource(remindLabel(days)), Modifier.padding(start = 16.dp))
+                        }
+                    }
+                }
+            },
+            confirmButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.close)) } },
+        )
         "time" -> TimeDialog(
             stringResource(R.string.notify_time_title),
             LocalTime.of(settings.notifyHour, settings.notifyMinute),
@@ -1220,4 +1282,11 @@ private fun SlidesDialog(slides: List<String>, onAdd: () -> Unit, onRemove: (Str
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) } },
     )
+}
+
+/** Text für die Vorab-Erinnerung: aus, 1 Tag oder 1 Woche vorher */
+private fun remindLabel(days: Int): Int = when (days) {
+    1 -> R.string.remind_day
+    7 -> R.string.remind_week
+    else -> R.string.remind_off
 }

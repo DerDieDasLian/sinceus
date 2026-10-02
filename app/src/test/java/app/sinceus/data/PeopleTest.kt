@@ -168,4 +168,27 @@ class PeopleTest {
         val quiet = s.copy(relationships = s.relationships.map { it.copy(notify = false) })
         assertNull(Notifier.dueToday(context, quiet, LocalDate.of(2025, 8, 20)))
     }
+
+    @Test
+    fun remindBeforeAndPlanned() {
+        val start = LocalDate.of(2025, 3, 15)
+        val couple = LoveSettings.couple("Alex", "Sam", start).copy(onboardingDone = true)
+        // Eine Woche vor dem 6-Monats-Tag
+        val week = couple.copy(remindBefore = 7)
+        val (_, lines) = Notifier.dueToday(context, week, LocalDate.of(2025, 9, 8))!!
+        assertEquals(listOf("In einer Woche: 6 Monate"), lines)
+        assertNull(Notifier.dueToday(context, couple, LocalDate.of(2025, 9, 8)))
+        val day = couple.copy(remindBefore = 1)
+        assertEquals(listOf("Morgen: 6 Monate"), Notifier.dueToday(context, day, LocalDate.of(2025, 9, 14))!!.second)
+
+        // Geplanter Moment: am Tag selbst und vorab
+        val millis = LocalDate.of(2025, 8, 1).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val trip = Moment("t", "Urlaub", LocalDate.of(2025, 8, 20), updatedAt = millis)
+        val planned = couple.copy(moments = listOf(trip), remindBefore = 1)
+        assertEquals(listOf("Morgen: Urlaub"), Notifier.dueToday(context, planned, LocalDate.of(2025, 8, 19))!!.second)
+        assertEquals(listOf("Heute ist es so weit: Urlaub"), Notifier.dueToday(context, planned, LocalDate.of(2025, 8, 20))!!.second)
+
+        // Die Einstellung kommt mit in die Sicherung
+        assertEquals(7, BackupCodec.decode(BackupCodec.encode(week)).remindBefore)
+    }
 }

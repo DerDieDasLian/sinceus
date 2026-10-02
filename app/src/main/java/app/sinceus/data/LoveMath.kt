@@ -12,11 +12,12 @@ data class Together(
     val totalDays: Long,
 )
 
-enum class MilestoneKind { YEARS, MONTHS, DAYS, WEEKS, MOMENT, BIRTHDAY }
+enum class MilestoneKind { YEARS, MONTHS, DAYS, WEEKS, MOMENT, BIRTHDAY, PLANNED }
 
 /**
  * Bei [MilestoneKind.MOMENT] ist [value] die Anzahl Jahre und [title] der Name des Moments,
- * bei [MilestoneKind.BIRTHDAY] ist [title] der Name des Menschen.
+ * bei [MilestoneKind.BIRTHDAY] ist [title] der Name des Menschen,
+ * bei [MilestoneKind.PLANNED] (ein geplanter Moment in der Zukunft) der Name des Moments.
  */
 data class Milestone(val kind: MilestoneKind, val value: Long, val date: LocalDate, val title: String? = null)
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import android.widget.Toast
 import app.sinceus.R
+import app.sinceus.data.AutoBackup
 import app.sinceus.data.LoveRepository
 import app.sinceus.update.UpdateChecker
 import app.sinceus.update.UpdateInstaller
@@ -54,6 +55,8 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
 
     fun refreshToday() {
         _today.value = LocalDate.now()
+        // Die automatische Sicherung läuft im Hintergrund, ihr Datum hier auffrischen
+        _autoBackup.value = AutoBackup.load(getApplication())
     }
 
     fun setNames(names: List<String>) = viewModelScope.launch { repo.setNames(names) }
@@ -69,9 +72,11 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun resetAll() = viewModelScope.launch {
         repo.resetAll()
         _pairing.value = null
+        _autoBackup.value = null
     }
     fun setNotifications(enabled: Boolean) = viewModelScope.launch { repo.setNotifications(enabled) }
     fun setNotifyTime(h: Int, m: Int) = viewModelScope.launch { repo.setNotifyTime(h, m) }
+    fun setRemindBefore(days: Int) = viewModelScope.launch { repo.setRemindBefore(days) }
     fun setPhoto(uri: Uri) = viewModelScope.launch { repo.setPhoto(uri) }
     fun setPreset(index: Int) = viewModelScope.launch { repo.setPreset(index) }
     fun resetPhoto() = viewModelScope.launch { repo.resetPhoto() }
@@ -100,6 +105,28 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
             false
         }
         Toast.makeText(app, app.getString(if (ok) R.string.backup_saved else R.string.backup_save_failed), Toast.LENGTH_SHORT).show()
+    }
+
+    private val _autoBackup = MutableStateFlow(AutoBackup.load(app))
+    val autoBackup: StateFlow<AutoBackup.State?> = _autoBackup.asStateFlow()
+
+    /** Automatische Sicherung in den gewählten Ordner einschalten und gleich die erste anlegen */
+    fun enableAutoBackup(tree: Uri) = viewModelScope.launch {
+        val app = getApplication<Application>()
+        val ok = try {
+            val state = AutoBackup.enable(app, tree)
+            withContext(Dispatchers.IO) { AutoBackup.run(app, state) }
+        } catch (e: Exception) {
+            android.util.Log.w("SinceUs", "Automatische Sicherung fehlgeschlagen", e)
+            false
+        }
+        _autoBackup.value = AutoBackup.load(app)
+        Toast.makeText(app, app.getString(if (ok) R.string.backup_saved else R.string.backup_save_failed), Toast.LENGTH_SHORT).show()
+    }
+
+    fun disableAutoBackup() {
+        AutoBackup.disable(getApplication())
+        _autoBackup.value = null
     }
 
     /** Ersetzt alle Daten durch die aus der gewählten Sicherungsdatei. */

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -80,6 +81,8 @@ fun MomentEditorScreen(
     relationships: List<Pair<String, String>> = emptyList(),
     /** Vorauswahl für neue Momente, null = für alle */
     defaultRelationship: String? = null,
+    /** Gespeicherten Moment als Bild teilen */
+    onShare: (Moment) -> Unit = {},
 ) {
     var title by rememberSaveable { mutableStateOf(existing?.title ?: suggestedTitle.orEmpty()) }
     var epochDay by rememberSaveable { mutableStateOf((existing?.date ?: defaultDate).toEpochDay()) }
@@ -118,6 +121,9 @@ fun MomentEditorScreen(
                 },
                 actions = {
                     if (existing != null) {
+                        IconButton(onClick = { onShare(existing) }) {
+                            Icon(Icons.Rounded.Share, contentDescription = stringResource(R.string.moment_share))
+                        }
                         IconButton(onClick = { deleteDialog = true }) {
                             Icon(Icons.Rounded.DeleteOutline, contentDescription = stringResource(R.string.moment_delete))
                         }
