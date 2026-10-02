@@ -23,7 +23,9 @@ import app.sinceus.data.Names
 import app.sinceus.data.Texts
 import app.sinceus.data.YearReview
 import app.sinceus.data.formatNumber
+import app.sinceus.ui.AppFonts
 import app.sinceus.widget.WidgetPhoto
+import app.sinceus.widget.WidgetText
 import java.io.File
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -37,6 +39,7 @@ object ShareCard {
     const val HEIGHT = 1350
     private const val MARGIN = 88f
 
+    @Synchronized
     fun render(context: Context, s: LoveSettings, today: LocalDate): Bitmap {
         val out = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(out)
@@ -66,18 +69,11 @@ object ShareCard {
             },
         )
 
-        val serifBold = Typeface.create(Typeface.SERIF, Typeface.BOLD)
-        val sans = Typeface.create("sans-serif", Typeface.NORMAL)
-        val sansMedium = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        useFont(context, s)
         val white = 0xFFFFFFFF.toInt()
         val soft = 0xE6FFE3E7.toInt()
         val pink = 0xFFFF8FA3.toInt()
 
-        fun paint(size: Float, face: Typeface, color: Int) = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            textSize = size
-            typeface = face
-            this.color = color
-        }
 
         // Kleiner Schriftzug oben, mit gezeichnetem Herz statt Emoji
         val brand = paint(40f, sansMedium, soft)
@@ -213,15 +209,29 @@ object ShareCard {
         )
     }
 
-    private fun paint(size: Float, face: Typeface, color: Int) = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    /** Schrift mit Stärke (100 bis 900); variable Schriften bekommen die Stärke über die Achse "wght" */
+    private class Face(val typeface: Typeface, val weight: Int)
+
+    private fun paint(size: Float, face: Face, color: Int) = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = size
-        typeface = face
+        typeface = face.typeface
         this.color = color
+        fontVariationSettings = "'wght' ${face.weight}"
     }
 
-    private val serifBold get() = Typeface.create(Typeface.SERIF, Typeface.BOLD)
-    private val sans get() = Typeface.create("sans-serif", Typeface.NORMAL)
-    private val sansMedium get() = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+    // Die gewählte App-Schrift, gesetzt zu Beginn jedes Bildes
+    private var serifBold = Face(Typeface.create(Typeface.SERIF, Typeface.BOLD), 700)
+    private var sans = Face(Typeface.DEFAULT, 400)
+    private var sansMedium = Face(Typeface.create("sans-serif-medium", Typeface.NORMAL), 500)
+
+    private fun useFont(context: Context, s: LoveSettings) {
+        val heading = WidgetText.typeface(context, s.font, heading = true)
+        val body = WidgetText.typeface(context, s.font, heading = false)
+        val classic = AppFonts.find(s.font).id == AppFonts.CLASSIC_ID
+        serifBold = Face(if (classic) Typeface.create(Typeface.SERIF, Typeface.BOLD) else heading, 700)
+        sans = Face(body, 400)
+        sansMedium = Face(if (classic) Typeface.create("sans-serif-medium", Typeface.NORMAL) else body, 500)
+    }
     private val WHITE = 0xFFFFFFFF.toInt()
     private val SOFT = 0xE6FFE3E7.toInt()
     private val PINK = 0xFFFF8FA3.toInt()
@@ -262,7 +272,9 @@ object ShareCard {
     }
 
     /** Ein Moment: Foto (sonst euer Hintergrund), Titel, Datum und wie lange es her ist */
+    @Synchronized
     fun renderMoment(context: Context, s: LoveSettings, m: Moment, today: LocalDate): Bitmap {
+        useFont(context, s)
         val photo = m.photoPath?.let { WidgetPhoto.photo(it, WIDTH, HEIGHT, DEFAULT_FOCUS_Y / 2) }
         val (out, canvas) = canvasWith(context, s, photo)
         val w = WIDTH.toFloat()
@@ -297,7 +309,9 @@ object ShareCard {
     }
 
     /** Jahresrückblick: bis zu vier Fotos des Jahres, die Zahl der Momente und das Jahr */
+    @Synchronized
     fun renderYear(context: Context, s: LoveSettings, review: YearReview): Bitmap {
+        useFont(context, s)
         val photos = review.moments.mapNotNull { it.photoPath }.take(4)
         val collage = if (photos.isEmpty()) null else collage(photos)
         val (out, canvas) = canvasWith(context, s, collage)
