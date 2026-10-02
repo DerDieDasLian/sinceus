@@ -378,7 +378,7 @@
     <string name="lock_no_screen_lock">Set up a screen lock on your phone first.</string>
     <string name="font_title">Font</string>
     <string name="font_sample">583 days together</string>
-    <string name="font_group_standard">Standard</string>
+    <string name="font_group_standard">Classic</string>
     <string name="font_group_round">Round and soft</string>
     <string name="font_group_modern">Modern and clear</string>
     <string name="font_group_serif">Elegant</string>
@@ -386,4 +386,5 @@
     <string name="licenses_fonts">Fonts</string>
     <string name="licenses_fonts_text">All fonts in the app are licensed under the SIL Open Font License 1.1.</string>
     <string name="licenses_fonts_show">Show font notices</string>
+    <string name="font_classic">Classic</string>
 </resources>

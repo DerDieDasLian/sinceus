@@ -1,0 +1,1 @@
+• New default font: Space Grotesk. If you already picked your own font, you keep it. The previous font is now called "Classic" and stays in the list.

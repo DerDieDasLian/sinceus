@@ -61,7 +61,7 @@ fun FontDialog(selected: String, onSelect: (String) -> Unit, onDismiss: () -> Un
                         RadioButton(selected = font.id == current, onClick = null)
                         Column(Modifier.padding(start = 12.dp)) {
                             Text(
-                                font.name,
+                                font.label(),
                                 fontFamily = font.heading,
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = (22 * font.scale).sp,

@@ -1,3 +1,9 @@
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("fonts/SpaceGrotesk.woff2") format("woff2");
+  font-weight: 300 700;
+  font-display: swap;
+}
 :root {
   --bg: #fff8f7;
   --surface: #ffffff;
@@ -11,8 +17,8 @@
   --hero-2: #8b1e31;
   --hero-3: #d64c63;
   --radius: 28px;
-  --serif: "Noto Serif", Georgia, "Times New Roman", serif;
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --serif: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root {

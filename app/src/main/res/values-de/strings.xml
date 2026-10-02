@@ -374,7 +374,7 @@
     <string name="lock_no_screen_lock">Richte zuerst eine Displaysperre am Handy ein.</string>
     <string name="font_title">Schrift</string>
     <string name="font_sample">583 Tage zusammen</string>
-    <string name="font_group_standard">Standard</string>
+    <string name="font_group_standard">Klassisch</string>
     <string name="font_group_round">Rund und weich</string>
     <string name="font_group_modern">Modern und klar</string>
     <string name="font_group_serif">Edel</string>
@@ -382,4 +382,5 @@
     <string name="licenses_fonts">Schriften</string>
     <string name="licenses_fonts_text">Alle Schriften in der App stehen unter der SIL Open Font License 1.1.</string>
     <string name="licenses_fonts_show">Hinweise zu den Schriften zeigen</string>
+    <string name="font_classic">Klassisch</string>
 </resources>

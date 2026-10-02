@@ -4,6 +4,8 @@ package app.sinceus.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.material3.Typography
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -24,11 +26,20 @@ class AppFont(
     val heading: FontFamily,
     val body: FontFamily? = null,
     val scale: Float = 1f,
+    /** Übersetzter Name statt [name], z. B. für die klassische Schrift */
+    @StringRes val nameRes: Int? = null,
 )
+
+/** Anzeigename der Schrift in der gewählten Sprache */
+@Composable
+fun AppFont.label(): String = nameRes?.let { stringResource(it) } ?: name
 
 object AppFonts {
     /** Schrift für alle, die noch keine eigene gewählt haben */
-    const val DEFAULT_ID = "standard"
+    const val DEFAULT_ID = "space_grotesk"
+
+    /** Die frühere Schrift der App (Systemschrift mit Serifen-Überschriften) */
+    const val CLASSIC_ID = "standard"
 
     private val weights = listOf(400, 500, 600, 700)
 
@@ -45,7 +56,7 @@ object AppFonts {
 
     val all: List<AppFont> by lazy {
         listOf(
-            AppFont(DEFAULT_ID, "Standard", R.string.font_group_standard, FontFamily.Serif),
+            AppFont(CLASSIC_ID, "", R.string.font_group_standard, FontFamily.Serif, nameRes = R.string.font_classic),
             // Rund und weich
             AppFont("quicksand", "Quicksand", R.string.font_group_round, quicksand, quicksand),
             AppFont("nunito", "Nunito", R.string.font_group_round, nunito, nunito),

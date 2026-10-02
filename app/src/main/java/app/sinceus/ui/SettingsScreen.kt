@@ -332,7 +332,7 @@ fun SettingsScreen(
                         Divider()
                         Row(Icons.Rounded.RestartAlt, stringResource(R.string.reset_photo), null, onClick = onResetPhoto)
                         Divider()
-                        Row(Icons.Rounded.TextFields, stringResource(R.string.font_title), AppFonts.find(settings.font).name) { dialog = "font" }
+                        Row(Icons.Rounded.TextFields, stringResource(R.string.font_title), AppFonts.find(settings.font).label()) { dialog = "font" }
                     }
                     SettingsPage.Notifications -> Section(null) {
                         ListItem(
