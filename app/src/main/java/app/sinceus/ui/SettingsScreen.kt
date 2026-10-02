@@ -109,6 +109,7 @@ import app.sinceus.data.REMIND_OPTIONS
 import app.sinceus.data.AutoBackup
 import androidx.compose.material.icons.rounded.EventRepeat
 import androidx.compose.material.icons.rounded.Alarm
+import androidx.compose.material.icons.rounded.NewReleases
 import androidx.compose.material.icons.rounded.Restore
 import androidx.compose.material.icons.rounded.Slideshow
 import app.sinceus.data.MAX_SLIDES
@@ -184,6 +185,9 @@ fun SettingsScreen(
     /** Automatische Sicherung, null = aus */
     autoBackup: AutoBackup.State? = null,
     onAutoBackup: (Boolean) -> Unit = {},
+    onShowChangelog: (Boolean) -> Unit = {},
+    /** Neuigkeiten dieser Version zeigen */
+    onOpenChangelog: () -> Unit = {},
     /** Gewählte App-Sprache, "" = wie das Handy */
     language: String = "",
     onLanguage: (String) -> Unit = {},
@@ -454,6 +458,15 @@ fun SettingsScreen(
                             }
                         }
                         Section(if (BuildConfig.UPDATE_CHECK) stringResource(R.string.settings_about) else null) {
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.changelog_setting)) },
+                                supportingContent = { Text(stringResource(R.string.changelog_setting_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.NewReleases, null) },
+                                trailingContent = { Switch(checked = settings.showChangelog, onCheckedChange = onShowChangelog) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { onShowChangelog(!settings.showChangelog) },
+                            )
+                            Divider()
                             Row(Icons.Rounded.Shield, stringResource(R.string.privacy), null) { dialog = "privacy" }
                             Divider()
                             Row(Icons.Rounded.Description, stringResource(R.string.licenses), null, onClick = onOpenLicenses)
@@ -462,7 +475,8 @@ fun SettingsScreen(
                                 Icons.Rounded.Info,
                                 stringResource(R.string.version),
                                 stringResource(R.string.version_value, BuildConfig.VERSION_NAME, BuildConfig.FLAVOR),
-                            ) {}
+                                onClick = onOpenChangelog,
+                            )
                         }
                     }
                     SettingsPage.Reset -> {

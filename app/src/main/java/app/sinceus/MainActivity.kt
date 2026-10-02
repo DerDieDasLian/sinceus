@@ -45,6 +45,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.sinceus.data.Backup
+import app.sinceus.ui.ChangelogDialog
+import app.sinceus.data.Changelog
 import app.sinceus.data.MAX_SLIDES
 import app.sinceus.notify.Notifier
 import app.sinceus.share.ShareCard
@@ -94,6 +96,23 @@ class MainActivity : ComponentActivity() {
                     onPauseOrDispose { }
                 }
                 val allowed = remember(resumeCount) { Notifier.canNotify(this@MainActivity) }
+
+                // Nach einem Update einmal zeigen, was neu ist (abschaltbar); null = kein Dialog
+                var changelog by remember { mutableStateOf<List<String>?>(null) }
+                // true = nach einem Update von selbst geöffnet, false = aus den Einstellungen
+                var changelogAuto by remember { mutableStateOf(true) }
+                LaunchedEffect(settings?.onboardingDone, settings?.changelogSeen, settings?.showChangelog) {
+                    val st = settings ?: return@LaunchedEffect
+                    val current = BuildConfig.VERSION_CODE
+                    if (!st.onboardingDone || st.changelogSeen >= current) return@LaunchedEffect
+                    val lines = if (st.showChangelog) Changelog.linesSince(this@MainActivity, st.changelogSeen, current) else emptyList()
+                    if (lines.isEmpty()) {
+                        vm.setChangelogSeen(current)
+                    } else {
+                        changelogAuto = true
+                        changelog = lines
+                    }
+                }
 
                 // App-Abkürzungen passend zu den eingeschalteten Bereichen (und in der gewählten Sprache)
                 LaunchedEffect(settings?.onboardingDone, settings?.showMoments, settings?.showLive) {
@@ -318,6 +337,14 @@ class MainActivity : ComponentActivity() {
                                 onExportBackup = ::saveBackup,
                                 onImportBackup = ::loadBackup,
                                 autoBackup = autoBackup,
+                                onShowChangelog = vm::setShowChangelog,
+                                onOpenChangelog = {
+                                    val lines = Changelog.linesSince(this@MainActivity, BuildConfig.VERSION_CODE - 1, BuildConfig.VERSION_CODE)
+                                    if (lines.isNotEmpty()) {
+                                        changelogAuto = false
+                                        changelog = lines
+                                    }
+                                },
                                 onAutoBackup = { on -> if (on) folderPicker.launch(null) else vm.disableAutoBackup() },
                                 language = remember { AppLanguage.current(this@MainActivity) },
                                 onLanguage = { AppLanguage.set(this@MainActivity, it) },
@@ -355,6 +382,24 @@ class MainActivity : ComponentActivity() {
                                 onJumped = { homeJump = null },
                             )
                         }
+                    }
+                    changelog?.let { lines ->
+                        val close = {
+                            vm.setChangelogSeen(BuildConfig.VERSION_CODE)
+                            changelog = null
+                        }
+                        ChangelogDialog(
+                            lines,
+                            onClose = close,
+                            onNeverAgain = if (changelogAuto) {
+                                {
+                                    vm.setShowChangelog(false)
+                                    close()
+                                }
+                            } else {
+                                null
+                            },
+                        )
                     }
                 }
                 }

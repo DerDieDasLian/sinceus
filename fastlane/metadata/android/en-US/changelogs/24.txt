@@ -1,0 +1,1 @@
+• After an update, Since Us briefly shows what's new. You can turn this off under "About the app" in the settings, where tapping the version shows it again any time.

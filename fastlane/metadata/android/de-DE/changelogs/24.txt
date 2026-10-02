@@ -1,0 +1,1 @@
+• Nach einem Update zeigt Since Us kurz, was neu ist. Abschaltbar in den Einstellungen unter "Über die App", dort zeigt ein Tipp auf die Version die Neuigkeiten jederzeit nochmal.

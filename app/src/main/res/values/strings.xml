@@ -364,4 +364,10 @@
         <item quantity="one">%1$s moment this year</item>
         <item quantity="other">%1$s moments this year</item>
     </plurals>
+    <!-- Neuigkeiten nach Updates -->
+    <string name="changelog_title">New in version %1$s</string>
+    <string name="changelog_ok">Nice</string>
+    <string name="changelog_never">Don\'t show again</string>
+    <string name="changelog_setting">What\'s new after updates</string>
+    <string name="changelog_setting_summary">Briefly show what\'s new after an update. Tap the version below to see it again.</string>
 </resources>

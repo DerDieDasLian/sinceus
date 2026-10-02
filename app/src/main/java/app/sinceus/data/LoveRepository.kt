@@ -1,5 +1,6 @@
 package app.sinceus.data
 
+import app.sinceus.BuildConfig
 import android.content.Context
 import android.net.Uri
 import androidx.datastore.preferences.core.MutablePreferences
@@ -79,6 +80,10 @@ data class LoveSettings(
     val showLive: Boolean = true,
     /** Weitere Fotos für die Diashow im Titelbild (Pfade im App-Speicher, files/slides/) */
     val slides: List<String> = emptyList(),
+    /** Version (versionCode), deren Neuigkeiten schon gezeigt wurden, 0 = unbekannt */
+    val changelogSeen: Int = 0,
+    /** Nach einem Update zeigen, was neu ist */
+    val showChangelog: Boolean = true,
 ) {
     /** Die gerade gezeigte Beziehung (bei „alle“ die erste) */
     val relationship: Relationship
@@ -149,6 +154,8 @@ private object Keys {
     val notifyHour = intPreferencesKey("notify_hour")
     val notifyMinute = intPreferencesKey("notify_minute")
     val remindBefore = intPreferencesKey("remind_before")
+    val changelogSeen = intPreferencesKey("changelog_seen")
+    val showChangelog = booleanPreferencesKey("show_changelog")
     val lastNotified = longPreferencesKey("last_notified_epoch_day")
     val focusX = floatPreferencesKey("focus_x")
     val focusY = floatPreferencesKey("focus_y")
@@ -244,6 +251,8 @@ class LoveRepository(private val context: Context) {
             showMoments = this[Keys.showMoments] ?: d.showMoments,
             showLive = this[Keys.showLive] ?: d.showLive,
             slides = PathListCodec.decode(this[Keys.slides]).filter { File(it).exists() },
+            changelogSeen = this[Keys.changelogSeen] ?: d.changelogSeen,
+            showChangelog = this[Keys.showChangelog] ?: d.showChangelog,
         )
     }
 
@@ -604,6 +613,7 @@ class LoveRepository(private val context: Context) {
             p[Keys.focusY] = restored.focusY
             p[Keys.zoom] = restored.zoom
             p[Keys.onboardingDone] = true
+            if (p[Keys.changelogSeen] == null) p[Keys.changelogSeen] = BuildConfig.VERSION_CODE
             p[Keys.homePage] = restored.homePage
             p[Keys.updateCheck] = restored.updateCheck
             p[Keys.moments] = MomentCodec.encode(restored.moments)
@@ -673,7 +683,15 @@ class LoveRepository(private val context: Context) {
         it[Keys.zoom] = zoom
     }
 
-    suspend fun setOnboardingDone(done: Boolean) = context.dataStore.edit { it[Keys.onboardingDone] = done }
+    suspend fun setOnboardingDone(done: Boolean) = context.dataStore.edit {
+        it[Keys.onboardingDone] = done
+        // Wer gerade erst eingerichtet hat, braucht keine Neuigkeiten zu dieser Version
+        if (done && it[Keys.changelogSeen] == null) it[Keys.changelogSeen] = BuildConfig.VERSION_CODE
+    }
+
+    suspend fun setChangelogSeen(code: Int) = context.dataStore.edit { it[Keys.changelogSeen] = code }
+
+    suspend fun setShowChangelog(on: Boolean) = context.dataStore.edit { it[Keys.showChangelog] = on }
 
     suspend fun setUpdateCheck(enabled: Boolean) = context.dataStore.edit { it[Keys.updateCheck] = enabled }
 

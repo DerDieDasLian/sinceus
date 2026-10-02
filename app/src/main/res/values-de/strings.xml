@@ -360,4 +360,10 @@
         <item quantity="one">%1$s Moment in diesem Jahr</item>
         <item quantity="other">%1$s Momente in diesem Jahr</item>
     </plurals>
+    <!-- Neuigkeiten nach Updates -->
+    <string name="changelog_title">Neu in Version %1$s</string>
+    <string name="changelog_ok">Schön</string>
+    <string name="changelog_never">Nicht mehr zeigen</string>
+    <string name="changelog_setting">Neuigkeiten nach Updates</string>
+    <string name="changelog_setting_summary">Nach einem Update kurz zeigen, was neu ist. Ein Tipp auf die Version unten zeigt es nochmal.</string>
 </resources>

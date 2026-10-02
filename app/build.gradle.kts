@@ -99,6 +99,39 @@ android {
     }
 }
 
+/**
+ * Kopiert die Änderungslisten aus fastlane/metadata in die App (assets/changelogs/de|en/<versionCode>.txt),
+ * damit sie nach einem Update als „Neu in dieser Version“ erscheinen. Eine Quelle für Stores und App.
+ */
+abstract class CopyChangelogs : DefaultTask() {
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val metadata: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val output: DirectoryProperty
+
+    @TaskAction
+    fun copy() {
+        val out = output.get().asFile
+        out.deleteRecursively()
+        mapOf("de-DE" to "de", "en-US" to "en").forEach { (folder, lang) ->
+            val target = out.resolve("changelogs/$lang").apply { mkdirs() }
+            metadata.get().asFile.resolve("$folder/changelogs").listFiles { f -> f.extension == "txt" }
+                ?.forEach { it.copyTo(target.resolve(it.name), overwrite = true) }
+        }
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        val copy = tasks.register<CopyChangelogs>("copy${variant.name.replaceFirstChar { it.uppercase() }}Changelogs") {
+            metadata.set(rootProject.layout.projectDirectory.dir("fastlane/metadata/android"))
+        }
+        variant.sources.assets?.addGeneratedSourceDirectory(copy, CopyChangelogs::output)
+    }
+}
+
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)

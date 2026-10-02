@@ -131,4 +131,12 @@ class MomentTest {
         assertEquals(listOf("since-us-auto-2026-09-01.zip"), AutoBackup.oldOnes(names))
         assertTrue(AutoBackup.oldOnes(names.take(3)).isEmpty())
     }
+
+    @Test
+    fun changelogLines() {
+        assertEquals(
+            listOf("Geburtstage", "Suche ab 8 Momenten"),
+            Changelog.parse(listOf("• Geburtstage", "", "  • Suche ab 8 Momenten  ")),
+        )
+    }
 }
