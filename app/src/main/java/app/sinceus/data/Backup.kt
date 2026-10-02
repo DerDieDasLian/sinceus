@@ -72,6 +72,8 @@ object BackupCodec {
         .put("updateCheck", s.updateCheck)
         .put("showMoments", s.showMoments)
         .put("showLive", s.showLive)
+        .put("showFacts", s.showFacts)
+        .put("celebrate", s.celebrate)
         .put("slides", JSONArray().apply { s.slides.forEach { put(File(it).name) } })
         .put(
             "moments",
@@ -137,6 +139,8 @@ object BackupCodec {
                 .sortedBy { it.date },
             showMoments = o.optBoolean("showMoments", d.showMoments),
             showLive = o.optBoolean("showLive", d.showLive),
+            showFacts = o.optBoolean("showFacts", d.showFacts),
+            celebrate = o.optBoolean("celebrate", d.celebrate),
             slides = (0 until (slides?.length() ?: 0))
                 .mapNotNull { fileName(slides?.optString(it)) }
                 .distinct()

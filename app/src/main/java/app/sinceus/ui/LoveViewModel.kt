@@ -94,6 +94,8 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun deleteMoment(id: String) = viewModelScope.launch { repo.deleteMoment(id) }
     fun setShowMoments(show: Boolean) = viewModelScope.launch { repo.setShowMoments(show) }
     fun setShowLive(show: Boolean) = viewModelScope.launch { repo.setShowLive(show) }
+    fun setShowFacts(show: Boolean) = viewModelScope.launch { repo.setShowFacts(show) }
+    fun setCelebrate(on: Boolean) = viewModelScope.launch { repo.setCelebrate(on) }
     fun addSlides(uris: List<Uri>) = viewModelScope.launch { repo.addSlides(uris) }
     fun removeSlide(path: String) = viewModelScope.launch { repo.removeSlide(path) }
 

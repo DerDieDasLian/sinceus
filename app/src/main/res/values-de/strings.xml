@@ -338,6 +338,58 @@
     <!-- Vorschau des Zähler-Widgets -->
     <string name="widget_preview_label">Tage zusammen</string>
     <string name="widget_preview_next">Als Nächstes: 6 Monate</string>
+    <string name="facts_show">Lustige Zahlen</string>
+    <string name="facts_show_summary">Wochenenden, Vollmonde und mehr auf der Übersicht</string>
+    <string name="celebrate_show">Feier</string>
+    <string name="celebrate_show_summary">Etwas Konfetti an Jahrestagen und runden Tagen</string>
+    <string name="facts_title">Wusstet ihr?</string>
+    <string name="facts_next">Nächste Zahl zeigen</string>
+    <string name="facts_sub">seit ihr zusammen seid</string>
+    <string name="facts_heartbeats_sub">jeweils, bei ruhigen 70 Schlägen pro Minute</string>
+    <plurals name="fact_weekends">
+        <item quantity="one">%s Wochenende</item>
+        <item quantity="other">%s Wochenenden</item>
+    </plurals>
+    <plurals name="fact_full_moons">
+        <item quantity="one">%s Vollmond</item>
+        <item quantity="other">%s Vollmonde</item>
+    </plurals>
+    <plurals name="fact_sunrises">
+        <item quantity="one">%s Sonnenaufgang</item>
+        <item quantity="other">%s Sonnenaufgänge</item>
+    </plurals>
+    <plurals name="fact_christmas">
+        <item quantity="one">%s Weihnachtsfest</item>
+        <item quantity="other">%s Weihnachtsfeste</item>
+    </plurals>
+    <plurals name="fact_new_years">
+        <item quantity="one">%s Jahreswechsel</item>
+        <item quantity="other">%s Jahreswechsel</item>
+    </plurals>
+    <plurals name="fact_seasons">
+        <item quantity="one">%s neue Jahreszeit</item>
+        <item quantity="other">%s neue Jahreszeiten</item>
+    </plurals>
+    <plurals name="fact_heartbeats">
+        <item quantity="one">Etwa %s Herzschlag</item>
+        <item quantity="other">Etwa %s Herzschläge</item>
+    </plurals>
+    <string name="distance_mode">Fernbeziehung</string>
+    <string name="distance_mode_summary">Countdown bis zum nächsten Treffen und die Uhrzeit bei der anderen Seite</string>
+    <string name="distance_zone">Wo ist die andere Seite?</string>
+    <string name="distance_zone_none">Gleiche Zeit wie hier</string>
+    <string name="distance_zone_search">Stadt suchen</string>
+    <string name="distance_meeting">Nächstes Treffen</string>
+    <string name="distance_no_meeting">Tragt euer nächstes Treffen in den Einstellungen unter Menschen &amp; Beziehungen ein</string>
+    <string name="distance_today">Heute seht ihr euch</string>
+    <string name="distance_time">In %1$s ist es gerade %2$s</string>
+    <string name="distance_later">%1$s später als hier</string>
+    <string name="distance_earlier">%1$s früher als hier</string>
+    <string name="distance_same_time">Gleiche Uhrzeit wie hier</string>
+    <plurals name="distance_days">
+        <item quantity="one">Noch %s Tag, bis ihr euch seht</item>
+        <item quantity="other">Noch %s Tage, bis ihr euch seht</item>
+    </plurals>
     <string name="widget_countdown_name">Countdown</string>
     <string name="moments_view_list">Liste</string>
     <string name="moments_view_calendar">Kalender</string>

@@ -38,6 +38,12 @@ class ScreenshotTest {
     fun homeGerman() = shot("home", lang = "de") { HomeScreen(settings, today, {}, {}) }
 
     @Test
+    fun homeDistanceGerman() = shot("home_distance", lang = "de") {
+        val far = settings.relationships.map { it.copy(distance = true, farZone = "America/New_York", nextMeeting = today.plusDays(12)) }
+        HomeScreen(settings.copy(relationships = far), today, {}, {})
+    }
+
+    @Test
     fun liveGerman() = shot("live", lang = "de") {
         LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2025, 8, 15, 12, 46, 33))
     }

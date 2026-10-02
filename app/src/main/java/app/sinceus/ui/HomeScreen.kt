@@ -23,6 +23,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.unit.Dp
@@ -98,6 +99,7 @@ import app.sinceus.R
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import app.sinceus.data.FunFacts
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -150,6 +152,8 @@ fun HomeScreen(
                 HomePage.Moments -> MomentsScreen(settings, today, onAdd = onAddMoment, onOpen = onOpenMoment)
             }
         }
+        // Kleine Feier an Jahrestagen und runden Tagen
+        if (settings.celebrate && remember(settings, today) { celebrateOn(settings, today) }) Confetti()
         // Schwebende Leiste unten, damit oben nichts das Foto verdeckt.
         // Alle Elemente sind gleich hoch und haben rundherum denselben Abstand,
         // so laufen die Rundungen von Leiste und Knöpfen parallel.
@@ -184,6 +188,13 @@ fun HomeScreen(
             }
         }
     }
+}
+
+/** Gefeiert wird am Jahrestag, an runden Tagen wie dem 100. und an Jahrestagen eurer Momente */
+private fun celebrateOn(settings: LoveSettings, today: LocalDate): Boolean {
+    val own = LoveMath.milestonesOn(settings.startDate, today).any { it.kind == MilestoneKind.YEARS || it.kind == MilestoneKind.DAYS }
+    val moments = settings.showMoments && MomentMath.milestonesOn(settings.visibleMoments, today).isNotEmpty()
+    return own || moments
 }
 
 private enum class HomePage(@androidx.annotation.StringRes val label: Int) {
@@ -276,6 +287,8 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
 
             if (todays.isNotEmpty()) TodayBanner(todays.map { Texts.milestoneMessage(context, it) })
 
+            if (settings.relationship.distance) DistanceCard(settings.relationship, today)
+
             review?.let { YearReviewCard(it) { ShareCard.shareYear(context, settings, it) } }
 
             if (LocalPrideMonth.current) RainbowCard(stringResource(R.string.pride_title), stringResource(R.string.all_couples_text))
@@ -286,6 +299,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
                     StatTile(Modifier.weight(1f), formatNumber(together.totalWeeks), stringResource(R.string.stat_weeks))
                     StatTile(Modifier.weight(1f), formatNumber(together.totalDays * 24), stringResource(R.string.stat_hours))
                 }
+                if (settings.showFacts) FunFactsCard(remember(start, today) { FunFacts.all(start, today) })
             }
 
             if (upcoming.isNotEmpty()) UpcomingCard(upcoming, today)

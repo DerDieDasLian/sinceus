@@ -1,0 +1,4 @@
+• Lustige Zahlen auf der Übersicht: eure gemeinsamen Wochenenden, Vollmonde, Sonnenaufgänge und mehr. Antippen zeigt die nächste Zahl.
+• Etwas Konfetti an Jahrestagen und runden Tagen.
+• Fernbeziehung: Für jede Beziehung einschaltbar, mit Countdown bis zum nächsten Treffen und der Uhrzeit am anderen Ort. Das Treffen erscheint auch im Countdown-Widget.
+• Beides lässt sich unter Startseite abschalten, die Fernbeziehung unter Menschen & Beziehungen.

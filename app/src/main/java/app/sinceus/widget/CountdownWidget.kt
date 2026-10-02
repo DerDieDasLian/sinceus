@@ -57,7 +57,10 @@ class CountdownWidget : GlanceAppWidget() {
 private fun CountdownContent(settings: LoveSettings) {
     val context = LocalContext.current
     val today = LocalDate.now()
-    val next = CountdownWidget.next(settings.visibleMoments, today)
+    // Bei einer Fernbeziehung zählt auch das nächste Treffen
+    val meeting = settings.relationship.takeIf { it.distance }?.nextMeeting
+        ?.let { Moment("meeting", context.getString(R.string.distance_meeting), it) }
+    val next = CountdownWidget.next(settings.visibleMoments + listOfNotNull(meeting), today)
     val size = LocalSize.current
     val wide = size.width >= 200.dp
     val flat = size.height < 110.dp

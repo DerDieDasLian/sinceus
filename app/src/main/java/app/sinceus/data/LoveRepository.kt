@@ -80,6 +80,10 @@ data class LoveSettings(
     val showMoments: Boolean = true,
     /** Live-Zähler anzeigen (lässt sich ausblenden) */
     val showLive: Boolean = true,
+    /** Lustige Zahlen auf der Übersicht (z. B. Wochenenden und Vollmonde zusammen) */
+    val showFacts: Boolean = true,
+    /** Kleine Konfetti-Feier an Jahrestagen und runden Tagen */
+    val celebrate: Boolean = true,
     /** Weitere Fotos für die Diashow im Titelbild (Pfade im App-Speicher, files/slides/) */
     val slides: List<String> = emptyList(),
     /** Version (versionCode), deren Neuigkeiten schon gezeigt wurden, 0 = unbekannt */
@@ -174,6 +178,8 @@ private object Keys {
     val moments = stringPreferencesKey("moments")
     val showMoments = booleanPreferencesKey("show_moments")
     val showLive = booleanPreferencesKey("show_live")
+    val showFacts = booleanPreferencesKey("show_facts")
+    val celebrate = booleanPreferencesKey("celebrate")
     val slides = stringPreferencesKey("slides")
     val people = stringPreferencesKey("people")
     val relationships = stringPreferencesKey("relationships")
@@ -254,6 +260,8 @@ class LoveRepository(private val context: Context) {
             moments = MomentCodec.decode(this[Keys.moments]).sortedBy { it.date },
             showMoments = this[Keys.showMoments] ?: d.showMoments,
             showLive = this[Keys.showLive] ?: d.showLive,
+            showFacts = this[Keys.showFacts] ?: d.showFacts,
+            celebrate = this[Keys.celebrate] ?: d.celebrate,
             slides = PathListCodec.decode(this[Keys.slides]).filter { File(it).exists() },
             changelogSeen = this[Keys.changelogSeen] ?: d.changelogSeen,
             showChangelog = this[Keys.showChangelog] ?: d.showChangelog,
@@ -371,6 +379,10 @@ class LoveRepository(private val context: Context) {
     suspend fun setShowMoments(show: Boolean) = context.dataStore.edit { it[Keys.showMoments] = show }
 
     suspend fun setShowLive(show: Boolean) = context.dataStore.edit { it[Keys.showLive] = show }
+
+    suspend fun setShowFacts(show: Boolean) = context.dataStore.edit { it[Keys.showFacts] = show }
+
+    suspend fun setCelebrate(on: Boolean) = context.dataStore.edit { it[Keys.celebrate] = on }
 
     suspend fun deleteMoment(id: String) {
         val old = current().moments.firstOrNull { it.id == id } ?: return
@@ -612,6 +624,8 @@ class LoveRepository(private val context: Context) {
             p[Keys.moments] = MomentCodec.encode(restored.moments)
             p[Keys.showMoments] = restored.showMoments
             p[Keys.showLive] = restored.showLive
+            p[Keys.showFacts] = restored.showFacts
+            p[Keys.celebrate] = restored.celebrate
             p[Keys.slides] = PathListCodec.encode(restored.slides)
         }
     }

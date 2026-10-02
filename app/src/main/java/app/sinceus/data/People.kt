@@ -33,6 +33,12 @@ data class Relationship(
     val label: String = "",
     /** Mitteilungen zu den besonderen Tagen dieser Beziehung */
     val notify: Boolean = true,
+    /** Fernbeziehung: Countdown zum nächsten Treffen und Uhrzeit am anderen Ort zeigen */
+    val distance: Boolean = false,
+    /** Zeitzone am anderen Ort, z. B. „America/New_York“, null = wie hier */
+    val farZone: String? = null,
+    /** Nächstes Treffen, null = keins eingetragen */
+    val nextMeeting: LocalDate? = null,
 ) {
     val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
 }
@@ -102,7 +108,10 @@ object PeopleCodec {
                     .put("start", r.startDate.toEpochDay())
                     .put("time", r.startTime?.toSecondOfDay() ?: JSONObject.NULL)
                     .put("label", r.label)
-                    .put("notify", r.notify),
+                    .put("notify", r.notify)
+                    .put("distance", r.distance)
+                    .put("farZone", r.farZone ?: JSONObject.NULL)
+                    .put("meeting", r.nextMeeting?.toEpochDay() ?: JSONObject.NULL),
             )
         }
     }.toString()
@@ -120,6 +129,9 @@ object PeopleCodec {
                     startTime = if (o.isNull("time")) null else LocalTime.ofSecondOfDay(o.getLong("time")),
                     label = o.optString("label", "").trim().take(MAX_NAME),
                     notify = o.optBoolean("notify", true),
+                    distance = o.optBoolean("distance", false),
+                    farZone = if (o.isNull("farZone")) null else o.optString("farZone").takeIf { Distance.isZone(it) },
+                    nextMeeting = if (o.isNull("meeting")) null else LocalDate.ofEpochDay(o.getLong("meeting")),
                 )
             }.getOrNull()
         }.distinctBy { it.id }

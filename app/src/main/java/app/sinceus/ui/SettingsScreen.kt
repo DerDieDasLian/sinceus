@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -81,6 +82,8 @@ import app.sinceus.BuildConfig
 import app.sinceus.R
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.Calculate
+import androidx.compose.material.icons.rounded.Celebration
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.SystemUpdate
@@ -132,6 +135,13 @@ import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Gavel
 import androidx.compose.material.icons.rounded.Public
+import androidx.compose.material.icons.rounded.Flight
+import androidx.compose.material.icons.rounded.Event
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.platform.LocalConfiguration
+import app.sinceus.data.Distance
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.VisibilityOff
@@ -180,6 +190,8 @@ fun SettingsScreen(
     onOpenUpdate: () -> Unit = {},
     onShowMoments: (Boolean) -> Unit = {},
     onShowLive: (Boolean) -> Unit = {},
+    onShowFacts: (Boolean) -> Unit = {},
+    onCelebrate: (Boolean) -> Unit = {},
     /** Download-Fortschritt eines Updates in Prozent (-1 = unbekannt), null = kein Download */
     updateProgress: Int? = null,
     onOpenLicenses: () -> Unit = {},
@@ -288,6 +300,7 @@ fun SettingsScreen(
                                         Text(
                                             listOfNotNull(
                                                 r.label.ifBlank { null },
+                                                if (r.distance) stringResource(R.string.distance_mode) else null,
                                                 stringResource(R.string.together_since_long, Texts.mediumDate(r.startDate)),
                                             ).joinToString(" · "),
                                             color = MaterialTheme.colorScheme.primary,
@@ -399,6 +412,24 @@ fun SettingsScreen(
                             trailingContent = { Switch(checked = settings.showLive, onCheckedChange = onShowLive) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                             modifier = Modifier.clickable { onShowLive(!settings.showLive) },
+                        )
+                        Divider()
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.facts_show)) },
+                            supportingContent = { Text(stringResource(R.string.facts_show_summary)) },
+                            leadingContent = { Icon(Icons.Rounded.Calculate, null) },
+                            trailingContent = { Switch(checked = settings.showFacts, onCheckedChange = onShowFacts) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { onShowFacts(!settings.showFacts) },
+                        )
+                        Divider()
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.celebrate_show)) },
+                            supportingContent = { Text(stringResource(R.string.celebrate_show_summary)) },
+                            leadingContent = { Icon(Icons.Rounded.Celebration, null) },
+                            trailingContent = { Switch(checked = settings.celebrate, onCheckedChange = onCelebrate) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { onCelebrate(!settings.celebrate) },
                         )
                         Divider()
                         Row(Icons.Rounded.Widgets, stringResource(R.string.add_widget), null, onClick = onAddWidget)
@@ -1035,6 +1066,40 @@ private fun RelationshipDialog(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     modifier = Modifier.clickable { draft = draft.copy(notify = !draft.notify) },
                 )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.distance_mode)) },
+                    supportingContent = { Text(stringResource(R.string.distance_mode_summary)) },
+                    leadingContent = { Icon(Icons.Rounded.Flight, null) },
+                    trailingContent = { Switch(checked = draft.distance, onCheckedChange = { draft = draft.copy(distance = it) }) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { draft = draft.copy(distance = !draft.distance) },
+                )
+                if (draft.distance) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.distance_zone)) },
+                        supportingContent = {
+                            Text(
+                                draft.farZone?.let(Distance::cityName) ?: stringResource(R.string.distance_zone_none),
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        },
+                        leadingContent = { Icon(Icons.Rounded.Public, null) },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable { pick = "zone" },
+                    )
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.distance_meeting)) },
+                        supportingContent = {
+                            Text(
+                                draft.nextMeeting?.let(Texts::mediumDate) ?: stringResource(R.string.not_set),
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        },
+                        leadingContent = { Icon(Icons.Rounded.Event, null) },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable { pick = "meet" },
+                    )
+                }
                 if (!isNew && settings.relationships.size > 1) {
                     val inWidget = settings.widget.id == relationship.id
                     ListItem(
@@ -1085,7 +1150,70 @@ private fun RelationshipDialog(
             draft = draft.copy(startTime = it)
             pick = null
         }
+        "zone" -> ZoneDialog(
+            current = draft.farZone,
+            onDismiss = { pick = null },
+        ) {
+            draft = draft.copy(farZone = it)
+            pick = null
+        }
+        "meet" -> DateDialog(
+            draft.nextMeeting ?: LocalDate.now().plusDays(7),
+            onDismiss = { pick = null },
+            title = R.string.distance_meeting,
+        ) {
+            draft = draft.copy(nextMeeting = it)
+            pick = null
+        }
     }
+}
+
+/** Auswahl des Orts der anderen Seite: Liste aller Städte mit Zeitzone und Suchfeld */
+@Composable
+private fun ZoneDialog(current: String?, onDismiss: () -> Unit, onPick: (String?) -> Unit) {
+    val locale = LocalConfiguration.current.locales[0]
+    val cities = remember(locale) { Distance.cities(locale) }
+    var query by remember { mutableStateOf("") }
+    val shown = remember(query, cities) { cities.filter { Distance.matches(it, query) } }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.distance_zone)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    query,
+                    { query = it },
+                    placeholder = { Text(stringResource(R.string.distance_zone_search)) },
+                    leadingIcon = { Icon(Icons.Rounded.Search, null) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                LazyColumn(Modifier.heightIn(max = 360.dp)) {
+                    if (query.isBlank()) {
+                        item {
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.distance_zone_none)) },
+                                trailingContent = { RadioButton(selected = current == null, onClick = { onPick(null) }) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { onPick(null) },
+                            )
+                        }
+                    }
+                    items(shown, key = { it.zone }) { city ->
+                        ListItem(
+                            headlineContent = { Text(city.name) },
+                            supportingContent = { Text(city.zoneName) },
+                            trailingContent = { RadioButton(selected = current == city.zone, onClick = { onPick(city.zone) }) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { onPick(city.zone) },
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
