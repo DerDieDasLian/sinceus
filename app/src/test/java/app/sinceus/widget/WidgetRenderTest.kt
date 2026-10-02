@@ -34,8 +34,8 @@ class WidgetRenderTest {
         )
         val repo = LoveRepository(context)
         repo.setNames(listOf("Alex", "Sam"))
-        // 153 Tage vor heute, damit die Zahlen wie auf dem Handy aussehen
-        repo.setStartDate(LocalDate.now().minusDays(153))
+        // Gut 5 Monate vor heute: Der Balken zum nächsten Monatstag ist dann etwa halb voll
+        repo.setStartDate(LocalDate.now().minusMonths(5).minusDays(15))
     }
 
     @Test

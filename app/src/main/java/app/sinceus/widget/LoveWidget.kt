@@ -208,18 +208,21 @@ private fun CardContent(settings: LoveSettings) {
                 val names = settings.shownNames().let { if (it.size > 3) listOf(Names.join(it)) else it }
                 var lines = names.map { WidgetText.render(context, it, heading, 13f, SOFT) }
                 // Zu lange Namen verkleinern statt abschneiden
-                val total = lines.sumOf { it.widthDp.toDouble() } + (names.size - 1) * 20
+                val total = lines.sumOf { it.widthDp.toDouble() } + (names.size - 1) * 23
                 if (total > room) {
                     val scale = (room / total).toFloat().coerceAtLeast(0.6f)
                     lines = names.map { WidgetText.render(context, it, heading, 13f, SOFT, scale = scale) }
                 }
                 lines.forEachIndexed { i, line ->
                     if (i > 0) {
+                        // Abstand als eigene Spacer: Innenabstand am Bild würde das Herz selbst verkleinern
+                        Spacer(GlanceModifier.width(5.dp))
                         Image(
                             ImageProvider(R.drawable.ic_heart_small),
                             contentDescription = null,
-                            modifier = GlanceModifier.padding(horizontal = 4.dp).size(12.dp),
+                            modifier = GlanceModifier.size(13.dp),
                         )
+                        Spacer(GlanceModifier.width(5.dp))
                     }
                     TextImage(line, names[i])
                 }
