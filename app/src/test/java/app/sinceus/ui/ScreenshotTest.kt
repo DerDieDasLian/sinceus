@@ -242,7 +242,7 @@ class ScreenshotTest {
         java.util.Locale.setDefault(if (lang == "de") java.util.Locale.GERMANY else java.util.Locale.US)
         org.robolectric.RuntimeEnvironment.setQualifiers("+$lang")
         if (dark) org.robolectric.RuntimeEnvironment.setQualifiers("+night")
-        compose.setContent { LoveTheme(content) }
+        compose.setContent { LoveTheme(content = content) }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         before()

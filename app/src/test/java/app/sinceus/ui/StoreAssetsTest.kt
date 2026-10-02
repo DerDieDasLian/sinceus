@@ -93,7 +93,7 @@ class StoreAssetsTest {
     }
 
     private fun render(name: String, content: @Composable () -> Unit) {
-        compose.setContent { LoveTheme(content) }
+        compose.setContent { LoveTheme(content = content) }
         compose.mainClock.autoAdvance = false
         compose.waitForIdle()
         val bitmap = compose.activity.window.decorView.drawToBitmap()
