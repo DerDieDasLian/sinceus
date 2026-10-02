@@ -1,5 +1,6 @@
 package app.sinceus.ui
 
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.icons.rounded.Restore
 import androidx.compose.material3.OutlinedButton
 import app.sinceus.R
@@ -293,40 +294,43 @@ fun OnboardingScreen(
             }
         }
 
-        // Neues Handy oder neu installiert: gut sichtbar alles aus einer Sicherung zurückholen
-        if (step == 0 && onRestoreBackup != null) {
-            OutlinedButton(
-                onClick = onRestoreBackup,
-                modifier = Modifier
+        if (step == 0) {
+            // Erste Seite: zwei gleich große Knöpfe untereinander, Loslegen oben,
+            // darunter alles aus einer Sicherung zurückholen (neues Handy oder neu installiert)
+            Column(
+                Modifier
                     .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, top = 8.dp),
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Icon(Icons.Rounded.Restore, null)
-                Text(stringResource(R.string.backup_restore_onboarding), Modifier.padding(start = 8.dp))
+                Button(onClick = ::next, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+                    Text(stringResource(R.string.lets_go))
+                }
+                if (onRestoreBackup != null) {
+                    OutlinedButton(onClick = onRestoreBackup, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+                        Icon(Icons.Rounded.Restore, null, Modifier.size(20.dp))
+                        Text(stringResource(R.string.backup_restore_onboarding), Modifier.padding(start = 8.dp))
+                    }
+                }
             }
-        }
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            // Namen und Datum sind Pflicht, nur das Foto kann warten
-            if (step == 3) {
-                TextButton(onClick = { onStep(step + 1) }) { Text(stringResource(R.string.skip)) }
-            }
-            Spacer(Modifier.weight(1f))
-            Button(
-                onClick = ::next,
-                enabled = step != 1 || names.count { it.isNotBlank() } >= 2,
+        } else {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    when (step) {
-                        0 -> stringResource(R.string.lets_go)
-                        STEPS - 1 -> stringResource(R.string.done)
-                        else -> stringResource(R.string.next)
-                    },
-                )
+                // Namen und Datum sind Pflicht, nur das Foto kann warten
+                if (step == 3) {
+                    TextButton(onClick = { onStep(step + 1) }) { Text(stringResource(R.string.skip)) }
+                }
+                Spacer(Modifier.weight(1f))
+                Button(
+                    onClick = ::next,
+                    enabled = step != 1 || names.count { it.isNotBlank() } >= 2,
+                ) {
+                    Text(if (step == STEPS - 1) stringResource(R.string.done) else stringResource(R.string.next))
+                }
             }
         }
     }
