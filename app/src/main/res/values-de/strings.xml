@@ -366,4 +366,10 @@
     <string name="changelog_never">Nicht mehr zeigen</string>
     <string name="changelog_setting">Neuigkeiten nach Updates</string>
     <string name="changelog_setting_summary">Nach einem Update kurz zeigen, was neu ist. Ein Tipp auf die Version unten zeigt es nochmal.</string>
+    <string name="app_lock">App-Sperre</string>
+    <string name="app_lock_summary">Beim Öffnen mit Fingerabdruck, Gesicht oder PIN entsperren. In „Letzte Apps“ ist der Inhalt verborgen.</string>
+    <string name="lock_title">Since Us ist gesperrt</string>
+    <string name="lock_prompt">Since Us entsperren</string>
+    <string name="lock_unlock">Entsperren</string>
+    <string name="lock_no_screen_lock">Richte zuerst eine Displaysperre am Handy ein.</string>
 </resources>

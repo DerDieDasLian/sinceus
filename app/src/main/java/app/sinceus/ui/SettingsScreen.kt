@@ -129,6 +129,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.PersonAdd
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.FilterChip
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -197,6 +198,9 @@ fun SettingsScreen(
     onDeleteRelationship: (String) -> Unit = {},
     onWidgetRelationship: (String) -> Unit = {},
     onDiscreet: (Boolean) -> Unit = {},
+    /** App-Sperre mit Fingerabdruck, Gesicht oder PIN */
+    appLock: Boolean = false,
+    onAppLock: (Boolean) -> Unit = {},
     /** Kopplung für den Abgleich, null = nicht gekoppelt */
     pairing: Pairing? = null,
     sync: SyncActions = SyncActions(),
@@ -293,6 +297,15 @@ fun SettingsScreen(
                                 trailingContent = { Switch(checked = settings.discreet, onCheckedChange = onDiscreet) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                 modifier = Modifier.clickable { onDiscreet(!settings.discreet) },
+                            )
+                            Divider()
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.app_lock)) },
+                                supportingContent = { Text(stringResource(R.string.app_lock_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.Lock, null) },
+                                trailingContent = { Switch(checked = appLock, onCheckedChange = onAppLock) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { onAppLock(!appLock) },
                             )
                         }
                     }

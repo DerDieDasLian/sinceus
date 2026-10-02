@@ -1,0 +1,2 @@
+• Neu: App-Sperre. Auf Wunsch fragt die App beim Öffnen nach Fingerabdruck, Gesicht oder PIN und verbirgt ihren Inhalt in „Letzte Apps“ (Einstellungen, unter Menschen & Beziehungen).
+• Fotos werden beim Hinzufügen auf gute Handyqualität verkleinert. Sicherungen und Abgleich-Dateien werden dadurch viel kleiner. Deine Originale in der Galerie bleiben unverändert.

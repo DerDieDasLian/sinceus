@@ -11,6 +11,7 @@ import app.sinceus.ui.SyncActions
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import android.os.Bundle
+import android.os.SystemClock
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -52,6 +53,7 @@ import app.sinceus.notify.Notifier
 import app.sinceus.share.ShareCard
 import app.sinceus.ui.HomeScreen
 import app.sinceus.ui.LicensesScreen
+import app.sinceus.ui.LockScreen
 import app.sinceus.ui.MomentEditorScreen
 import app.sinceus.ui.OnboardingScreen
 import app.sinceus.ui.PhotoEditorScreen
@@ -64,6 +66,17 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private val vm: LoveViewModel by viewModels()
 
+    // App-Sperre: an/aus, gerade gesperrt, wann die App zuletzt in den Hintergrund ging
+    private var lockOn by mutableStateOf(false)
+    private var locked by mutableStateOf(false)
+    private var leftAt = 0L
+    private var autoPrompted = false
+
+    // Bis Android 10 fragt der Bildschirm der Displaysperre nach PIN oder Fingerabdruck
+    private val credential = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) locked = false
+    }
+
     override fun attachBaseContext(newBase: android.content.Context) {
         super.attachBaseContext(AppLanguage.wrap(newBase))
     }
@@ -71,6 +84,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        lockOn = AppLock.isEnabled(this)
+        // Nach dem Drehen entsperrt bleiben, nach langer Pause (App vom System beendet) wieder sperren
+        val away = System.currentTimeMillis() - (savedInstanceState?.getLong(KEY_SAVED_AT) ?: 0L)
+        locked = lockOn && (savedInstanceState?.getBoolean(KEY_LOCKED) != false || away >= AppLock.GRACE_MS)
+        AppLock.hideInRecents(this, lockOn)
         if (savedInstanceState == null) handleIntent(intent)
         setContent {
             LoveTheme {
@@ -239,6 +257,10 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background),
                 ) {
+                    if (locked) {
+                        LockScreen(onUnlock = ::unlock)
+                        return@Box
+                    }
                     AnimatedContent(
                         targetState = screen,
                         transitionSpec = {
@@ -321,6 +343,7 @@ class MainActivity : ComponentActivity() {
                                     vm.setOnboardingDone(false)
                                 },
                                 onResetAll = {
+                                    setAppLock(false)
                                     onboardingStep = 0
                                     showSettings = false
                                     vm.resetAll()
@@ -354,6 +377,8 @@ class MainActivity : ComponentActivity() {
                                 onDeleteRelationship = vm::deleteRelationship,
                                 onWidgetRelationship = vm::setWidgetRelationship,
                                 onDiscreet = vm::setDiscreet,
+                                appLock = lockOn,
+                                onAppLock = ::setAppLock,
                                 pairing = pairing,
                                 sync = SyncActions(
                                     onCreate = vm::createPairing,
@@ -407,6 +432,57 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(KEY_LOCKED, locked)
+        outState.putLong(KEY_SAVED_AT, System.currentTimeMillis())
+    }
+
+    override fun onStop() {
+        super.onStop()
+        leftAt = SystemClock.elapsedRealtime()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Nach mehr als einer Minute im Hintergrund wieder sperren
+        if (lockOn && leftAt != 0L && AppLock.shouldLock(leftAt)) {
+            locked = true
+            autoPrompted = false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Einmal von selbst fragen; wer abbricht, kann über den Knopf erneut entsperren
+        if (locked && !autoPrompted) {
+            autoPrompted = true
+            unlock()
+        }
+    }
+
+    private fun unlock() {
+        if (!AppLock.canLock(this)) {
+            // Displaysperre am Handy entfernt: dann kann auch die App nicht mehr gesperrt bleiben
+            setAppLock(false)
+            return
+        }
+        if (!AppLock.prompt(this) { locked = false }) {
+            AppLock.credentialIntent(this)?.let(credential::launch) ?: run { locked = false }
+        }
+    }
+
+    private fun setAppLock(on: Boolean) {
+        if (on && !AppLock.canLock(this)) {
+            Toast.makeText(this, getString(R.string.lock_no_screen_lock), Toast.LENGTH_LONG).show()
+            return
+        }
+        AppLock.setEnabled(this, on)
+        lockOn = on
+        if (!on) locked = false
+        AppLock.hideInRecents(this, on)
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent)
@@ -426,6 +502,11 @@ class MainActivity : ComponentActivity() {
             Intent.ACTION_SEND -> IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
                 ?.let(vm::importSync)
         }
+    }
+
+    private companion object {
+        const val KEY_LOCKED = "locked"
+        const val KEY_SAVED_AT = "saved_at"
     }
 
     private fun pinWidget() {

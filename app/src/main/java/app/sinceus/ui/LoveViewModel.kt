@@ -48,6 +48,8 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
                 }
             }
         }
+        // Große Fotos (z. B. aus älteren Versionen) einmal verkleinern, damit Sicherungen klein bleiben
+        viewModelScope.launch { if (repo.shrinkPhotos() > 0) LoveWidget.refresh(app) }
     }
 
     /** Gewünschter Sprung von einer App-Abkürzung: "moment" oder "live", null = keiner */

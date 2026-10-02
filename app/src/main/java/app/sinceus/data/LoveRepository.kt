@@ -348,9 +348,7 @@ class LoveRepository(private val context: Context) {
         if (newPhoto != null) {
             photo = withContext(Dispatchers.IO) {
                 val file = File(momentDir(), "${moment.id}_${System.currentTimeMillis()}.jpg")
-                context.contentResolver.openInputStream(newPhoto)?.use { input ->
-                    file.outputStream().use { input.copyTo(it) }
-                } ?: return@withContext photo
+                if (!PhotoShrink.copy(context, newPhoto, file)) return@withContext photo
                 file.absolutePath
             }
         }
@@ -494,17 +492,7 @@ class LoveRepository(private val context: Context) {
         val added = withContext(Dispatchers.IO) {
             uris.take(room).mapIndexedNotNull { i, uri ->
                 val file = File(slideDir(), "slide_${stamp}_$i.jpg")
-                val copied = runCatching {
-                    context.contentResolver.openInputStream(uri)?.use { input ->
-                        file.outputStream().use { input.copyTo(it) }
-                    } != null
-                }.getOrDefault(false)
-                if (copied) {
-                    file.absolutePath
-                } else {
-                    file.delete()
-                    null
-                }
+                if (PhotoShrink.copy(context, uri, file)) file.absolutePath else null
             }
         }
         context.dataStore.edit { prefs ->
@@ -663,9 +651,7 @@ class LoveRepository(private val context: Context) {
             deletePhotos()
             // Neuer Dateiname pro Foto, damit der Bild-Cache sicher aktualisiert
             val file = File(photoDir(), "photo_${System.currentTimeMillis()}.jpg")
-            context.contentResolver.openInputStream(uri)?.use { input ->
-                file.outputStream().use { input.copyTo(it) }
-            } ?: return@withContext null
+            if (!PhotoShrink.copy(context, uri, file)) return@withContext null
             file
         } ?: return
         context.dataStore.edit {
@@ -740,6 +726,11 @@ class LoveRepository(private val context: Context) {
     }
 
     private fun photoDir() = File(context.filesDir, "photos").apply { mkdirs() }
+
+    /** Verkleinert große Fotos aus älteren Versionen, aus Sicherungen oder vom Abgleich */
+    suspend fun shrinkPhotos() = withContext(Dispatchers.IO) {
+        PhotoShrink.shrinkAll(listOf(photoDir(), slideDir(), momentDir()))
+    }
 
     private suspend fun deletePhotos() = withContext(Dispatchers.IO) {
         photoDir().listFiles()?.forEach { it.delete() }

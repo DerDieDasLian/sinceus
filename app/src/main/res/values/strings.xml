@@ -370,4 +370,10 @@
     <string name="changelog_never">Don\'t show again</string>
     <string name="changelog_setting">What\'s new after updates</string>
     <string name="changelog_setting_summary">Briefly show what\'s new after an update. Tap the version below to see it again.</string>
+    <string name="app_lock">App lock</string>
+    <string name="app_lock_summary">Unlock with fingerprint, face or PIN when opening. The content is hidden in recent apps.</string>
+    <string name="lock_title">Since Us is locked</string>
+    <string name="lock_prompt">Unlock Since Us</string>
+    <string name="lock_unlock">Unlock</string>
+    <string name="lock_no_screen_lock">Set up a screen lock on your phone first.</string>
 </resources>

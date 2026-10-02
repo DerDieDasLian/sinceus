@@ -1,0 +1,2 @@
+• New: app lock. If you like, the app asks for your fingerprint, face or PIN when opening and hides its content in recent apps (Settings, under people & relationships).
+• Photos are scaled down to good phone quality when you add them. Backups and sync files get much smaller. Your originals in the gallery stay untouched.
