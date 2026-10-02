@@ -49,6 +49,11 @@ object AppLock {
      */
     fun prompt(activity: Activity, onSuccess: () -> Unit): Boolean {
         if (Build.VERSION.SDK_INT < 30) return false
+        // Klappt der Systemdialog nicht, fragt die App über die Displaysperre, statt abzustürzen
+        return runCatching { biometric(activity, onSuccess) }.isSuccess
+    }
+
+    private fun biometric(activity: Activity, onSuccess: () -> Unit) {
         BiometricPrompt.Builder(activity)
             .setTitle(activity.getString(R.string.lock_prompt))
             .setAllowedAuthenticators(Authenticators.BIOMETRIC_WEAK or Authenticators.DEVICE_CREDENTIAL)
@@ -60,11 +65,12 @@ object AppLock {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult?) = onSuccess()
                 },
             )
-        return true
     }
 
     /** Bis Android 10: Abfrage der Displaysperre des Handys (PIN, Muster, Passwort oder Fingerabdruck) */
     @Suppress("DEPRECATION")
-    fun credentialIntent(activity: Activity) = activity.getSystemService(KeyguardManager::class.java)
-        .createConfirmDeviceCredentialIntent(activity.getString(R.string.lock_prompt), null)
+    fun credentialIntent(activity: Activity) = runCatching {
+        activity.getSystemService(KeyguardManager::class.java)
+            .createConfirmDeviceCredentialIntent(activity.getString(R.string.lock_prompt), null)
+    }.getOrNull()
 }

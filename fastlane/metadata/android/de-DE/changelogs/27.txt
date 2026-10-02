@@ -1,0 +1,1 @@
+• Behoben: Mit eingeschalteter App-Sperre stürzte die App beim Öffnen ab. Die Sperre funktioniert jetzt, und falls die Abfrage auf einem Handy einmal nicht geht, öffnet sich die App trotzdem, statt abzustürzen.

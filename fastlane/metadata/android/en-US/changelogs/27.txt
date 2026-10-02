@@ -1,0 +1,1 @@
+• Fixed: with the app lock turned on, the app crashed when opening. The lock works now, and if the check ever fails on a phone, the app opens instead of crashing.

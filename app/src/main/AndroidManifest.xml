@@ -5,6 +5,8 @@
     <!-- Keine Internet-Berechtigung (Ausnahme: GitHub-Variante, siehe src/github) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Für die App-Sperre (Fingerabdruck, Gesicht oder PIN), ohne sie stürzt die Abfrage ab -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
     <application
         android:name=".LoveApp"

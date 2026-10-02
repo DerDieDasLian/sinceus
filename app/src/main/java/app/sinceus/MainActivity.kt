@@ -259,172 +259,172 @@ class MainActivity : ComponentActivity() {
                 ) {
                     if (locked) {
                         LockScreen(onUnlock = ::unlock)
-                        return@Box
-                    }
-                    AnimatedContent(
-                        targetState = screen,
-                        transitionSpec = {
-                            // Tiefer hinein (Einstellungen, Lizenzen) gleitet von rechts herein, zurück wieder hinaus
-                            if (targetState == "licenses" || (targetState == "settings" && initialState != "licenses")) {
-                                (slideInHorizontally { it / 3 } + fadeIn()) togetherWith fadeOut()
-                            } else if (initialState == "settings" || initialState == "licenses") {
-                                fadeIn() togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
-                            } else {
-                                fadeIn() togetherWith fadeOut()
-                            }
-                        },
-                        label = "screen",
-                    ) { target ->
-                        if (s == null) return@AnimatedContent
-                        when (target) {
-                            "licenses" -> LicensesScreen(onBack = { showLicenses = false })
-                            "moment" -> MomentEditorScreen(
-                                existing = s.moments.firstOrNull { it.id == editingMoment },
-                                suggestedTitle = momentSuggestion,
-                                defaultDate = today,
-                                onClose = { editingMoment = null },
-                                onSave = { moment, photo, remove ->
-                                    vm.saveMoment(moment, photo, remove)
-                                    editingMoment = null
-                                },
-                                onDelete = {
-                                    vm.deleteMoment(it.id)
-                                    editingMoment = null
-                                },
-                                relationships = s.relationships.map { it.id to s.namesOf(it) },
-                                defaultRelationship = if (s.showAll) null else s.relationship.id,
-                                onShare = { ShareCard.shareMoment(this@MainActivity, s, it, today) },
-                            )
-                            "editor" -> PhotoEditorScreen(
-                                settings = s,
-                                onPickOther = ::pickPhoto,
-                                onCancel = { editingPhoto = false },
-                                onSave = { x, y, z ->
-                                    vm.setPhotoFrame(x, y, z)
-                                    editingPhoto = false
-                                },
-                            )
-                            "onboarding" -> OnboardingScreen(
-                                settings = s,
-                                notificationsAllowed = allowed,
-                                onNames = vm::setNames,
-                                onStartDate = vm::setStartDate,
-                                onPickPhoto = ::pickPhoto,
-                                onAdjustPhoto = { editingPhoto = true },
-                                onPreset = vm::setPreset,
-                                onNotifications = ::setNotifications,
-                                onNotifyTime = vm::setNotifyTime,
-                                onStartTime = vm::setStartTime,
-                                onFinish = {
-                                    vm.setOnboardingDone(true)
-                                    showSettings = false
-                                },
-                                step = onboardingStep,
-                                onStep = { onboardingStep = it },
-                                onRestoreBackup = ::loadBackup,
-                            )
-                            "settings" -> SettingsScreen(
-                                settings = s,
-                                notificationsAllowed = allowed,
-                                onBack = { showSettings = false },
-                                onPickPhoto = ::pickPhoto,
-                                onPreset = vm::setPreset,
-                                onResetPhoto = vm::resetPhoto,
-                                onNotifications = ::setNotifications,
-                                onNotifyTime = vm::setNotifyTime,
-                                onRemindBefore = vm::setRemindBefore,
-                                onTestNotification = {
-                                    if (allowed) vm.sendTestNotification() else askPermission()
-                                },
-                                onAddWidget = ::pinWidget,
-                                onAdjustPhoto = { editingPhoto = true },
-                                onRestartOnboarding = {
-                                    onboardingStep = 0
-                                    vm.setOnboardingDone(false)
-                                },
-                                onResetAll = {
-                                    setAppLock(false)
-                                    onboardingStep = 0
-                                    showSettings = false
-                                    vm.resetAll()
-                                },
-                                onUpdateCheck = vm::setUpdateCheck,
-                                onShowMoments = vm::setShowMoments,
-                                onShowLive = vm::setShowLive,
-                                onCheckUpdates = vm::checkUpdatesNow,
-                                onOpenUpdate = vm::installUpdate,
-                                updateProgress = updateProgress,
-                                onOpenLicenses = { showLicenses = true },
-                                onAddSlides = ::pickSlides,
-                                onRemoveSlide = vm::removeSlide,
-                                onExportBackup = ::saveBackup,
-                                onImportBackup = ::loadBackup,
-                                autoBackup = autoBackup,
-                                onShowChangelog = vm::setShowChangelog,
-                                onOpenChangelog = {
-                                    val lines = Changelog.linesSince(this@MainActivity, BuildConfig.VERSION_CODE - 1, BuildConfig.VERSION_CODE)
-                                    if (lines.isNotEmpty()) {
-                                        changelogAuto = false
-                                        changelog = lines
-                                    }
-                                },
-                                onAutoBackup = { on -> if (on) folderPicker.launch(null) else vm.disableAutoBackup() },
-                                language = remember { AppLanguage.current(this@MainActivity) },
-                                onLanguage = { AppLanguage.set(this@MainActivity, it) },
-                                onSavePerson = vm::savePerson,
-                                onDeletePerson = vm::deletePerson,
-                                onSaveRelationship = vm::saveRelationship,
-                                onDeleteRelationship = vm::deleteRelationship,
-                                onWidgetRelationship = vm::setWidgetRelationship,
-                                onDiscreet = vm::setDiscreet,
-                                appLock = lockOn,
-                                onAppLock = ::setAppLock,
-                                pairing = pairing,
-                                sync = SyncActions(
-                                    onCreate = vm::createPairing,
-                                    onScan = ::scanPairing,
-                                    onMe = vm::setMe,
-                                    onUnpair = vm::unpair,
-                                    onSend = { vm.shareSync() },
-                                    onOpen = { syncOpener.launch(arrayOf("*/*")) },
-                                ),
-                            )
-                            else -> HomeScreen(
-                                s,
-                                today,
-                                onOpenSettings = { showSettings = true },
-                                onPageChange = vm::setHomePage,
-                                onAddMoment = { title ->
-                                    momentSuggestion = title
-                                    editingMoment = ""
-                                },
-                                onOpenMoment = {
-                                    momentSuggestion = null
-                                    editingMoment = it.id
-                                },
-                                onSelect = vm::setSelected,
-                                jumpTo = homeJump,
-                                onJumped = { homeJump = null },
-                            )
-                        }
-                    }
-                    changelog?.let { lines ->
-                        val close = {
-                            vm.setChangelogSeen(BuildConfig.VERSION_CODE)
-                            changelog = null
-                        }
-                        ChangelogDialog(
-                            lines,
-                            onClose = close,
-                            onNeverAgain = if (changelogAuto) {
-                                {
-                                    vm.setShowChangelog(false)
-                                    close()
+                    } else {
+                        AnimatedContent(
+                            targetState = screen,
+                            transitionSpec = {
+                                // Tiefer hinein (Einstellungen, Lizenzen) gleitet von rechts herein, zurück wieder hinaus
+                                if (targetState == "licenses" || (targetState == "settings" && initialState != "licenses")) {
+                                    (slideInHorizontally { it / 3 } + fadeIn()) togetherWith fadeOut()
+                                } else if (initialState == "settings" || initialState == "licenses") {
+                                    fadeIn() togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
+                                } else {
+                                    fadeIn() togetherWith fadeOut()
                                 }
-                            } else {
-                                null
                             },
-                        )
+                            label = "screen",
+                        ) { target ->
+                            if (s == null) return@AnimatedContent
+                            when (target) {
+                                "licenses" -> LicensesScreen(onBack = { showLicenses = false })
+                                "moment" -> MomentEditorScreen(
+                                    existing = s.moments.firstOrNull { it.id == editingMoment },
+                                    suggestedTitle = momentSuggestion,
+                                    defaultDate = today,
+                                    onClose = { editingMoment = null },
+                                    onSave = { moment, photo, remove ->
+                                        vm.saveMoment(moment, photo, remove)
+                                        editingMoment = null
+                                    },
+                                    onDelete = {
+                                        vm.deleteMoment(it.id)
+                                        editingMoment = null
+                                    },
+                                    relationships = s.relationships.map { it.id to s.namesOf(it) },
+                                    defaultRelationship = if (s.showAll) null else s.relationship.id,
+                                    onShare = { ShareCard.shareMoment(this@MainActivity, s, it, today) },
+                                )
+                                "editor" -> PhotoEditorScreen(
+                                    settings = s,
+                                    onPickOther = ::pickPhoto,
+                                    onCancel = { editingPhoto = false },
+                                    onSave = { x, y, z ->
+                                        vm.setPhotoFrame(x, y, z)
+                                        editingPhoto = false
+                                    },
+                                )
+                                "onboarding" -> OnboardingScreen(
+                                    settings = s,
+                                    notificationsAllowed = allowed,
+                                    onNames = vm::setNames,
+                                    onStartDate = vm::setStartDate,
+                                    onPickPhoto = ::pickPhoto,
+                                    onAdjustPhoto = { editingPhoto = true },
+                                    onPreset = vm::setPreset,
+                                    onNotifications = ::setNotifications,
+                                    onNotifyTime = vm::setNotifyTime,
+                                    onStartTime = vm::setStartTime,
+                                    onFinish = {
+                                        vm.setOnboardingDone(true)
+                                        showSettings = false
+                                    },
+                                    step = onboardingStep,
+                                    onStep = { onboardingStep = it },
+                                    onRestoreBackup = ::loadBackup,
+                                )
+                                "settings" -> SettingsScreen(
+                                    settings = s,
+                                    notificationsAllowed = allowed,
+                                    onBack = { showSettings = false },
+                                    onPickPhoto = ::pickPhoto,
+                                    onPreset = vm::setPreset,
+                                    onResetPhoto = vm::resetPhoto,
+                                    onNotifications = ::setNotifications,
+                                    onNotifyTime = vm::setNotifyTime,
+                                    onRemindBefore = vm::setRemindBefore,
+                                    onTestNotification = {
+                                        if (allowed) vm.sendTestNotification() else askPermission()
+                                    },
+                                    onAddWidget = ::pinWidget,
+                                    onAdjustPhoto = { editingPhoto = true },
+                                    onRestartOnboarding = {
+                                        onboardingStep = 0
+                                        vm.setOnboardingDone(false)
+                                    },
+                                    onResetAll = {
+                                        setAppLock(false)
+                                        onboardingStep = 0
+                                        showSettings = false
+                                        vm.resetAll()
+                                    },
+                                    onUpdateCheck = vm::setUpdateCheck,
+                                    onShowMoments = vm::setShowMoments,
+                                    onShowLive = vm::setShowLive,
+                                    onCheckUpdates = vm::checkUpdatesNow,
+                                    onOpenUpdate = vm::installUpdate,
+                                    updateProgress = updateProgress,
+                                    onOpenLicenses = { showLicenses = true },
+                                    onAddSlides = ::pickSlides,
+                                    onRemoveSlide = vm::removeSlide,
+                                    onExportBackup = ::saveBackup,
+                                    onImportBackup = ::loadBackup,
+                                    autoBackup = autoBackup,
+                                    onShowChangelog = vm::setShowChangelog,
+                                    onOpenChangelog = {
+                                        val lines = Changelog.linesSince(this@MainActivity, BuildConfig.VERSION_CODE - 1, BuildConfig.VERSION_CODE)
+                                        if (lines.isNotEmpty()) {
+                                            changelogAuto = false
+                                            changelog = lines
+                                        }
+                                    },
+                                    onAutoBackup = { on -> if (on) folderPicker.launch(null) else vm.disableAutoBackup() },
+                                    language = remember { AppLanguage.current(this@MainActivity) },
+                                    onLanguage = { AppLanguage.set(this@MainActivity, it) },
+                                    onSavePerson = vm::savePerson,
+                                    onDeletePerson = vm::deletePerson,
+                                    onSaveRelationship = vm::saveRelationship,
+                                    onDeleteRelationship = vm::deleteRelationship,
+                                    onWidgetRelationship = vm::setWidgetRelationship,
+                                    onDiscreet = vm::setDiscreet,
+                                    appLock = lockOn,
+                                    onAppLock = ::setAppLock,
+                                    pairing = pairing,
+                                    sync = SyncActions(
+                                        onCreate = vm::createPairing,
+                                        onScan = ::scanPairing,
+                                        onMe = vm::setMe,
+                                        onUnpair = vm::unpair,
+                                        onSend = { vm.shareSync() },
+                                        onOpen = { syncOpener.launch(arrayOf("*/*")) },
+                                    ),
+                                )
+                                else -> HomeScreen(
+                                    s,
+                                    today,
+                                    onOpenSettings = { showSettings = true },
+                                    onPageChange = vm::setHomePage,
+                                    onAddMoment = { title ->
+                                        momentSuggestion = title
+                                        editingMoment = ""
+                                    },
+                                    onOpenMoment = {
+                                        momentSuggestion = null
+                                        editingMoment = it.id
+                                    },
+                                    onSelect = vm::setSelected,
+                                    jumpTo = homeJump,
+                                    onJumped = { homeJump = null },
+                                )
+                            }
+                        }
+                        changelog?.let { lines ->
+                            val close = {
+                                vm.setChangelogSeen(BuildConfig.VERSION_CODE)
+                                changelog = null
+                            }
+                            ChangelogDialog(
+                                lines,
+                                onClose = close,
+                                onNeverAgain = if (changelogAuto) {
+                                    {
+                                        vm.setShowChangelog(false)
+                                        close()
+                                    }
+                                } else {
+                                    null
+                                },
+                            )
+                        }
                     }
                 }
                 }
@@ -467,9 +467,11 @@ class MainActivity : ComponentActivity() {
             setAppLock(false)
             return
         }
-        if (!AppLock.prompt(this) { locked = false }) {
-            AppLock.credentialIntent(this)?.let(credential::launch) ?: run { locked = false }
-        }
+        if (AppLock.prompt(this) { locked = false }) return
+        // Bis Android 10 oder wenn der Systemdialog nicht geht: Displaysperre des Handys.
+        // Geht auch das nicht, lieber entsperren als die App unbenutzbar zu machen.
+        val intent = AppLock.credentialIntent(this)
+        if (intent == null || runCatching { credential.launch(intent) }.isFailure) locked = false
     }
 
     private fun setAppLock(on: Boolean) {
