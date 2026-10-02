@@ -4,11 +4,17 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Locale
 
+// JSON braucht die echte Android-Umgebung, daher Robolectric
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
 class DistanceTest {
     private val today = LocalDate.of(2026, 10, 3)
 
