@@ -364,16 +364,17 @@ class LoveRepository(private val context: Context) {
                 file.absolutePath
             }
         }
-        if (old?.photoPath != null && old.photoPath != photo) deleteFile(old.photoPath)
         val saved = moment.copy(
             photoPath = photo,
             updatedAt = System.currentTimeMillis(),
             addedBy = old?.addedBy ?: moment.addedBy ?: PairingStore.load(context)?.me,
         )
+        // Erst dataStore aktualisieren, dann alte Datei löschen
         context.dataStore.edit { prefs ->
             val list = MomentCodec.decode(prefs[Keys.moments]).filterNot { it.id == moment.id } + saved
             prefs[Keys.moments] = MomentCodec.encode(list)
         }
+        if (old?.photoPath != null && old.photoPath != photo) deleteFile(old.photoPath)
     }
 
     suspend fun setShowMoments(show: Boolean) = context.dataStore.edit { it[Keys.showMoments] = show }
@@ -422,7 +423,7 @@ class LoveRepository(private val context: Context) {
                 }
                 out.buffered().use { o -> zipFile.inputStream().buffered().use { SyncCrypto.encrypt(it, o, pairing.key) } }
             } finally {
-                zipFile.delete()
+                if (zipFile.exists()) zipFile.delete()
             }
         }
     }
@@ -586,14 +587,16 @@ class LoveRepository(private val context: Context) {
                 source.copyTo(target, overwrite = true)
                 return target.absolutePath
             }
-            deletePhotos()
-            slideDir().listFiles()?.forEach { it.delete() }
-            momentDir().listFiles()?.forEach { it.delete() }
+            // Neue Dateien zuerst schreiben
             val result = data.copy(
                 photoPath = move(Backup.PHOTOS, photoDir(), data.photoPath),
                 slides = data.slides.mapNotNull { move(Backup.SLIDES, slideDir(), it) },
                 moments = data.moments.map { it.copy(photoPath = move(Backup.MOMENTS, momentDir(), it.photoPath)) },
             )
+            // Dann alle alten Fotos löschen (die nicht überschrieben wurden)
+            deletePhotos()
+            slideDir().listFiles()?.forEach { File(it.absolutePath).delete() }
+            momentDir().listFiles()?.forEach { File(it.absolutePath).delete() }
             restore.deleteRecursively()
             result
         }
