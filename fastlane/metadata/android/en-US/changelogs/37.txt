@@ -1,0 +1,2 @@
+• Fun numbers: nicer wording, each number now has its own fitting line.
+• Sunrises are gone, since they always matched your days together.

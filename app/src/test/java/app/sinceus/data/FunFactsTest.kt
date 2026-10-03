@@ -19,7 +19,6 @@ class FunFactsTest {
         assertEquals(1L, value(FunFacts.Kind.NEW_YEARS, start, today))
         // 20.03., 21.06., 22.09. und 21.12.
         assertEquals(4L, value(FunFacts.Kind.SEASONS, start, today))
-        assertEquals(292L, value(FunFacts.Kind.SUNRISES, start, today))
     }
 
     @Test

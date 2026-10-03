@@ -342,10 +342,14 @@
     <string name="facts_show_summary">Wochenenden, Vollmonde und mehr auf der Übersicht</string>
     <string name="celebrate_show">Feier</string>
     <string name="celebrate_show_summary">Etwas Konfetti an Jahrestagen und runden Tagen</string>
-    <string name="facts_title">Wusstet ihr?</string>
+    <string name="facts_title">Wusstet ihr schon?</string>
     <string name="facts_next">Nächste Zahl zeigen</string>
-    <string name="facts_sub">seit ihr zusammen seid</string>
-    <string name="facts_heartbeats_sub">jeweils, bei ruhigen 70 Schlägen pro Minute</string>
+    <string name="fact_weekends_sub">habt ihr schon zusammen verbracht</string>
+    <string name="fact_full_moons_sub">gab es, seit ihr zusammen seid</string>
+    <string name="fact_christmas_sub">habt ihr schon zusammen gefeiert</string>
+    <string name="fact_new_years_sub">habt ihr schon zusammen gefeiert</string>
+    <string name="fact_seasons_sub">habt ihr schon zusammen erlebt</string>
+    <string name="fact_heartbeats_sub">hat jedes eurer Herzen geschlagen, seit ihr zusammen seid</string>
     <plurals name="fact_weekends">
         <item quantity="one">%s Wochenende</item>
         <item quantity="other">%s Wochenenden</item>
@@ -354,21 +358,17 @@
         <item quantity="one">%s Vollmond</item>
         <item quantity="other">%s Vollmonde</item>
     </plurals>
-    <plurals name="fact_sunrises">
-        <item quantity="one">%s Sonnenaufgang</item>
-        <item quantity="other">%s Sonnenaufgänge</item>
-    </plurals>
     <plurals name="fact_christmas">
         <item quantity="one">%s Weihnachtsfest</item>
         <item quantity="other">%s Weihnachtsfeste</item>
     </plurals>
     <plurals name="fact_new_years">
-        <item quantity="one">%s Jahreswechsel</item>
-        <item quantity="other">%s Jahreswechsel</item>
+        <item quantity="one">%s Silvester</item>
+        <item quantity="other">%s Silvester</item>
     </plurals>
     <plurals name="fact_seasons">
-        <item quantity="one">%s neue Jahreszeit</item>
-        <item quantity="other">%s neue Jahreszeiten</item>
+        <item quantity="one">%s Jahreszeitenwechsel</item>
+        <item quantity="other">%s Jahreszeitenwechsel</item>
     </plurals>
     <plurals name="fact_heartbeats">
         <item quantity="one">Etwa %s Herzschlag</item>

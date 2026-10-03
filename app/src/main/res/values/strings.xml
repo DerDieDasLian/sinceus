@@ -348,8 +348,12 @@
     <string name="celebrate_show_summary">A little confetti on anniversaries and round days</string>
     <string name="facts_title">Did you know?</string>
     <string name="facts_next">Show the next number</string>
-    <string name="facts_sub">since you got together</string>
-    <string name="facts_heartbeats_sub">each, at a calm 70 beats per minute</string>
+    <string name="fact_weekends_sub">you have spent together</string>
+    <string name="fact_full_moons_sub">since you got together</string>
+    <string name="fact_christmas_sub">you have celebrated together</string>
+    <string name="fact_new_years_sub">you have celebrated together</string>
+    <string name="fact_seasons_sub">you have been through together</string>
+    <string name="fact_heartbeats_sub">from each of your hearts since you got together</string>
     <plurals name="fact_weekends">
         <item quantity="one">%s weekend</item>
         <item quantity="other">%s weekends</item>
@@ -358,21 +362,17 @@
         <item quantity="one">%s full moon</item>
         <item quantity="other">%s full moons</item>
     </plurals>
-    <plurals name="fact_sunrises">
-        <item quantity="one">%s sunrise</item>
-        <item quantity="other">%s sunrises</item>
-    </plurals>
     <plurals name="fact_christmas">
         <item quantity="one">%s Christmas</item>
         <item quantity="other">%s Christmases</item>
     </plurals>
     <plurals name="fact_new_years">
-        <item quantity="one">%s New Year</item>
-        <item quantity="other">%s New Years</item>
+        <item quantity="one">%s New Year\'s Eve</item>
+        <item quantity="other">%s New Year\'s Eves</item>
     </plurals>
     <plurals name="fact_seasons">
-        <item quantity="one">%s new season</item>
-        <item quantity="other">%s new seasons</item>
+        <item quantity="one">%s change of seasons</item>
+        <item quantity="other">%s changes of seasons</item>
     </plurals>
     <plurals name="fact_heartbeats">
         <item quantity="one">About %s heartbeat</item>

@@ -8,7 +8,7 @@ import kotlin.math.floor
 
 /** Lustige Zahlen zu eurer gemeinsamen Zeit, nur aus dem Startdatum berechnet */
 object FunFacts {
-    enum class Kind { WEEKENDS, FULL_MOONS, SUNRISES, CHRISTMAS, NEW_YEARS, SEASONS, HEARTBEATS }
+    enum class Kind { WEEKENDS, FULL_MOONS, CHRISTMAS, NEW_YEARS, SEASONS, HEARTBEATS }
 
     data class Fact(val kind: Kind, val value: Long)
 
@@ -30,7 +30,6 @@ object FunFacts {
         return listOf(
             Fact(Kind.WEEKENDS, count(start, today) { it.dayOfWeek == DayOfWeek.SATURDAY }),
             Fact(Kind.FULL_MOONS, fullMoons(start, today)),
-            Fact(Kind.SUNRISES, days),
             Fact(Kind.CHRISTMAS, count(start, today) { it.monthValue == 12 && it.dayOfMonth == 24 }),
             Fact(Kind.NEW_YEARS, count(start, today) { it.dayOfYear == 1 }),
             Fact(Kind.SEASONS, count(start, today) { MonthDay.from(it) in SEASON_STARTS }),
