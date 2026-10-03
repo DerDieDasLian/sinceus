@@ -19,6 +19,12 @@ class FunFactsTest {
         assertEquals(1L, value(FunFacts.Kind.NEW_YEARS, start, today))
         // 20.03., 21.06., 22.09. und 21.12.
         assertEquals(4L, value(FunFacts.Kind.SEASONS, start, today))
+        assertEquals(0L, value(FunFacts.Kind.VALENTINES, start, today))
+        assertEquals(1L, value(FunFacts.Kind.PRIDE_MONTHS, start, today))
+        assertEquals(1L, value(FunFacts.Kind.HALLOWEENS, start, today))
+        // 2025 fiel nur der 13. Juni auf einen Freitag
+        assertEquals(1L, value(FunFacts.Kind.FRIDAY_13TH, start, today))
+        assertEquals(292L * FunFacts.EARTH_KM_PER_DAY, value(FunFacts.Kind.EARTH_KM, start, today))
     }
 
     @Test
@@ -37,5 +43,6 @@ class FunFactsTest {
     @Test
     fun heartbeatsAtSeventyPerMinute() {
         assertEquals(100_800L, value(FunFacts.Kind.HEARTBEATS, LocalDate.of(2025, 3, 15), LocalDate.of(2025, 3, 16)))
+        assertEquals(23_040L, value(FunFacts.Kind.BREATHS, LocalDate.of(2025, 3, 15), LocalDate.of(2025, 3, 16)))
     }
 }

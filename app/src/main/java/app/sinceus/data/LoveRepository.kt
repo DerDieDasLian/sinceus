@@ -364,7 +364,6 @@ class LoveRepository(private val context: Context) {
                 file.absolutePath
             }
         }
-        if (old?.photoPath != null && old.photoPath != photo) deleteFile(old.photoPath)
         val saved = moment.copy(
             photoPath = photo,
             updatedAt = System.currentTimeMillis(),
@@ -374,6 +373,8 @@ class LoveRepository(private val context: Context) {
             val list = MomentCodec.decode(prefs[Keys.moments]).filterNot { it.id == moment.id } + saved
             prefs[Keys.moments] = MomentCodec.encode(list)
         }
+        // Altes Foto erst löschen, wenn der Moment gespeichert ist
+        if (old?.photoPath != null && old.photoPath != photo) deleteFile(old.photoPath)
     }
 
     suspend fun setShowMoments(show: Boolean) = context.dataStore.edit { it[Keys.showMoments] = show }

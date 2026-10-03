@@ -99,17 +99,29 @@ internal fun FunFactsCard(facts: List<FunFacts.Fact>) {
 private fun FunFacts.Kind.text(): Int = when (this) {
     FunFacts.Kind.WEEKENDS -> R.plurals.fact_weekends
     FunFacts.Kind.FULL_MOONS -> R.plurals.fact_full_moons
+    FunFacts.Kind.VALENTINES -> R.plurals.fact_valentines
+    FunFacts.Kind.PRIDE_MONTHS -> R.plurals.fact_pride_months
+    FunFacts.Kind.HALLOWEENS -> R.plurals.fact_halloweens
     FunFacts.Kind.CHRISTMAS -> R.plurals.fact_christmas
     FunFacts.Kind.NEW_YEARS -> R.plurals.fact_new_years
+    FunFacts.Kind.FRIDAY_13TH -> R.plurals.fact_friday_13th
     FunFacts.Kind.SEASONS -> R.plurals.fact_seasons
+    FunFacts.Kind.EARTH_KM -> R.plurals.fact_earth_km
     FunFacts.Kind.HEARTBEATS -> R.plurals.fact_heartbeats
+    FunFacts.Kind.BREATHS -> R.plurals.fact_breaths
 }
 
 private fun FunFacts.Kind.sub(): Int = when (this) {
     FunFacts.Kind.WEEKENDS -> R.string.fact_weekends_sub
     FunFacts.Kind.FULL_MOONS -> R.string.fact_full_moons_sub
+    FunFacts.Kind.VALENTINES -> R.string.fact_valentines_sub
+    FunFacts.Kind.PRIDE_MONTHS -> R.string.fact_pride_months_sub
+    FunFacts.Kind.HALLOWEENS -> R.string.fact_halloweens_sub
     FunFacts.Kind.CHRISTMAS -> R.string.fact_christmas_sub
     FunFacts.Kind.NEW_YEARS -> R.string.fact_new_years_sub
+    FunFacts.Kind.FRIDAY_13TH -> R.string.fact_friday_13th_sub
     FunFacts.Kind.SEASONS -> R.string.fact_seasons_sub
+    FunFacts.Kind.EARTH_KM -> R.string.fact_earth_km_sub
     FunFacts.Kind.HEARTBEATS -> R.string.fact_heartbeats_sub
+    FunFacts.Kind.BREATHS -> R.string.fact_breaths_sub
 }
