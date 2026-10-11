@@ -8,12 +8,9 @@ from PIL import Image
 
 SHOTS = Path("app/build/screenshots")
 DOCS = Path("docs/img")
-STORE = Path("fastlane/metadata/android")
 
 # Website: Startbereich (1 bis 3) und Abschnitt Momente
 SCREENS = {"1": "home", "2": "live", "3": "settings"}
-# Store: Reihenfolge der Screenshots
-STORE_SCREENS = ["home", "live", "moments", "settings"]
 LANGS = {"de": "de-DE", "en": "en-US"}
 
 
@@ -25,10 +22,6 @@ for lang, store_lang in LANGS.items():
     for number, name in SCREENS.items():
         screen(lang, name).save(DOCS / f"{lang}-{number}.webp", quality=82, method=6)
     screen(lang, "moments").save(DOCS / f"moments-{lang}.webp", quality=82, method=6)
-
-    phone = STORE / store_lang / "images" / "phoneScreenshots"
-    for index, name in enumerate(STORE_SCREENS, start=1):
-        screen(lang, name).save(phone / f"{index}.jpg", quality=88, optimize=True, progressive=True)
 
     # Liebeskarte mit durchsichtigen runden Ecken
     widget = "card_3x2" if lang == "de" else "card_3x2_en"

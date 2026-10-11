@@ -106,6 +106,30 @@ class ScreenshotTest {
         SettingsScreen(settings, true, initialPage = SettingsPage.Couple)
     }
 
+    private val polyEnglish = poly.copy(
+        people = poly.people.map { if (it.id == "k") it.copy(pronouns = "she/her") else it },
+        relationships = poly.relationships.map { if (it.id == "r2") it.copy(label = "Nesting partner") else it },
+    )
+
+    @Test
+    fun homePoly() = shot("home_poly") { HomeScreen(polyEnglish, today, {}, {}) }
+
+    @Test
+    fun sync() = shot("sync") { SettingsScreen(settings, true, initialPage = SettingsPage.Sync) }
+
+    @Test
+    fun syncGerman() = shot("sync", lang = "de") { SettingsScreen(settings, true, initialPage = SettingsPage.Sync) }
+
+    @Test
+    fun privacy() = shot("privacy") {
+        SettingsScreen(settings.copy(discreet = true), true, appLock = true, initialPage = SettingsPage.Privacy)
+    }
+
+    @Test
+    fun privacyGerman() = shot("privacy", lang = "de") {
+        SettingsScreen(settings.copy(discreet = true), true, appLock = true, initialPage = SettingsPage.Privacy)
+    }
+
     @Test
     fun homePrideGerman() = shot("home_pride", lang = "de") {
         androidx.compose.runtime.CompositionLocalProvider(LocalPrideMonth provides true) {

@@ -31,12 +31,13 @@ jobs:
         run: |
           pip install --quiet pillow
           python3 .github/scripts/website-images.py
+          python3 .github/scripts/store-images.py
 
       - name: Commit images
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/img fastlane/metadata/android/*/images/phoneScreenshots
+          git add -A docs/img fastlane/metadata/android/*/images
           if git diff --cached --quiet; then
             echo "Keine Änderungen"
           else

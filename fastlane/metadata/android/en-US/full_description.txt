@@ -1,22 +1,24 @@
-How long have you been together? Since Us shows you at a glance, with your favorite photo.
+How long have you been together? Since Us shows you at a glance, with your favorite photo. No account, no ads, no tracking, and free forever.
+
+<b>Private by design</b>
+All your data stays on your phone. There is no server and no sign-up, and the app does not even have internet access. Sync with your partner without any cloud: pair your phones once with a QR code, then share an encrypted file only your phones can open. Lock the app with your fingerprint if you like, and save a backup file to move everything to a new phone.
+
+<b>For every kind of love</b>
+Since Us is for everyone in love, no matter who you are, whom you love or how many of you there are. Poly mode gives every relationship its own date, pronouns are built in, and a discreet mode shows only initials. In June the app celebrates Pride Month.
+
+<b>Free and open source</b>
+No premium version, no paywall, no ads. The code is public, so anyone can check what the app does.
 
 <b>Your time together</b>
 Days, weeks, months and hours since you got together. Live mode even counts every second.
 
 <b>Never miss a special day</b>
-Reminders for monthly and yearly anniversaries, round numbers like 100, 200 or 500 days and fun numbers like 222, at a time you choose.
+Reminders for anniversaries, birthdays, round numbers like 100 or 500 days and fun numbers like 222, at a time you choose.
 
 <b>Your moments</b>
 Keep the moments that matter, like your first date or first trip, with a note and a photo. Optional yearly reminders.
 
-<b>Your photo</b>
-Pick a picture of you together and adjust the framing with one finger. Add more photos for a slideshow if you like.
+<b>Widgets and your style</b>
+A love card or a compact counter for your home screen, a slideshow of your photos and dozens of fonts to choose from.
 
-<b>Widgets</b>
-A love card with your names and days together, or a compact counter in your phone's colors.
-
-<b>For every kind of love</b>
-Since Us is for everyone in love, no matter who you are, whom you love or how many of you there are. In poly mode every relationship has its own date, and a discreet mode shows only initials. In June the app celebrates Pride Month.
-
-<b>Private</b>
-No account, no ads, no tracking. All data stays on your phone. Save a backup file to move everything to a new phone. Sync your phones without a server: pair them once with a QR code, then send an encrypted file only your phones can open. English and German.
+Available in English and German.
