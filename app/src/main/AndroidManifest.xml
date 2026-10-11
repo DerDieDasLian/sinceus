@@ -47,10 +47,20 @@
                 <data android:pathPattern=".*\\..*\\.sinceus" />
                 <data android:pathPattern=".*\\..*\\..*\\.sinceus" />
             </intent-filter>
+            <!-- Messenger und der Download-Ordner liefern die Datei meist ohne Namen und als
+                 "unbekannte Datei" (application/octet-stream). Ob es wirklich eine Abgleich-Datei ist,
+                 prüft die App beim Öffnen selbst. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/vnd.sinceus.sync" />
+                <data android:mimeType="application/octet-stream" />
             </intent-filter>
         </activity>
 
