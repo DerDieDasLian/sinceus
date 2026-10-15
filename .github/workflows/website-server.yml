@@ -1,28 +1,42 @@
 name: Website on own server
 
-# Optional: kopiert docs/ per SSH auf einen eigenen Webserver.
-# Läuft nur, wenn die Variable WEB_DEPLOY_HOST gesetzt ist (variables WEB_DEPLOY_HOST, WEB_DEPLOY_USER, WEB_DEPLOY_PATH, secrets WEB_DEPLOY_SSH_KEY, WEB_DEPLOY_KNOWN_HOSTS).
+# Lädt docs/ bei jeder Änderung per FTPS auf den Webspace bei All-Inkl hoch (funktioniert mit jedem Tarif).
+# Läuft nur, wenn die Variable WEB_FTP_HOST gesetzt ist.
+# Einrichtung unter Settings > Secrets and variables > Actions:
+#   Variables: WEB_FTP_HOST (z. B. w0123456.kasserver.com), WEB_FTP_USER, optional WEB_FTP_PATH (Standard /)
+#   Secrets:   WEB_FTP_PASSWORD
+# Am besten einen eigenen FTP-Zugang anlegen, der nur den Ordner der Website sieht.
 on:
   push:
     branches: ["**"]
     paths: ["docs/**"]
   workflow_dispatch:
 
+concurrency:
+  group: website-server
+  cancel-in-progress: false
+
 jobs:
   deploy:
-    if: vars.WEB_DEPLOY_HOST != '' && github.ref_name == github.event.repository.default_branch
+    if: vars.WEB_FTP_HOST != '' && github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Upload with rsync
+      - name: Install lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+      - name: Upload with FTPS
         env:
-          HOST: ${{ vars.WEB_DEPLOY_HOST }}
-          USER: ${{ vars.WEB_DEPLOY_USER }}
-          TARGET: ${{ vars.WEB_DEPLOY_PATH }}
-          KEY: ${{ secrets.WEB_DEPLOY_SSH_KEY }}
-          KNOWN_HOSTS: ${{ secrets.WEB_DEPLOY_KNOWN_HOSTS }}
+          HOST: ${{ vars.WEB_FTP_HOST }}
+          USER: ${{ vars.WEB_FTP_USER }}
+          TARGET: ${{ vars.WEB_FTP_PATH || '/' }}
+          LFTP_PASSWORD: ${{ secrets.WEB_FTP_PASSWORD }}
         run: |
-          mkdir -p ~/.ssh
-          echo "$KEY" > ~/.ssh/id_deploy && chmod 600 ~/.ssh/id_deploy
-          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
-          rsync -az --delete -e "ssh -i ~/.ssh/id_deploy" docs/ "$USER@$HOST:$TARGET/"
+          # Alles hochladen, auf dem Server gelöschte Dateien ebenfalls löschen (.htaccess bleibt)
+          lftp -e "
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate true;
+            open --env-password -u $USER $HOST;
+            mirror --reverse --delete --no-perms --verbose --exclude-glob .htaccess docs/ $TARGET;
+            bye
+          "
