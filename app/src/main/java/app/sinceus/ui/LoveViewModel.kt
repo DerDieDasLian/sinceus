@@ -17,6 +17,7 @@ import app.sinceus.data.SyncCodec
 import app.sinceus.notify.DailyScheduler
 import app.sinceus.notify.Notifier
 import app.sinceus.widget.LoveWidget
+import app.sinceus.share.Photobook
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -123,7 +124,7 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
             val settings = repo.current()
             withContext(Dispatchers.IO) {
                 val out = app.contentResolver.openOutputStream(uri) ?: throw java.io.IOException("no output stream")
-                out.use { app.sinceus.share.Photobook.write(app, settings, moments, java.time.LocalDate.now(), it) }
+                out.use { Photobook.write(app, settings, moments, LocalDate.now(), it) }
             }
             true
         } catch (e: Exception) {
