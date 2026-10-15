@@ -15,7 +15,7 @@ import java.util.Locale
  */
 object AppLanguage {
     /** "" = wie das Handy */
-    val OPTIONS = listOf("", "de", "en")
+    val OPTIONS = listOf("", "de", "en", "nl")
 
     private const val PREFS = "language"
     private const val KEY = "tag"

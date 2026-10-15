@@ -1386,6 +1386,7 @@ private fun LanguageDialog(current: String, onDismiss: () -> Unit, onPick: (Stri
 private fun languageLabel(tag: String) = when (tag) {
     "de" -> "Deutsch"
     "en" -> "English"
+    "nl" -> "Nederlands"
     else -> stringResource(R.string.language_system)
 }
 
