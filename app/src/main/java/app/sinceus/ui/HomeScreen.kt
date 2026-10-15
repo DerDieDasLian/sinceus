@@ -352,9 +352,9 @@ fun NamesOverlay(settings: LoveSettings, modifier: Modifier = Modifier) {
     val names = if (settings.showAll) settings.people.map { it.name } else settings.memberNames()
     NamesRow(
         names,
-        kind = if (settings.showAll) RelationKind.LOVE else settings.relationship.kind,
         if (names.size > 2) MaterialTheme.typography.displaySmall else MaterialTheme.typography.displayMedium,
         heart = if (names.size > 2) 24.dp else 30.dp,
+        kind = if (settings.showAll) RelationKind.LOVE else settings.relationship.kind,
         modifier = modifier.padding(start = 24.dp, end = 24.dp, bottom = 48.dp),
     )
 }
