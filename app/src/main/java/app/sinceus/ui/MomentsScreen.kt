@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.SwapVert
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -114,6 +116,7 @@ fun MomentsScreen(
     today: LocalDate,
     onAdd: (String?) -> Unit,
     onOpen: (Moment) -> Unit,
+    onNewestFirst: (Boolean) -> Unit = {},
 ) {
     val context = LocalContext.current
     // Mit mehreren Beziehungen steht an jedem Eintrag, zu wem er gehört
@@ -149,6 +152,8 @@ fun MomentsScreen(
             starts.map { TimelineEntry.Start(it.startDate, who(it.id)) }
         )
         .sortedBy { it.date }
+    // Die Zeitleiste lässt sich umdrehen, der Kalender bleibt immer gleich
+    val timeline = if (settings.newestFirst) entries.asReversed() else entries
 
     Column(
         Modifier
@@ -320,12 +325,26 @@ fun MomentsScreen(
                 onOpen = onOpen,
             )
         } else {
-            entries.forEachIndexed { index, entry ->
+            if (timeline.size > 1) {
+                TextButton(
+                    onClick = { onNewestFirst(!settings.newestFirst) },
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(bottom = 8.dp),
+                ) {
+                    Icon(Icons.Rounded.SwapVert, null, modifier = Modifier.size(18.dp))
+                    Text(
+                        stringResource(if (settings.newestFirst) R.string.moments_newest_first else R.string.moments_oldest_first),
+                        Modifier.padding(start = 8.dp),
+                    )
+                }
+            }
+            timeline.forEachIndexed { index, entry ->
                 TimelineItem(
                     entry = entry,
                     today = today,
                     isFirst = index == 0,
-                    isLast = index == entries.lastIndex,
+                    isLast = index == timeline.lastIndex,
                     onClick = (entry as? TimelineEntry.Saved)?.let { { onOpen(it.moment) } },
                     relative = relativeText(context, entry.date, today),
                 )

@@ -82,6 +82,8 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun setFont(id: String) = viewModelScope.launch { repo.setFont(id) }
     fun setChangelogSeen(code: Int) = viewModelScope.launch { repo.setChangelogSeen(code) }
     fun setShowChangelog(on: Boolean) = viewModelScope.launch { repo.setShowChangelog(on) }
+
+    fun setNewestFirst(on: Boolean) = viewModelScope.launch { repo.setNewestFirst(on) }
     fun setPhoto(uri: Uri) = viewModelScope.launch { repo.setPhoto(uri) }
     fun setPreset(index: Int) = viewModelScope.launch { repo.setPreset(index) }
     fun resetPhoto() = viewModelScope.launch { repo.resetPhoto() }

@@ -404,6 +404,7 @@ class MainActivity : ComponentActivity() {
                                         momentSuggestion = null
                                         editingMoment = it.id
                                     },
+                                    onNewestFirst = vm::setNewestFirst,
                                     onSelect = vm::setSelected,
                                     jumpTo = homeJump,
                                     onJumped = { homeJump = null },

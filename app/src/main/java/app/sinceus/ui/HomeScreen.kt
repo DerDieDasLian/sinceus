@@ -112,6 +112,8 @@ fun HomeScreen(
     onPageChange: (Int) -> Unit,
     onAddMoment: (String?) -> Unit = {},
     onOpenMoment: (app.sinceus.data.Moment) -> Unit = {},
+    /** Reihenfolge der Momente umdrehen (neueste oben) */
+    onNewestFirst: (Boolean) -> Unit = {},
     /** Andere Beziehung zeigen (Poly-Modus), [app.sinceus.data.ALL_RELATIONSHIPS] = alle */
     onSelect: (String) -> Unit = {},
     /** Von einer App-Abkürzung: "live" springt zum Live-Zähler */
@@ -149,7 +151,13 @@ fun HomeScreen(
                     Overview(settings, today, onSelect)
                 }
                 HomePage.Live -> LiveScreen(settings, active = pager.currentPage == page)
-                HomePage.Moments -> MomentsScreen(settings, today, onAdd = onAddMoment, onOpen = onOpenMoment)
+                HomePage.Moments -> MomentsScreen(
+                    settings,
+                    today,
+                    onAdd = onAddMoment,
+                    onOpen = onOpenMoment,
+                    onNewestFirst = onNewestFirst,
+                )
             }
         }
         // Kleine Feier an Jahrestagen und runden Tagen

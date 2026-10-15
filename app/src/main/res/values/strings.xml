@@ -427,6 +427,8 @@
     <string name="widget_countdown_name">Countdown</string>
     <string name="moments_view_list">List</string>
     <string name="moments_view_calendar">Calendar</string>
+    <string name="moments_oldest_first">Oldest first</string>
+    <string name="moments_newest_first">Newest first</string>
     <string name="calendar_previous">Previous month</string>
     <string name="calendar_next">Next month</string>
     <string name="calendar_anniversaries">Anniversaries this month</string>

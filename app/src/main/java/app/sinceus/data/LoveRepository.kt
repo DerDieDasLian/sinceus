@@ -90,6 +90,8 @@ data class LoveSettings(
     val changelogSeen: Int = 0,
     /** Nach einem Update zeigen, was neu ist */
     val showChangelog: Boolean = true,
+    /** Momente-Zeitleiste mit den neuesten oben */
+    val newestFirst: Boolean = false,
 ) {
     /** Die gerade gezeigte Beziehung (bei „alle“ die erste) */
     val relationship: Relationship
@@ -163,6 +165,7 @@ private object Keys {
     val font = stringPreferencesKey("font")
     val changelogSeen = intPreferencesKey("changelog_seen")
     val showChangelog = booleanPreferencesKey("show_changelog")
+    val newestFirst = booleanPreferencesKey("moments_newest_first")
     val lastNotified = longPreferencesKey("last_notified_epoch_day")
     val focusX = floatPreferencesKey("focus_x")
     val focusY = floatPreferencesKey("focus_y")
@@ -265,6 +268,7 @@ class LoveRepository(private val context: Context) {
             slides = PathListCodec.decode(this[Keys.slides]).filter { File(it).exists() },
             changelogSeen = this[Keys.changelogSeen] ?: d.changelogSeen,
             showChangelog = this[Keys.showChangelog] ?: d.showChangelog,
+            newestFirst = this[Keys.newestFirst] ?: d.newestFirst,
         )
     }
 
@@ -698,6 +702,8 @@ class LoveRepository(private val context: Context) {
     suspend fun setChangelogSeen(code: Int) = context.dataStore.edit { it[Keys.changelogSeen] = code }
 
     suspend fun setShowChangelog(on: Boolean) = context.dataStore.edit { it[Keys.showChangelog] = on }
+
+    suspend fun setNewestFirst(on: Boolean) = context.dataStore.edit { it[Keys.newestFirst] = on }
 
     suspend fun setUpdateCheck(enabled: Boolean) = context.dataStore.edit { it[Keys.updateCheck] = enabled }
 
