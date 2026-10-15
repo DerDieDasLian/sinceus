@@ -242,7 +242,7 @@ class ScreenshotTest {
 
     @Test
     fun momentEditor()= shot("moment_editor", lang = "de") {
-        MomentEditorScreen(withMoments.moments[1], null, today, {}, { _, _, _ -> }, {})
+        MomentEditorScreen(withMoments.moments[1], null, today, {}, { _, _ -> }, {})
     }
 
     @Test

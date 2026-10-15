@@ -63,20 +63,20 @@ class WidgetRenderTest {
 
     @Test
     fun countdown(): Unit = runBlocking {
-        LoveRepository(context).saveMoment(app.sinceus.data.Moment("trip", "Urlaub am Meer", LocalDate.now().plusDays(12)), null, false)
+        LoveRepository(context).saveMoment(app.sinceus.data.Moment("trip", "Urlaub am Meer", LocalDate.now().plusDays(12)), emptyList())
         render(CountdownWidget(), "countdown_3x2", DpSize(250.dp, 150.dp))
     }
 
     @Test
     @Config(qualifiers = "en-night-xxhdpi")
     fun countdownEnglish(): Unit = runBlocking {
-        LoveRepository(context).saveMoment(app.sinceus.data.Moment("trip", "Holiday by the sea", LocalDate.now().plusDays(12)), null, false)
+        LoveRepository(context).saveMoment(app.sinceus.data.Moment("trip", "Holiday by the sea", LocalDate.now().plusDays(12)), emptyList())
         render(CountdownWidget(), "countdown_3x2_en", DpSize(250.dp, 150.dp))
     }
 
     @Test
     fun countdownSmall(): Unit = runBlocking {
-        LoveRepository(context).saveMoment(app.sinceus.data.Moment("trip", "Urlaub am Meer", LocalDate.now().plusDays(1)), null, false)
+        LoveRepository(context).saveMoment(app.sinceus.data.Moment("trip", "Urlaub am Meer", LocalDate.now().plusDays(1)), emptyList())
         render(CountdownWidget(), "countdown_2x2", DpSize(160.dp, 150.dp))
     }
 

@@ -148,7 +148,7 @@ class SyncTest {
         val repo = LoveRepository(context)
         repo.resetAll()
         repo.setNames(listOf("Alex", "Sam"))
-        repo.saveMoment(Moment("m1", "Erstes Date", LocalDate.of(2025, 3, 15)), null, false)
+        repo.saveMoment(Moment("m1", "Erstes Date", LocalDate.of(2025, 3, 15)), emptyList())
         val pairing = Pairing(key, null, 1)
         val file = ByteArrayOutputStream().also { repo.exportSync(it, pairing) }.toByteArray()
         assertTrue(SyncCrypto.belongsTo(file.copyOf(32), key))
