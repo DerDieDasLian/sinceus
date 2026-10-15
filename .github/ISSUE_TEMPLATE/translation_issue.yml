@@ -1,0 +1,37 @@
+name: Translation issue
+description: Report a wrong, missing or awkward text in the app.
+title: "Text: "
+labels: ["translation issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping to make the texts in Since Us better!
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - English
+        - German
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where in the app?
+      placeholder: e.g. Settings, Moments, widget
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current text
+      description: What does the app say right now? A screenshot helps too.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggestion
+      description: Optional, how should it read instead?
