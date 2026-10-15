@@ -1,0 +1,4 @@
+• Tags for moments, like Trip or Date. Filter the timeline by them with one tap.
+• Moments can have a place. Tap it to open it in your maps app.
+• New Memory widget: a different moment from your time together every day, with a photo.
+• Photo book: save the moments shown as a PDF to print or give as a gift.

@@ -23,6 +23,10 @@ data class Moment(
     val updatedAt: Long = 0,
     /** Wer den Moment angelegt hat (ID einer [Person]), null = unbekannt */
     val addedBy: String? = null,
+    /** Schlagwörter wie „Urlaub“ oder „Date“, zum Filtern der Zeitleiste */
+    val tags: List<String> = emptyList(),
+    /** Wo der Moment war, frei geschrieben, leer = kein Ort */
+    val place: String = "",
 ) {
     /** Titelbild für Zeitleiste, Teilen-Bild und Rückblick, null = kein Foto */
     val photoPath: String? get() = photos.firstOrNull()
@@ -46,7 +50,9 @@ object MomentCodec {
                     .put("remind", m.yearlyReminder)
                     .put("rel", m.relationshipId ?: JSONObject.NULL)
                     .put("updated", m.updatedAt)
-                    .put("by", m.addedBy ?: JSONObject.NULL),
+                    .put("by", m.addedBy ?: JSONObject.NULL)
+                    .put("tags", JSONArray().apply { m.tags.forEach { put(it) } })
+                    .put("place", m.place),
             )
         }
     }.toString()
@@ -68,9 +74,16 @@ object MomentCodec {
                     relationshipId = if (o.isNull("rel")) null else o.optString("rel").ifBlank { null },
                     updatedAt = o.optLong("updated", 0),
                     addedBy = if (o.isNull("by")) null else o.optString("by").ifBlank { null },
+                    tags = decodeTags(o),
+                    place = o.optString("place", "").trim(),
                 )
             }.getOrNull()
         }
+    }
+
+    private fun decodeTags(o: JSONObject): List<String> {
+        val array = o.optJSONArray("tags") ?: return emptyList()
+        return MomentTags.clean((0 until array.length()).map { array.optString(it) })
     }
 
     /** Liest "photos"; Daten aus älteren Versionen haben nur ein Foto unter "photo" */
@@ -145,9 +158,14 @@ object MomentFilter {
      * Passt [m] zu Suchtext, Jahr und Beziehung? Leerer Text und null bedeuten jeweils „alles“.
      * Momente für alle Beziehungen passen zu jeder Beziehung.
      */
-    fun matches(m: Moment, query: String, year: Int? = null, relationshipId: String? = null): Boolean {
+    fun matches(m: Moment, query: String, year: Int? = null, relationshipId: String? = null, tag: String? = null): Boolean {
         val q = query.trim()
-        if (q.isNotEmpty() && !m.title.contains(q, ignoreCase = true) && !m.note.contains(q, ignoreCase = true)) return false
+        if (q.isNotEmpty() && listOf(m.title, m.note, m.place).none { it.contains(q, ignoreCase = true) } &&
+            m.tags.none { it.contains(q, ignoreCase = true) }
+        ) {
+            return false
+        }
+        if (tag != null && m.tags.none { it.equals(tag, ignoreCase = true) }) return false
         if (year != null && m.date.year != year) return false
         if (relationshipId != null && m.relationshipId != null && m.relationshipId != relationshipId) return false
         return true
@@ -155,6 +173,53 @@ object MomentFilter {
 
     /** Jahre mit Momenten, das neueste zuerst */
     fun years(moments: List<Moment>): List<Int> = moments.map { it.date.year }.distinct().sortedDescending()
+}
+
+object MomentTags {
+    /** So lang darf ein Schlagwort höchstens sein */
+    const val MAX_LENGTH = 30
+
+    /** Leerzeichen weg, leere und doppelte (auch in anderer Schreibweise) raus */
+    fun clean(tags: List<String>): List<String> =
+        tags.map { it.trim().take(MAX_LENGTH) }.filter { it.isNotEmpty() }.distinctBy { it.lowercase() }
+
+    /** Alle benutzten Schlagwörter, die häufigsten zuerst, sonst alphabetisch */
+    fun all(moments: List<Moment>): List<String> =
+        moments.flatMap { it.tags }
+            .groupBy { it.lowercase() }
+            .map { (_, same) -> same.first() to same.size }
+            .sortedWith(compareByDescending<Pair<String, Int>> { it.second }.thenBy { it.first.lowercase() })
+            .map { it.first }
+}
+
+/** Welcher Moment im Erinnerungs-Widget steht */
+object MemoryPick {
+    /**
+     * Der Moment für [today]: Hat ein Moment heute Jahrestag, gewinnt er. Sonst wechselt die Wahl
+     * jeden Tag, Momente mit Foto zuerst. Nur vergangene Momente, null = keine.
+     */
+    fun pick(moments: List<Moment>, today: LocalDate): Moment? {
+        val past = moments.filter { it.date.isBefore(today) }.sortedWith(compareBy({ it.date }, { it.id }))
+        if (past.isEmpty()) return null
+        past.filter { MomentMath.anniversaryOn(it, today) != null }.let { if (it.isNotEmpty()) return it[dayIndex(today, it.size)] }
+        val pool = past.filter { it.photos.isNotEmpty() }.ifEmpty { past }
+        return pool[dayIndex(today, pool.size)]
+    }
+
+    enum class Span { DAYS, MONTHS, YEARS }
+
+    /** Wie lange [date] her ist, in der größten passenden Einheit, z. B. 2 Jahre oder 3 Monate */
+    fun ago(date: LocalDate, today: LocalDate): Pair<Span, Int> {
+        val period = java.time.Period.between(date, today)
+        return when {
+            period.years > 0 -> Span.YEARS to period.years
+            period.toTotalMonths() > 0 -> Span.MONTHS to period.toTotalMonths().toInt()
+            else -> Span.DAYS to ChronoUnit.DAYS.between(date, today).toInt()
+        }
+    }
+
+    /** Springt von Tag zu Tag durch die Liste, damit nicht nur der nächste Moment drankommt */
+    private fun dayIndex(today: LocalDate, size: Int): Int = Math.floorMod(today.toEpochDay() * 7919L, size.toLong()).toInt()
 }
 
 /** Rückblick auf ein Beziehungsjahr: Nummer des Jahres, Zeitraum und die Momente darin */

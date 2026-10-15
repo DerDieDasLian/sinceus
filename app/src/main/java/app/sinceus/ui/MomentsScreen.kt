@@ -15,6 +15,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import app.sinceus.data.MomentFilter
+import app.sinceus.data.MomentTags
+import androidx.compose.material.icons.rounded.PictureAsPdf
+import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material.icons.rounded.Sell
+import androidx.compose.material3.OutlinedButton
 import app.sinceus.data.MomentCalendar
 import androidx.compose.foundation.border
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
@@ -122,6 +127,7 @@ fun MomentsScreen(
     onAdd: (String?) -> Unit,
     onOpen: (Moment) -> Unit,
     onNewestFirst: (Boolean) -> Unit = {},
+    onPhotobook: (List<Moment>) -> Unit = {},
 ) {
     val context = LocalContext.current
     // Mit mehreren Beziehungen steht an jedem Eintrag, zu wem er gehört
@@ -134,12 +140,25 @@ fun MomentsScreen(
     var year by rememberSaveable { mutableStateOf<Int?>(null) }
     var relationship by rememberSaveable { mutableStateOf<String?>(null) }
     val filterRelationships = multi && settings.showAll
+    // Schlagwörter zum Filtern, sobald es welche gibt, auch bei wenigen Momenten
+    val tags = MomentTags.all(moments)
+    var tag by rememberSaveable { mutableStateOf<String?>(null) }
+    val activeTag = tag?.takeIf { t -> tags.any { it.equals(t, ignoreCase = true) } }
     // Ansicht: Zeitleiste oder Kalender
     var calendar by rememberSaveable { mutableStateOf(false) }
     var monthIndex by rememberSaveable { mutableStateOf(today.year * 12 + today.monthValue - 1) }
-    val filtering = searchable && (query.isNotBlank() || year != null || (filterRelationships && relationship != null))
+    val searching = searchable && (query.isNotBlank() || year != null || (filterRelationships && relationship != null))
+    val filtering = searching || activeTag != null
     val shown = if (filtering) {
-        moments.filter { MomentFilter.matches(it, query, year, relationship.takeIf { filterRelationships }) }
+        moments.filter {
+            MomentFilter.matches(
+                it,
+                query.takeIf { searching }.orEmpty(),
+                year.takeIf { searching },
+                relationship.takeIf { searching && filterRelationships },
+                activeTag,
+            )
+        }
     } else {
         moments
     }
@@ -318,6 +337,39 @@ fun MomentsScreen(
             }
         }
 
+        if (tags.isNotEmpty()) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                tags.forEach { t ->
+                    val on = activeTag.equals(t, ignoreCase = true)
+                    FilterChip(
+                        selected = on,
+                        onClick = { tag = if (on) null else t },
+                        label = { Text(t) },
+                        leadingIcon = { Icon(Icons.Rounded.Sell, null, modifier = Modifier.size(16.dp)) },
+                    )
+                }
+            }
+        }
+
+        // Hinweis, wenn nur der Schlagwort-Filter nichts findet (die Suche zeigt ihren eigenen)
+        if (!searchable && filtering && shown.isEmpty()) {
+            Text(
+                stringResource(R.string.moments_no_results),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp),
+            )
+        }
+
         if (calendar && moments.isNotEmpty()) {
             val month = YearMonth.of(monthIndex / 12, monthIndex % 12 + 1)
             CalendarView(
@@ -354,6 +406,27 @@ fun MomentsScreen(
                     relative = relativeText(context, entry.date, today),
                 )
             }
+        }
+
+        if (shown.isNotEmpty()) {
+            OutlinedButton(
+                onClick = { onPhotobook(shown.sortedBy { it.date }) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+            ) {
+                Icon(Icons.Rounded.PictureAsPdf, null)
+                Text(stringResource(R.string.photobook_save), Modifier.padding(start = 8.dp))
+            }
+            Text(
+                stringResource(R.string.photobook_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+            )
         }
 
         // Platz für die schwebende Leiste
@@ -629,6 +702,15 @@ private fun TimelineItem(
                         modifier = Modifier.padding(top = 6.dp),
                     )
                 }
+                if (moment != null && moment.place.isNotBlank()) PlaceLink(moment.place)
+                if (moment != null && moment.tags.isNotEmpty()) {
+                    Text(
+                        moment.tags.joinToString(" · "),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.padding(top = 6.dp),
+                    )
+                }
                 if (moment != null && moment.yearlyReminder && !moment.date.isAfter(today)) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
                         Icon(
@@ -650,6 +732,39 @@ private fun TimelineItem(
                 }
             }
         }
+    }
+}
+
+/** Ort eines Moments, Antippen öffnet ihn in der Karten-App (Since Us selbst braucht dafür kein Internet) */
+@Composable
+private fun PlaceLink(place: String) {
+    val context = LocalContext.current
+    val label = stringResource(R.string.moment_open_place, place)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(top = 6.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(onClickLabel = label) { openPlace(context, place) }
+            .padding(vertical = 4.dp),
+    ) {
+        Icon(Icons.Rounded.Place, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+        Text(
+            place,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 6.dp),
+        )
+    }
+}
+
+/** Sucht den Ort in der Karten-App, die auf dem Handy eingestellt ist */
+fun openPlace(context: android.content.Context, place: String) {
+    val uri = android.net.Uri.parse("geo:0,0?q=" + android.net.Uri.encode(place))
+    try {
+        context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, uri))
+    } catch (_: android.content.ActivityNotFoundException) {
+        android.widget.Toast.makeText(context, R.string.moment_no_maps, android.widget.Toast.LENGTH_SHORT).show()
     }
 }
 

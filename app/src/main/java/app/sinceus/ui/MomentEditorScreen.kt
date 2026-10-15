@@ -55,6 +55,13 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import app.sinceus.R
 import app.sinceus.data.Moment
+import app.sinceus.data.MomentTags
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.ui.text.input.ImeAction
 import app.sinceus.data.Texts
 import coil3.compose.AsyncImage
 import java.io.File
@@ -95,11 +102,20 @@ fun MomentEditorScreen(
     defaultRelationship: String? = null,
     /** Gespeicherten Moment als Bild teilen */
     onShare: (Moment) -> Unit = {},
+    /** Schon benutzte Schlagwörter, als Vorschläge */
+    knownTags: List<String> = emptyList(),
 ) {
     var title by rememberSaveable { mutableStateOf(existing?.title ?: suggestedTitle.orEmpty()) }
     var epochDay by rememberSaveable { mutableStateOf((existing?.date ?: defaultDate).toEpochDay()) }
     var note by rememberSaveable { mutableStateOf(existing?.note.orEmpty()) }
     var remind by rememberSaveable { mutableStateOf(existing?.yearlyReminder ?: true) }
+    var place by rememberSaveable { mutableStateOf(existing?.place.orEmpty()) }
+    var tags by rememberSaveable { mutableStateOf(ArrayList(existing?.tags.orEmpty())) }
+    var newTag by rememberSaveable { mutableStateOf("") }
+    fun addTag() {
+        tags = ArrayList(MomentTags.clean(tags + newTag))
+        newTag = ""
+    }
     var relationship by rememberSaveable {
         mutableStateOf(if (existing != null) existing.relationshipId else defaultRelationship)
     }
@@ -172,6 +188,27 @@ fun MomentEditorScreen(
                 minLines = 3,
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 modifier = Modifier.fillMaxWidth(),
+            )
+            OutlinedTextField(
+                value = place,
+                onValueChange = { place = it },
+                label = { Text(stringResource(R.string.moment_field_place)) },
+                leadingIcon = { Icon(Icons.Rounded.Place, null) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            TagPicker(
+                selected = tags,
+                suggestions = MomentTags.clean(knownTags.ifEmpty { TagSuggestions.map { stringResource(it) } }),
+                newTag = newTag,
+                onNewTag = { if (it.length <= MomentTags.MAX_LENGTH) newTag = it },
+                onAdd = ::addTag,
+                onToggle = { tag ->
+                    tags = ArrayList(
+                        if (tags.any { it.equals(tag, ignoreCase = true) }) tags.filterNot { it.equals(tag, ignoreCase = true) } else tags + tag,
+                    )
+                },
             )
 
             if (photos.isNotEmpty()) {
@@ -259,6 +296,9 @@ fun MomentEditorScreen(
                         note = note.trim(),
                         yearlyReminder = remind,
                         relationshipId = relationship?.takeIf { id -> relationships.any { it.first == id } },
+                        // Ein angefangenes Schlagwort ohne Tippen auf Hinzufügen nicht verlieren
+                        tags = MomentTags.clean(tags + newTag),
+                        place = place.trim(),
                     )
                     onSave(moment, photos)
                 },
@@ -344,5 +384,69 @@ private fun PhotoThumb(model: Any, isCover: Boolean, position: String, onClick: 
                 )
             }
         }
+    }
+}
+
+/** Vorschläge für Schlagwörter, solange noch keine eigenen benutzt wurden */
+private val TagSuggestions = listOf(
+    R.string.tag_date,
+    R.string.tag_trip,
+    R.string.tag_milestone,
+    R.string.tag_celebration,
+    R.string.tag_everyday,
+)
+
+/** Schlagwörter antippen zum An- und Abwählen, darunter ein Feld für neue */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TagPicker(
+    selected: List<String>,
+    suggestions: List<String>,
+    newTag: String,
+    onNewTag: (String) -> Unit,
+    onAdd: () -> Unit,
+    onToggle: (String) -> Unit,
+) {
+    Column {
+        Text(
+            stringResource(R.string.moment_tags),
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(bottom = 4.dp),
+        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            MomentTags.clean(selected + suggestions).forEach { tag ->
+                val on = selected.any { it.equals(tag, ignoreCase = true) }
+                FilterChip(
+                    selected = on,
+                    onClick = { onToggle(tag) },
+                    label = { Text(tag) },
+                    leadingIcon = if (on) {
+                        { Icon(Icons.Rounded.Check, null, modifier = Modifier.size(FilterChipDefaults.IconSize)) }
+                    } else {
+                        null
+                    },
+                )
+            }
+        }
+        OutlinedTextField(
+            value = newTag,
+            onValueChange = onNewTag,
+            label = { Text(stringResource(R.string.moment_tag_new)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { onAdd() }),
+            trailingIcon = if (newTag.isNotBlank()) {
+                {
+                    IconButton(onClick = onAdd) {
+                        Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.moment_tag_add))
+                    }
+                }
+            } else {
+                null
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
+        )
     }
 }

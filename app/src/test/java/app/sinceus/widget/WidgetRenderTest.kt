@@ -80,6 +80,27 @@ class WidgetRenderTest {
         render(CountdownWidget(), "countdown_2x2", DpSize(160.dp, 150.dp))
     }
 
+    @Test
+    fun memoryEmpty() = render(MemoryWidget(), "memory_empty_3x2", DpSize(250.dp, 150.dp))
+
+    @Test
+    fun memory(): Unit = runBlocking {
+        LoveRepository(context).saveMoment(app.sinceus.data.Moment("date", "Erstes Date", LocalDate.now().minusYears(2)), emptyList())
+        render(MemoryWidget(), "memory_3x2", DpSize(250.dp, 150.dp))
+    }
+
+    @Test
+    fun memoryPhotoStaysSmall() {
+        // Großes Testfoto: das Widget muss es trotzdem klein genug übertragen
+        val file = File(context.filesDir, "memory_test.jpg")
+        val photo = Bitmap.createBitmap(4000, 3000, Bitmap.Config.ARGB_8888)
+        Canvas(photo).drawColor(0xFF6A4C93.toInt())
+        file.outputStream().use { photo.compress(Bitmap.CompressFormat.JPEG, 95, it) }
+        val bytes = MemoryWidget.jpeg(context, file.path, 330f, 180f)
+        org.junit.Assert.assertNotNull(bytes)
+        org.junit.Assert.assertTrue("Foto zu groß: ${bytes!!.size / 1024} KB", bytes.size < 400 * 1024)
+    }
+
     @OptIn(ExperimentalGlanceRemoteViewsApi::class)
     private fun render(widget: GlanceAppWidget, name: String, size: DpSize): Unit = runBlocking {
         setUp()

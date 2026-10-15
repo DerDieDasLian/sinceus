@@ -502,4 +502,42 @@
     <string name="website">Website</string>
     <string name="imprint">Legal notice</string>
     <string name="privacy_full">Full policy</string>
+    <!-- Schlagwörter und Ort für Momente -->
+    <string name="moment_field_place">Place (optional)</string>
+    <string name="moment_open_place">Open %1$s in maps</string>
+    <string name="moment_no_maps">No maps app found</string>
+    <string name="moment_tags">Tags</string>
+    <string name="moment_tag_new">New tag</string>
+    <string name="moment_tag_add">Add tag</string>
+    <string name="moment_tag_remove">Remove tag %1$s</string>
+    <string name="tag_date">Date</string>
+    <string name="tag_trip">Trip</string>
+    <string name="tag_milestone">Milestone</string>
+    <string name="tag_celebration">Celebration</string>
+    <string name="tag_everyday">Everyday</string>
+
+    <!-- Erinnerungs-Widget -->
+    <string name="widget_memory_name">Memory</string>
+    <string name="widget_memory_description">A different moment from your time together every day</string>
+    <string name="widget_memory_empty">No memories yet</string>
+    <string name="widget_memory_empty_hint">Add moments and this widget shows one every day</string>
+    <string name="widget_memory_preview_title">First date</string>
+    <string name="widget_memory_preview_when">2 years ago</string>
+    <plurals name="memory_years_ago">
+        <item quantity="one">%s year ago</item>
+        <item quantity="other">%s years ago</item>
+    </plurals>
+    <plurals name="memory_months_ago">
+        <item quantity="one">%s month ago</item>
+        <item quantity="other">%s months ago</item>
+    </plurals>
+
+    <!-- Fotobuch als PDF -->
+    <string name="photobook_save">Save as photo book (PDF)</string>
+    <string name="photobook_hint">Contains the moments shown above, ready to print or give as a gift</string>
+    <string name="photobook_file">Since Us photo book</string>
+    <string name="photobook_saved">Photo book saved</string>
+    <string name="photobook_failed">Could not save the photo book</string>
+    <string name="photobook_made_with">Made with Since Us</string>
+    <string name="photobook_moments_title">Our moments</string>
 </resources>

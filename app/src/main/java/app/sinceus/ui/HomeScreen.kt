@@ -114,6 +114,8 @@ fun HomeScreen(
     onOpenMoment: (app.sinceus.data.Moment) -> Unit = {},
     /** Reihenfolge der Momente umdrehen (neueste oben) */
     onNewestFirst: (Boolean) -> Unit = {},
+    /** Die gezeigten Momente als Fotobuch (PDF) speichern */
+    onPhotobook: (List<app.sinceus.data.Moment>) -> Unit = {},
     /** Andere Beziehung zeigen (Poly-Modus), [app.sinceus.data.ALL_RELATIONSHIPS] = alle */
     onSelect: (String) -> Unit = {},
     /** Von einer App-Abkürzung: "live" springt zum Live-Zähler */
@@ -157,6 +159,7 @@ fun HomeScreen(
                     onAdd = onAddMoment,
                     onOpen = onOpenMoment,
                     onNewestFirst = onNewestFirst,
+                    onPhotobook = onPhotobook,
                 )
             }
         }

@@ -24,6 +24,62 @@ class MomentTest {
     }
 
     @Test
+    fun tagsAndPlaceRoundTrip() {
+        val trip = firstDate.copy(tags = listOf("Urlaub", "Date"), place = "Lissabon")
+        assertEquals(listOf(trip), MomentCodec.decode(MomentCodec.encode(listOf(trip))))
+        // Ältere Daten ohne Schlagwörter und Ort
+        val old = MomentCodec.decode("""[{"id":"a","title":"Alt","date":19000}]""")[0]
+        assertEquals(emptyList<String>(), old.tags)
+        assertEquals("", old.place)
+    }
+
+    @Test
+    fun tagsAreCleaned() {
+        assertEquals(listOf("Urlaub", "Date"), MomentTags.clean(listOf(" Urlaub ", "", "urlaub", "Date")))
+        val a = firstDate.copy(id = "1", tags = listOf("Date"))
+        val b = firstDate.copy(id = "2", tags = listOf("Urlaub", "date"))
+        assertEquals(listOf("Date", "Urlaub"), MomentTags.all(listOf(a, b)))
+    }
+
+    @Test
+    fun filterByTagAndPlace() {
+        val trip = firstDate.copy(tags = listOf("Urlaub"), place = "Lissabon")
+        assertTrue(MomentFilter.matches(trip, "", tag = "urlaub"))
+        assertTrue(!MomentFilter.matches(firstDate, "", tag = "Urlaub"))
+        assertTrue(MomentFilter.matches(trip, "lissa"))
+        assertTrue(MomentFilter.matches(trip, "urlau"))
+    }
+
+    @Test
+    fun memoryPrefersAnniversaryThenPhotos() {
+        val today = LocalDate.of(2026, 5, 10)
+        val planned = Moment("f", "Zukunft", LocalDate.of(2026, 8, 1), photos = listOf("/x/f.jpg"))
+        // firstDate hat heute Jahrestag
+        assertEquals(firstDate, MemoryPick.pick(listOf(planned, leap, firstDate), today))
+        val other = LocalDate.of(2026, 5, 11)
+        // Ohne Jahrestag nur Momente mit Foto, solange es welche gibt
+        assertEquals(firstDate, MemoryPick.pick(listOf(leap, quiet, firstDate), other))
+        assertNull(MemoryPick.pick(listOf(planned), other))
+        // Ohne Fotos kommt trotzdem ein Moment
+        assertTrue(MemoryPick.pick(listOf(leap, quiet), other) in listOf(leap, quiet))
+    }
+
+    @Test
+    fun memoryChangesDaily() {
+        val moments = (1..5).map { Moment("m$it", "M$it", LocalDate.of(2020, 1, it), photos = listOf("/x/$it.jpg")) }
+        val picks = (0L until 5L).map { MemoryPick.pick(moments, LocalDate.of(2026, 6, 1).plusDays(it)) }.toSet()
+        assertTrue(picks.size > 1)
+    }
+
+    @Test
+    fun memoryAgo() {
+        val today = LocalDate.of(2026, 5, 10)
+        assertEquals(MemoryPick.Span.YEARS to 2, MemoryPick.ago(LocalDate.of(2024, 5, 10), today))
+        assertEquals(MemoryPick.Span.MONTHS to 11, MemoryPick.ago(LocalDate.of(2025, 6, 1), today))
+        assertEquals(MemoryPick.Span.DAYS to 9, MemoryPick.ago(LocalDate.of(2026, 5, 1), today))
+    }
+
+    @Test
     fun firstPhotoIsCover() {
         assertEquals("/x/a.jpg", firstDate.photoPath)
         assertNull(leap.photoPath)
