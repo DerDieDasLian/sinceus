@@ -282,8 +282,8 @@ class MainActivity : ComponentActivity() {
                                     suggestedTitle = momentSuggestion,
                                     defaultDate = today,
                                     onClose = { editingMoment = null },
-                                    onSave = { moment, photo, remove ->
-                                        vm.saveMoment(moment, photo, remove)
+                                    onSave = { moment, photos ->
+                                        vm.saveMoment(moment, photos)
                                         editingMoment = null
                                     },
                                     onDelete = {

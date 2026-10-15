@@ -39,7 +39,7 @@ class BackupTest {
         onboardingDone = true,
         homePage = 1,
         updateCheck = false,
-        moments = listOf(Moment("1", "Erstes Date", LocalDate.of(2025, 2, 14), "Kino", "/data/x/files/moments/1_5.jpg")),
+        moments = listOf(Moment("1", "Erstes Date", LocalDate.of(2025, 2, 14), "Kino", listOf("/data/x/files/moments/1_5.jpg", "/data/x/files/moments/1_6.jpg"))),
         showMoments = true,
         showLive = false,
         slides = listOf("/data/x/files/slides/slide_1_0.jpg"),
@@ -52,7 +52,7 @@ class BackupTest {
     fun jsonKeepsAllDataWithFileNamesOnly() {
         val expected = sample.copy(
             photoPath = "photo_1.jpg",
-            moments = sample.moments.map { it.copy(photoPath = "1_5.jpg") },
+            moments = sample.moments.map { it.copy(photos = listOf("1_5.jpg", "1_6.jpg")) },
             slides = listOf("slide_1_0.jpg"),
         )
         assertEquals(expected, BackupCodec.decode(BackupCodec.encode(sample)))
@@ -80,7 +80,7 @@ class BackupTest {
         repo.resetAll()
         repo.setNames(listOf("Alex", "Sam"))
         repo.setStartDate(LocalDate.of(2025, 3, 15))
-        repo.saveMoment(Moment("1", "Erstes Date", LocalDate.of(2025, 2, 14), "Kino"), null, false)
+        repo.saveMoment(Moment("1", "Erstes Date", LocalDate.of(2025, 2, 14), "Kino"), emptyList())
         val file = ByteArrayOutputStream()
         repo.exportBackup(file)
 
@@ -105,6 +105,9 @@ class BackupTest {
             z.putNextEntry(ZipEntry("photos/photo_1.jpg"))
             z.write(byteArrayOf(1, 2, 3))
             z.closeEntry()
+            z.putNextEntry(ZipEntry("moments/1_6.jpg"))
+            z.write(byteArrayOf(4, 5))
+            z.closeEntry()
             z.putNextEntry(ZipEntry("photos/../../evil.txt"))
             z.write(byteArrayOf(9))
             z.closeEntry()
@@ -116,7 +119,7 @@ class BackupTest {
         assertEquals(File(File(context.filesDir, "photos"), "photo_1.jpg").absolutePath, s.photoPath)
         // Fotos, die in der Datei fehlen, fallen weg
         assertTrue(s.slides.isEmpty())
-        assertNull(s.moments.single().photoPath)
+        assertEquals(listOf(File(File(context.filesDir, "moments"), "1_6.jpg").absolutePath), s.moments.single().photos)
         assertFalse(File(context.filesDir.parentFile, "evil.txt").exists())
         assertFalse(File(context.cacheDir.parentFile, "evil.txt").exists())
     }

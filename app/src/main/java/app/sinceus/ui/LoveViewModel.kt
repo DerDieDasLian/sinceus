@@ -91,8 +91,8 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun setOnboardingDone(done: Boolean) = viewModelScope.launch { repo.setOnboardingDone(done) }
     fun setHomePage(page: Int) = viewModelScope.launch { repo.setHomePage(page) }
 
-    fun saveMoment(moment: app.sinceus.data.Moment, photo: Uri?, removePhoto: Boolean) =
-        viewModelScope.launch { repo.saveMoment(moment, photo, removePhoto) }
+    fun saveMoment(moment: app.sinceus.data.Moment, photos: List<String>) =
+        viewModelScope.launch { repo.saveMoment(moment, photos) }
     fun deleteMoment(id: String) = viewModelScope.launch { repo.deleteMoment(id) }
     fun setShowMoments(show: Boolean) = viewModelScope.launch { repo.setShowMoments(show) }
     fun setShowLive(show: Boolean) = viewModelScope.launch { repo.setShowLive(show) }

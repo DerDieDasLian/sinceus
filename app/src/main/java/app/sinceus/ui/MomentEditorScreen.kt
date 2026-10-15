@@ -63,10 +63,22 @@ import java.util.UUID
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.FilterChip
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 
 /**
  * Neuen Moment anlegen ([existing] = null, optional mit [suggestedTitle]) oder bestehenden bearbeiten.
- * [onSave] bekommt den Moment, ein neu gewähltes Foto und ob das alte Foto entfernt werden soll.
+ * [onSave] bekommt den Moment und die Fotos in gewünschter Reihenfolge: Pfade bisheriger Fotos
+ * und content-Uris neu gewählter Fotos. Das erste Foto ist das Titelbild.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -75,7 +87,7 @@ fun MomentEditorScreen(
     suggestedTitle: String?,
     defaultDate: LocalDate,
     onClose: () -> Unit,
-    onSave: (Moment, Uri?, Boolean) -> Unit,
+    onSave: (Moment, List<String>) -> Unit,
     onDelete: (Moment) -> Unit,
     /** Beziehungen zur Auswahl als ID und Titel; nur bei mehreren wird gefragt, zu wem der Moment gehört */
     relationships: List<Pair<String, String>> = emptyList(),
@@ -91,22 +103,15 @@ fun MomentEditorScreen(
     var relationship by rememberSaveable {
         mutableStateOf(if (existing != null) existing.relationshipId else defaultRelationship)
     }
-    var newPhoto by rememberSaveable { mutableStateOf<String?>(null) }
-    var removePhoto by rememberSaveable { mutableStateOf(false) }
+    // Bisherige Fotos als Pfad, neu gewählte als content-Uri
+    var photos by rememberSaveable { mutableStateOf(ArrayList(existing?.photos.orEmpty())) }
     var dateDialog by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
 
-    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            newPhoto = uri.toString()
-            removePhoto = false
-        }
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+        if (uris.isNotEmpty()) photos = ArrayList((photos + uris.map { it.toString() }).distinct())
     }
-    val shownPhoto: Any? = when {
-        newPhoto != null -> Uri.parse(newPhoto)
-        !removePhoto && existing?.photoPath != null -> File(existing.photoPath)
-        else -> null
-    }
+    fun pick() = picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
 
     BackHandler(onBack = onClose)
 
@@ -169,9 +174,9 @@ fun MomentEditorScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            if (shownPhoto != null) {
+            if (photos.isNotEmpty()) {
                 AsyncImage(
-                    model = shownPhoto,
+                    model = photoModel(photos.first()),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -179,20 +184,35 @@ fun MomentEditorScreen(
                         .aspectRatio(16f / 10f)
                         .clip(RoundedCornerShape(20.dp)),
                 )
+                if (photos.size > 1) {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        itemsIndexed(photos, key = { _, item -> item }) { index, item ->
+                            PhotoThumb(
+                                model = photoModel(item),
+                                isCover = index == 0,
+                                position = stringResource(R.string.moment_photo_position, index + 1, photos.size),
+                                onClick = { photos = ArrayList(listOf(item) + (photos - item)) },
+                                onRemove = { photos = ArrayList(photos - item) },
+                            )
+                        }
+                    }
+                    Text(
+                        stringResource(R.string.moment_cover_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = {
-                        picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                    }) { Text(stringResource(R.string.moment_change_photo)) }
-                    TextButton(onClick = {
-                        newPhoto = null
-                        removePhoto = true
-                    }) { Text(stringResource(R.string.moment_remove_photo)) }
+                    OutlinedButton(onClick = ::pick) {
+                        Icon(Icons.Rounded.AddPhotoAlternate, null)
+                        Text(stringResource(R.string.moment_more_photos), Modifier.padding(start = 8.dp))
+                    }
+                    if (photos.size == 1) {
+                        TextButton(onClick = { photos = ArrayList() }) { Text(stringResource(R.string.moment_remove_photo)) }
+                    }
                 }
             } else {
-                FilledTonalButton(
-                    onClick = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+                FilledTonalButton(onClick = ::pick, modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Rounded.AddPhotoAlternate, null)
                     Text(stringResource(R.string.moment_add_photo), Modifier.padding(start = 8.dp))
                 }
@@ -237,11 +257,10 @@ fun MomentEditorScreen(
                         title = title.trim(),
                         date = LocalDate.ofEpochDay(epochDay),
                         note = note.trim(),
-                        photoPath = existing?.photoPath,
                         yearlyReminder = remind,
                         relationshipId = relationship?.takeIf { id -> relationships.any { it.first == id } },
                     )
-                    onSave(moment, newPhoto?.let(Uri::parse), removePhoto)
+                    onSave(moment, photos)
                 },
                 enabled = title.isNotBlank(),
                 modifier = Modifier
@@ -278,5 +297,52 @@ fun MomentEditorScreen(
             },
             dismissButton = { TextButton(onClick = { deleteDialog = false }) { Text(stringResource(R.string.cancel)) } },
         )
+    }
+}
+
+/** Bisherige Fotos liegen als Pfad im App-Speicher, neu gewählte sind content-Uris */
+private fun photoModel(item: String): Any = if (item.startsWith("/")) File(item) else Uri.parse(item)
+
+/** Vorschaubild in der Fotoleiste: Tippen macht es zum Titelbild, das Kreuz entfernt es */
+@Composable
+private fun PhotoThumb(model: Any, isCover: Boolean, position: String, onClick: () -> Unit, onRemove: () -> Unit) {
+    val makeCover = stringResource(R.string.moment_make_cover)
+    Box(
+        Modifier
+            .size(84.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .then(
+                if (isCover) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(14.dp)) else Modifier,
+            )
+            .semantics { contentDescription = position }
+            .clickable(enabled = !isCover, onClickLabel = makeCover, onClick = onClick),
+    ) {
+        AsyncImage(
+            model = model,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+        )
+        IconButton(
+            onClick = onRemove,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .size(36.dp),
+        ) {
+            Box(
+                Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.55f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Rounded.Close,
+                    contentDescription = stringResource(R.string.moment_remove_photo),
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        }
     }
 }

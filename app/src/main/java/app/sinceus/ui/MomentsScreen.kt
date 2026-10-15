@@ -75,6 +75,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.sinceus.R
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.Moment
 import app.sinceus.data.MomentMath
@@ -600,16 +605,7 @@ private fun TimelineItem(
                 .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         ) {
             val moment = (entry as? TimelineEntry.Saved)?.moment
-            if (moment?.photoPath != null) {
-                AsyncImage(
-                    model = File(moment.photoPath),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(16f / 10f),
-                )
-            }
+            if (moment != null && moment.photos.isNotEmpty()) MomentPhotos(moment.photos)
             Column(Modifier.padding(horizontal = 18.dp, vertical = 14.dp)) {
                 Text(
                     "${Texts.longDate(entry.date)} · $relative".uppercase(),
@@ -656,3 +652,63 @@ private fun TimelineItem(
         }
     }
 }
+
+/** Fotos eines Moments: eins als Bild, mehrere zum Wischen mit Punkten oder Zähler unten */
+@Composable
+private fun MomentPhotos(photos: List<String>) {
+    val imageModifier = Modifier
+        .fillMaxWidth()
+        .aspectRatio(16f / 10f)
+    if (photos.size == 1) {
+        AsyncImage(
+            model = File(photos.first()),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = imageModifier,
+        )
+        return
+    }
+    val pager = rememberPagerState { photos.size }
+    Box {
+        HorizontalPager(pager, key = { photos[it] }) { page ->
+            AsyncImage(
+                model = File(photos[page]),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = imageModifier,
+            )
+        }
+        val position = stringResource(R.string.moment_photo_position, pager.currentPage + 1, photos.size)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 10.dp)
+                .clip(RoundedCornerShape(50))
+                .background(Color.Black.copy(alpha = 0.4f))
+                .padding(horizontal = 8.dp, vertical = 5.dp)
+                .semantics { contentDescription = position },
+        ) {
+            if (photos.size <= MAX_DOTS) {
+                repeat(photos.size) { i ->
+                    Box(
+                        Modifier
+                            .size(if (i == pager.currentPage) 8.dp else 6.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = if (i == pager.currentPage) 1f else 0.55f)),
+                    )
+                }
+            } else {
+                Text(
+                    "${pager.currentPage + 1} / ${photos.size}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.White,
+                )
+            }
+        }
+    }
+}
+
+/** Ab so vielen Fotos zeigt die Galerie einen Zähler statt Punkten */
+private const val MAX_DOTS = 6

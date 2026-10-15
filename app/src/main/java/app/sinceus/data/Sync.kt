@@ -214,7 +214,7 @@ object SyncCodec {
         .put("relationships", JSONArray(PeopleCodec.encodeRelationships(d.relationships)))
         .put(
             "moments",
-            JSONArray(MomentCodec.encode(d.moments.map { m -> m.copy(photoPath = m.photoPath?.let { java.io.File(it).name }) })),
+            JSONArray(MomentCodec.encode(d.moments.map { m -> m.mapPhotos { java.io.File(it).name } })),
         )
         .put("deleted", JSONObject().apply { d.deleted.forEach { (id, time) -> put(id, time) } })
         .toString()
@@ -228,7 +228,7 @@ object SyncCodec {
             people = PeopleCodec.decodePeople(o.optJSONArray("people")?.toString()).orEmpty(),
             relationships = PeopleCodec.decodeRelationships(o.optJSONArray("relationships")?.toString()).orEmpty(),
             moments = MomentCodec.decode(o.optJSONArray("moments")?.toString())
-                .map { m -> m.copy(photoPath = m.photoPath?.takeIf { Backup.isSafeName(it) }) },
+                .map { m -> m.mapPhotos { it.takeIf(Backup::isSafeName) } },
             deleted = deleted?.keys()?.asSequence()?.associateWith { deleted.optLong(it) }.orEmpty(),
             from = if (o.isNull("from")) null else o.optString("from").ifBlank { null },
         )

@@ -13,8 +13,8 @@ data class Moment(
     val title: String,
     val date: LocalDate,
     val note: String = "",
-    /** Pfad zum Foto im App-Speicher (files/moments/), null = kein Foto */
-    val photoPath: String? = null,
+    /** Pfade zu den Fotos im App-Speicher (files/moments/), das erste ist das Titelbild */
+    val photos: List<String> = emptyList(),
     /** Am Jahrestag eine Mitteilung schicken */
     val yearlyReminder: Boolean = true,
     /** Gehört zu dieser Beziehung, null = zu allen */
@@ -23,7 +23,13 @@ data class Moment(
     val updatedAt: Long = 0,
     /** Wer den Moment angelegt hat (ID einer [Person]), null = unbekannt */
     val addedBy: String? = null,
-)
+) {
+    /** Titelbild für Zeitleiste, Teilen-Bild und Rückblick, null = kein Foto */
+    val photoPath: String? get() = photos.firstOrNull()
+
+    /** Wendet [f] auf jeden Fotopfad an; null fällt weg, doppelte Pfade auch */
+    fun mapPhotos(f: (String) -> String?): Moment = copy(photos = photos.mapNotNull(f).distinct())
+}
 
 object MomentCodec {
     fun encode(moments: List<Moment>): String = JSONArray().apply {
@@ -34,7 +40,9 @@ object MomentCodec {
                     .put("title", m.title)
                     .put("date", m.date.toEpochDay())
                     .put("note", m.note)
+                    // "photo" für ältere Versionen, die nur ein Foto kennen
                     .put("photo", m.photoPath ?: JSONObject.NULL)
+                    .put("photos", JSONArray().apply { m.photos.forEach { put(it) } })
                     .put("remind", m.yearlyReminder)
                     .put("rel", m.relationshipId ?: JSONObject.NULL)
                     .put("updated", m.updatedAt)
@@ -55,7 +63,7 @@ object MomentCodec {
                     title = o.getString("title"),
                     date = LocalDate.ofEpochDay(o.getLong("date")),
                     note = o.optString("note", ""),
-                    photoPath = if (o.isNull("photo")) null else o.optString("photo").ifBlank { null },
+                    photos = decodePhotos(o),
                     yearlyReminder = o.optBoolean("remind", true),
                     relationshipId = if (o.isNull("rel")) null else o.optString("rel").ifBlank { null },
                     updatedAt = o.optLong("updated", 0),
@@ -63,6 +71,13 @@ object MomentCodec {
                 )
             }.getOrNull()
         }
+    }
+
+    /** Liest "photos"; Daten aus älteren Versionen haben nur ein Foto unter "photo" */
+    private fun decodePhotos(o: JSONObject): List<String> {
+        val array = o.optJSONArray("photos")
+        if (array != null) return (0 until array.length()).mapNotNull { array.optString(it).ifBlank { null } }.distinct()
+        return listOfNotNull(if (o.isNull("photo")) null else o.optString("photo").ifBlank { null })
     }
 }
 

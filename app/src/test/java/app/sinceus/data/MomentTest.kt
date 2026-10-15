@@ -13,7 +13,7 @@ import java.time.LocalDate
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 class MomentTest {
-    private val firstDate = Moment("a", "Erstes Date", LocalDate.of(2024, 5, 10), "Kino", "/x/a.jpg", true)
+    private val firstDate = Moment("a", "Erstes Date", LocalDate.of(2024, 5, 10), "Kino", listOf("/x/a.jpg", "/x/b.jpg"), true)
     private val leap = Moment("b", "Schaltjahr", LocalDate.of(2024, 2, 29), yearlyReminder = true)
     private val quiet = Moment("c", "Ohne Erinnerung", LocalDate.of(2024, 5, 10), yearlyReminder = false)
 
@@ -21,6 +21,28 @@ class MomentTest {
     fun jsonRoundTrip() {
         val list = listOf(firstDate, leap, quiet)
         assertEquals(list, MomentCodec.decode(MomentCodec.encode(list)))
+    }
+
+    @Test
+    fun firstPhotoIsCover() {
+        assertEquals("/x/a.jpg", firstDate.photoPath)
+        assertNull(leap.photoPath)
+    }
+
+    @Test
+    fun oldJsonWithOnePhotoStillWorks() {
+        val old = """[{"id":"a","title":"Alt","date":19000,"photo":"/x/alt.jpg"},{"id":"b","title":"Ohne","date":19000,"photo":null}]"""
+        val moments = MomentCodec.decode(old)
+        assertEquals(listOf("/x/alt.jpg"), moments[0].photos)
+        assertEquals(emptyList<String>(), moments[1].photos)
+    }
+
+    @Test
+    fun newJsonKeepsCoverForOlderVersions() {
+        // Ältere Versionen lesen nur "photo" und sehen so wenigstens das Titelbild
+        val json = org.json.JSONArray(MomentCodec.encode(listOf(firstDate))).getJSONObject(0)
+        assertEquals("/x/a.jpg", json.getString("photo"))
+        assertEquals(2, json.getJSONArray("photos").length())
     }
 
     @Test

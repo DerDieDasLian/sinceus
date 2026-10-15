@@ -86,7 +86,7 @@ class SyncTest {
             people = listOf(Person("a", "Alex"), Person("b", "Sam", "they/them")),
             relationships = listOf(Relationship("r", listOf("a", "b"), LocalDate.of(2025, 3, 15))),
             moments = listOf(
-                Moment("m1", "Erstes Date", LocalDate.of(2025, 3, 15), photoPath = "/data/x/moments/m1.jpg", updatedAt = 5, addedBy = "a"),
+                Moment("m1", "Erstes Date", LocalDate.of(2025, 3, 15), photos = listOf("/data/x/moments/m1.jpg", "/data/x/moments/m1_2.jpg"), updatedAt = 5, addedBy = "a"),
             ),
             deleted = mapOf("old" to 42L),
             from = "b",
@@ -94,8 +94,8 @@ class SyncTest {
         val back = SyncCodec.decode(SyncCodec.encode(data))
         assertEquals(data.people, back.people)
         assertEquals(data.relationships, back.relationships)
-        // Nur der Dateiname des Fotos reist mit
-        assertEquals(data.moments[0].copy(photoPath = "m1.jpg"), back.moments[0])
+        // Nur die Dateinamen der Fotos reisen mit
+        assertEquals(data.moments[0].copy(photos = listOf("m1.jpg", "m1_2.jpg")), back.moments[0])
         assertEquals(data.deleted, back.deleted)
         assertEquals("b", back.from)
         assertThrows(Exception::class.java) { SyncCodec.decode("""{"app":"other"}""") }
