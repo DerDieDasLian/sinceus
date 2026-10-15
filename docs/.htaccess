@@ -1,0 +1,9 @@
+# Nur für den Webserver bei All-Inkl (GitHub Pages ignoriert diese Datei)
+RewriteEngine On
+
+# Immer HTTPS und ohne www
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://sinceus.de%{REQUEST_URI} [L,R=301]
+
+ErrorDocument 404 /index.html

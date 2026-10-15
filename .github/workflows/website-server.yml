@@ -31,12 +31,12 @@ jobs:
           TARGET: ${{ vars.WEB_FTP_PATH || '/' }}
           LFTP_PASSWORD: ${{ secrets.WEB_FTP_PASSWORD }}
         run: |
-          # Alles hochladen, auf dem Server gelöschte Dateien ebenfalls löschen (.htaccess bleibt)
+          # Alles hochladen, auf dem Server gelöschte Dateien ebenfalls löschen
           lftp -e "
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate true;
             open --env-password -u $USER $HOST;
-            mirror --reverse --delete --no-perms --verbose --exclude-glob .htaccess docs/ $TARGET;
+            mirror --reverse --delete --no-perms --verbose docs/ $TARGET;
             bye
           "
