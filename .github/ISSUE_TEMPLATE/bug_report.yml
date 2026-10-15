@@ -1,0 +1,59 @@
+name: Bug report
+description: Something in the app doesn't work as expected.
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this! Please don't share private photos or personal data here.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, and what went wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Tap ...
+        3. See ...
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: You can find it at the bottom of the settings.
+      placeholder: e.g. 2.12.5
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Where did you install the app from?
+      options:
+        - F-Droid
+        - GitHub
+        - Google Play
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Phone and Android version
+      placeholder: e.g. Pixel 8, Android 15
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Optional, you can drag images in here.

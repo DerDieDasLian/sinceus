@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest an idea for Since Us.
+title: "Idea: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your idea! Since Us is made for couples (poly ones too), so ideas that fit that focus have the best chance.
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: What would you like the app to do?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it help?
+      description: What would it make easier or nicer for you?
+    validations:
+      required: true
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else?
+      description: Optional, for example sketches or examples from other apps.

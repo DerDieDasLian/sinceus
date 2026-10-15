@@ -1,0 +1,36 @@
+name: Accessibility problem
+description: Something is hard or impossible to use, for example with a screen reader or large text.
+title: "Accessibility: "
+labels: ["accessibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you! Since Us should work for everyone, so these reports are important to me.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is hard to use?
+      description: Where in the app, and what happens?
+    validations:
+      required: true
+  - type: checkboxes
+    id: tools
+    attributes:
+      label: What do you use?
+      options:
+        - label: Screen reader (e.g. TalkBack)
+        - label: Large font or display size
+        - label: High contrast or color settings
+        - label: Switch access or keyboard
+        - label: Something else
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      placeholder: e.g. 2.12.5
+  - type: input
+    id: device
+    attributes:
+      label: Phone and Android version
+      placeholder: e.g. Pixel 8, Android 15
