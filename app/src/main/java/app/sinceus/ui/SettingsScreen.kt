@@ -1495,7 +1495,7 @@ private fun remindLabel(days: Int): Int = when (days) {
 
 /** Seiten der Website, auf Deutsch oder Englisch passend zur App-Sprache */
 private object Web {
-    private const val BASE = "https://derdiedaslian.github.io/sinceus/"
+    private const val BASE = "https://sinceus.de/"
 
     fun page(name: String, context: android.content.Context): String {
         val de = context.resources.configuration.locales[0].language == "de"

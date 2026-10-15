@@ -63,7 +63,7 @@ Kotlin, Jetpack Compose (Material 3), Glance widgets, DataStore, Coil. Minimum A
 
 ## Website
 
-https://derdiedaslian.github.io/sinceus/ (privacy policy: [English](docs/privacy-en.html), [Deutsch](docs/privacy-de.html))
+https://sinceus.de/ (privacy policy: [English](docs/privacy-en.html), [Deutsch](docs/privacy-de.html))
 
 ## How this app was made
 
