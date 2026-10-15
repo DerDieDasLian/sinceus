@@ -11,6 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Erinnert daran, die Änderungsnotizen für das nächste Release zu schreiben
+      - name: Release notes for next version
+        run: |
+          last_tag=$(git describe --tags --abbrev=0 --match 'v[0-9]*' 2>/dev/null || true)
+          if [ -n "$last_tag" ] && ! git diff --quiet "$last_tag" HEAD -- app/ ':!app/src/test'; then
+            next=$(( $(grep -oP 'versionCode = \K[0-9]+' app/build.gradle.kts) + 1 ))
+            .github/scripts/check-release.sh "$next" 2>&1 | sed 's/^::error/::warning/' || true
+          fi
+
       - uses: actions/setup-java@v6
         with:
           distribution: temurin

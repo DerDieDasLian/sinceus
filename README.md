@@ -33,7 +33,7 @@ Since Us uses Android Jetpack (AndroidX, Jetpack Compose, Material 3, Glance, Da
 | Where | Updates |
 | --- | --- |
 | [GitHub Releases](https://github.com/DerDieDasLian/sinceus/releases) | The app checks GitHub once a day, notifies you and installs the update with one tap (can be turned off). Also works with [Obtainium](https://github.com/ImranR98/Obtainium). |
-| F-Droid | Through F-Droid (planned) |
+| F-Droid | [Through F-Droid](https://f-droid.org/packages/app.sinceus/) |
 | Google Play | Through the Play Store (planned) |
 
 The three versions are signed differently, so switching between them requires uninstalling first.
@@ -53,7 +53,7 @@ Tests, screenshots and store graphics: `./gradlew testGithubDebugUnitTest` (outp
 ## Releasing
 
 - **Signing:** create `keystore.properties` (not committed) with `storeFile`, `storePassword`, `keyAlias`, `keyPassword`. Without it, release builds stay unsigned (this is what F-Droid expects). In GitHub Actions the secrets `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS` and `UPLOAD_KEY_PASSWORD` are used.
-- **GitHub releases are automatic:** every push to the default branch that changes `app/` bumps the version (patch by default, `[minor]` or `[major]` in a commit message for bigger steps), commits it back, tags `v<versionName>` and publishes the signed APK. A manually raised `versionName` is respected. Release notes come from `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` and are generated from commit messages if missing. Pull before working, since the release workflow pushes version commits.
+- **Releases are made on purpose:** changes collect on the default branch until a release is started by hand (Actions > Release > Run workflow, type `auto`, `patch`, `minor` or `major`; `auto` honors `[minor]`/`[major]` in commit messages). The workflow bumps the version, checks that `fastlane/metadata/android/{de-DE,en-US}/changelogs/<versionCode>.txt` exist (at most 500 characters, shown in the app, on F-Droid and on GitHub), runs the tests, builds all variants, then commits the version, tags `v<versionName>` and publishes the signed APK. F-Droid builds every new tag. Every app change adds a line to the notes for the next versionCode; the Build workflow warns while they are missing. Pull before working, since the release workflow pushes version commits.
 - **F-Droid** builds the `fdroid` variant from source; store texts and images are in `fastlane/`, a metadata template is in `fdroid/`.
 - **Website:** `docs/` (landing page and privacy policy) is published via GitHub Pages and can be copied to any static web server.
 

@@ -65,6 +65,7 @@ img { max-width: 100%; display: block; }
 .btn-ghost { color: #fff; border: 1px solid rgba(255, 255, 255, .45); }
 .btn:hover { transform: translateY(-2px); }
 .soon { margin-top: 18px; font-size: .9rem; color: rgba(255, 255, 255, .7); }
+.soon a { color: #fff; }
 
 .phones { position: relative; height: 560px; }
 .phone { position: absolute; width: 250px; border-radius: 36px; padding: 8px; background: #0e0708;

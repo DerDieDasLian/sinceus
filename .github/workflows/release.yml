@@ -1,14 +1,21 @@
 name: Release
 
-# Erstellt automatisch ein GitHub-Release, sobald auf dem Hauptbranch App-Code geändert wird.
-# Die Version wird dabei automatisch erhöht (siehe .github/scripts/next-version.sh):
-# normal die letzte Stelle, mit [minor] oder [major] in einer Commit-Nachricht die entsprechende.
+# Erstellt ein neues Release, aber nur auf Knopfdruck (Actions > Release > Run workflow).
+# Änderungen auf main sammeln sich so lange, bis bewusst eine neue Version veröffentlicht wird.
+# Jeder Tag wird auch von F-Droid automatisch gebaut, deshalb lieber wenige, gut geprüfte Releases.
+#
+# Ablauf (siehe .github/scripts/next-version.sh und check-release.sh):
+# 1. Version bestimmen (Art: auto, patch, minor oder major)
+# 2. Prüfen: Änderungsnotizen für die neue Version in Deutsch und Englisch vorhanden und kurz genug
+# 3. Tests und alle Varianten bauen, erst danach Version committen und Release mit Tag erstellen
 on:
-  push:
-    branches: ["**"]
-    paths: ["app/**", "!app/src/test/**"]
   workflow_dispatch:
     inputs:
+      bump:
+        description: "Art der neuen Version (auto: [minor]/[major] aus den Commit-Nachrichten, sonst patch)"
+        type: choice
+        options: [auto, patch, minor, major]
+        default: auto
       force:
         description: "Auch ohne App-Änderung ein neues Release erstellen"
         type: boolean
@@ -34,22 +41,18 @@ jobs:
         id: version
         env:
           FORCE: ${{ inputs.force }}
+          BUMP: ${{ inputs.bump }}
         run: |
           .github/scripts/next-version.sh | tee -a "$GITHUB_OUTPUT"
           echo "tag=v$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)" >> "$GITHUB_OUTPUT"
 
-      - name: Commit new version
-        id: commit
+      - name: Nothing to release
+        if: steps.version.outputs.release != 'true'
+        run: echo "::notice::Seit dem letzten Release hat sich an der App nichts geändert, kein neues Release."
+
+      - name: Check release notes
         if: steps.version.outputs.release == 'true'
-        run: |
-          if [ "${{ steps.version.outputs.changed }}" = "true" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add app/build.gradle.kts fastlane/metadata/android
-            git commit -m "Version ${{ steps.version.outputs.version }}"
-            git push origin HEAD:${{ github.ref_name }}
-          fi
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: .github/scripts/check-release.sh "${{ steps.version.outputs.code }}"
 
       - uses: actions/setup-java@v6
         if: steps.version.outputs.release == 'true'
@@ -82,6 +85,20 @@ jobs:
       - name: Build
         if: steps.version.outputs.release == 'true'
         run: ./gradlew testGithubDebugUnitTest assembleGithubRelease assembleFdroidRelease bundlePlayRelease
+
+      # Erst wenn Tests und Build durchgelaufen sind, wird die neue Version festgeschrieben
+      - name: Commit new version
+        id: commit
+        if: steps.version.outputs.release == 'true'
+        run: |
+          if [ "${{ steps.version.outputs.changed }}" = "true" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add app/build.gradle.kts
+            git commit -m "Version ${{ steps.version.outputs.version }}"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Prepare files
         if: steps.version.outputs.release == 'true'

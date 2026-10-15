@@ -4,16 +4,17 @@
 # Regeln:
 # - Keine Änderung unter app/ (ohne Tests) seit dem letzten Release-Tag: kein Release (release=false).
 # - versionName in der Datei wurde von Hand über den letzten Tag erhöht: diese Version nehmen.
-# - Sonst automatisch erhöhen: [major] oder [minor] in einer Commit-Nachricht seit dem letzten
-#   Tag erhöht die entsprechende Stelle, ansonsten die letzte Stelle (Patch).
+# - Sonst nach BUMP erhöhen (patch, minor, major). Bei BUMP=auto (Standard) erhöht [major] oder
+#   [minor] in einer Commit-Nachricht seit dem letzten Tag die entsprechende Stelle, sonst Patch.
 # - versionCode ist immer mindestens eins höher als beim letzten Release.
-# - Fehlende Änderungsnotizen werden aus den Commit-Nachrichten erzeugt.
+# - Die Änderungsnotizen schreibt man selbst, check-release.sh prüft sie.
 #
 # Ausgabe (für $GITHUB_OUTPUT): release, version, code, changed
 set -euo pipefail
 
 FILE=app/build.gradle.kts
 FORCE="${FORCE:-false}"
+BUMP="${BUMP:-auto}"
 
 file_name=$(grep -oP 'versionName = "\K[^"]+' "$FILE")
 file_code=$(grep -oP 'versionCode = \K[0-9]+' "$FILE")
@@ -40,6 +41,9 @@ else
   IFS=. read -r major minor patch <<<"$last_name"
   minor=${minor:-0}; patch=${patch:-0}
   messages=$(git log --format='%s%n%b' "$last_tag"..HEAD)
+  if [ "$BUMP" != "auto" ]; then
+    messages="[$BUMP]"
+  fi
   if grep -qi '\[major\]' <<<"$messages"; then
     name="$((major + 1)).0.0"
   elif grep -qi '\[minor\]' <<<"$messages"; then
@@ -55,17 +59,5 @@ if [ "$name" != "$file_name" ] || [ "$code" != "$file_code" ]; then
   sed -i "s/versionName = \"$file_name\"/versionName = \"$name\"/; s/versionCode = $file_code/versionCode = $code/" "$FILE"
   changed=true
 fi
-
-# Änderungsnotiz erzeugen, falls keine von Hand geschrieben wurde (F-Droid erlaubt max. 500 Zeichen)
-for lang in en-US de-DE; do
-  notes="fastlane/metadata/android/$lang/changelogs/$code.txt"
-  if [ -d "fastlane/metadata/android/$lang" ] && [ ! -f "$notes" ]; then
-    mkdir -p "$(dirname "$notes")"
-    git log --format='• %s' --no-merges "$last_tag"..HEAD -- app/ ':!app/src/test' \
-      | sed -E 's/ *\[(major|minor)\]//I' | head -c 480 > "$notes"
-    echo >> "$notes"
-    changed=true
-  fi
-done
 
 echo "release=true"; echo "version=$name"; echo "code=$code"; echo "changed=$changed"
