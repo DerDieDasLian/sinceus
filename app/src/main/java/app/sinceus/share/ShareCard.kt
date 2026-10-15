@@ -1,5 +1,6 @@
 package app.sinceus.share
 
+import app.sinceus.ui.sinceLong
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
@@ -86,7 +87,7 @@ object ShareCard {
         var y = h - MARGIN
 
         // Von unten nach oben: Datum, Zeitspanne, Tage, Namen
-        val since = context.getString(R.string.together_since_long, Texts.longDate(s.startDate))
+        val since = context.getString(s.relationship.kind.sinceLong, Texts.longDate(s.startDate))
         canvas.drawText(since, MARGIN, y, paint(38f, sans, soft))
         y -= 64f
 

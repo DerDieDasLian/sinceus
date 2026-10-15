@@ -301,7 +301,7 @@ private fun RelationshipCard(settings: LoveSettings, r: Relationship, color: Col
                 Text(
                     listOfNotNull(
                         r.label.ifBlank { null },
-                        stringResource(R.string.together_since_long, Texts.mediumDate(r.startDate)),
+                        stringResource(r.kind.sinceLong, Texts.mediumDate(r.startDate)),
                     ).joinToString(" · "),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
