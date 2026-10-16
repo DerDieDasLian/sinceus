@@ -34,11 +34,21 @@ Since Us uses Android Jetpack (AndroidX, Jetpack Compose, Material 3, Glance, Da
 | --- | --- |
 | [GitHub Releases](https://github.com/DerDieDasLian/sinceus/releases) | The app checks GitHub once a day, notifies you and installs the update with one tap (can be turned off). Also works with [Obtainium](https://github.com/ImranR98/Obtainium). |
 | F-Droid | [Through F-Droid](https://f-droid.org/packages/app.sinceus/) |
-| Google Play | Through the Play Store (planned) |
+| Google Play | Through the Play Store (closed test, [testers wanted](#help-test-on-google-play)) |
 
 The three versions are signed differently, so switching between them requires uninstalling first.
 
 Tip: if notifications arrive late, set *Settings → Apps → Since Us → Battery* to "Unrestricted".
+
+## Help test on Google Play
+
+Before Since Us can go live on Google Play, Google wants the app tested for 14 days by at least 12 people. Want to help? You need an Android phone and a Google account.
+
+1. Write to [contact@sinceus.de](mailto:contact@sinceus.de?subject=Since%20Us%20Google%20Play%20test) with the Google address (Gmail) you use on your phone.
+2. You get a link to join the test and install Since Us from Google Play.
+3. Keep the app installed for 14 days and open it now and then. Feedback is welcome, but not required.
+
+Your address is only used to add you to the test.
 
 ## Build variants
 
