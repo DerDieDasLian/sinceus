@@ -362,6 +362,7 @@
     <string name="celebrate_show_summary">Etwas Konfetti an Jahrestagen und runden Tagen</string>
     <string name="facts_title">Wusstet ihr schon?</string>
     <string name="facts_next">Nächste Zahl zeigen</string>
+    <string name="facts_previous">Vorherige Zahl zeigen</string>
     <string name="fact_weekends_sub">habt ihr schon zusammen verbracht</string>
     <string name="fact_full_moons_sub">gab es, seit ihr zusammen seid</string>
     <string name="fact_christmas_sub">habt ihr schon zusammen gefeiert</string>

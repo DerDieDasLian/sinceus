@@ -3,3 +3,4 @@
 • Existing photos, backups and syncing keep working.
 • Relationships can be love, friendship or family, with their own texts and symbol.
 • A relationship can have an earlier phase, e.g. first friends and then a couple.
+• Swipe through "Did you know?" facts.

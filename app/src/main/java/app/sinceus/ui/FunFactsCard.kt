@@ -3,9 +3,12 @@ package app.sinceus.ui
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,28 +30,61 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.sinceus.R
 import app.sinceus.data.FunFacts
 import app.sinceus.data.formatNumber
 
-/** Karte mit einer lustigen Zahl; Antippen zeigt die nächste */
+/** Karte mit einer lustigen Zahl; Wischen nach links/rechts oder Antippen blättert weiter */
 @Composable
 internal fun FunFactsCard(facts: List<FunFacts.Fact>) {
     if (facts.isEmpty()) return
     var index by rememberSaveable { mutableIntStateOf(0) }
-    val fact = facts[index % facts.size]
+    // Richtung der letzten Bewegung: 1 = weiter, -1 = zurück (für die Schiebe-Animation)
+    var direction by rememberSaveable { mutableIntStateOf(1) }
+    val count = facts.size
+    val current = index % count
+    val next = { direction = 1; index = (index % count + 1) % count }
+    val previous = { direction = -1; index = (index % count - 1 + count) % count }
+    val threshold = with(LocalDensity.current) { 48.dp.toPx() }
+    val previousLabel = stringResource(R.string.facts_previous)
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .clickable(role = Role.Button, onClickLabel = stringResource(R.string.facts_next)) { index = (index + 1) % facts.size },
+            .pointerInput(count) {
+                if (count < 2) return@pointerInput
+                var dragged = 0f
+                detectHorizontalDragGestures(
+                    onDragStart = { dragged = 0f },
+                    onDragEnd = {
+                        when {
+                            dragged <= -threshold -> next()
+                            dragged >= threshold -> previous()
+                        }
+                    },
+                ) { change, amount ->
+                    change.consume()
+                    dragged += amount
+                }
+            }
+            .semantics {
+                if (count > 1) {
+                    customActions = listOf(CustomAccessibilityAction(previousLabel) { previous(); true })
+                }
+            }
+            .clickable(role = Role.Button, onClickLabel = stringResource(R.string.facts_next)) { next() },
     ) {
         Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
             Text(
@@ -57,10 +93,15 @@ internal fun FunFactsCard(facts: List<FunFacts.Fact>) {
                 color = MaterialTheme.colorScheme.primary,
             )
             AnimatedContent(
-                targetState = fact,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
+                targetState = current,
+                transitionSpec = {
+                    val d = direction
+                    (slideInHorizontally { it * d / 3 } + fadeIn()) togetherWith
+                        (slideOutHorizontally { -it * d / 3 } + fadeOut())
+                },
                 label = "fact",
-            ) { f ->
+            ) { i ->
+                val f = facts[i % facts.size]
                 Column(Modifier.padding(top = 6.dp)) {
                     Text(
                         pluralStringResource(f.kind.text(), f.value.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(), formatNumber(f.value)),
@@ -82,7 +123,7 @@ internal fun FunFactsCard(facts: List<FunFacts.Fact>) {
                     modifier = Modifier.padding(top = 12.dp),
                 ) {
                     facts.indices.forEach { i ->
-                        val active = i == index % facts.size
+                        val active = i == current
                         Box(
                             Modifier
                                 .size(if (active) 8.dp else 6.dp)

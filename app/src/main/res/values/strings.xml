@@ -366,6 +366,7 @@
     <string name="celebrate_show_summary">A little confetti on anniversaries and round days</string>
     <string name="facts_title">Did you know?</string>
     <string name="facts_next">Show the next number</string>
+    <string name="facts_previous">Show the previous number</string>
     <string name="fact_weekends_sub">you have spent together</string>
     <string name="fact_full_moons_sub">since you got together</string>
     <string name="fact_christmas_sub">you have celebrated together</string>
