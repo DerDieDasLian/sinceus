@@ -64,6 +64,16 @@ android {
             // Ohne keystore.properties bleibt die APK unsigniert (so erwartet es F-Droid, das selbst signiert)
             signingConfig = signingConfigs.findByName("release")
         }
+        // Testversion vor einem Release: eigene App "Since Us Test" mit eigenem Symbol und eigenen Daten,
+        // die neben der richtigen App installiert wird. Gebaut wie ein Release (inkl. R8), damit Fehler
+        // durch das Verkleinern beim Testen auffallen. Ohne Schlüssel mit dem Debug-Schlüssel signiert.
+        create("beta") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".test"
+            versionNameSuffix = "-test"
+            matchingFallbacks += "release"
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
+        }
     }
 
     // Keine verschlüsselten Abhängigkeits-Infos in der APK (F-Droid kann sie nicht prüfen); im Play-Bundle bleiben sie
