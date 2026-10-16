@@ -657,14 +657,6 @@ fun SettingsScreen(
             },
             confirmButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.close)) } },
         )
-        "before" -> DateDialog(
-            draft.beforeStart ?: draft.startDate.minusYears(1),
-            onDismiss = { pick = null },
-            title = R.string.relationship_before_since,
-        ) {
-            draft = draft.copy(beforeStart = it)
-            pick = null
-        }
         "time" -> TimeDialog(
             stringResource(R.string.notify_time_title),
             LocalTime.of(settings.notifyHour, settings.notifyMinute),
