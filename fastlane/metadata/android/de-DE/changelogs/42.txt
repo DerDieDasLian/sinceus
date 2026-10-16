@@ -1,3 +1,4 @@
 • Momente können jetzt beliebig viele Fotos haben. In der Zeitleiste wischst du durch die Fotos.
 • Das erste Foto ist das Titelbild. Tippe beim Bearbeiten auf ein anderes Foto, um es zum Titelbild zu machen.
 • Bisherige Fotos, Sicherungen und der Abgleich zwischen zwei Handys funktionieren weiter.
+• Beziehungen können jetzt Liebe, Freundschaft oder Familie sein, mit eigenen Texten und eigenem Symbol. Einstellbar unter Menschen & Beziehungen.

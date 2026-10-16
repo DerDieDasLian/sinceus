@@ -32,8 +32,8 @@ object FunFacts {
 
     private val SEASON_STARTS = listOf(MonthDay.of(3, 20), MonthDay.of(6, 21), MonthDay.of(9, 22), MonthDay.of(12, 21))
 
-    /** Alle Zahlen zwischen [start] und [today]; leer, wenn ihr noch nicht zusammen seid */
-    fun all(start: LocalDate, today: LocalDate): List<Fact> {
+    /** Alle Zahlen zwischen [start] und [today]; leer, wenn ihr noch nicht zusammen seid. Valentinstage nur bei [love] */
+    fun all(start: LocalDate, today: LocalDate, love: Boolean = true): List<Fact> {
         if (!today.isAfter(start)) return emptyList()
         val days = ChronoUnit.DAYS.between(start, today)
         return listOf(
@@ -49,7 +49,7 @@ object FunFacts {
             Fact(Kind.EARTH_KM, days * EARTH_KM_PER_DAY),
             Fact(Kind.HEARTBEATS, days * 24 * 60 * BEATS_PER_MINUTE),
             Fact(Kind.BREATHS, days * 24 * 60 * BREATHS_PER_MINUTE),
-        ).filter { it.value > 0 }
+        ).filter { it.value > 0 && (love || it.kind != Kind.VALENTINES) }
     }
 
     /** Tage nach [start] bis einschließlich [today], die [match] erfüllen */

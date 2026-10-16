@@ -286,6 +286,14 @@
     <string name="relationship_members">Who is part of it?</string>
     <string name="relationship_label">Name (optional)</string>
     <string name="relationship_label_hint">e.g. nesting partner</string>
+    <string name="relationship_kind">Kind of relationship</string>
+    <string name="kind_love">Love</string>
+    <string name="kind_friends">Friendship</string>
+    <string name="kind_family">Family</string>
+    <string name="friends_for">Friends for</string>
+    <string name="family_for">Family for</string>
+    <string name="friends_since_long">Friends since %1$s</string>
+    <string name="family_since_long">Family since %1$s</string>
     <string name="relationship_notify">Notifications for special days</string>
     <string name="relationship_widget">Show in widget</string>
     <string name="discreet">Discreet mode</string>

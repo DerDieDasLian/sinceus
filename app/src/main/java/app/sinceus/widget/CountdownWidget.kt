@@ -85,7 +85,7 @@ private fun CountdownContent(settings: LoveSettings) {
     ) {
         Box(modifier = GlanceModifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
             Image(
-                ImageProvider(R.drawable.widget_heart_deco),
+                ImageProvider(settings.relationship.kind.widgetDeco),
                 contentDescription = null,
                 modifier = GlanceModifier.size(if (flat) 70.dp else if (wide) 110.dp else 84.dp),
             )

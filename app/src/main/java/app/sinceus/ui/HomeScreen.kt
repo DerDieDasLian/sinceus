@@ -1,5 +1,6 @@
 package app.sinceus.ui
 
+import app.sinceus.data.RelationKind
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -242,6 +243,7 @@ private fun ModeSwitch(selected: Int, pages: List<HomePage>, onSelect: (Int) -> 
 @Composable
 private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String) -> Unit) {
     val start = settings.startDate
+    val kind = settings.relationship.kind
     val together = LoveMath.together(start, today)
     val future = start.isAfter(today)
     // Jahrestage der Momente erscheinen mit, solange die Momente nicht ausgeblendet sind
@@ -277,7 +279,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
         ) {
             if (together.totalDays == 0L) {
                 CounterCard(
-                    stringResource(R.string.together_for),
+                    stringResource(kind.forLabel),
                     stringResource(R.string.today_word),
                     "",
                     stringResource(R.string.beginning),
@@ -285,7 +287,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
                 )
             } else {
                 CounterCard(
-                    label = stringResource(if (future) R.string.starts_in else R.string.together_for),
+                    label = stringResource(if (future) R.string.starts_in else kind.forLabel),
                     big = formatNumber(together.totalDays),
                     unit = pluralStringResource(R.plurals.unit_days_dative, together.totalDays.toInt()),
                     sub = Texts.period(context, together.period, dative = true),
@@ -307,13 +309,13 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
                     StatTile(Modifier.weight(1f), formatNumber(together.totalWeeks), stringResource(R.string.stat_weeks))
                     StatTile(Modifier.weight(1f), formatNumber(together.totalDays * 24), stringResource(R.string.stat_hours))
                 }
-                if (settings.showFacts) FunFactsCard(remember(start, today) { FunFacts.all(start, today) })
+                if (settings.showFacts) FunFactsCard(remember(start, today, kind) { FunFacts.all(start, today, love = kind == RelationKind.LOVE) })
             }
 
             if (upcoming.isNotEmpty()) UpcomingCard(upcoming, today)
 
             Text(
-                stringResource(R.string.together_since_long, Texts.longDate(start)),
+                stringResource(kind.sinceLong, Texts.longDate(start)),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -352,24 +354,25 @@ fun NamesOverlay(settings: LoveSettings, modifier: Modifier = Modifier) {
         names,
         if (names.size > 2) MaterialTheme.typography.displaySmall else MaterialTheme.typography.displayMedium,
         heart = if (names.size > 2) 24.dp else 30.dp,
+        kind = if (settings.showAll) RelationKind.LOVE else settings.relationship.kind,
         modifier = modifier.padding(start = 24.dp, end = 24.dp, bottom = 48.dp),
     )
 }
 
-/** Namen mit schlagendem Herz dazwischen; bei mehr als zwei Menschen mit Zeilenumbruch */
+/** Namen mit schlagendem Herz dazwischen (bei Freundschaft und Familie ein anderes Symbol); bei mehr als zwei Menschen mit Zeilenumbruch */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun NamesRow(names: List<String>, style: TextStyle, heart: Dp, modifier: Modifier = Modifier) {
+fun NamesRow(names: List<String>, style: TextStyle, heart: Dp, modifier: Modifier = Modifier, kind: RelationKind = RelationKind.LOVE) {
     FlowRow(modifier, itemVerticalAlignment = Alignment.CenterVertically) {
         names.forEachIndexed { i, name ->
-            if (i > 0) BeatingHeart(Modifier.padding(horizontal = heart * 0.4f), size = heart)
+            if (i > 0) BeatingHeart(Modifier.padding(horizontal = heart * 0.4f), size = heart, icon = kind.icon)
             Text(name, style = style, color = Color.White, maxLines = 1)
         }
     }
 }
 
 @Composable
-fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp) {
+fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp, icon: ImageVector = Icons.Rounded.Favorite) {
     val beat by rememberInfiniteTransition(label = "heart").animateFloat(
         initialValue = 1f,
         targetValue = 1.18f,
@@ -378,7 +381,7 @@ fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp) {
     )
     val pride = LocalPrideMonth.current
     Icon(
-        Icons.Rounded.Favorite,
+        icon,
         contentDescription = null,
         tint = if (pride) Color.White else Color(0xFFFF5C77),
         modifier = modifier

@@ -1,5 +1,6 @@
 package app.sinceus.ui
 
+import app.sinceus.data.RelationKind
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -301,12 +302,12 @@ fun SettingsScreen(
                                             listOfNotNull(
                                                 r.label.ifBlank { null },
                                                 if (r.distance) stringResource(R.string.distance_mode) else null,
-                                                stringResource(R.string.together_since_long, Texts.mediumDate(r.startDate)),
+                                                stringResource(r.kind.sinceLong, Texts.mediumDate(r.startDate)),
                                             ).joinToString(" · "),
                                             color = MaterialTheme.colorScheme.primary,
                                         )
                                     },
-                                    leadingContent = { Icon(Icons.Rounded.Favorite, null) },
+                                    leadingContent = { Icon(r.kind.icon, null) },
                                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                     modifier = Modifier.clickable { dialog = "rel:${r.id}" },
                                 )
@@ -1030,6 +1031,17 @@ private fun RelationshipDialog(
                                 draft = draft.copy(members = if (selected) draft.members - p.id else draft.members + p.id)
                             },
                             label = { Text(p.name) },
+                        )
+                    }
+                }
+                Text(stringResource(R.string.relationship_kind), style = MaterialTheme.typography.titleSmall)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    RelationKind.entries.forEach { k ->
+                        FilterChip(
+                            selected = draft.kind == k,
+                            onClick = { draft = draft.copy(kind = k) },
+                            label = { Text(stringResource(k.title)) },
+                            leadingIcon = { Icon(k.icon, null, Modifier.size(18.dp)) },
                         )
                     }
                 }
