@@ -314,8 +314,12 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
 
             if (upcoming.isNotEmpty()) UpcomingCard(upcoming, today)
 
+            val earlier = settings.relationship.earlier.takeUnless { settings.showAll }
             Text(
-                stringResource(kind.sinceLong, Texts.longDate(start)),
+                listOfNotNull(
+                    stringResource(kind.sinceLong, Texts.longDate(start)),
+                    earlier?.let { (k, d) -> stringResource(k.beforeLong, Texts.longDate(d)) },
+                ).joinToString("\n"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

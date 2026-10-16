@@ -291,6 +291,13 @@
     <string name="family_for">Ihr seid Familie seit</string>
     <string name="friends_since_long">Befreundet seit %1$s</string>
     <string name="family_since_long">Familie seit %1$s</string>
+    <string name="before_together_long">Davor zusammen seit %1$s</string>
+    <string name="before_friends_long">Davor befreundet seit %1$s</string>
+    <string name="before_family_long">Davor Familie seit %1$s</string>
+    <string name="relationship_before">Davor etwas anderes?</string>
+    <string name="relationship_before_summary">z. B. erst befreundet, dann ein Paar</string>
+    <string name="relationship_before_since">Seit dem</string>
+    <string name="relationship_before_invalid">Muss vor dem Startdatum liegen</string>
     <string name="relationship_notify">Mitteilungen zu besonderen Tagen</string>
     <string name="relationship_widget">Im Widget zeigen</string>
     <string name="discreet">Diskreter Modus</string>

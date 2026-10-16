@@ -294,6 +294,13 @@
     <string name="family_for">Family for</string>
     <string name="friends_since_long">Friends since %1$s</string>
     <string name="family_since_long">Family since %1$s</string>
+    <string name="before_together_long">Before that, together since %1$s</string>
+    <string name="before_friends_long">Before that, friends since %1$s</string>
+    <string name="before_family_long">Before that, family since %1$s</string>
+    <string name="relationship_before">Something else before?</string>
+    <string name="relationship_before_summary">e.g. first friends, then a couple</string>
+    <string name="relationship_before_since">Since</string>
+    <string name="relationship_before_invalid">Must be before the start date</string>
     <string name="relationship_notify">Notifications for special days</string>
     <string name="relationship_widget">Show in widget</string>
     <string name="discreet">Discreet mode</string>
