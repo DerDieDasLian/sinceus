@@ -36,6 +36,15 @@ val RelationKind.sinceLong: Int
         RelationKind.FAMILY -> R.string.family_since_long
     }
 
+/** „Before that, friends since %1$s“ für die frühere Phase einer Beziehung */
+@get:StringRes
+val RelationKind.beforeLong: Int
+    get() = when (this) {
+        RelationKind.LOVE -> R.string.before_together_long
+        RelationKind.FRIENDS -> R.string.before_friends_long
+        RelationKind.FAMILY -> R.string.before_family_long
+    }
+
 /** Symbol zwischen den Namen: Herz, Menschen oder Haus (wie im Widget) */
 val RelationKind.icon: ImageVector
     get() = when (this) {

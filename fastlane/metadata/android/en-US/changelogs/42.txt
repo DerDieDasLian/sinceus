@@ -1,4 +1,5 @@
 • Moments can now have as many photos as you like. Swipe through them in the timeline.
 • The first photo is the cover. While editing, tap another photo to make it the cover.
-• Existing photos, backups and syncing between two phones keep working.
-• Relationships can now be love, friendship or family, with their own texts and symbol. Set it under People & relationships.
+• Existing photos, backups and syncing keep working.
+• Relationships can be love, friendship or family, with their own texts and symbol.
+• A relationship can have an earlier phase, e.g. first friends and then a couple.
