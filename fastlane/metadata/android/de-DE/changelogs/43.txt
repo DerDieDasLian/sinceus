@@ -1,0 +1,1 @@
+• Technische Verbesserung, damit F-Droid die App wieder selbst nachbauen und prüfen kann.
