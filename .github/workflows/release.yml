@@ -86,7 +86,10 @@ jobs:
         if: steps.version.outputs.release == 'true'
         run: ./gradlew testGithubDebugUnitTest assembleGithubRelease assembleFdroidRelease bundlePlayRelease
 
-      # Erst wenn Tests und Build durchgelaufen sind, wird die neue Version festgeschrieben
+      # Erst wenn Tests und Build durchgelaufen sind, wird die neue Version festgeschrieben.
+      # Der Tag zeigt immer auf genau den Stand, der gebaut wurde (wichtig für F-Droid).
+      # Kam während des Builds etwas Neues auf main dazu, wird die Version per Merge übernommen
+      # statt den Push abzulehnen; die neuen Änderungen kommen dann ins nächste Release.
       - name: Commit new version
         id: commit
         if: steps.version.outputs.release == 'true'
@@ -96,9 +99,21 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add app/build.gradle.kts
             git commit -m "Version ${{ steps.version.outputs.version }}"
-            git push origin HEAD:${{ github.ref_name }}
           fi
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          if [ "${{ steps.version.outputs.changed }}" = "true" ]; then
+            branch="${{ github.ref_name }}"
+            for attempt in 1 2 3 4 5; do
+              git fetch origin "$branch"
+              if ! git merge-base --is-ancestor "origin/$branch" HEAD; then
+                git merge --no-edit -m "Version ${{ steps.version.outputs.version }} übernehmen" "origin/$branch"
+              fi
+              if git push origin "HEAD:$branch"; then exit 0; fi
+              sleep $((attempt * 5))
+            done
+            echo "::error::Version konnte nicht nach $branch gepusht werden" >&2
+            exit 1
+          fi
 
       - name: Prepare files
         if: steps.version.outputs.release == 'true'
