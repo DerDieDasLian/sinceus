@@ -136,3 +136,5 @@ jobs:
         with:
           name: play-bundle-${{ steps.version.outputs.tag }}
           path: app/build/outputs/bundle/playRelease/app-play-release.aab
+          # Reicht zum Hochladen in die Play Console, spart Actions-Speicher
+          retention-days: 30
