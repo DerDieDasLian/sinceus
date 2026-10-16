@@ -309,7 +309,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
                     StatTile(Modifier.weight(1f), formatNumber(together.totalWeeks), stringResource(R.string.stat_weeks))
                     StatTile(Modifier.weight(1f), formatNumber(together.totalDays * 24), stringResource(R.string.stat_hours))
                 }
-                if (settings.showFacts) FunFactsCard(remember(start, today) { FunFacts.all(start, today) })
+                if (settings.showFacts) FunFactsCard(remember(start, today, kind) { FunFacts.all(start, today, love = kind == RelationKind.LOVE) })
             }
 
             if (upcoming.isNotEmpty()) UpcomingCard(upcoming, today)

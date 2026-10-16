@@ -3,8 +3,8 @@ package app.sinceus.ui
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.Handshake
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.People
 import androidx.compose.ui.graphics.vector.ImageVector
 import app.sinceus.R
 import app.sinceus.data.RelationKind
@@ -36,10 +36,10 @@ val RelationKind.sinceLong: Int
         RelationKind.FAMILY -> R.string.family_since_long
     }
 
-/** Symbol zwischen den Namen: Herz, Handschlag oder Haus */
+/** Symbol zwischen den Namen: Herz, Menschen oder Haus (wie im Widget) */
 val RelationKind.icon: ImageVector
     get() = when (this) {
         RelationKind.LOVE -> Icons.Rounded.Favorite
-        RelationKind.FRIENDS -> Icons.Rounded.Handshake
+        RelationKind.FRIENDS -> Icons.Rounded.People
         RelationKind.FAMILY -> Icons.Rounded.Home
     }
