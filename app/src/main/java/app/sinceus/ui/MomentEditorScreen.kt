@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -185,7 +186,10 @@ fun MomentEditorScreen(
                         .clip(RoundedCornerShape(20.dp)),
                 )
                 if (photos.size > 1) {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.height(84.dp),
+                    ) {
                         itemsIndexed(photos, key = { _, item -> item }) { index, item ->
                             PhotoThumb(
                                 model = photoModel(item),
