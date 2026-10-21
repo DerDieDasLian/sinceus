@@ -1,0 +1,1 @@
+• Behoben: Die App stürzte ab, sobald ein Moment mehr als ein Foto hatte, und ließ sich danach nicht mehr öffnen. Deine Momente und Fotos sind nicht verloren, nach dem Update ist alles wieder da.
