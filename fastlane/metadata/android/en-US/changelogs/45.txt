@@ -1,0 +1,1 @@
+• Fewer permissions: "view network connections" and "run foreground service" are gone. Both only came in through a library used for the widgets and were never used.

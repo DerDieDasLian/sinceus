@@ -7,6 +7,14 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- Für die App-Sperre (Fingerabdruck, Gesicht oder PIN), ohne sie stürzt die Abfrage ab -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <!-- Bringt WorkManager (über Glance, für die Widgets) mit. Die App stellt nie Aufgaben mit
+         Netzwerk-Bedingung oder als Vordergrunddienst ein, also brauchen wir beides nicht. -->
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE"
+        tools:node="remove" />
 
     <application
         android:name=".LoveApp"
@@ -69,6 +77,11 @@
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
             tools:replace="android:screenOrientation" />
+
+        <!-- Vordergrunddienst von WorkManager, wird nie gestartet (siehe oben) -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            tools:node="remove" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
