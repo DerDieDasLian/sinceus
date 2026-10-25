@@ -1,4 +1,1 @@
-• Schlagwörter für Momente, z. B. Urlaub oder Date. In der Zeitleiste filterst du mit einem Tipp danach.
-• Momente können einen Ort haben. Antippen öffnet ihn in deiner Karten-App.
-• Neues Widget Erinnerung: jeden Tag ein anderer Moment aus eurer gemeinsamen Zeit, mit Foto.
-• Fotobuch: Die angezeigten Momente lassen sich als PDF speichern, zum Ausdrucken oder Verschenken.
+• Technische Verbesserung, damit F-Droid die App wieder selbst nachbauen und prüfen kann.

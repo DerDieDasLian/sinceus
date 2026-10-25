@@ -191,4 +191,33 @@ class PeopleTest {
         // Die Einstellung kommt mit in die Sicherung
         assertEquals(7, BackupCodec.decode(BackupCodec.encode(week)).remindBefore)
     }
+
+    @Test
+    fun relationshipKindIsStoredAndOldDataStaysLove() {
+        val friends = Relationship("f", listOf("a", "b"), LocalDate.of(2025, 3, 15), kind = RelationKind.FRIENDS)
+        val family = friends.copy(id = "g", kind = RelationKind.FAMILY)
+        val back = PeopleCodec.decodeRelationships(PeopleCodec.encodeRelationships(listOf(friends, family)))!!
+        assertEquals(listOf(RelationKind.FRIENDS, RelationKind.FAMILY), back.map { it.kind })
+
+        // Daten von vor dieser Version haben kein "kind" und gelten als Liebe
+        val old = """[{"id":"main","members":["a","b"],"start":${LocalDate.of(2025, 3, 15).toEpochDay()}}]"""
+        assertEquals(RelationKind.LOVE, PeopleCodec.decodeRelationships(old)!!.single().kind)
+        assertEquals(RelationKind.LOVE, RelationKind.of("unbekannt"))
+    }
+
+    @Test
+    fun earlierPhaseRoundTripsAndIsChecked() {
+        val r = Relationship(
+            "p", listOf("a", "b"), LocalDate.of(2025, 3, 15),
+            before = RelationKind.FRIENDS, beforeStart = LocalDate.of(2022, 6, 1),
+        )
+        val back = PeopleCodec.decodeRelationships(PeopleCodec.encodeRelationships(listOf(r)))!!.single()
+        assertEquals(RelationKind.FRIENDS to LocalDate.of(2022, 6, 1), back.earlier)
+        // Ohne frühere Phase bleibt alles leer
+        val plain = PeopleCodec.decodeRelationships(PeopleCodec.encodeRelationships(listOf(r.copy(before = null, beforeStart = null))))!!.single()
+        assertEquals(null, plain.earlier)
+        // Gleiche Art oder Datum nicht vor dem Start zählt nicht
+        assertEquals(null, r.copy(before = RelationKind.LOVE).earlier)
+        assertEquals(null, r.copy(beforeStart = r.startDate).earlier)
+    }
 }

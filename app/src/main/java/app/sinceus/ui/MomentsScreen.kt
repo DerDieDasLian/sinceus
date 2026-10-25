@@ -784,13 +784,15 @@ private fun MomentPhotos(photos: List<String>) {
         return
     }
     val pager = rememberPagerState { photos.size }
-    Box {
-        HorizontalPager(pager, key = { photos[it] }) { page ->
+    // Feste Größe außen: Die Zeitleiste fragt die Höhe vorab ab (IntrinsicSize.Min),
+    // das darf den Pager nie erreichen, sonst stürzt die App ab (Issue #9)
+    Box(imageModifier) {
+        HorizontalPager(pager, Modifier.fillMaxSize(), key = { photos[it] }) { page ->
             AsyncImage(
                 model = File(photos[page]),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = imageModifier,
+                modifier = Modifier.fillMaxSize(),
             )
         }
         val position = stringResource(R.string.moment_photo_position, pager.currentPage + 1, photos.size)

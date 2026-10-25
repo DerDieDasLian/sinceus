@@ -1,0 +1,1 @@
+• Weniger Berechtigungen: "Netzwerkverbindungen abrufen" und "Vordergrunddienst ausführen" sind weg. Beide kamen nur über eine Bibliothek für die Widgets mit und wurden nie genutzt.

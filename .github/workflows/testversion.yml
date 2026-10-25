@@ -1,0 +1,118 @@
+name: Testversion
+
+# Baut "Since Us Test": eine eigene App neben der richtigen, mit grauem Symbol und eigenen Daten.
+# Sie trägt schon die Version, die das nächste Release bekommen würde (mit "-test" dahinter),
+# und wird wie ein Release gebaut (R8, Signatur), damit beim Testen dieselben Fehler auffallen.
+# Läuft bei jedem Push mit App-Änderungen und von Hand (Actions > Testversion > Run workflow),
+# dort auch für andere Branches. Es entsteht kein Tag und kein Release, F-Droid merkt davon nichts.
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "app/**"
+      - "fastlane/metadata/android/*/changelogs/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle/**"
+      - ".github/workflows/testversion.yml"
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Welche Version das nächste Release wohl bekommt (nur für die Anzeige in der Testversion)"
+        type: choice
+        options: [auto, patch, minor, major]
+        default: auto
+
+concurrency:
+  group: testversion-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testversion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Nur lokal im Lauf, wird nicht committet
+      - name: Version of the next release
+        id: version
+        env:
+          BUMP: ${{ inputs.bump || 'auto' }}
+          FORCE: "true"
+        run: .github/scripts/next-version.sh | tee -a "$GITHUB_OUTPUT"
+
+      - name: Check release notes
+        id: notes
+        run: |
+          if .github/scripts/check-release.sh "${{ steps.version.outputs.code }}" > notes-check.txt 2>&1; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            sed 's/^::error/::warning/' notes-check.txt
+          fi
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v6
+
+      # Mit dem Upload-Schlüssel signiert, damit jede neue Testversion über die alte installiert werden kann.
+      # Ohne Schlüssel (z. B. bei Forks) nimmt Gradle den Debug-Schlüssel.
+      - name: Set up signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::warning::Kein Signier-Schlüssel, die Testversion wird mit dem Debug-Schlüssel signiert"
+            exit 0
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > upload.jks
+          {
+            echo "storeFile=upload.jks"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$KEY_PASSWORD"
+          } > keystore.properties
+
+      # GitHub-Variante, damit auch die Update-Suche getestet werden kann
+      - name: Build
+        run: ./gradlew assembleGithubBeta
+
+      - name: Prepare file
+        id: file
+        run: |
+          name="SinceUs-Test-${{ steps.version.outputs.version }}-$(git rev-parse --short HEAD)"
+          mkdir out
+          cp app/build/outputs/apk/github/beta/app-github-beta.apk "out/$name.apk"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v7
+        id: upload
+        with:
+          name: ${{ steps.file.outputs.name }}
+          path: out/*.apk
+          retention-days: 14
+          # APK ist schon gepackt, ZIP bringt nichts
+          compression-level: 0
+
+      - name: Summary
+        run: |
+          {
+            echo "## Since Us Test ${{ steps.version.outputs.version }}-test"
+            echo
+            echo "Branch \`${{ github.ref_name }}\`, Commit \`$(git rev-parse --short HEAD)\`"
+            echo
+            echo "**[APK herunterladen](${{ steps.upload.outputs.artifact-url }})** (ZIP entpacken, dann die APK öffnen)"
+            echo
+            if [ "${{ steps.notes.outputs.ok }}" = "true" ]; then
+              echo "Änderungsnotizen für Version ${{ steps.version.outputs.code }}: vorhanden"
+            else
+              echo "**Änderungsnotizen für Version ${{ steps.version.outputs.code }} fehlen oder sind zu lang.** Ohne sie bricht das Release ab."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

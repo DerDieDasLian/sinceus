@@ -142,7 +142,7 @@ private fun MemoryContent(settings: LoveSettings) {
         } else {
             Box(modifier = GlanceModifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                 Image(
-                    ImageProvider(R.drawable.widget_heart_deco),
+                    ImageProvider(settings.relationship.kind.widgetDeco),
                     contentDescription = null,
                     modifier = GlanceModifier.size(if (flat) 70.dp else 96.dp),
                 )

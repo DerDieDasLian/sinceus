@@ -1,5 +1,6 @@
 package app.sinceus.ui
 
+import app.sinceus.data.RelationKind
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -136,6 +137,7 @@ import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Gavel
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.Flight
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.foundation.lazy.LazyColumn
@@ -301,12 +303,13 @@ fun SettingsScreen(
                                             listOfNotNull(
                                                 r.label.ifBlank { null },
                                                 if (r.distance) stringResource(R.string.distance_mode) else null,
-                                                stringResource(R.string.together_since_long, Texts.mediumDate(r.startDate)),
+                                                stringResource(r.kind.sinceLong, Texts.mediumDate(r.startDate)),
+                                                r.earlier?.let { (k, d) -> stringResource(k.beforeLong, Texts.mediumDate(d)) },
                                             ).joinToString(" · "),
                                             color = MaterialTheme.colorScheme.primary,
                                         )
                                     },
-                                    leadingContent = { Icon(Icons.Rounded.Favorite, null) },
+                                    leadingContent = { Icon(r.kind.icon, null) },
                                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                     modifier = Modifier.clickable { dialog = "rel:${r.id}" },
                                 )
@@ -1033,6 +1036,18 @@ private fun RelationshipDialog(
                         )
                     }
                 }
+                Text(stringResource(R.string.relationship_kind), style = MaterialTheme.typography.titleSmall)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    RelationKind.entries.forEach { k ->
+                        FilterChip(
+                            selected = draft.kind == k,
+                            // Hat die frühere Phase dieselbe Art, tauschen beide
+                            onClick = { draft = draft.copy(kind = k, before = if (draft.before == k) draft.kind else draft.before) },
+                            label = { Text(stringResource(k.title)) },
+                            leadingIcon = { Icon(k.icon, null, Modifier.size(18.dp)) },
+                        )
+                    }
+                }
                 OutlinedTextField(
                     draft.label,
                     { draft = draft.copy(label = it) },
@@ -1059,6 +1074,52 @@ private fun RelationshipDialog(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     modifier = Modifier.clickable { pick = "time" },
                 )
+                // Frühere Phase, z. B. erst befreundet und dann ein Paar
+                val hasBefore = draft.before != null
+                val toggleBefore = {
+                    draft = if (hasBefore) {
+                        draft.copy(before = null, beforeStart = null)
+                    } else {
+                        draft.copy(
+                            before = RelationKind.entries.first { it != draft.kind },
+                            beforeStart = draft.beforeStart ?: draft.startDate.minusYears(1),
+                        )
+                    }
+                }
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.relationship_before)) },
+                    supportingContent = { Text(stringResource(R.string.relationship_before_summary)) },
+                    leadingContent = { Icon(Icons.Rounded.History, null) },
+                    trailingContent = { Switch(checked = hasBefore, onCheckedChange = { toggleBefore() }) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { toggleBefore() },
+                )
+                if (hasBefore) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        RelationKind.entries.filter { it != draft.kind }.forEach { k ->
+                            FilterChip(
+                                selected = draft.before == k,
+                                onClick = { draft = draft.copy(before = k) },
+                                label = { Text(stringResource(k.title)) },
+                                leadingIcon = { Icon(k.icon, null, Modifier.size(18.dp)) },
+                            )
+                        }
+                    }
+                    val beforeStart = draft.beforeStart ?: draft.startDate
+                    val valid = beforeStart.isBefore(draft.startDate)
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.relationship_before_since)) },
+                        supportingContent = {
+                            Text(
+                                if (valid) Texts.mediumDate(beforeStart) else stringResource(R.string.relationship_before_invalid),
+                                color = if (valid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                            )
+                        },
+                        leadingContent = { Icon(Icons.Rounded.CalendarMonth, null) },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable { pick = "before" },
+                    )
+                }
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.relationship_notify)) },
                     leadingContent = { Icon(Icons.Rounded.NotificationsActive, null) },
@@ -1127,7 +1188,8 @@ private fun RelationshipDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { onSave(draft) }, enabled = draft.members.size >= 2) {
+            val beforeOk = draft.before == null || draft.earlier != null
+            TextButton(onClick = { onSave(draft) }, enabled = draft.members.size >= 2 && beforeOk) {
                 Text(stringResource(R.string.save))
             }
         },
@@ -1136,6 +1198,14 @@ private fun RelationshipDialog(
     when (pick) {
         "date" -> DateDialog(draft.startDate, onDismiss = { pick = null }) {
             draft = draft.copy(startDate = it)
+            pick = null
+        }
+        "before" -> DateDialog(
+            draft.beforeStart ?: draft.startDate.minusYears(1),
+            onDismiss = { pick = null },
+            title = R.string.relationship_before_since,
+        ) {
+            draft = draft.copy(beforeStart = it)
             pick = null
         }
         "time" -> TimeDialog(

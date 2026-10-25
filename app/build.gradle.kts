@@ -19,8 +19,8 @@ android {
         applicationId = "app.sinceus"
         minSdk = 26
         targetSdk = 36
-        versionCode = 41
-        versionName = "2.12.5"
+        versionCode = 45
+        versionName = "2.13.3"
         // Repository, in dem die GitHub-Version nach neuen Releases sucht
         val githubRepo = providers.gradleProperty("githubRepo").getOrElse("DerDieDasLian/sinceus")
         buildConfigField("String", "GITHUB_REPO", "\"$githubRepo\"")
@@ -63,6 +63,16 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // Ohne keystore.properties bleibt die APK unsigniert (so erwartet es F-Droid, das selbst signiert)
             signingConfig = signingConfigs.findByName("release")
+        }
+        // Testversion vor einem Release: eigene App "Since Us Test" mit eigenem Symbol und eigenen Daten,
+        // die neben der richtigen App installiert wird. Gebaut wie ein Release (inkl. R8), damit Fehler
+        // durch das Verkleinern beim Testen auffallen. Ohne Schlüssel mit dem Debug-Schlüssel signiert.
+        create("beta") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".test"
+            versionNameSuffix = "-test"
+            matchingFallbacks += "release"
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
 

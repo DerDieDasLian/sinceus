@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Graues Symbol, damit die Testversion nicht mit der richtigen App verwechselt wird -->
+    <color name="icon_bg">#3D4350</color>
+</resources>

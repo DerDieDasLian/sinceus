@@ -17,6 +17,19 @@ data class Person(
     val birthday: LocalDate? = null,
 )
 
+/** Art einer Beziehung: Liebe (Standard), Freundschaft oder Familie. [id] wird gespeichert. */
+enum class RelationKind(val id: String) {
+    LOVE("love"),
+    FRIENDS("friends"),
+    FAMILY("family"),
+    ;
+
+    companion object {
+        /** Unbekannte oder fehlende Werte (ältere Daten) gelten als Liebe */
+        fun of(id: String?): RelationKind = entries.firstOrNull { it.id == id } ?: LOVE
+    }
+}
+
 /**
  * Eine Beziehung zwischen zwei oder mehr Menschen mit eigenem Startdatum.
  * Ein Paar ist eine Beziehung mit zwei Menschen, eine Triade eine mit dreien. Bei poly Menschen
@@ -39,8 +52,22 @@ data class Relationship(
     val farZone: String? = null,
     /** Nächstes Treffen, null = keins eingetragen */
     val nextMeeting: LocalDate? = null,
+    /** Liebe, Freundschaft oder Familie; ändert nur Texte und Symbol */
+    val kind: RelationKind = RelationKind.LOVE,
+    /** Art der Beziehung vor [startDate], z. B. erst Freundschaft und dann Liebe, null = keine frühere Phase */
+    val before: RelationKind? = null,
+    /** Beginn der früheren Phase, liegt vor [startDate] */
+    val beforeStart: LocalDate? = null,
 ) {
     val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
+
+    /** Die frühere Phase, nur wenn sie vollständig ist, eine andere Art hat und vor dem Start liegt */
+    val earlier: Pair<RelationKind, LocalDate>?
+        get() = if (before != null && beforeStart != null && before != kind && beforeStart.isBefore(startDate)) {
+            before to beforeStart
+        } else {
+            null
+        }
 }
 
 /** Höchstzahl Menschen und Beziehungen, damit Startseite und Widget lesbar bleiben */
@@ -111,7 +138,10 @@ object PeopleCodec {
                     .put("notify", r.notify)
                     .put("distance", r.distance)
                     .put("farZone", r.farZone ?: JSONObject.NULL)
-                    .put("meeting", r.nextMeeting?.toEpochDay() ?: JSONObject.NULL),
+                    .put("meeting", r.nextMeeting?.toEpochDay() ?: JSONObject.NULL)
+                    .put("kind", r.kind.id)
+                    .put("before", r.before?.id ?: JSONObject.NULL)
+                    .put("beforeStart", r.beforeStart?.toEpochDay() ?: JSONObject.NULL),
             )
         }
     }.toString()
@@ -132,6 +162,9 @@ object PeopleCodec {
                     distance = o.optBoolean("distance", false),
                     farZone = if (o.isNull("farZone")) null else o.optString("farZone").takeIf { Distance.isZone(it) },
                     nextMeeting = if (o.isNull("meeting")) null else LocalDate.ofEpochDay(o.getLong("meeting")),
+                    kind = RelationKind.of(o.optString("kind")),
+                    before = if (o.isNull("before")) null else RelationKind.entries.firstOrNull { it.id == o.optString("before") },
+                    beforeStart = if (o.isNull("beforeStart")) null else LocalDate.ofEpochDay(o.getLong("beforeStart")),
                 )
             }.getOrNull()
         }.distinctBy { it.id }

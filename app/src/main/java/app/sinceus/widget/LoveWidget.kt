@@ -188,10 +188,10 @@ private fun CardContent(settings: LoveSettings) {
             .background(ImageProvider(R.drawable.widget_card_bg))
             .clickable(actionStartActivity<MainActivity>()),
     ) {
-        // Großes, kaum sichtbares Herz als Dekoration unten rechts
+        // Großes, kaum sichtbares Symbol als Dekoration unten rechts (Herz, Menschen oder Haus)
         Box(modifier = GlanceModifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
             Image(
-                ImageProvider(R.drawable.widget_heart_deco),
+                ImageProvider(settings.relationship.kind.widgetDeco),
                 contentDescription = null,
                 modifier = GlanceModifier.size(if (flat) 70.dp else if (wide) 110.dp else 84.dp),
             )
@@ -220,7 +220,7 @@ private fun CardContent(settings: LoveSettings) {
                         // Abstand als eigene Spacer: Innenabstand am Bild würde das Herz selbst verkleinern
                         Spacer(GlanceModifier.width(5.dp))
                         Image(
-                            ImageProvider(R.drawable.ic_heart_small),
+                            ImageProvider(settings.relationship.kind.widgetSmall),
                             contentDescription = null,
                             modifier = GlanceModifier.size(13.dp),
                         )

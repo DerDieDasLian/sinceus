@@ -1,5 +1,6 @@
 package app.sinceus.ui
 
+import app.sinceus.data.RelationKind
 import androidx.annotation.PluralsRes
 import app.sinceus.R
 import app.sinceus.data.Texts
@@ -140,9 +141,15 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            NamesRow(settings.memberNames(), MaterialTheme.typography.headlineSmall, heart = 22.dp)
+            NamesRow(settings.memberNames(), MaterialTheme.typography.headlineSmall, heart = 22.dp, kind = settings.relationship.kind)
             Text(
-                stringResource(if (future) R.string.live_until else R.string.live_together).uppercase(),
+                stringResource(
+                    when {
+                        future -> R.string.live_until
+                        settings.relationship.kind == RelationKind.LOVE -> R.string.live_together
+                        else -> settings.relationship.kind.forLabel
+                    },
+                ).uppercase(),
                 style = LabelCaps,
                 color = Color(0xFFFFB2B9),
                 modifier = Modifier.padding(top = 32.dp, bottom = 16.dp),

@@ -45,4 +45,12 @@ class FunFactsTest {
         assertEquals(100_800L, value(FunFacts.Kind.HEARTBEATS, LocalDate.of(2025, 3, 15), LocalDate.of(2025, 3, 16)))
         assertEquals(23_040L, value(FunFacts.Kind.BREATHS, LocalDate.of(2025, 3, 15), LocalDate.of(2025, 3, 16)))
     }
+
+    @Test
+    fun valentinesOnlyForLove() {
+        val start = LocalDate.of(2025, 3, 15)
+        val today = LocalDate.of(2026, 3, 1)
+        assertTrue(FunFacts.all(start, today).any { it.kind == FunFacts.Kind.VALENTINES })
+        assertTrue(FunFacts.all(start, today, love = false).none { it.kind == FunFacts.Kind.VALENTINES })
+    }
 }
