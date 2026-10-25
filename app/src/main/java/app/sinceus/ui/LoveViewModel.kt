@@ -117,11 +117,13 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
         Toast.makeText(app, app.getString(if (ok) R.string.backup_saved else R.string.backup_save_failed), Toast.LENGTH_SHORT).show()
     }
 
-    /** Speichert [moments] als Fotobuch (PDF) in die gewählte Datei */
-    fun exportPhotobook(uri: Uri, moments: List<app.sinceus.data.Moment>) = viewModelScope.launch {
+    /** Speichert die Momente mit den IDs [ids] als Fotobuch (PDF) in die gewählte Datei, nach Datum sortiert */
+    fun exportPhotobook(uri: Uri, ids: List<String>) = viewModelScope.launch {
         val app = getApplication<Application>()
         val ok = try {
             val settings = repo.current()
+            val moments = settings.moments.filter { it.id in ids }.sortedBy { it.date }
+            if (moments.isEmpty()) throw IllegalStateException("no moments")
             withContext(Dispatchers.IO) {
                 val out = app.contentResolver.openOutputStream(uri) ?: throw java.io.IOException("no output stream")
                 out.use { Photobook.write(app, settings, moments, LocalDate.now(), it) }

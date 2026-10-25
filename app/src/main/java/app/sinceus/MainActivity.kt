@@ -193,11 +193,12 @@ class MainActivity : ComponentActivity() {
                 val backupSaver = rememberLauncherForActivityResult(
                     ActivityResultContracts.CreateDocument(Backup.MIME),
                 ) { uri -> if (uri != null) vm.exportBackup(uri) }
-                // Fotobuch: die gezeigten Momente merken, bis die Datei gewählt ist
-                var photobookMoments by remember { mutableStateOf<List<app.sinceus.data.Moment>>(emptyList()) }
+                // Fotobuch: die gezeigten Momente merken, bis die Datei gewählt ist. Nur die IDs, damit sie
+                // auch ein Drehen des Handys oder ein Neustart der App während der Dateiauswahl überstehen
+                var photobookIds by rememberSaveable { mutableStateOf(ArrayList<String>()) }
                 val photobookSaver = rememberLauncherForActivityResult(
                     ActivityResultContracts.CreateDocument(app.sinceus.share.Photobook.MIME),
-                ) { uri -> if (uri != null && photobookMoments.isNotEmpty()) vm.exportPhotobook(uri, photobookMoments) }
+                ) { uri -> if (uri != null && photobookIds.isNotEmpty()) vm.exportPhotobook(uri, photobookIds) }
                 val backupLoader = rememberLauncherForActivityResult(
                     ActivityResultContracts.OpenDocument(),
                 ) { uri -> if (uri != null) vm.importBackup(uri) }
@@ -412,7 +413,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onNewestFirst = vm::setNewestFirst,
                                     onPhotobook = { moments ->
-                                        photobookMoments = moments
+                                        photobookIds = ArrayList(moments.map { it.id })
                                         photobookSaver.launch(app.sinceus.share.Photobook.fileName(this@MainActivity, today))
                                     },
                                     onSelect = vm::setSelected,
