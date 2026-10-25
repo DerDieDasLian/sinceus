@@ -193,6 +193,12 @@ class MainActivity : ComponentActivity() {
                 val backupSaver = rememberLauncherForActivityResult(
                     ActivityResultContracts.CreateDocument(Backup.MIME),
                 ) { uri -> if (uri != null) vm.exportBackup(uri) }
+                // Fotobuch: die gezeigten Momente merken, bis die Datei gewählt ist. Nur die IDs, damit sie
+                // auch ein Drehen des Handys oder ein Neustart der App während der Dateiauswahl überstehen
+                var photobookIds by rememberSaveable { mutableStateOf(ArrayList<String>()) }
+                val photobookSaver = rememberLauncherForActivityResult(
+                    ActivityResultContracts.CreateDocument(app.sinceus.share.Photobook.MIME),
+                ) { uri -> if (uri != null && photobookIds.isNotEmpty()) vm.exportPhotobook(uri, photobookIds) }
                 val backupLoader = rememberLauncherForActivityResult(
                     ActivityResultContracts.OpenDocument(),
                 ) { uri -> if (uri != null) vm.importBackup(uri) }
@@ -293,6 +299,7 @@ class MainActivity : ComponentActivity() {
                                     relationships = s.relationships.map { it.id to s.namesOf(it) },
                                     defaultRelationship = if (s.showAll) null else s.relationship.id,
                                     onShare = { ShareCard.shareMoment(this@MainActivity, s, it, today) },
+                                    knownTags = app.sinceus.data.MomentTags.all(s.moments),
                                 )
                                 "editor" -> PhotoEditorScreen(
                                     settings = s,
@@ -405,6 +412,10 @@ class MainActivity : ComponentActivity() {
                                         editingMoment = it.id
                                     },
                                     onNewestFirst = vm::setNewestFirst,
+                                    onPhotobook = { moments ->
+                                        photobookIds = ArrayList(moments.map { it.id })
+                                        photobookSaver.launch(app.sinceus.share.Photobook.fileName(this@MainActivity, today))
+                                    },
                                     onSelect = vm::setSelected,
                                     jumpTo = homeJump,
                                     onJumped = { homeJump = null },

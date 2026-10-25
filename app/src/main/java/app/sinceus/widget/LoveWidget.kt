@@ -73,6 +73,7 @@ class LoveWidget : GlanceAppWidget() {
             update(context, LoveWidgetReceiver::class.java, LoveWidget())
             update(context, PhotoWidgetReceiver::class.java, CardWidget())
             update(context, CountdownWidgetReceiver::class.java, CountdownWidget())
+            update(context, MemoryWidgetReceiver::class.java, MemoryWidget())
         }
 
         private suspend fun update(context: Context, receiver: Class<*>, widget: GlanceAppWidget) {
