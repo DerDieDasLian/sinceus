@@ -135,8 +135,7 @@ internal fun PolyOverview(settings: LoveSettings, today: LocalDate, onSelect: (S
     val context = LocalContext.current
     val moments = if (settings.showMoments) settings.moments else emptyList()
     val todays = settings.relationships.flatMap { r ->
-        (LoveMath.milestonesOn(r.startDate, today) + BirthdayMath.halfLifeOn(settings.members(r), r.startDate, today))
-            .map { "${settings.namesOf(r)}: ${Texts.milestoneMessage(context, it)}" }
+        LoveMath.milestonesOn(r.startDate, today).map { "${settings.namesOf(r)}: ${Texts.milestoneMessage(context, it)}" }
     } + (
         MomentMath.milestonesOn(moments, today) + BirthdayMath.milestonesOn(settings.people, today) +
             MomentMath.plannedOn(moments, today).map { Milestone(MilestoneKind.PLANNED, 0, today, it.title) }
@@ -144,9 +143,6 @@ internal fun PolyOverview(settings: LoveSettings, today: LocalDate, onSelect: (S
         .map { Texts.milestoneMessage(context, it) }
     val upcoming = (
         settings.relationships.flatMap { r -> LoveMath.upcoming(r.startDate, today, 3).map { it to settings.namesOf(r) } } +
-            settings.relationships.flatMap { r ->
-                BirthdayMath.halfLifeUpcoming(settings.members(r), r.startDate, today).take(3).map { it to settings.namesOf(r) }
-            } +
             MomentMath.upcoming(moments, today, 3).map { it to null } +
             BirthdayMath.upcoming(settings.people, today, 3).map { it to null } +
             MomentMath.planned(moments, today, 3).map { it to null }

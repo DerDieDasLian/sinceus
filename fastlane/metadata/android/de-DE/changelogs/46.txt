@@ -1,7 +1,4 @@
-• Schlagwörter für Momente, z. B. Urlaub oder Date, mit Filter in der Zeitleiste.
-• Momente können einen Ort haben, der sich in der Karten-App öffnet.
-• Neues Widget Erinnerung: jeden Tag ein anderer Moment mit Foto.
-• Fotobuch: Momente als PDF speichern.
-• Eigener Titel für euren ersten Tag, z. B. „Wir haben geheiratet“.
-• Feiertage bei den lustigen Zahlen einzeln abschaltbar.
-• Mit Geburtstagen: euer gemeinsamer Anteil am Leben und der Tag, ab dem es ein halbes Leben ist.
+• Schlagwörter für Momente, z. B. Urlaub oder Date. In der Zeitleiste filterst du mit einem Tipp danach.
+• Momente können einen Ort haben. Antippen öffnet ihn in deiner Karten-App.
+• Neues Widget Erinnerung: jeden Tag ein anderer Moment aus eurer gemeinsamen Zeit, mit Foto.
+• Fotobuch: Die angezeigten Momente lassen sich als PDF speichern, zum Ausdrucken oder Verschenken.

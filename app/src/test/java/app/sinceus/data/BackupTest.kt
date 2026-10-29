@@ -42,7 +42,6 @@ class BackupTest {
         moments = listOf(Moment("1", "Erstes Date", LocalDate.of(2025, 2, 14), "Kino", listOf("/data/x/files/moments/1_5.jpg", "/data/x/files/moments/1_6.jpg"))),
         showMoments = true,
         showLive = false,
-        hiddenFacts = setOf(FunFacts.Kind.CHRISTMAS, FunFacts.Kind.HALLOWEENS),
         slides = listOf("/data/x/files/slides/slide_1_0.jpg"),
     )
 

@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import android.widget.Toast
 import app.sinceus.R
 import app.sinceus.data.AutoBackup
-import app.sinceus.data.FunFacts
 import app.sinceus.data.LoveRepository
 import app.sinceus.update.UpdateChecker
 import app.sinceus.update.UpdateInstaller
@@ -99,7 +98,6 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun setShowMoments(show: Boolean) = viewModelScope.launch { repo.setShowMoments(show) }
     fun setShowLive(show: Boolean) = viewModelScope.launch { repo.setShowLive(show) }
     fun setShowFacts(show: Boolean) = viewModelScope.launch { repo.setShowFacts(show) }
-    fun setHiddenFacts(hidden: Set<FunFacts.Kind>) = viewModelScope.launch { repo.setHiddenFacts(hidden) }
     fun setCelebrate(on: Boolean) = viewModelScope.launch { repo.setCelebrate(on) }
     fun addSlides(uris: List<Uri>) = viewModelScope.launch { repo.addSlides(uris) }
     fun removeSlide(path: String) = viewModelScope.launch { repo.removeSlide(path) }

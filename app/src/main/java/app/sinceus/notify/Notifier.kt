@@ -120,8 +120,6 @@ object Notifier {
     private fun eventsOn(settings: LoveSettings, day: LocalDate): List<Pair<Relationship?, Milestone>> = buildList {
         settings.relationships.filter { it.notify }.forEach { r ->
             LoveMath.milestonesOn(r.startDate, day).forEach { add(r to it) }
-            BirthdayMath.halfLifeOn(settings.members(r), r.startDate, day) { if (settings.discreet) Names.initial(it.name) else it.name }
-                .forEach { add(r to it) }
         }
         if (settings.showMoments) {
             fun relationOf(m: Moment) = settings.relationships.firstOrNull { it.id == m.relationshipId }

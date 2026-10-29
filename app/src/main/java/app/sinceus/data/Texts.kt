@@ -46,7 +46,6 @@ object Texts {
         )
         MilestoneKind.BIRTHDAY -> context.getString(R.string.birthday_title, m.title.orEmpty())
         MilestoneKind.PLANNED -> m.title.orEmpty()
-        MilestoneKind.HALF_LIFE -> context.getString(R.string.half_life_title, m.title.orEmpty())
     }
 
     fun milestoneMessage(context: Context, m: Milestone): String = when (m.kind) {
@@ -63,7 +62,6 @@ object Texts {
         )
         MilestoneKind.BIRTHDAY -> context.getString(R.string.msg_birthday, m.title.orEmpty())
         MilestoneKind.PLANNED -> context.getString(R.string.msg_planned, m.title.orEmpty())
-        MilestoneKind.HALF_LIFE -> context.getString(R.string.msg_half_life, m.title.orEmpty())
         else -> context.getString(R.string.msg_together, milestoneTitle(context, m))
     }
 

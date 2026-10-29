@@ -53,32 +53,4 @@ class FunFactsTest {
         assertTrue(FunFacts.all(start, today).any { it.kind == FunFacts.Kind.VALENTINES })
         assertTrue(FunFacts.all(start, today, love = false).none { it.kind == FunFacts.Kind.VALENTINES })
     }
-
-    @Test
-    fun hiddenHolidaysAreLeftOut() {
-        val start = LocalDate.of(2020, 3, 15)
-        val today = LocalDate.of(2026, 1, 1)
-        val kinds = FunFacts.all(start, today, hidden = setOf(FunFacts.Kind.CHRISTMAS, FunFacts.Kind.HALLOWEENS)).map { it.kind }
-        assertTrue(FunFacts.Kind.CHRISTMAS !in kinds)
-        assertTrue(FunFacts.Kind.HALLOWEENS !in kinds)
-        assertTrue(FunFacts.Kind.VALENTINES in kinds)
-        assertTrue(FunFacts.Kind.FULL_MOONS in kinds)
-        // Nur Feiertage lassen sich gespeichert ausblenden, Unbekanntes fällt weg
-        assertEquals(setOf(FunFacts.Kind.CHRISTMAS), FunFacts.holidaysOf(listOf("CHRISTMAS", "FULL_MOONS", "gibt es nicht")))
-    }
-
-    @Test
-    fun shareOfLifeNeedsABirthdayBeforeTheStart() {
-        val start = LocalDate.of(2020, 1, 1)
-        val today = LocalDate.of(2030, 1, 1)
-        val people = listOf(
-            Person("a", "Alex", birthday = LocalDate.of(2000, 1, 1)),
-            Person("b", "Sam"),
-            Person("c", "Kim", birthday = LocalDate.of(2021, 1, 1)),
-        )
-        val shares = FunFacts.all(start, today, people = people).filter { it.kind == FunFacts.Kind.LIFE_SHARE }
-        // 10 von 30 Jahren zusammen, abgerundet
-        assertEquals(listOf("Alex" to 33L), shares.map { it.name to it.value })
-        assertTrue(FunFacts.all(start, today, hidden = setOf(FunFacts.Kind.LIFE_SHARE), people = people).none { it.kind == FunFacts.Kind.LIFE_SHARE })
-    }
 }

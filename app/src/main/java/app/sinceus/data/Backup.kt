@@ -73,7 +73,6 @@ object BackupCodec {
         .put("showMoments", s.showMoments)
         .put("showLive", s.showLive)
         .put("showFacts", s.showFacts)
-        .put("hiddenFacts", JSONArray().apply { s.hiddenFacts.forEach { put(it.name) } })
         .put("celebrate", s.celebrate)
         .put("slides", JSONArray().apply { s.slides.forEach { put(File(it).name) } })
         .put(
@@ -141,9 +140,6 @@ object BackupCodec {
             showMoments = o.optBoolean("showMoments", d.showMoments),
             showLive = o.optBoolean("showLive", d.showLive),
             showFacts = o.optBoolean("showFacts", d.showFacts),
-            hiddenFacts = o.optJSONArray("hiddenFacts")
-                ?.let { a -> FunFacts.holidaysOf((0 until a.length()).map { a.optString(it) }) }
-                ?: d.hiddenFacts,
             celebrate = o.optBoolean("celebrate", d.celebrate),
             slides = (0 until (slides?.length() ?: 0))
                 .mapNotNull { fileName(slides?.optString(it)) }
