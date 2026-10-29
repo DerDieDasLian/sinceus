@@ -62,6 +62,7 @@ import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Celebration
 import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.HourglassBottom
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.Card
@@ -253,11 +254,11 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
     val moments = if (settings.showMoments) settings.visibleMoments else emptyList()
     val members = settings.members()
     val todays = LoveMath.milestonesOn(start, today) + MomentMath.milestonesOn(moments, today) +
-        BirthdayMath.milestonesOn(members, today) +
+        BirthdayMath.milestonesOn(members, today) + BirthdayMath.halfLifeOn(members, start, today) +
         MomentMath.plannedOn(moments, today).map { Milestone(MilestoneKind.PLANNED, 0, today, it.title) }
     val upcoming = (
         LoveMath.upcoming(start, today, 4) + MomentMath.upcoming(moments, today, 4) + BirthdayMath.upcoming(members, today, 4) +
-            MomentMath.planned(moments, today, 4)
+            BirthdayMath.halfLifeUpcoming(members, start, today).take(4) + MomentMath.planned(moments, today, 4)
         )
         .sortedBy { it.date }
         .take(4)
@@ -312,7 +313,13 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
                     StatTile(Modifier.weight(1f), formatNumber(together.totalWeeks), stringResource(R.string.stat_weeks))
                     StatTile(Modifier.weight(1f), formatNumber(together.totalDays * 24), stringResource(R.string.stat_hours))
                 }
-                if (settings.showFacts) FunFactsCard(remember(start, today, kind) { FunFacts.all(start, today, love = kind == RelationKind.LOVE) })
+                if (settings.showFacts) {
+                    FunFactsCard(
+                        remember(start, today, kind, settings.hiddenFacts, members) {
+                            FunFacts.all(start, today, love = kind == RelationKind.LOVE, hidden = settings.hiddenFacts, people = members)
+                        },
+                    )
+                }
             }
 
             if (upcoming.isNotEmpty()) UpcomingCard(upcoming, today)
@@ -653,4 +660,5 @@ private fun MilestoneKind.icon(): ImageVector = when (this) {
     MilestoneKind.MOMENT -> Icons.Rounded.AutoAwesome
     MilestoneKind.BIRTHDAY -> Icons.Rounded.CardGiftcard
     MilestoneKind.PLANNED -> Icons.Rounded.Event
+    MilestoneKind.HALF_LIFE -> Icons.Rounded.HourglassBottom
 }

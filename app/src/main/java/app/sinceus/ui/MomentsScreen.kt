@@ -116,7 +116,8 @@ private sealed interface TimelineEntry {
         override val date get() = moment.date
     }
 
-    data class Start(override val date: LocalDate, override val who: String? = null) : TimelineEntry
+    /** [title] ist der eigene Titel des Starttags, null = Standardtext */
+    data class Start(override val date: LocalDate, override val who: String? = null, val title: String? = null) : TimelineEntry
 }
 
 @OptIn(ExperimentalLayoutApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
@@ -173,7 +174,7 @@ fun MomentsScreen(
             val by = m.addedBy?.let(settings::person)?.name?.let { context.getString(R.string.moment_added_by, it) }
             TimelineEntry.Saved(m, listOfNotNull(who(m.relationshipId), by).joinToString(" · ").ifBlank { null })
         } +
-            starts.map { TimelineEntry.Start(it.startDate, who(it.id)) }
+            starts.map { TimelineEntry.Start(it.startDate, who(it.id), it.startTitle.ifBlank { null }) }
         )
         .sortedBy { it.date }
     // Die Zeitleiste lässt sich umdrehen, der Kalender bleibt immer gleich
@@ -686,7 +687,7 @@ private fun TimelineItem(
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    moment?.title ?: stringResource(R.string.moment_together_start),
+                    moment?.title ?: (entry as? TimelineEntry.Start)?.title ?: stringResource(R.string.moment_together_start),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(top = 4.dp),

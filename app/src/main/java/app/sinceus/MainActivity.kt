@@ -359,6 +359,7 @@ class MainActivity : ComponentActivity() {
                                     onShowMoments = vm::setShowMoments,
                                     onShowLive = vm::setShowLive,
                                     onShowFacts = vm::setShowFacts,
+                                    onHiddenFacts = vm::setHiddenFacts,
                                     onCelebrate = vm::setCelebrate,
                                     onCheckUpdates = vm::checkUpdatesNow,
                                     onOpenUpdate = vm::installUpdate,

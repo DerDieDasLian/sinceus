@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -82,6 +83,8 @@ data class LoveSettings(
     val showLive: Boolean = true,
     /** Lustige Zahlen auf der Übersicht (z. B. Wochenenden und Vollmonde zusammen) */
     val showFacts: Boolean = true,
+    /** Ausgeblendete Feiertage bei den lustigen Zahlen (aus [FunFacts.HOLIDAYS]) */
+    val hiddenFacts: Set<FunFacts.Kind> = emptySet(),
     /** Kleine Konfetti-Feier an Jahrestagen und runden Tagen */
     val celebrate: Boolean = true,
     /** Weitere Fotos für die Diashow im Titelbild (Pfade im App-Speicher, files/slides/) */
@@ -182,6 +185,7 @@ private object Keys {
     val showMoments = booleanPreferencesKey("show_moments")
     val showLive = booleanPreferencesKey("show_live")
     val showFacts = booleanPreferencesKey("show_facts")
+    val hiddenFacts = stringSetPreferencesKey("hidden_facts")
     val celebrate = booleanPreferencesKey("celebrate")
     val slides = stringPreferencesKey("slides")
     val people = stringPreferencesKey("people")
@@ -264,6 +268,7 @@ class LoveRepository(private val context: Context) {
             showMoments = this[Keys.showMoments] ?: d.showMoments,
             showLive = this[Keys.showLive] ?: d.showLive,
             showFacts = this[Keys.showFacts] ?: d.showFacts,
+            hiddenFacts = this[Keys.hiddenFacts]?.let(FunFacts::holidaysOf) ?: d.hiddenFacts,
             celebrate = this[Keys.celebrate] ?: d.celebrate,
             slides = PathListCodec.decode(this[Keys.slides]).filter { File(it).exists() },
             changelogSeen = this[Keys.changelogSeen] ?: d.changelogSeen,
@@ -327,7 +332,10 @@ class LoveRepository(private val context: Context) {
     /** Neue oder geänderte Beziehung */
     suspend fun saveRelationship(relationship: Relationship) = context.dataStore.edit { prefs ->
         val (people, relationships) = prefs.model()
-        val clean = relationship.copy(label = relationship.label.trim().take(PeopleCodec.MAX_NAME))
+        val clean = relationship.copy(
+            label = relationship.label.trim().take(PeopleCodec.MAX_NAME),
+            startTitle = relationship.startTitle.trim().take(PeopleCodec.MAX_TITLE),
+        )
         val list = if (relationships.any { it.id == clean.id }) {
             relationships.map { if (it.id == clean.id) clean else it }
         } else {
@@ -389,6 +397,9 @@ class LoveRepository(private val context: Context) {
     suspend fun setShowLive(show: Boolean) = context.dataStore.edit { it[Keys.showLive] = show }
 
     suspend fun setShowFacts(show: Boolean) = context.dataStore.edit { it[Keys.showFacts] = show }
+
+    suspend fun setHiddenFacts(hidden: Set<FunFacts.Kind>) =
+        context.dataStore.edit { it[Keys.hiddenFacts] = hidden.map { k -> k.name }.toSet() }
 
     suspend fun setCelebrate(on: Boolean) = context.dataStore.edit { it[Keys.celebrate] = on }
 
@@ -635,6 +646,7 @@ class LoveRepository(private val context: Context) {
             p[Keys.showMoments] = restored.showMoments
             p[Keys.showLive] = restored.showLive
             p[Keys.showFacts] = restored.showFacts
+            p[Keys.hiddenFacts] = restored.hiddenFacts.map { it.name }.toSet()
             p[Keys.celebrate] = restored.celebrate
             p[Keys.slides] = PathListCodec.encode(restored.slides)
         }
