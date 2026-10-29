@@ -262,4 +262,10 @@
     <string name="notify_off">Off</string>
     <string name="notify_daily_at">Nei giorni speciali alle %1$s</string>
     <string name="all_couples">Qualunque sia il vostro amore</string>
+    <string name="all_couples_text">Since Us è per tutti gli innamorati; non importa chi sei, chi ami o in quanti siete.</string>
+    <string name="pride_title">Buon mese del Pride!</string>
+    <string name="credit_heart">amore</string>
+    <string name="reset_summary">Avvia di nuovo la configurazione iniziale o elimina tutto</string>
+    <string name="reset_intro">Attenzione: i prossimi passaggi modificheranno o elimineranno i dati. Se vuoi conservarli, crea un backup prima di procedere.</string>
+    <string name="reset_backup_summary">Consigliato prima di ricominciare da zero</string>
 </resources>
