@@ -20,4 +20,17 @@
     <string name="notify_special">Notifica nei giorni speciali</string>
     <string name="notify_blocked">Le notifiche sono bloccate nelle impostazioni di Android</string>
     <string name="notify_summary">Anniversari mensili, annuali, ogni 100 giorni e altro</string>
+    <string name="notify_time">Ora</string>
+    <string name="time_value">%1$s</string>
+    <string name="send_test">Invia notifica di prova</string>
+    <string name="add_widget">Aggiungi widget alla schermata principale</string>
+    <string name="restart_setup">Ricomincia dall\'inizio</string>
+    <string name="privacy">Privacy</string>
+    <string name="privacy_text">Nomi, date, foto e momenti sono salvati in locale. L\'app non ha accesso ad internet e non contiene né tracker, né pubblicità. I tuoi dati possono lasciare il dispositivo solo in caso di salvataggio di un backup, invio un file di sincronizzazione ad un dispositivo associato o tramite backup Android (backup Google).</string>
+    <string name="delete_all">Elimina tutti i dati</string>
+    <string name="delete_all_summary">Resetta l\'app e riparti da zero</string>
+    <string name="delete_all_question">Vuoi davvero eliminare tutto?</string>
+    <string name="delete_all_text">Nomi, date, foto, momenti e impostazioni verranno eliminati da questo dispositivo, quindi ripartirà la configurazione iniziale. Questa operazione non può essere annullata.</string>
+    <string name="ok">OK</string>
+    <string name="your_names">I vostri nomi</string>
 </resources>
