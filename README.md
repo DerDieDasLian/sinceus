@@ -50,6 +50,23 @@ Before Since Us can go live on Google Play, Google wants the app tested for 14 d
 
 Your address is only used to add you to the test.
 
+## Help translate
+
+Since Us is translated on [Weblate](https://hosted.weblate.org/engage/since-us/). Everyone is welcome, no programming needed.
+
+[![Translation status](https://hosted.weblate.org/widget/since-us/multi-auto.svg)](https://hosted.weblate.org/engage/since-us/)
+
+1. Sign in on [hosted.weblate.org](https://hosted.weblate.org/engage/since-us/) (for example with GitHub).
+2. Pick your language. If it is not listed yet, you can add it there.
+3. Translate as much or as little as you like. Weblate sends your work to this repository.
+
+A few notes:
+
+- A language is added to the app once it is (almost) complete, so nobody sees a half-translated app. Until then your work is safe in the repository.
+- The store listing (title and descriptions for F-Droid) is part of it too. Old changelogs don't need to be translated.
+- Please keep the tone warm and simple. Since Us is for every kind of love, so gender-neutral wording is great where your language allows it.
+- Something unclear in the English text? Leave a comment on Weblate or open an [issue](https://github.com/DerDieDasLian/sinceus/issues/new/choose).
+
 ## Build variants
 
 | Variant | Gradle task | Internet | Updates |
