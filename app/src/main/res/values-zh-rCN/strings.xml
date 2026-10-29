@@ -70,4 +70,5 @@
     <string name="tab_overview">概览</string>
     <string name="tab_live">活动</string>
     <string name="together_for">相恋已经</string>
+    <string name="time_value">%1$s</string>
 </resources>
