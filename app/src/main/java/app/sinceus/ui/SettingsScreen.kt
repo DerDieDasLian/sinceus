@@ -123,6 +123,7 @@ import androidx.compose.material.icons.rounded.Slideshow
 import app.sinceus.data.MAX_SLIDES
 import coil3.compose.AsyncImage
 import java.io.File
+import java.util.Locale
 import app.sinceus.AppLanguage
 import app.sinceus.data.MAX_PEOPLE
 import app.sinceus.data.MAX_RELATIONSHIPS
@@ -1505,11 +1506,12 @@ private fun LanguageDialog(current: String, onDismiss: () -> Unit, onPick: (Stri
 
 /** Sprachen stehen immer in ihrer eigenen Sprache da, damit man sie auch in der falschen Sprache findet */
 @Composable
-private fun languageLabel(tag: String) = when (tag) {
-    "de" -> "Deutsch"
-    "en" -> "English"
-    else -> stringResource(R.string.language_system)
-}
+private fun languageLabel(tag: String) =
+    if (tag.isEmpty()) {
+        stringResource(R.string.language_system)
+    } else {
+        Locale.forLanguageTag(tag).let { locale -> locale.getDisplayName(locale).replaceFirstChar { it.titlecase(locale) } }
+    }
 
 @Composable
 internal fun PresetDialog(selected: Int, onDismiss: () -> Unit, onPick: (Int) -> Unit) {

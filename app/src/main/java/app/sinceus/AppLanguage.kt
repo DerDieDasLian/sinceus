@@ -14,8 +14,8 @@ import java.util.Locale
  * (sie steht dann auch in den App-Infos), davor merkt sich die App die Wahl selbst.
  */
 object AppLanguage {
-    /** "" = wie das Handy */
-    val OPTIONS = listOf("", "de", "en")
+    /** "" = wie das Handy, danach die Sprachen aus appLanguages in app/build.gradle.kts */
+    val OPTIONS = listOf("") + BuildConfig.APP_LANGUAGES.split(",")
 
     private const val PREFS = "language"
     private const val KEY = "tag"
