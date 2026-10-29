@@ -1,3 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    </resources>
+    <string name="widget_days_name">Giorni insieme</string>
+    <string name="widget_days_description">Mostra da quanti giorni siete insieme</string>
+    <string name="widget_photo_description">I vostri nomi, da quanti giorni siete insieme e il prossimo giorno speciale</string>
+    <string name="channel_name">Giorni speciali</string>
+    <string name="channel_description">Anniversari mensili/annuali e traguardi importanti</string>
+    <string name="settings">Impostazioni</string>
+    <string name="back">Indietro</string>
+    <string name="names">Nomi</string>
+    <string name="together_since_date">Insieme dal</string>
+    <string name="start_time_optional">Ora (opzionale)</string>
+    <string name="not_set">Non impostato</string>
+    <string name="section_photo">Aspetto</string>
+    <string name="pick_own_photo">Scegli la tua foto</string>
+    <string name="adjust_crop">Ritaglia</string>
+    <string name="pick_preset">Scegli uno sfondo</string>
+    <string name="reset_photo">Reimposta foto</string>
+    <string name="section_notifications">Notifiche</string>
+    <string name="notify_special">Notifica nei giorni speciali</string>
+    <string name="notify_blocked">Le notifiche sono bloccate nelle impostazioni di Android</string>
+    <string name="notify_summary">Anniversari mensili, annuali, ogni 100 giorni e altro</string>
+</resources>
