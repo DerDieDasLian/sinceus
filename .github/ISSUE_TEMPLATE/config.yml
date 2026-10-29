@@ -3,3 +3,6 @@ contact_links:
   - name: Website
     url: https://sinceus.de/
     about: Learn more about Since Us and how it works.
+  - name: Help translate
+    url: https://hosted.weblate.org/engage/since-us/
+    about: Translate Since Us into your language on Weblate, no account on GitHub needed.

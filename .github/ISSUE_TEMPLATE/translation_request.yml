@@ -7,8 +7,9 @@ body:
     attributes:
       value: |
         Thank you for wanting to bring Since Us to more people!
-        Right now the app is only available in English and German, because those are the languages I can check myself.
-        Requests are collected here, so I know which languages are wanted most when I add more.
+        Translations happen on Weblate: https://hosted.weblate.org/engage/since-us/
+        If you want to translate yourself, you can start there right away, also with a new language.
+        A language is added to the app once it is (almost) complete. Use this form if you want to ask for a language or have a question about translating.
   - type: input
     id: language
     attributes:

@@ -1,6 +1,10 @@
 # Since Us
 
-A privacy-friendly Android app for couples: counts how long you have been together and reminds you of every special day. Available in English and German.
+A privacy-friendly Android app for couples: counts how long you have been together and reminds you of every special day. Available in English and German, more languages are [being translated](#help-translate).
+
+[![F-Droid](https://img.shields.io/f-droid/v/app.sinceus?label=F-Droid)](https://f-droid.org/packages/app.sinceus/)
+[![Translation status](https://hosted.weblate.org/widget/since-us/svg-badge.svg)](https://hosted.weblate.org/engage/since-us/)
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 
 <p>
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" width="200" alt="Overview">
@@ -19,7 +23,7 @@ A privacy-friendly Android app for couples: counts how long you have been togeth
 - Guided setup, optional start time, one-tap "delete all data"
 - Backup as a file (all data and photos) to move to a new phone, without internet
 - Sync between phones without a server: pair once with a QR code, then send each other an encrypted file (AES-256-GCM) that opens right in the app and only on your paired phones
-- Light and dark mode, English and German, language can be changed right in the app
+- Light and dark mode, English and German (more on the way), language can be changed right in the app
 - No account, no ads, no tracking, all data stays on the device
 - Poly mode: more than two people and several relationships, each with its own date, special days and reminders, plus a discreet mode with initials only
 - For every kind of love, no matter who you are, whom you love or how many of you there are, with a little rainbow decoration in Pride Month (June)
@@ -52,9 +56,11 @@ Your address is only used to add you to the test.
 
 ## Help translate
 
-Since Us is translated on [Weblate](https://hosted.weblate.org/engage/since-us/). Everyone is welcome, no programming needed.
+Since Us is translated on [Weblate](https://hosted.weblate.org/engage/since-us/), a free platform for open source translations. Everyone is welcome, no programming needed.
 
-[![Translation status](https://hosted.weblate.org/widget/since-us/multi-auto.svg)](https://hosted.weblate.org/engage/since-us/)
+<a href="https://hosted.weblate.org/engage/since-us/">
+  <img src="https://hosted.weblate.org/widget/since-us/horizontal-auto.svg" alt="Translation status per language">
+</a>
 
 1. Sign in on [hosted.weblate.org](https://hosted.weblate.org/engage/since-us/) (for example with GitHub).
 2. Pick your language. If it is not listed yet, you can add it there.
@@ -65,6 +71,7 @@ A few notes:
 - A language is added to the app once it is (almost) complete, so nobody sees a half-translated app. Until then your work is safe in the repository.
 - The store listing (title and descriptions for F-Droid) is part of it too. Old changelogs don't need to be translated.
 - Please keep the tone warm and simple. Since Us is for every kind of love, so gender-neutral wording is great where your language allows it.
+- Found a wrong or awkward text in the app? Fix it right on Weblate, or open an [issue](https://github.com/DerDieDasLian/sinceus/issues/new/choose).
 - Something unclear in the English text? Leave a comment on Weblate or open an [issue](https://github.com/DerDieDasLian/sinceus/issues/new/choose).
 
 ## Build variants
