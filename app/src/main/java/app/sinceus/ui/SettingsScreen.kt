@@ -1,6 +1,10 @@
 package app.sinceus.ui
 
 import app.sinceus.data.RelationKind
+import app.sinceus.data.FunFacts
+import app.sinceus.data.PeopleCodec
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Checkbox
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -193,6 +197,7 @@ fun SettingsScreen(
     onShowMoments: (Boolean) -> Unit = {},
     onShowLive: (Boolean) -> Unit = {},
     onShowFacts: (Boolean) -> Unit = {},
+    onHiddenFacts: (Set<FunFacts.Kind>) -> Unit = {},
     onCelebrate: (Boolean) -> Unit = {},
     /** Download-Fortschritt eines Updates in Prozent (-1 = unbekannt), null = kein Download */
     updateProgress: Int? = null,
@@ -425,6 +430,15 @@ fun SettingsScreen(
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                             modifier = Modifier.clickable { onShowFacts(!settings.showFacts) },
                         )
+                        if (settings.showFacts) {
+                            Divider()
+                            val shown = FunFacts.HOLIDAYS.filterNot { it in settings.hiddenFacts }.map { stringResource(it.holidayName()) }
+                            Row(
+                                Icons.Rounded.Event,
+                                stringResource(R.string.holidays_title),
+                                shown.joinToString(", ").ifBlank { stringResource(R.string.holidays_none) },
+                            ) { dialog = "holidays" }
+                        }
                         Divider()
                         ListItem(
                             headlineContent = { Text(stringResource(R.string.celebrate_show)) },
@@ -632,6 +646,36 @@ fun SettingsScreen(
         }
     }
     when (current) {
+        "holidays" -> AlertDialog(
+            onDismissRequest = { dialog = null },
+            icon = { Icon(Icons.Rounded.Event, null) },
+            title = { Text(stringResource(R.string.holidays_title)) },
+            text = {
+                Column {
+                    Text(
+                        stringResource(R.string.holidays_text),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp),
+                    )
+                    FunFacts.HOLIDAYS.forEach { k ->
+                        val on = k !in settings.hiddenFacts
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .toggleable(value = on, role = Role.Checkbox) {
+                                    onHiddenFacts(if (on) settings.hiddenFacts + k else settings.hiddenFacts - k)
+                                }
+                                .padding(vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(checked = on, onCheckedChange = null)
+                            Text(stringResource(k.holidayName()), Modifier.padding(start = 16.dp))
+                        }
+                    }
+                }
+            },
+            confirmButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.close)) } },
+        )
         "remind" -> AlertDialog(
             onDismissRequest = { dialog = null },
             icon = { Icon(Icons.Rounded.Alarm, null) },
@@ -1053,6 +1097,14 @@ private fun RelationshipDialog(
                     { draft = draft.copy(label = it) },
                     label = { Text(stringResource(R.string.relationship_label)) },
                     placeholder = { Text(stringResource(R.string.relationship_label_hint)) },
+                    singleLine = true,
+                )
+                OutlinedTextField(
+                    draft.startTitle,
+                    { draft = draft.copy(startTitle = it.take(PeopleCodec.MAX_TITLE)) },
+                    label = { Text(stringResource(R.string.relationship_start_title)) },
+                    placeholder = { Text(stringResource(R.string.relationship_start_title_hint)) },
+                    supportingText = { Text(stringResource(R.string.relationship_start_title_help)) },
                     singleLine = true,
                 )
                 ListItem(
@@ -1575,4 +1627,12 @@ private object Web {
             else -> if (de) "index-de.html" else ""
         }
     }
+}
+
+/** Name eines Feiertags aus [FunFacts.HOLIDAYS] */
+private fun FunFacts.Kind.holidayName(): Int = when (this) {
+    FunFacts.Kind.VALENTINES -> R.string.holiday_valentines
+    FunFacts.Kind.HALLOWEENS -> R.string.holiday_halloween
+    FunFacts.Kind.CHRISTMAS -> R.string.holiday_christmas
+    else -> R.string.holiday_new_year
 }

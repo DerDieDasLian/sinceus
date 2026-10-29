@@ -104,7 +104,8 @@ internal fun FunFactsCard(facts: List<FunFacts.Fact>) {
                 val f = facts[i % facts.size]
                 Column(Modifier.padding(top = 6.dp)) {
                     Text(
-                        pluralStringResource(f.kind.text(), f.value.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(), formatNumber(f.value)),
+                        f.kind.text()?.let { pluralStringResource(it, f.value.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(), formatNumber(f.value)) }
+                            ?: stringResource(R.string.fact_life_share, formatNumber(f.value), f.name.orEmpty()),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -137,7 +138,8 @@ internal fun FunFactsCard(facts: List<FunFacts.Fact>) {
     }
 }
 
-private fun FunFacts.Kind.text(): Int = when (this) {
+/** Text mit der Zahl, null = eigener Text mit Namen ([FunFacts.Kind.LIFE_SHARE]) */
+private fun FunFacts.Kind.text(): Int? = when (this) {
     FunFacts.Kind.WEEKENDS -> R.plurals.fact_weekends
     FunFacts.Kind.FULL_MOONS -> R.plurals.fact_full_moons
     FunFacts.Kind.VALENTINES -> R.plurals.fact_valentines
@@ -150,6 +152,7 @@ private fun FunFacts.Kind.text(): Int = when (this) {
     FunFacts.Kind.EARTH_KM -> R.plurals.fact_earth_km
     FunFacts.Kind.HEARTBEATS -> R.plurals.fact_heartbeats
     FunFacts.Kind.BREATHS -> R.plurals.fact_breaths
+    FunFacts.Kind.LIFE_SHARE -> null
 }
 
 private fun FunFacts.Kind.sub(): Int = when (this) {
@@ -165,4 +168,5 @@ private fun FunFacts.Kind.sub(): Int = when (this) {
     FunFacts.Kind.EARTH_KM -> R.string.fact_earth_km_sub
     FunFacts.Kind.HEARTBEATS -> R.string.fact_heartbeats_sub
     FunFacts.Kind.BREATHS -> R.string.fact_breaths_sub
+    FunFacts.Kind.LIFE_SHARE -> R.string.fact_life_share_sub
 }

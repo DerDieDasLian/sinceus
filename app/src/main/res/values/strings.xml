@@ -286,6 +286,9 @@
     <string name="relationship_members">Who is part of it?</string>
     <string name="relationship_label">Name (optional)</string>
     <string name="relationship_label_hint">e.g. nesting partner</string>
+    <string name="relationship_start_title">Title of your first day (optional)</string>
+    <string name="relationship_start_title_hint">e.g. We got married</string>
+    <string name="relationship_start_title_help">Shown in the timeline instead of “You got together”</string>
     <string name="relationship_kind">Kind of relationship</string>
     <string name="kind_love">Love</string>
     <string name="kind_friends">Friendship</string>
@@ -367,6 +370,17 @@
     <string name="facts_title">Did you know?</string>
     <string name="facts_next">Show the next number</string>
     <string name="facts_previous">Show the previous number</string>
+    <string name="holidays_title">Holidays in the numbers</string>
+    <string name="holidays_text">Only the holidays you celebrate are counted.</string>
+    <string name="holidays_none">None</string>
+    <string name="holiday_valentines">Valentine\'s Day</string>
+    <string name="holiday_halloween">Halloween</string>
+    <string name="holiday_christmas">Christmas</string>
+    <string name="holiday_new_year">New Year\'s Day</string>
+    <string name="fact_life_share">%1$s%% of %2$s\'s life</string>
+    <string name="fact_life_share_sub">you have spent together</string>
+    <string name="half_life_title">Half of %1$s\'s life together</string>
+    <string name="msg_half_life">Today you have been together for half of %1$s\'s life.</string>
     <string name="fact_weekends_sub">you have spent together</string>
     <string name="fact_full_moons_sub">since you got together</string>
     <string name="fact_christmas_sub">you have celebrated together</string>

@@ -220,4 +220,28 @@ class PeopleTest {
         assertEquals(null, r.copy(before = RelationKind.LOVE).earlier)
         assertEquals(null, r.copy(beforeStart = r.startDate).earlier)
     }
+
+    @Test
+    fun startTitleRoundTripsAndOldDataHasNone() {
+        val r = Relationship("p", listOf("a", "b"), LocalDate.of(2025, 3, 15), startTitle = "Wir haben geheiratet")
+        assertEquals("Wir haben geheiratet", PeopleCodec.decodeRelationships(PeopleCodec.encodeRelationships(listOf(r)))!!.single().startTitle)
+        val old = PeopleCodec.decodeRelationships("""[{"id":"p","members":["a","b"],"start":20162,"time":null}]""")!!.single()
+        assertEquals("", old.startTitle)
+    }
+
+    @Test
+    fun halfLifeTogether() {
+        val start = LocalDate.of(2020, 1, 1)
+        val alex = Person("a", "Alex", birthday = LocalDate.of(2000, 1, 1))
+        // 20 Jahre vor dem Start, also 20 Jahre danach
+        val day = LocalDate.of(2040, 1, 1)
+        assertEquals(day, BirthdayMath.halfLife(alex, start))
+        assertEquals(null, BirthdayMath.halfLife(Person("b", "Sam"), start))
+        assertEquals(null, BirthdayMath.halfLife(alex.copy(birthday = start), start))
+        val on = BirthdayMath.halfLifeOn(listOf(alex), start, day).single()
+        assertEquals(MilestoneKind.HALF_LIFE to "Alex", on.kind to on.title)
+        assertTrue(BirthdayMath.halfLifeOn(listOf(alex), start, day.minusDays(1)).isEmpty())
+        assertEquals(listOf(day), BirthdayMath.halfLifeUpcoming(listOf(alex), start, LocalDate.of(2030, 1, 1)).map { it.date })
+        assertTrue(BirthdayMath.halfLifeUpcoming(listOf(alex), start, day).isEmpty())
+    }
 }

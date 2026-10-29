@@ -5,6 +5,7 @@ import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 /** Ein Mensch in der App, z. B. „Alex“ mit den Pronomen „sie/ihr“. */
@@ -58,6 +59,8 @@ data class Relationship(
     val before: RelationKind? = null,
     /** Beginn der früheren Phase, liegt vor [startDate] */
     val beforeStart: LocalDate? = null,
+    /** Eigener Titel für den Starttag in der Zeitleiste, z. B. „Wir haben geheiratet“, leer = Standardtext */
+    val startTitle: String = "",
 ) {
     val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
 
@@ -141,7 +144,8 @@ object PeopleCodec {
                     .put("meeting", r.nextMeeting?.toEpochDay() ?: JSONObject.NULL)
                     .put("kind", r.kind.id)
                     .put("before", r.before?.id ?: JSONObject.NULL)
-                    .put("beforeStart", r.beforeStart?.toEpochDay() ?: JSONObject.NULL),
+                    .put("beforeStart", r.beforeStart?.toEpochDay() ?: JSONObject.NULL)
+                    .put("startTitle", r.startTitle),
             )
         }
     }.toString()
@@ -165,6 +169,7 @@ object PeopleCodec {
                     kind = RelationKind.of(o.optString("kind")),
                     before = if (o.isNull("before")) null else RelationKind.entries.firstOrNull { it.id == o.optString("before") },
                     beforeStart = if (o.isNull("beforeStart")) null else LocalDate.ofEpochDay(o.getLong("beforeStart")),
+                    startTitle = o.optString("startTitle", "").trim().take(MAX_TITLE),
                 )
             }.getOrNull()
         }.distinctBy { it.id }
@@ -192,6 +197,9 @@ object PeopleCodec {
     }
 
     const val MAX_NAME = 40
+
+    /** Höchstlänge für [Relationship.startTitle] */
+    const val MAX_TITLE = 60
 
     /** IDs für Daten aus der Zeit vor dem Poly-Modus */
     const val MAIN_ID = "main"
@@ -226,4 +234,25 @@ object BirthdayMath {
         }
             .sortedBy { it.date }
             .take(count)
+
+    /**
+     * Tag, ab dem [person] die Hälfte des Lebens mit der Beziehung ab [start] verbracht hat:
+     * dann ist die gemeinsame Zeit so lang wie die Zeit davor. null ohne Geburtstag vor [start].
+     */
+    fun halfLife(person: Person, start: LocalDate): LocalDate? {
+        val b = person.birthday?.takeIf { it.isBefore(start) } ?: return null
+        return start.plusDays(ChronoUnit.DAYS.between(b, start))
+    }
+
+    /** „Halbes Leben zusammen“, das genau auf [day] fällt; [title] ist der Name. */
+    fun halfLifeOn(people: List<Person>, start: LocalDate, day: LocalDate, name: (Person) -> String = { it.name }): List<Milestone> =
+        people.mapNotNull { p ->
+            halfLife(p, start)?.takeIf { it == day }?.let { Milestone(MilestoneKind.HALF_LIFE, 0, it, name(p)) }
+        }
+
+    /** Die nächsten „Halbes Leben zusammen“ nach [today] (exklusiv), nach Datum sortiert. */
+    fun halfLifeUpcoming(people: List<Person>, start: LocalDate, today: LocalDate, name: (Person) -> String = { it.name }): List<Milestone> =
+        people.mapNotNull { p ->
+            halfLife(p, start)?.takeIf { it.isAfter(today) }?.let { Milestone(MilestoneKind.HALF_LIFE, 0, it, name(p)) }
+        }.sortedBy { it.date }
 }
