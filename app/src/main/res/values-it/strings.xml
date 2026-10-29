@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false"></string>
+    <string name="widget_days_name"></string>
+    <string name="widget_days_description"></string>
+    <string name="widget_photo_name"></string>
+    <string name="widget_photo_description"></string>
+    <string name="channel_name"></string>
+    <string name="channel_description"></string>
+    <string name="settings"></string>
+    <string name="back"></string>
+    <string name="names"></string>
+    <string name="together_since_date"></string>
+    <string name="start_time_optional"></string>
+    <string name="not_set"></string>
+    <string name="section_photo"></string>
+    <string name="pick_own_photo"></string>
+    <string name="adjust_crop"></string>
+    <string name="pick_preset"></string>
+    <string name="reset_photo"></string>
+    <string name="section_notifications"></string>
+    <string name="notify_special"></string>
+    <string name="notify_blocked"></string>
+    <string name="notify_summary"></string>
+    <string name="notify_time"></string>
+    <string name="time_value"></string>
+    <string name="send_test"></string>
+    <string name="add_widget"></string>
+    <string name="restart_setup"></string>
+    <string name="privacy"></string>
+    <string name="privacy_text"></string>
+    <string name="delete_all"></string>
+    <string name="delete_all_summary"></string>
+    <string name="delete_all_question"></string>
+    <string name="delete_all_text"></string>
+    <string name="ok"></string>
+    <string name="your_names"></string>
+    <string name="save"></string>
+    <string name="cancel"></string>
+    <string name="remove"></string>
+    <string name="close"></string>
+    <string name="done"></string>
+    <string name="next"></string>
+    <string name="skip"></string>
+    <string name="lets_go"></string>
+    <string name="together_since_title"></string>
+    <string name="notify_time_title"></string>
+    <string name="backgrounds"></string>
+    <string name="preset_wine"></string>
+    <string name="preset_sunset"></string>
+    <string name="preset_lavender"></string>
+    <string name="preset_night"></string>
+    <string name="preset_rose"></string>
+    <string name="preset_ocean"></string>
+    <string name="ob_names_title"></string>
+    <string name="ob_names_sub"></string>
+    <string name="ob_date_title"></string>
+    <string name="ob_date_sub"></string>
+    <string name="add_time_optional"></string>
+    <string name="time_label"></string>
+    <string name="ob_photo_title"></string>
+    <string name="ob_photo_sub"></string>
+    <string name="pick_photo"></string>
+    <string name="presets_short"></string>
+    <string name="adjust"></string>
+    <string name="ob_notify_title"></string>
+    <string name="ob_notify_sub"></string>
+    <string name="notifications_on"></string>
+    <string name="allow_notifications"></string>
+    <string name="welcome"></string>
+    <string name="welcome_sub"></string>
+    <string name="tab_overview"></string>
+    <string name="tab_live"></string>
+    <string name="together_for"></string>
+    <string name="starts_in"></string>
+    <string name="today_word"></string>
+    <string name="beginning"></string>
+    <string name="stat_months"></string>
+    <string name="stat_weeks"></string>
+    <string name="stat_hours"></string>
+    <string name="together_since_long"></string>
+    <string name="special_today"></string>
+    <string name="upcoming"></string>
+    <string name="tomorrow"></string>
+    <string name="day_after_tomorrow"></string>
+    <string name="live_together"></string>
+    <string name="live_until"></string>
+    <string name="share"></string>
+    <string name="share_text"></string>
+    <string name="live_hint"></string>
+    <string name="your_photo"></string>
+    <string name="editor_hint"></string>
+    <string name="other_photo"></string>
+    <string name="reset"></string>
+    <string name="widget_manual_hint"></string>
+    <string name="test_notification"></string>
+    <string name="widget_days_until"></string>
+    <string name="widget_next"></string>
+    <string name="anniversary_title"></string>
+    <string name="msg_anniversary"></string>
+    <string name="msg_exact"></string>
+    <string name="msg_together"></string>
+    <string name="and_word"></string>
+    <string name="update_channel_name"></string>
+    <string name="update_available"></string>
+    <string name="update_tap_to_open"></string>
+    <string name="update_downloading"></string>
+    <string name="update_downloading_percent"></string>
+    <string name="update_download_failed"></string>
+    <string name="section_updates"></string>
+    <string name="update_auto"></string>
+    <string name="update_auto_summary"></string>
+    <string name="update_check_now"></string>
+    <string name="update_none"></string>
+    <string name="update_failed"></string>
+    <string name="version"></string>
+    <string name="licenses"></string>
+    <string name="licenses_app"></string>
+    <string name="licenses_libraries"></string>
+    <string name="licenses_show_text"></string>
+    <string name="licenses_hide_text"></string>
+    <string name="version_value"></string>
+    <plurals name="years">
+    </plurals>
+    <plurals name="years_dative">
+    </plurals>
+    <plurals name="months">
+    </plurals>
+    <plurals name="months_dative">
+    </plurals>
+    <plurals name="days">
+    </plurals>
+    <plurals name="days_dative">
+    </plurals>
+    <plurals name="weeks">
+    </plurals>
+    <plurals name="hours">
+    </plurals>
+    <plurals name="minutes">
+    </plurals>
+    <plurals name="seconds">
+    </plurals>
+    <plurals name="in_days">
+    </plurals>
+    <plurals name="unit_days_dative">
+    </plurals>
+    <plurals name="unit_days_together">
+    </plurals>
+    <string name="tab_moments"></string>
+    <string name="moments_title"></string>
+    <string name="moment_add"></string>
+    <string name="moments_empty_title"></string>
+    <string name="moments_empty_sub"></string>
+    <string name="suggest_met"></string>
+    <string name="suggest_first_date"></string>
+    <string name="suggest_first_kiss"></string>
+    <string name="suggest_i_love_you"></string>
+    <string name="suggest_first_trip"></string>
+    <string name="suggest_moved_in"></string>
+    <string name="moment_together_start"></string>
+    <string name="moment_new"></string>
+    <string name="moment_edit"></string>
+    <string name="moment_field_title"></string>
+    <string name="moment_field_date"></string>
+    <string name="moment_field_note"></string>
+    <string name="moment_add_photo"></string>
+    <string name="moment_more_photos"></string>
+    <string name="moment_cover_hint"></string>
+    <string name="moment_make_cover"></string>
+    <string name="moment_photo_position"></string>
+    <string name="moment_remove_photo"></string>
+    <string name="moment_remind"></string>
+    <string name="moment_remind_summary"></string>
+    <string name="moment_delete"></string>
+    <string name="moment_delete_question"></string>
+    <string name="moment_delete_text"></string>
+    <string name="delete"></string>
+    <string name="moment_next_anniversary"></string>
+    <string name="moment_anniversary_title"></string>
+    <string name="notify_moment"></string>
+    <plurals name="moments_count">
+    </plurals>
+    <plurals name="days_ago">
+    </plurals>
+    <string name="moments_show"></string>
+    <string name="live_show"></string>
+    <string name="live_show_summary"></string>
+    <string name="moments_show_summary"></string>
+    <string name="slideshow"></string>
+    <string name="slideshow_off"></string>
+    <plurals name="slideshow_count">
+    </plurals>
+    <string name="slideshow_hint"></string>
+    <string name="slideshow_empty"></string>
+    <string name="slideshow_add"></string>
+    <string name="slideshow_remove"></string>
+    <string name="section_backup"></string>
+    <string name="backup_export"></string>
+    <string name="backup_export_summary"></string>
+    <string name="backup_import"></string>
+    <string name="backup_import_summary"></string>
+    <string name="backup_import_question"></string>
+    <string name="backup_import_text"></string>
+    <string name="backup_import_confirm"></string>
+    <string name="backup_restore_onboarding"></string>
+    <string name="backup_saved"></string>
+    <string name="backup_save_failed"></string>
+    <string name="backup_restored"></string>
+    <string name="backup_restore_failed"></string>
+    <string name="settings_couple"></string>
+    <string name="settings_home"></string>
+    <string name="settings_home_summary"></string>
+    <string name="settings_backup_summary"></string>
+    <string name="settings_about"></string>
+    <string name="section_reset"></string>
+    <string name="photo_own"></string>
+    <string name="notify_off"></string>
+    <string name="notify_daily_at"></string>
+    <string name="all_couples"></string>
+    <string name="all_couples_text"></string>
+    <string name="pride_title"></string>
+    <string name="credit_before" translatable="false"></string>
+    <string name="credit_heart"></string>
+    <string name="credit_after" translatable="false"></string>
+    <string name="reset_summary"></string>
+    <string name="reset_intro"></string>
+    <string name="reset_backup_summary"></string>
+    <string name="restart_setup_summary"></string>
+    <string name="restart_setup_question"></string>
+    <string name="restart_setup_text"></string>
+    <string name="restart_setup_confirm"></string>
+    <string name="delete_all_backup_first"></string>
+    <string name="delete_all_hold"></string>
+    <string name="language"></string>
+    <string name="language_system"></string>
+    <string name="name"></string>
+    <string name="name_n"></string>
+    <string name="add_person"></string>
+    <string name="edit_person"></string>
+    <string name="remove_person"></string>
+    <string name="remove_person_confirm"></string>
+    <string name="pronouns"></string>
+    <string name="pronouns_hint"></string>
+    <string name="ob_names_poly_hint"></string>
+    <string name="poly_all"></string>
+    <string name="poly_title"></string>
+    <string name="poly_hint"></string>
+    <string name="section_people"></string>
+    <string name="section_relationships"></string>
+    <string name="add_relationship"></string>
+    <string name="edit_relationship"></string>
+    <string name="remove_relationship"></string>
+    <string name="remove_relationship_confirm"></string>
+    <string name="relationship_members"></string>
+    <string name="relationship_label"></string>
+    <string name="relationship_label_hint"></string>
+    <string name="relationship_start_title"></string>
+    <string name="relationship_start_title_hint"></string>
+    <string name="relationship_start_title_help"></string>
+    <string name="relationship_kind"></string>
+    <string name="kind_love"></string>
+    <string name="kind_friends"></string>
+    <string name="kind_family"></string>
+    <string name="friends_for"></string>
+    <string name="family_for"></string>
+    <string name="friends_since_long"></string>
+    <string name="family_since_long"></string>
+    <string name="before_together_long"></string>
+    <string name="before_friends_long"></string>
+    <string name="before_family_long"></string>
+    <string name="relationship_before"></string>
+    <string name="relationship_before_summary"></string>
+    <string name="relationship_before_since"></string>
+    <string name="relationship_before_invalid"></string>
+    <string name="relationship_notify"></string>
+    <string name="relationship_widget"></string>
+    <string name="discreet"></string>
+    <string name="discreet_summary"></string>
+    <string name="moment_for"></string>
+    <plurals name="relationships_count">
+    </plurals>
+    <string name="section_sync"></string>
+    <string name="sync_summary"></string>
+    <string name="sync_intro"></string>
+    <string name="sync_intro_paired"></string>
+    <string name="sync_who"></string>
+    <string name="sync_show_qr"></string>
+    <string name="sync_show_qr_summary"></string>
+    <string name="sync_scan"></string>
+    <string name="sync_scan_summary"></string>
+    <string name="sync_scan_prompt"></string>
+    <string name="sync_qr_text"></string>
+    <string name="sync_paired"></string>
+    <string name="sync_paired_since"></string>
+    <string name="sync_last"></string>
+    <string name="sync_paired_now"></string>
+    <string name="sync_bad_qr"></string>
+    <string name="sync_send"></string>
+    <string name="sync_send_summary"></string>
+    <string name="sync_send_failed"></string>
+    <string name="sync_open"></string>
+    <string name="sync_open_summary"></string>
+    <string name="sync_show_qr_again"></string>
+    <string name="sync_show_qr_again_summary"></string>
+    <string name="sync_unpair"></string>
+    <string name="sync_unpair_question"></string>
+    <string name="sync_unpair_text"></string>
+    <string name="sync_not_paired"></string>
+    <string name="sync_failed"></string>
+    <string name="sync_done"></string>
+    <string name="moment_added_by"></string>
+    <!-- Geburtstage -->
+    <string name="birthday"></string>
+    <string name="birthday_optional"></string>
+    <string name="birthday_remove"></string>
+    <string name="birthday_title"></string>
+    <string name="msg_birthday"></string>
+    <!-- Suche in den Momenten -->
+    <string name="moments_search"></string>
+    <string name="moments_search_clear"></string>
+    <string name="moments_no_results"></string>
+    <!-- App-Abkürzungen -->
+    <string name="shortcut_moment"></string>
+    <string name="shortcut_moment_long"></string>
+    <string name="shortcut_live"></string>
+    <string name="shortcut_live_long"></string>
+    <!-- Vorschau des Zähler-Widgets -->
+    <string name="widget_preview_number" translatable="false"></string>
+    <string name="widget_preview_label"></string>
+    <string name="widget_preview_next"></string>
+    <string name="facts_show"></string>
+    <string name="facts_show_summary"></string>
+    <string name="celebrate_show"></string>
+    <string name="celebrate_show_summary"></string>
+    <string name="facts_title"></string>
+    <string name="facts_next"></string>
+    <string name="facts_previous"></string>
+    <string name="holidays_title"></string>
+    <string name="holidays_text"></string>
+    <string name="holidays_none"></string>
+    <string name="holiday_valentines"></string>
+    <string name="holiday_halloween"></string>
+    <string name="holiday_christmas"></string>
+    <string name="holiday_new_year"></string>
+    <string name="fact_life_share"></string>
+    <string name="fact_life_share_sub"></string>
+    <string name="half_life_title"></string>
+    <string name="msg_half_life"></string>
+    <string name="fact_weekends_sub"></string>
+    <string name="fact_full_moons_sub"></string>
+    <string name="fact_christmas_sub"></string>
+    <string name="fact_new_years_sub"></string>
+    <string name="fact_seasons_sub"></string>
+    <string name="fact_heartbeats_sub"></string>
+    <string name="fact_valentines_sub"></string>
+    <string name="fact_pride_months_sub"></string>
+    <string name="fact_halloweens_sub"></string>
+    <string name="fact_friday_13th_sub"></string>
+    <string name="fact_earth_km_sub"></string>
+    <string name="fact_breaths_sub"></string>
+    <plurals name="fact_weekends">
+    </plurals>
+    <plurals name="fact_full_moons">
+    </plurals>
+    <plurals name="fact_valentines">
+    </plurals>
+    <plurals name="fact_pride_months">
+    </plurals>
+    <plurals name="fact_halloweens">
+    </plurals>
+    <plurals name="fact_friday_13th">
+    </plurals>
+    <plurals name="fact_earth_km">
+    </plurals>
+    <plurals name="fact_breaths">
+    </plurals>
+    <plurals name="fact_christmas">
+    </plurals>
+    <plurals name="fact_new_years">
+    </plurals>
+    <plurals name="fact_seasons">
+    </plurals>
+    <plurals name="fact_heartbeats">
+    </plurals>
+    <string name="distance_mode"></string>
+    <string name="distance_mode_summary"></string>
+    <string name="distance_zone"></string>
+    <string name="distance_zone_none"></string>
+    <string name="distance_zone_search"></string>
+    <string name="distance_meeting"></string>
+    <string name="distance_no_meeting"></string>
+    <string name="distance_today"></string>
+    <string name="distance_time"></string>
+    <string name="distance_later"></string>
+    <string name="distance_earlier"></string>
+    <string name="distance_same_time"></string>
+    <plurals name="distance_days">
+    </plurals>
+    <string name="widget_countdown_name"></string>
+    <string name="moments_view_list"></string>
+    <string name="moments_view_calendar"></string>
+    <string name="moments_oldest_first"></string>
+    <string name="moments_newest_first"></string>
+    <string name="calendar_previous"></string>
+    <string name="calendar_next"></string>
+    <string name="calendar_anniversaries"></string>
+    <string name="calendar_empty"></string>
+    <string name="widget_countdown_description"></string>
+    <string name="widget_countdown_empty"></string>
+    <string name="widget_countdown_empty_hint"></string>
+    <string name="widget_today"></string>
+    <string name="widget_countdown_preview_title"></string>
+    <string name="widget_countdown_preview_number" translatable="false"></string>
+    <string name="widget_countdown_preview_label"></string>
+    <plurals name="widget_countdown_days">
+    </plurals>
+    <!-- Geplante Momente, Vorab-Erinnerung -->
+    <string name="msg_planned"></string>
+    <string name="remind_before"></string>
+    <string name="remind_off"></string>
+    <string name="remind_day"></string>
+    <string name="remind_week"></string>
+    <string name="remind_tomorrow"></string>
+    <string name="remind_in_week"></string>
+    <!-- Automatische Sicherung -->
+    <string name="backup_auto"></string>
+    <string name="backup_auto_summary"></string>
+    <string name="backup_auto_folder"></string>
+    <string name="backup_auto_last"></string>
+    <!-- Teilen und Jahresrückblick -->
+    <string name="moment_share"></string>
+    <string name="year_review_title"></string>
+    <string name="year_review_range"></string>
+    <string name="year_review_share"></string>
+    <plurals name="year_review_moments">
+    </plurals>
+    <!-- Neuigkeiten nach Updates -->
+    <string name="changelog_title"></string>
+    <string name="changelog_ok"></string>
+    <string name="changelog_never"></string>
+    <string name="changelog_setting"></string>
+    <string name="changelog_setting_summary"></string>
+    <string name="app_lock"></string>
+    <string name="app_lock_summary"></string>
+    <string name="lock_title"></string>
+    <string name="lock_prompt"></string>
+    <string name="lock_unlock"></string>
+    <string name="lock_no_screen_lock"></string>
+    <string name="font_title"></string>
+    <string name="font_sample"></string>
+    <string name="font_group_standard"></string>
+    <string name="font_group_round"></string>
+    <string name="font_group_modern"></string>
+    <string name="font_group_serif"></string>
+    <string name="font_group_script"></string>
+    <string name="licenses_fonts"></string>
+    <string name="licenses_fonts_text"></string>
+    <string name="licenses_fonts_show"></string>
+    <string name="font_classic"></string>
+    <string name="section_privacy"></string>
+    <string name="settings_group_love"></string>
+    <string name="settings_group_app"></string>
+    <string name="settings_group_data"></string>
+    <string name="settings_group_info"></string>
+    <string name="app_lock_on"></string>
+    <string name="app_lock_off"></string>
+    <string name="website"></string>
+    <string name="imprint"></string>
+    <string name="privacy_full"></string>
+    <!-- Schlagwörter und Ort für Momente -->
+    <string name="moment_field_place"></string>
+    <string name="moment_open_place"></string>
+    <string name="moment_no_maps"></string>
+    <string name="moment_tags"></string>
+    <string name="moment_tag_new"></string>
+    <string name="moment_tag_add"></string>
+    <string name="moment_tag_remove"></string>
+    <string name="tag_date"></string>
+    <string name="tag_trip"></string>
+    <string name="tag_milestone"></string>
+    <string name="tag_celebration"></string>
+    <string name="tag_everyday"></string>
+    <!-- Erinnerungs-Widget -->
+    <string name="widget_memory_name"></string>
+    <string name="widget_memory_description"></string>
+    <string name="widget_memory_empty"></string>
+    <string name="widget_memory_empty_hint"></string>
+    <string name="widget_memory_preview_title"></string>
+    <string name="widget_memory_preview_when"></string>
+    <plurals name="memory_years_ago">
+    </plurals>
+    <plurals name="memory_months_ago">
+    </plurals>
+    <!-- Fotobuch als PDF -->
+    <string name="photobook_save"></string>
+    <string name="photobook_hint"></string>
+    <string name="photobook_file"></string>
+    <string name="photobook_saved"></string>
+    <string name="photobook_failed"></string>
+    <string name="photobook_made_with"></string>
+    <string name="photobook_moments_title"></string>
+</resources>
