@@ -439,6 +439,15 @@
     </plurals>
     <string name="distance_mode">Fernbeziehung</string>
     <string name="distance_mode_summary">Countdown bis zum nächsten Treffen und die Uhrzeit bei der anderen Seite</string>
+    <string name="travel_title">So reist ihr zueinander</string>
+    <string name="travel_plane">Flugzeug</string>
+    <string name="travel_train">Zug</string>
+    <string name="travel_car">Auto</string>
+    <string name="travel_bus">Bus</string>
+    <string name="travel_motorcycle">Motorrad</string>
+    <string name="travel_bike">Fahrrad</string>
+    <string name="travel_boat">Schiff</string>
+    <string name="travel_luggage">Koffer</string>
     <string name="distance_zone">Wo ist die andere Seite?</string>
     <string name="distance_zone_none">Gleiche Zeit wie hier</string>
     <string name="distance_zone_search">Stadt suchen</string>

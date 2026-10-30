@@ -31,6 +31,24 @@ enum class RelationKind(val id: String) {
     }
 }
 
+/** Verkehrsmittel, mit dem man sich bei einer Fernbeziehung besucht; ändert nur das Symbol. [id] wird gespeichert. */
+enum class Travel(val id: String) {
+    PLANE("plane"),
+    TRAIN("train"),
+    CAR("car"),
+    BUS("bus"),
+    MOTORCYCLE("motorcycle"),
+    BIKE("bike"),
+    BOAT("boat"),
+    LUGGAGE("luggage"),
+    ;
+
+    companion object {
+        /** Unbekannte oder fehlende Werte (ältere Daten) gelten als Flugzeug */
+        fun of(id: String?): Travel = entries.firstOrNull { it.id == id } ?: PLANE
+    }
+}
+
 /**
  * Eine Beziehung zwischen zwei oder mehr Menschen mit eigenem Startdatum.
  * Ein Paar ist eine Beziehung mit zwei Menschen, eine Triade eine mit dreien. Bei poly Menschen
@@ -53,6 +71,8 @@ data class Relationship(
     val farZone: String? = null,
     /** Nächstes Treffen, null = keins eingetragen */
     val nextMeeting: LocalDate? = null,
+    /** Wie man zueinander reist, nur für das Symbol der Fernbeziehung */
+    val travel: Travel = Travel.PLANE,
     /** Liebe, Freundschaft oder Familie; ändert nur Texte und Symbol */
     val kind: RelationKind = RelationKind.LOVE,
     /** Art der Beziehung vor [startDate], z. B. erst Freundschaft und dann Liebe, null = keine frühere Phase */
@@ -142,6 +162,7 @@ object PeopleCodec {
                     .put("distance", r.distance)
                     .put("farZone", r.farZone ?: JSONObject.NULL)
                     .put("meeting", r.nextMeeting?.toEpochDay() ?: JSONObject.NULL)
+                    .put("travel", r.travel.id)
                     .put("kind", r.kind.id)
                     .put("before", r.before?.id ?: JSONObject.NULL)
                     .put("beforeStart", r.beforeStart?.toEpochDay() ?: JSONObject.NULL)
@@ -166,6 +187,7 @@ object PeopleCodec {
                     distance = o.optBoolean("distance", false),
                     farZone = if (o.isNull("farZone")) null else o.optString("farZone").takeIf { Distance.isZone(it) },
                     nextMeeting = if (o.isNull("meeting")) null else LocalDate.ofEpochDay(o.getLong("meeting")),
+                    travel = Travel.of(o.optString("travel")),
                     kind = RelationKind.of(o.optString("kind")),
                     before = if (o.isNull("before")) null else RelationKind.entries.firstOrNull { it.id == o.optString("before") },
                     beforeStart = if (o.isNull("beforeStart")) null else LocalDate.ofEpochDay(o.getLong("beforeStart")),
