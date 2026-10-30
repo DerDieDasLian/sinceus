@@ -1,0 +1,1 @@
+La version F-Droid est maintenant signée avec la même clé que la version GitHub ("reproducible builds").
