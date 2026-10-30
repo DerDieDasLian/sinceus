@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_days_name">Jours passés ensemble</string>
+    <string name="changelog_never">Ne plus me montrer</string>
+    <string name="moments_view_calendar">Calendrier</string>
+    <string name="slideshow_off">Désactivé : seulement la photo principale</string>
+    <string name="delete_all_hold">Maintenez appuyé pour supprimer</string>
+    <string name="before_together_long">Avant celà, ensemble depuis %1$s</string>
+    <string name="update_channel_name">Mises à jour de l\'appli</string>
+    <string name="fact_weekends_sub">vous avez passé ensemble</string>
+    <string name="moment_remove_photo">Retirer la photo</string>
+    <string name="relationship_start_title">Titre de votre premier jour (optionnel)</string>
+    <plurals name="unit_days_dative">
+        <item quantity="one">jour</item>
+        <item quantity="many">jours</item>
+        <item quantity="other">jours</item>
+    </plurals>
+    <string name="distance_no_meeting">Ajoutez votre prochain rdv dans les paramètres dans la section Personnes &amp; relations</string>
+    <string name="sync_last">Dernière synchronisation le %1$s</string>
+    <string name="delete_all_question">Supprimer toutes les données ?</string>
+    <string name="half_life_title">La moitié de la vie de %1$s ensemble</string>
+    <string name="birthday_remove">Retirer l\'anniversaire</string>
+    <string name="restart_setup_confirm">Commencer le paramétrage</string>
+    <string name="fact_friday_13th_sub">ensemble vous avez survécu à</string>
+    <string name="tab_moments">Évènements</string>
+    <string name="sync_paired_since">Téléphones appairés depuis %1$s</string>
+    <string name="slideshow_empty">Pas encore de photos. Ajoutez-en quelques unes pour lancer le diaporama.</string>
+    <string name="fact_full_moons_sub">depuis que vous vous êtes mis ensemble</string>
+    <string name="sync_qr_text">Ouvrez Sync sur l\'autre appareil et appuyez sur Scanner le code QR. Ne montrez ce code qu\'à la personne avec qui vous voulez appairer votre appareil.</string>
+    <string name="settings_home">Écran d\'accueil</string>
+    <string name="adjust">Ajuster</string>
+    <plurals name="fact_weekends">
+        <item quantity="one">%s weekend</item>
+        <item quantity="many">%s weekends</item>
+        <item quantity="other">%s weekends</item>
+    </plurals>
+    <string name="notify_daily_at">Lors des jours spéciaux à %1$s</string>
+    <string name="ob_names_sub">Vos noms apparaissent en gros sur la photo.</string>
+    <string name="relationship_members">Qui en fait partie ?</string>
+    <string name="pronouns">Pronoms (optionnel)</string>
+    <string name="family_for">Membre de la famille depuis</string>
+    <string name="cancel">Annuler</string>
+    <string name="moment_field_note">Note (optionnel)</string>
+    <string name="poly_title">Vos relations</string>
+    <string name="poly_hint">Vous êtes plus de deux, ou vous avec pluseirs relations ? Ajoutez des personnes supplémentaires ici et donnez à chaque relation sa propre date.</string>
+    <string name="time_label">Temps : %1$s</string>
+    <string name="fact_new_years_sub">ensemble vous avez célébré</string>
+    <string name="widget_photo_description">Vos noms, les jours passés ensemble et le prochain jour spécial</string>
+</resources>
