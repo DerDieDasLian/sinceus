@@ -322,4 +322,12 @@
     <string name="moment_for">Pertenece a</string>
     <string name="update_channel_name">Actualizaciones de la app</string>
     <string name="update_available">Versión %1$s disponible</string>
+    <plurals name="relationships_count">
+        <item quantity="one">%1$s relación</item>
+        <item quantity="many">%1$s relaciones</item>
+    </plurals>
+    <string name="section_sync">Sincronizar</string>
+    <string name="sync_summary">Comparte momentos entre vuestros teléfonos</string>
+    <string name="sync_who">¿Quién utiliza este teléfono?</string>
+    <string name="sync_show_qr">Mostrar código QR</string>
 </resources>
