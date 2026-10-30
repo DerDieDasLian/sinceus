@@ -1,6 +1,7 @@
 package app.sinceus.ui
 
 import app.sinceus.data.RelationKind
+import app.sinceus.data.Travel
 import app.sinceus.data.FunFacts
 import app.sinceus.data.PeopleCodec
 import androidx.compose.foundation.selection.toggleable
@@ -141,7 +142,6 @@ import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Gavel
 import androidx.compose.material.icons.rounded.Public
-import androidx.compose.material.icons.rounded.Flight
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.Search
@@ -1183,12 +1183,23 @@ private fun RelationshipDialog(
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.distance_mode)) },
                     supportingContent = { Text(stringResource(R.string.distance_mode_summary)) },
-                    leadingContent = { Icon(Icons.Rounded.Flight, null) },
+                    leadingContent = { Icon(draft.travel.icon, null) },
                     trailingContent = { Switch(checked = draft.distance, onCheckedChange = { draft = draft.copy(distance = it) }) },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     modifier = Modifier.clickable { draft = draft.copy(distance = !draft.distance) },
                 )
                 if (draft.distance) {
+                    Text(stringResource(R.string.travel_title), style = MaterialTheme.typography.titleSmall)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Travel.entries.forEach { t ->
+                            FilterChip(
+                                selected = draft.travel == t,
+                                onClick = { draft = draft.copy(travel = t) },
+                                label = { Text(stringResource(t.title)) },
+                                leadingIcon = { Icon(t.icon, null, Modifier.size(18.dp)) },
+                            )
+                        }
+                    }
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.distance_zone)) },
                         supportingContent = {

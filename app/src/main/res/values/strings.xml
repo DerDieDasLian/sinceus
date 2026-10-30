@@ -443,6 +443,15 @@
     </plurals>
     <string name="distance_mode">Long distance</string>
     <string name="distance_mode_summary">Countdown to your next meeting and the time on the other side</string>
+    <string name="travel_title">How you travel to each other</string>
+    <string name="travel_plane">Plane</string>
+    <string name="travel_train">Train</string>
+    <string name="travel_car">Car</string>
+    <string name="travel_bus">Bus</string>
+    <string name="travel_motorcycle">Motorcycle</string>
+    <string name="travel_bike">Bike</string>
+    <string name="travel_boat">Boat</string>
+    <string name="travel_luggage">Luggage</string>
     <string name="distance_zone">Where is the other side?</string>
     <string name="distance_zone_none">Same time as here</string>
     <string name="distance_zone_search">Search for a city</string>

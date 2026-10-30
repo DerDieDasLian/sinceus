@@ -230,6 +230,15 @@ class PeopleTest {
     }
 
     @Test
+    fun travelRoundTripsAndOldDataFlies() {
+        val r = Relationship("p", listOf("a", "b"), LocalDate.of(2025, 3, 15), distance = true, travel = Travel.TRAIN)
+        assertEquals(Travel.TRAIN, PeopleCodec.decodeRelationships(PeopleCodec.encodeRelationships(listOf(r)))!!.single().travel)
+        val old = PeopleCodec.decodeRelationships("""[{"id":"p","members":["a","b"],"start":20162,"distance":true}]""")!!.single()
+        assertEquals(Travel.PLANE, old.travel)
+        assertEquals(Travel.PLANE, Travel.of("rocket"))
+    }
+
+    @Test
     fun halfLifeTogether() {
         val start = LocalDate.of(2020, 1, 1)
         val alex = Person("a", "Alex", birthday = LocalDate.of(2000, 1, 1))
