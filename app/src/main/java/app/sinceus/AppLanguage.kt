@@ -23,10 +23,16 @@ object AppLanguage {
     fun current(context: Context): String =
         if (Build.VERSION.SDK_INT >= 33) {
             val locales = context.getSystemService(LocaleManager::class.java).applicationLocales
-            if (locales.isEmpty) "" else locales[0].language
+            if (locales.isEmpty) "" else match(locales[0])
         } else {
             stored(context)
         }.takeIf { it in OPTIONS }.orEmpty()
+
+    /** Passender Eintrag aus [OPTIONS]: erst genau (z. B. „zh-CN“), sonst nur nach Sprache (z. B. „de-AT“ → „de“) */
+    private fun match(locale: Locale): String =
+        OPTIONS.firstOrNull { it.isNotEmpty() && it == locale.toLanguageTag() }
+            ?: OPTIONS.firstOrNull { it.isNotEmpty() && Locale.forLanguageTag(it).language == locale.language }
+            ?: ""
 
     fun set(activity: Activity, tag: String) {
         if (Build.VERSION.SDK_INT >= 33) {

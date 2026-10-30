@@ -1,6 +1,6 @@
 # Since Us
 
-A privacy-friendly Android app for couples: counts how long you have been together and reminds you of every special day. Available in English and German, more languages are [being translated](#help-translate).
+A privacy-friendly Android app for couples: counts how long you have been together and reminds you of every special day. Available in English, German, Italian and Chinese, more languages are [being translated](#help-translate).
 
 [![F-Droid](https://img.shields.io/f-droid/v/app.sinceus?label=F-Droid)](https://f-droid.org/packages/app.sinceus/)
 [![Translation status](https://hosted.weblate.org/widget/since-us/svg-badge.svg)](https://hosted.weblate.org/engage/since-us/)
@@ -23,7 +23,7 @@ A privacy-friendly Android app for couples: counts how long you have been togeth
 - Guided setup, optional start time, one-tap "delete all data"
 - Backup as a file (all data and photos) to move to a new phone, without internet
 - Sync between phones without a server: pair once with a QR code, then send each other an encrypted file (AES-256-GCM) that opens right in the app and only on your paired phones
-- Light and dark mode, English and German (more on the way), language can be changed right in the app
+- Light and dark mode, English, German, Italian and Chinese (more on the way), language can be changed right in the app
 - No account, no ads, no tracking, all data stays on the device
 - Poly mode: more than two people and several relationships, each with its own date, special days and reminders, plus a discreet mode with initials only
 - For every kind of love, no matter who you are, whom you love or how many of you there are, with a little rainbow decoration in Pride Month (June)

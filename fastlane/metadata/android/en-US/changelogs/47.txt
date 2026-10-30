@@ -1,1 +1,2 @@
 • Long distance: Choose how you travel to each other, e.g. train, car or plane. The icon shows up on the home screen.
+• Now in Italian and Chinese, thanks to the translators on Weblate.
