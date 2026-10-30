@@ -1,1 +1,2 @@
 • Fernbeziehung: Wählt, wie ihr zueinander reist, z. B. Zug, Auto oder Flugzeug. Das Symbol erscheint auf der Startseite.
+• Neu auf Italienisch und Chinesisch, dank der Übersetzer:innen auf Weblate.
