@@ -320,4 +320,6 @@
     <string name="discreet">Modo discreto</string>
     <string name="discreet_summary">Los widgets y las notificaciones solo muestran las iniciales</string>
     <string name="moment_for">Pertenece a</string>
+    <string name="update_channel_name">Actualizaciones de la app</string>
+    <string name="update_available">Versión %1$s disponible</string>
 </resources>
