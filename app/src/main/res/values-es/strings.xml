@@ -330,4 +330,20 @@
     <string name="sync_summary">Comparte momentos entre vuestros teléfonos</string>
     <string name="sync_who">¿Quién utiliza este teléfono?</string>
     <string name="sync_show_qr">Mostrar código QR</string>
+    <string name="sync_show_qr_summary">El otro móvil lo escanea</string>
+    <string name="sync_scan">Escanear el código QR</string>
+    <string name="sync_scan_summary">Escanea el código que aparece en el otro teléfono</string>
+    <string name="sync_scan_prompt">Escanea el código QR de Since Us en el otro teléfono.</string>
+    <string name="sync_qr_text">Abre Sync en el otro teléfono y pulsa en «Escanear código QR». Muéstrale este código únicamente a las personas con las que vayas a emparejar el dispositivo.</string>
+    <string name="sync_paired">Emparejados</string>
+    <string name="sync_paired_now">Emparejados. Ya puedes enviar archivos de sincronización.</string>
+    <string name="sync_bad_qr">Este no es un código de emparejamiento de Since Us.</string>
+    <string name="sync_send">Enviar sincronización</string>
+    <string name="sync_send_summary">Crea un archivo cifrado para compartirlo</string>
+    <string name="sync_send_failed">No se ha podido crear el archivo de sincronización.</string>
+    <string name="sync_open">Abrir archivo de sincronización</string>
+    <string name="sync_show_qr_again">Emparejar otro teléfono</string>
+    <string name="sync_show_qr_again_summary">Vuelve a mostrar el código QR, por ejemplo, para un teléfono nuevo</string>
+    <string name="sync_unpair">Desemparejar</string>
+    <string name="sync_unpair_question">Desemparejar?</string>
 </resources>
