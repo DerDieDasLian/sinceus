@@ -1,6 +1,6 @@
 # Code of Conduct
 
-Since Us is made for every kind of love, and this project should feel just as welcoming. Everyone is welcome here, no matter their age, body, disability, ethnicity, gender identity and expression, level of experience, nationality, appearance, religion or belief, sexual orientation or relationship style.
+Since Us is made for every kind of love by a queer, non-binary person (Lian, they/them), and this project should feel just as welcoming. Everyone is welcome here, no matter their age, body, disability, ethnicity, gender identity and expression, level of experience, nationality, appearance, religion or belief, sexual orientation or relationship style.
 
 ## What we expect
 
@@ -8,11 +8,13 @@ Since Us is made for every kind of love, and this project should feel just as we
 - Assume good intentions and stay respectful when you disagree.
 - Accept that not every idea will be added to the app (see [SCOPE.md](SCOPE.md)), and respect a "no".
 - Give feedback on the work, not the person.
+- Use the pronouns people tell you. If you don't know them, use the person's name or they/them.
 
 ## What is not okay
 
 - Insults, harassment, threats or personal attacks
 - Discriminating, sexist, racist, queerphobic or otherwise hateful comments
+- Misgendering or deadnaming someone on purpose, or questioning someone's identity or relationship
 - Sexual language or images
 - Sharing other people's private information without their permission
 - Repeatedly pushing for something after a clear answer
