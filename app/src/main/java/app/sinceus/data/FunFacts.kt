@@ -76,7 +76,7 @@ object FunFacts {
     }
 
     /** Tage nach [start] bis einschließlich [today], die [match] erfüllen */
-    private fun count(start: LocalDate, today: LocalDate, match: (LocalDate) -> Boolean): Long {
+    internal fun count(start: LocalDate, today: LocalDate, match: (LocalDate) -> Boolean): Long {
         var n = 0L
         var d = start.plusDays(1)
         while (!d.isAfter(today)) {

@@ -87,6 +87,8 @@ data class LoveSettings(
     val hiddenFacts: Set<FunFacts.Kind> = emptySet(),
     /** Kleine Konfetti-Feier an Jahrestagen und runden Tagen */
     val celebrate: Boolean = true,
+    /** Jahresrückblick rund um den Jahrestag und frühere Jahre bei den Momenten */
+    val showWrapped: Boolean = true,
     /** Weitere Fotos für die Diashow im Titelbild (Pfade im App-Speicher, files/slides/) */
     val slides: List<String> = emptyList(),
     /** Version (versionCode), deren Neuigkeiten schon gezeigt wurden, 0 = unbekannt */
@@ -187,6 +189,7 @@ private object Keys {
     val showFacts = booleanPreferencesKey("show_facts")
     val hiddenFacts = stringSetPreferencesKey("hidden_facts")
     val celebrate = booleanPreferencesKey("celebrate")
+    val showWrapped = booleanPreferencesKey("show_wrapped")
     val slides = stringPreferencesKey("slides")
     val people = stringPreferencesKey("people")
     val relationships = stringPreferencesKey("relationships")
@@ -270,6 +273,7 @@ class LoveRepository(private val context: Context) {
             showFacts = this[Keys.showFacts] ?: d.showFacts,
             hiddenFacts = this[Keys.hiddenFacts]?.let(FunFacts::holidaysOf) ?: d.hiddenFacts,
             celebrate = this[Keys.celebrate] ?: d.celebrate,
+            showWrapped = this[Keys.showWrapped] ?: d.showWrapped,
             slides = PathListCodec.decode(this[Keys.slides]).filter { File(it).exists() },
             changelogSeen = this[Keys.changelogSeen] ?: d.changelogSeen,
             showChangelog = this[Keys.showChangelog] ?: d.showChangelog,
@@ -402,6 +406,8 @@ class LoveRepository(private val context: Context) {
         context.dataStore.edit { it[Keys.hiddenFacts] = hidden.map { k -> k.name }.toSet() }
 
     suspend fun setCelebrate(on: Boolean) = context.dataStore.edit { it[Keys.celebrate] = on }
+
+    suspend fun setShowWrapped(show: Boolean) = context.dataStore.edit { it[Keys.showWrapped] = show }
 
     suspend fun deleteMoment(id: String) {
         val old = current().moments.firstOrNull { it.id == id } ?: return
@@ -648,6 +654,7 @@ class LoveRepository(private val context: Context) {
             p[Keys.showFacts] = restored.showFacts
             p[Keys.hiddenFacts] = restored.hiddenFacts.map { it.name }.toSet()
             p[Keys.celebrate] = restored.celebrate
+            p[Keys.showWrapped] = restored.showWrapped
             p[Keys.slides] = PathListCodec.encode(restored.slides)
         }
     }

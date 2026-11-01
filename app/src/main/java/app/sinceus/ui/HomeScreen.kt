@@ -8,7 +8,13 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import app.sinceus.data.WrappedMath
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.aspectRatio
@@ -133,6 +139,8 @@ fun HomeScreen(
     val pageCount = pages.size
     val pager = rememberPagerState(initialPage = settings.homePage.coerceIn(0, pageCount - 1)) { pageCount }
     val scope = rememberCoroutineScope()
+    // Gerade geöffneter Jahresrückblick (Nummer des Jahres), 0 = keiner
+    var wrappedYear by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(pager) {
         snapshotFlow { pager.settledPage }.drop(1).collect(onPageChange)
     }
@@ -152,7 +160,7 @@ fun HomeScreen(
                 HomePage.Overview -> if (settings.showAll) {
                     PolyOverview(settings, today, onSelect)
                 } else {
-                    Overview(settings, today, onSelect)
+                    Overview(settings, today, onSelect, onOpenWrapped = { wrappedYear = it })
                 }
                 HomePage.Live -> LiveScreen(settings, active = pager.currentPage == page)
                 HomePage.Moments -> MomentsScreen(
@@ -162,6 +170,7 @@ fun HomeScreen(
                     onOpen = onOpenMoment,
                     onNewestFirst = onNewestFirst,
                     onPhotobook = onPhotobook,
+                    onOpenWrapped = { wrappedYear = it },
                 )
             }
         }
@@ -199,6 +208,21 @@ fun HomeScreen(
                     modifier = Modifier.size(22.dp),
                 )
             }
+        }
+        if (settings.showWrapped && wrappedYear > 0) {
+            val context = LocalContext.current
+            val start = settings.startDate
+            val review = remember(settings, wrappedYear) {
+                YearReviewMath.reviewOf(start, wrappedYear, if (settings.showMoments) settings.visibleMoments else emptyList())
+            }
+            val wrapped = remember(review, today) { WrappedMath.of(start, review, today) }
+            WrappedScreen(
+                settings,
+                wrapped,
+                today,
+                onShare = { ShareCard.shareYear(context, settings, review) },
+                onClose = { wrappedYear = 0 },
+            )
         }
     }
 }
@@ -245,7 +269,7 @@ private fun ModeSwitch(selected: Int, pages: List<HomePage>, onSelect: (Int) -> 
 }
 
 @Composable
-private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String) -> Unit) {
+private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String) -> Unit, onOpenWrapped: (Int) -> Unit) {
     val start = settings.startDate
     val kind = settings.relationship.kind
     val together = LoveMath.together(start, today)
@@ -265,8 +289,8 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
         .map { it to (null as String?) }
     val context = LocalContext.current
     val share = { ShareCard.share(context, settings, today, ShareCard.defaultText(context, settings, today)) }
-    // Rückblick am Jahrestag und in der Woche danach
-    val review = if (settings.showMoments) YearReviewMath.reviewFor(start, today, settings.visibleMoments) else null
+    // Rückblick am Jahrestag und in der Woche danach, lässt sich in den Einstellungen abschalten
+    val review = if (settings.showWrapped) YearReviewMath.reviewFor(start, today, moments) else null
 
     Column(
         Modifier
@@ -303,7 +327,11 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
 
             if (settings.relationship.distance) DistanceCard(settings.relationship, today)
 
-            review?.let { YearReviewCard(it) { ShareCard.shareYear(context, settings, it) } }
+            review?.let {
+                YearReviewCard(it, withMoments = settings.showMoments, onOpen = { onOpenWrapped(it.year) }) {
+                    ShareCard.shareYear(context, settings, it)
+                }
+            }
 
             if (LocalPrideMonth.current) RainbowCard(stringResource(R.string.pride_title), stringResource(R.string.all_couples_text))
 
@@ -528,9 +556,10 @@ internal fun TodayBanner(lines: List<String>) {
     }
 }
 
-/** Rückblick auf das vergangene Jahr mit ein paar Fotos und dem Knopf zum Teilen */
+/** Rückblick auf das vergangene Jahr mit ein paar Fotos, dem großen Rückblick und dem Knopf zum Teilen */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun YearReviewCard(review: YearReview, onShare: () -> Unit) {
+private fun YearReviewCard(review: YearReview, withMoments: Boolean, onOpen: () -> Unit, onShare: () -> Unit) {
     val photos = review.moments.mapNotNull { it.photoPath }.take(3)
     Card(
         shape = RoundedCornerShape(24.dp),
@@ -544,7 +573,11 @@ private fun YearReviewCard(review: YearReview, onShare: () -> Unit) {
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                pluralStringResource(R.plurals.year_review_moments, review.moments.size, formatNumber(review.moments.size.toLong())),
+                if (withMoments) {
+                    pluralStringResource(R.plurals.year_review_moments, review.moments.size, formatNumber(review.moments.size.toLong()))
+                } else {
+                    stringResource(R.string.year_review_range, Texts.longDate(review.from), Texts.longDate(review.to))
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -577,9 +610,19 @@ private fun YearReviewCard(review: YearReview, onShare: () -> Unit) {
                     modifier = Modifier.padding(top = 6.dp),
                 )
             }
-            FilledTonalButton(onClick = onShare, modifier = Modifier.padding(top = 12.dp)) {
-                Icon(Icons.Rounded.Share, null)
-                Text(stringResource(R.string.year_review_share), Modifier.padding(start = 8.dp))
+            FlowRow(
+                Modifier.padding(top = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Button(onClick = onOpen) {
+                    Icon(Icons.Rounded.History, null)
+                    Text(stringResource(R.string.wrapped_open), Modifier.padding(start = 8.dp))
+                }
+                FilledTonalButton(onClick = onShare) {
+                    Icon(Icons.Rounded.Share, null)
+                    Text(stringResource(R.string.year_review_share), Modifier.padding(start = 8.dp))
+                }
             }
         }
     }

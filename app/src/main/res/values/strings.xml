@@ -594,4 +594,60 @@
     <string name="help_translate_summary">On Weblate, no programming needed</string>
     <string name="about_scope">What Since Us is (and isn\'t)</string>
     <string name="about_scope_summary">Why some ideas won\'t be added</string>
+    <!-- Großer Jahresrückblick ("Wrapped") -->
+    <string name="wrapped_show">Year in review</string>
+    <string name="wrapped_show_summary">A look back at your year around your anniversary, earlier years under Moments</string>
+    <string name="wrapped_open">Look back</string>
+    <string name="wrapped_close">Close</string>
+    <string name="wrapped_page">%1$d of %2$d</string>
+    <string name="wrapped_years">Your years in review</string>
+    <string name="wrapped_pick_year">Which year?</string>
+    <string name="wrapped_intro_label">Looking back</string>
+    <string name="wrapped_time_label">Your time</string>
+    <plurals name="wrapped_days">
+        <item quantity="one">day together</item>
+        <item quantity="other">days together</item>
+    </plurals>
+    <plurals name="wrapped_weekends">
+        <item quantity="one">%1$s weekend</item>
+        <item quantity="other">%1$s weekends</item>
+    </plurals>
+    <plurals name="wrapped_full_moons">
+        <item quantity="one">%1$s full moon</item>
+        <item quantity="other">%1$s full moons</item>
+    </plurals>
+    <string name="wrapped_moments_label">Your moments</string>
+    <string name="wrapped_no_moments">No moments saved for this year. Maybe there will be some here next year.</string>
+    <plurals name="wrapped_moments">
+        <item quantity="one">moment this year</item>
+        <item quantity="other">moments this year</item>
+    </plurals>
+    <plurals name="wrapped_photos">
+        <item quantity="one">with %1$s photo</item>
+        <item quantity="other">with %1$s photos</item>
+    </plurals>
+    <plurals name="wrapped_top_month">
+        <item quantity="one">%2$s of them in %1$s</item>
+        <item quantity="other">%2$s of them in %1$s</item>
+    </plurals>
+    <string name="wrapped_tags_label">Your tags</string>
+    <plurals name="wrapped_times">
+        <item quantity="one">%1$s time</item>
+        <item quantity="other">%1$s times</item>
+    </plurals>
+    <string name="wrapped_places_label">Your places</string>
+    <plurals name="wrapped_places">
+        <item quantity="one">%1$s place</item>
+        <item quantity="other">%1$s different places</item>
+    </plurals>
+    <string name="wrapped_top_place">Most often: %1$s</string>
+    <string name="wrapped_photos_label">Your photos</string>
+    <string name="wrapped_first_label">First moment of the year</string>
+    <string name="wrapped_last_label">Last moment of the year</string>
+    <string name="wrapped_next_label">Coming up</string>
+    <plurals name="wrapped_in_days">
+        <item quantity="one">in %1$s day</item>
+        <item quantity="other">in %1$s days</item>
+    </plurals>
+    <string name="wrapped_end">Here\'s to the next year.</string>
 </resources>

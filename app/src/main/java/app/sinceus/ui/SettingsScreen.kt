@@ -93,6 +93,7 @@ import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.Celebration
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.SystemUpdate
@@ -203,6 +204,7 @@ fun SettingsScreen(
     onShowFacts: (Boolean) -> Unit = {},
     onHiddenFacts: (Set<FunFacts.Kind>) -> Unit = {},
     onCelebrate: (Boolean) -> Unit = {},
+    onShowWrapped: (Boolean) -> Unit = {},
     /** Download-Fortschritt eines Updates in Prozent (-1 = unbekannt), null = kein Download */
     updateProgress: Int? = null,
     onOpenLicenses: () -> Unit = {},
@@ -451,6 +453,15 @@ fun SettingsScreen(
                             trailingContent = { Switch(checked = settings.celebrate, onCheckedChange = onCelebrate) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                             modifier = Modifier.clickable { onCelebrate(!settings.celebrate) },
+                        )
+                        Divider()
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.wrapped_show)) },
+                            supportingContent = { Text(stringResource(R.string.wrapped_show_summary)) },
+                            leadingContent = { Icon(Icons.Rounded.History, null) },
+                            trailingContent = { Switch(checked = settings.showWrapped, onCheckedChange = onShowWrapped) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable { onShowWrapped(!settings.showWrapped) },
                         )
                         Divider()
                         Row(Icons.Rounded.Widgets, stringResource(R.string.add_widget), null, onClick = onAddWidget)
