@@ -1,5 +1,11 @@
 blank_issues_enabled: true
 contact_links:
+  - name: What Since Us is (and isn't)
+    url: https://github.com/DerDieDasLian/sinceus/blob/main/SCOPE.md
+    about: Please read this before suggesting an idea.
+  - name: Report a security problem
+    url: https://github.com/DerDieDasLian/sinceus/security/advisories/new
+    about: Please report security problems privately, not as a public issue.
   - name: Website
     url: https://sinceus.de/
     about: Learn more about Since Us and how it works.
