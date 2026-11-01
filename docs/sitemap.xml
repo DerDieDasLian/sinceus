@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://sinceus.de/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sinceus.de/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://sinceus.de/index-de.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sinceus.de/"/>
+  </url>
+  <url>
+    <loc>https://sinceus.de/index-de.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sinceus.de/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://sinceus.de/index-de.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sinceus.de/"/>
+  </url>
+  <url>
+    <loc>https://sinceus.de/privacy-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sinceus.de/privacy-en.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://sinceus.de/privacy-de.html"/>
+  </url>
+  <url>
+    <loc>https://sinceus.de/privacy-de.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sinceus.de/privacy-en.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://sinceus.de/privacy-de.html"/>
+  </url>
+</urlset>
