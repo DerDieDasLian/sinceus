@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for your idea! Since Us is made for couples (poly ones too), so ideas that fit that focus have the best chance.
+        Thanks for your idea! Since Us is made for couples (poly ones too), so ideas that fit that focus have the best chance. Please read [what Since Us is and isn't](https://github.com/DerDieDasLian/sinceus/blob/main/SCOPE.md) before you continue.
   - type: textarea
     id: idea
     attributes:

@@ -1,16 +1,28 @@
+<div align="center">
+
+<img src="docs/img/icon.png" width="96" alt="Since Us icon">
+
 # Since Us
 
-A privacy-friendly Android app for couples: counts how long you have been together and reminds you of every special day. Available in English, German, Italian and Chinese, more languages are [being translated](#help-translate).
+**A privacy-friendly Android app for couples.**<br>
+Counts how long you have been together and reminds you of every special day.
 
 [![F-Droid](https://img.shields.io/f-droid/v/app.sinceus?label=F-Droid)](https://f-droid.org/packages/app.sinceus/)
+[![GitHub release](https://img.shields.io/github/v/release/DerDieDasLian/sinceus?label=GitHub)](https://github.com/DerDieDasLian/sinceus/releases/latest)
 [![Translation status](https://hosted.weblate.org/widget/since-us/svg-badge.svg)](https://hosted.weblate.org/engage/since-us/)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
+
+[Website](https://sinceus.de/) · [Download](#download) · [Help translate](#help-translate) · [Contributing](CONTRIBUTING.md) · [Scope](SCOPE.md)
 
 <p>
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" width="200" alt="Overview">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg" width="200" alt="Live counter">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg" width="200" alt="Setup">
 </p>
+
+</div>
+
+Available in English, German, Italian and Chinese, more languages are [being translated](#help-translate).
 
 ## Features
 
@@ -27,6 +39,14 @@ A privacy-friendly Android app for couples: counts how long you have been togeth
 - No account, no ads, no tracking, all data stays on the device
 - Poly mode: more than two people and several relationships, each with its own date, special days and reminders, plus a discreet mode with initials only
 - For every kind of love, no matter who you are, whom you love or how many of you there are, with a little rainbow decoration in Pride Month (June)
+
+## What Since Us is (and isn't)
+
+Since Us is made for couples, poly ones included. Friendship and family can be chosen per relationship in the settings, but the app stays built around couples. It has no account, no server and no tracking, and it stays that way. The details are in [SCOPE.md](SCOPE.md), please read it before suggesting an idea.
+
+## Contributing
+
+Bug reports, ideas, translations and small fixes are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help, and please follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security problems should be reported privately, see the [security policy](.github/SECURITY.md).
 
 ## Third-party libraries
 
