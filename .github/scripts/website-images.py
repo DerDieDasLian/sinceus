@@ -9,8 +9,8 @@ from PIL import Image
 SHOTS = Path("app/build/screenshots")
 DOCS = Path("docs/img")
 
-# Website: Startbereich (1 bis 3) und Abschnitt Momente
-SCREENS = {"1": "home", "2": "live", "3": "settings"}
+# Website: Startbereich (1 bis 3) und Abschnitt Momente, im Dunkelmodus wie die Seite selbst
+SCREENS = {"1": "home_dark_site", "2": "live_dark", "3": "settings_dark"}
 LANGS = {"de": "de-DE", "en": "en-US"}
 
 
@@ -21,7 +21,7 @@ def screen(lang: str, name: str) -> Image.Image:
 for lang, store_lang in LANGS.items():
     for number, name in SCREENS.items():
         screen(lang, name).save(DOCS / f"{lang}-{number}.webp", quality=82, method=6)
-    screen(lang, "moments").save(DOCS / f"moments-{lang}.webp", quality=82, method=6)
+    screen(lang, "moments_dark").save(DOCS / f"moments-{lang}.webp", quality=82, method=6)
 
     # Liebeskarte mit durchsichtigen runden Ecken
     widget = "card_3x2" if lang == "de" else "card_3x2_en"

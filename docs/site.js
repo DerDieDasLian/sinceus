@@ -11,6 +11,21 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
+  // Menü auf dem Handy
+  var menuBtn = document.querySelector(".menu-btn");
+  if (nav && menuBtn) {
+    menuBtn.addEventListener("click", function () {
+      var open = nav.classList.toggle("open");
+      menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    nav.querySelectorAll(".nav-links a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        nav.classList.remove("open");
+        menuBtn.setAttribute("aria-expanded", "false");
+      });
+    });
+  }
+
   // Einblenden beim Scrollen
   var targets = document.querySelectorAll(".section-head, main .card, .split > div, .help-note");
   if (calm || !("IntersectionObserver" in window)) return;
