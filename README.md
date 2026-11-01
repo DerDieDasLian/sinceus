@@ -12,7 +12,7 @@ Counts how long you have been together and reminds you of every special day.
 [![Translation status](https://hosted.weblate.org/widget/since-us/svg-badge.svg)](https://hosted.weblate.org/engage/since-us/)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 
-[Website](https://sinceus.de/) · [Download](#download) · [Help translate](#help-translate) · [Contributing](CONTRIBUTING.md) · [Scope](SCOPE.md)
+[Website](https://sinceus.de/) · [Download](#download) · [Help translate](#help-translate) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Scope](SCOPE.md)
 
 <p>
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" width="200" alt="Overview">
@@ -23,6 +23,14 @@ Counts how long you have been together and reminds you of every special day.
 </div>
 
 Available in English, German, Italian and Chinese, more languages are [being translated](#help-translate).
+
+## Why Since Us
+
+- **Poly friendly from day one:** as many people and relationships as you like, each with its own date, special days and reminders
+- **Queer and non-binary friendly at its core:** gender-neutral texts, pronouns built in, Pride decoration in June, made by a queer, non-binary person
+- **Open source:** all code is public under the GPL
+- **Free forever:** no ads, no subscription, no premium version, no in-app purchases
+- **Private by design:** no account, no server, no tracking, everything stays on your phone
 
 ## Features
 
@@ -42,7 +50,7 @@ Available in English, German, Italian and Chinese, more languages are [being tra
 
 ## What Since Us is (and isn't)
 
-Since Us is made for couples, poly ones included. Friendship and family can be chosen per relationship in the settings, but the app stays built around couples. It has no account, no server and no tracking, and it stays that way. The details are in [SCOPE.md](SCOPE.md), please read it before suggesting an idea.
+Since Us is made for couples, poly ones included. Friendship and family can be chosen per relationship in the settings, but the app stays built around couples. It will never have ads, accounts, tracking or anything that costs money. The details are in [SCOPE.md](SCOPE.md), please read it before suggesting an idea. What is planned next is on the [roadmap](ROADMAP.md).
 
 ## Contributing
 
