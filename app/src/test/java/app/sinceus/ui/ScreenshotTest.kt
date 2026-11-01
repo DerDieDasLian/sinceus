@@ -269,6 +269,43 @@ class ScreenshotTest {
         )
     }
 
+    // Dunkle Screenshots für die Website (sinceus.de ist dunkel gestaltet)
+    private val englishMoments = listOf(
+        app.sinceus.data.Moment("1", "How we met", LocalDate.of(2025, 1, 20), "At Mia's birthday party"),
+        app.sinceus.data.Moment("2", "First date", LocalDate.of(2025, 2, 14), "Movies and pizza afterwards"),
+        app.sinceus.data.Moment("3", "First trip", LocalDate.of(2025, 7, 5), "A week by the sea"),
+    )
+
+    @Test
+    fun websiteHomeDark() = shot("home_dark_site", dark = true) { HomeScreen(settings, today, {}, {}) }
+
+    @Test
+    fun websiteHomeDarkGerman() = shot("home_dark_site", dark = true, lang = "de") { HomeScreen(settings, today, {}, {}) }
+
+    @Test
+    fun websiteLiveDark() = shot("live_dark", dark = true) {
+        LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2025, 8, 15, 12, 46, 33))
+    }
+
+    @Test
+    fun websiteLiveDarkGerman() = shot("live_dark", dark = true, lang = "de") {
+        LiveScreen(settings, active = false, now = java.time.LocalDateTime.of(2025, 8, 15, 12, 46, 33))
+    }
+
+    @Test
+    fun websiteSettingsDark() = shot("settings_dark", dark = true) { SettingsScreen(settings, true) }
+
+    @Test
+    fun websiteSettingsDarkGerman() = shot("settings_dark", dark = true, lang = "de") { SettingsScreen(settings, true) }
+
+    @Test
+    fun websiteMomentsDark() = shot("moments_dark", dark = true) {
+        MomentsScreen(settings.copy(moments = englishMoments), today, {}, {})
+    }
+
+    @Test
+    fun websiteMomentsDarkGerman() = shot("moments_dark", dark = true, lang = "de") { MomentsScreen(withMoments, today, {}, {}) }
+
     private fun shot(
         name: String,
         dark: Boolean = false,
