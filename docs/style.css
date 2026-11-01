@@ -74,7 +74,7 @@ svg { fill: currentColor; }
 .nav-links .lang:hover { background: var(--accent); color: var(--on-accent); }
 
 /* Hero */
-.hero { position: relative; overflow: hidden; padding: 140px 0 96px; isolation: isolate; }
+.hero { position: relative; padding: 140px 0 96px; isolation: isolate; }
 .glow { position: absolute; z-index: -1; pointer-events: none; width: 560px; height: 560px; right: 6%; top: 18%; border-radius: 50%;
   background: var(--accent-2); opacity: .16; filter: blur(110px); }
 .hero .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
@@ -330,5 +330,5 @@ html, body { overflow-x: clip; }
 .involve-links small { color: var(--muted); font-size: .9rem; }
 .involve-links .arrow { flex: none; width: 22px; height: 22px; fill: var(--muted); }
 .involve-note { grid-column: 1 / -1; margin: 8px 0 0; color: var(--muted); font-size: .92rem; }
-#help { padding-top: 0; }
+#help { padding-bottom: 0; }
 @media (max-width: 960px) { .involve { grid-template-columns: 1fr; padding: 28px 20px; } }
