@@ -579,4 +579,19 @@
     <string name="photobook_failed">Could not save the photo book</string>
     <string name="photobook_made_with">Made with Since Us</string>
     <string name="photobook_moments_title">Our moments</string>
+    <string name="section_feedback">Help and feedback</string>
+    <string name="report_bug">Report a bug</string>
+    <string name="report_bug_summary">On GitHub or by email</string>
+    <string name="report_bug_text">Your app version, where you got the app from and your phone model are filled in for you. Names, dates and photos are never sent. Please don\'t write private data into the report.</string>
+    <string name="report_github">GitHub</string>
+    <string name="report_email">Email</string>
+    <string name="bug_mail_subject">Since Us bug report</string>
+    <string name="bug_mail_body">What happened?\n\n\nWhat did you expect?\n\n\n%1$s</string>
+    <string name="no_mail_app">No email app found. You can write to %1$s.</string>
+    <string name="suggest_idea">Suggest an idea</string>
+    <string name="suggest_idea_summary">Since Us is made for couples. Ideas that fit have the best chance.</string>
+    <string name="help_translate">Help translate</string>
+    <string name="help_translate_summary">On Weblate, no programming needed</string>
+    <string name="about_scope">What Since Us is (and isn\'t)</string>
+    <string name="about_scope_summary">Why some ideas won\'t be added</string>
 </resources>
