@@ -348,3 +348,8 @@ html, body { overflow-x: clip; }
   .js .nav.open .nav-links .lang { display: block; text-align: center; margin-top: 6px; }
   .js .nav.open .wrap { background: color-mix(in srgb, var(--surface) 78%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 }
+
+/* Vier Karten unter Für jede Liebe */
+.grid.four { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 960px) { .grid.four { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) { .grid.four { grid-template-columns: 1fr; } }
