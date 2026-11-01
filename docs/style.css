@@ -117,6 +117,7 @@ section { padding: 88px 0; }
 .store h3 { margin: 0 0 8px; }
 .store p { color: var(--muted); margin: 0 0 18px; min-height: 3.2em; }
 .store .btn-accent { background: var(--accent); color: var(--bg); }
+.help-note { text-align: center; color: var(--muted); margin: 32px auto 0; max-width: 640px; }
 .store .more { display: block; margin-top: 12px; font-size: .9rem; color: var(--muted); }
 
 footer { border-top: 1px solid var(--line); padding: 36px 0 48px; color: var(--muted); font-size: .95rem; }

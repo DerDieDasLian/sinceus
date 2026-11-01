@@ -87,6 +87,9 @@ import java.time.ZoneOffset
 import app.sinceus.BuildConfig
 import app.sinceus.R
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Translate
+import androidx.compose.material.icons.rounded.Lightbulb
+import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.Celebration
@@ -560,6 +563,39 @@ fun SettingsScreen(
                                 onClick = onOpenChangelog,
                             )
                         }
+                        Section(stringResource(R.string.section_feedback)) {
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.report_bug)) },
+                                supportingContent = { Text(stringResource(R.string.report_bug_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.BugReport, null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { dialog = "bug" },
+                            )
+                            Divider()
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.suggest_idea)) },
+                                supportingContent = { Text(stringResource(R.string.suggest_idea_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.Lightbulb, null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { uri.openUri(Feedback.ideaUrl()) },
+                            )
+                            Divider()
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.help_translate)) },
+                                supportingContent = { Text(stringResource(R.string.help_translate_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.Translate, null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { uri.openUri(Feedback.WEBLATE) },
+                            )
+                            Divider()
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.about_scope)) },
+                                supportingContent = { Text(stringResource(R.string.about_scope_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.Favorite, null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { uri.openUri(Feedback.SCOPE) },
+                            )
+                        }
                     }
                     SettingsPage.Reset -> {
                         Text(
@@ -754,6 +790,18 @@ fun SettingsScreen(
                 }) { Text(stringResource(R.string.backup_import_confirm)) }
             },
             dismissButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.cancel)) } },
+        )
+        "bug" -> AlertDialog(
+            onDismissRequest = { dialog = null },
+            icon = { Icon(Icons.Rounded.BugReport, null) },
+            title = { Text(stringResource(R.string.report_bug)) },
+            text = { Text(stringResource(R.string.report_bug_text)) },
+            confirmButton = {
+                TextButton(onClick = { dialog = null; uri.openUri(Feedback.bugUrl()) }) { Text(stringResource(R.string.report_github)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { dialog = null; Feedback.mailBug(context) }) { Text(stringResource(R.string.report_email)) }
+            },
         )
         "privacy" -> AlertDialog(
             onDismissRequest = { dialog = null },

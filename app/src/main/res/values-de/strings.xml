@@ -574,4 +574,19 @@
     <string name="photobook_failed">Fotobuch konnte nicht gespeichert werden</string>
     <string name="photobook_made_with">Erstellt mit Since Us</string>
     <string name="photobook_moments_title">Unsere Momente</string>
+    <string name="section_feedback">Hilfe und Feedback</string>
+    <string name="report_bug">Fehler melden</string>
+    <string name="report_bug_summary">Auf GitHub oder per Mail</string>
+    <string name="report_bug_text">App-Version, Bezugsquelle und euer Handymodell werden automatisch eingetragen. Namen, Daten und Fotos werden nie mitgeschickt. Bitte schreibt keine privaten Daten in die Meldung.</string>
+    <string name="report_github">GitHub</string>
+    <string name="report_email">Mail</string>
+    <string name="bug_mail_subject">Since Us Fehlermeldung</string>
+    <string name="bug_mail_body">Was ist passiert?\n\n\nWas hätte passieren sollen?\n\n\n%1$s</string>
+    <string name="no_mail_app">Keine Mail-App gefunden. Ihr könnt an %1$s schreiben.</string>
+    <string name="suggest_idea">Idee vorschlagen</string>
+    <string name="suggest_idea_summary">Since Us ist für Paare gemacht. Passende Ideen haben die besten Chancen.</string>
+    <string name="help_translate">Beim Übersetzen helfen</string>
+    <string name="help_translate_summary">Auf Weblate, ganz ohne Programmieren</string>
+    <string name="about_scope">Was Since Us ist (und was nicht)</string>
+    <string name="about_scope_summary">Warum manche Ideen nicht dazukommen</string>
 </resources>

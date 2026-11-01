@@ -1,2 +1,3 @@
 • Long distance: Choose how you travel to each other, e.g. train, car or plane. The icon shows up on the home screen.
 • Now in Italian and Chinese, thanks to the translators on Weblate.
+• New under Settings, About the app: report a bug (on GitHub or by email, version and phone are filled in for you), suggest an idea and help translate.

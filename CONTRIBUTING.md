@@ -8,7 +8,7 @@ Please read [What Since Us is (and what it isn't)](SCOPE.md) first. Since Us is 
 
 ## Ways to help
 
-- **Report a bug:** open an [issue](https://github.com/DerDieDasLian/sinceus/issues/new/choose) with the bug template. Your Android version, phone model and app version help a lot.
+- **Report a bug:** right in the app (Settings, About the app, Report a bug), or open an [issue](https://github.com/DerDieDasLian/sinceus/issues/new/choose) with the bug template. Your Android version, phone model and app version help a lot.
 - **Suggest an idea:** use the idea template and tell us why it would help.
 - **Accessibility:** if something is hard to use with TalkBack, large text or other settings, there is a template just for that.
 - **Translate:** Since Us is translated on [Weblate](https://hosted.weblate.org/engage/since-us/). Please don't send translations as pull requests, Weblate takes care of that.
