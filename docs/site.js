@@ -29,14 +29,12 @@
 
   // Die seitlichen Handys bewegen sich beim Scrollen leicht
   var p2 = document.querySelector(".phones .p2");
-  var p3 = document.querySelector(".phones .p3");
   var p1 = document.querySelector(".phones .p1");
   var ticking = false;
   function parallax() {
     var y = Math.min(window.scrollY, 800);
     if (p1) p1.style.transform = "translateY(" + y * -0.06 + "px)";
     if (p2) p2.style.transform = "translateY(" + y * 0.12 + "px)";
-    if (p3) p3.style.transform = "translateY(" + y * 0.18 + "px)";
     ticking = false;
   }
   window.addEventListener("scroll", function () {
