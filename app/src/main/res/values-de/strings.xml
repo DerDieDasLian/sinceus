@@ -583,6 +583,7 @@
     <string name="bug_mail_subject">Since Us Fehlermeldung</string>
     <string name="bug_mail_body">Was ist passiert?\n\n\nWas hätte passieren sollen?\n\n\n%1$s</string>
     <string name="no_mail_app">Keine Mail-App gefunden. Ihr könnt an %1$s schreiben.</string>
+    <string name="no_browser">Kein Browser gefunden. Ihr könnt diesen Link selbst öffnen: %1$s</string>
     <string name="suggest_idea">Idee vorschlagen</string>
     <string name="suggest_idea_summary">Since Us ist für Paare gemacht. Passende Ideen haben die besten Chancen.</string>
     <string name="help_translate">Beim Übersetzen helfen</string>
