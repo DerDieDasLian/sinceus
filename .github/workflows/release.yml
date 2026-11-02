@@ -23,6 +23,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: release
@@ -98,9 +99,30 @@ jobs:
           fi
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
+      # Die Tests laufen schon bei jedem Push im Build-Ablauf. War der für genau diesen Stand
+      # von main grün, werden sie hier nicht noch einmal ausgeführt (die neue Version ändert nur
+      # die Versionsnummer). Sonst laufen sie wie bisher vor dem Bauen.
+      - name: Tests already green?
+        id: tests
+        if: steps.version.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          green=$(gh run list --repo "${{ github.repository }}" --workflow build.yml --commit "${{ github.sha }}" \
+            --status success --json databaseId --jq length 2>/dev/null || echo 0)
+          if [ "${green:-0}" -gt 0 ]; then
+            echo "::notice::Tests für diesen Stand waren schon grün, sie werden übersprungen."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build
         if: steps.version.outputs.release == 'true'
-        run: ./gradlew testGithubDebugUnitTest assembleGithubRelease assembleFdroidRelease bundlePlayRelease
+        run: |
+          tests=""
+          if [ "${{ steps.tests.outputs.run }}" != "false" ]; then tests="testGithubDebugUnitTest"; fi
+          ./gradlew $tests assembleGithubRelease assembleFdroidRelease bundlePlayRelease
 
       # Erst wenn Tests und Build durchgelaufen sind, wird die neue Version festgeschrieben.
       # Der Tag zeigt immer auf genau den Stand, der gebaut wurde (wichtig für F-Droid).
