@@ -75,7 +75,7 @@ object BackupCodec {
         .put("showFacts", s.showFacts)
         .put("hiddenFacts", JSONArray().apply { s.hiddenFacts.forEach { put(it.name) } })
         .put("celebrate", s.celebrate)
-        .put("showWrapped", s.showWrapped)
+        .put("showRecap", s.showRecap)
         .put("slides", JSONArray().apply { s.slides.forEach { put(File(it).name) } })
         .put(
             "moments",
@@ -146,7 +146,7 @@ object BackupCodec {
                 ?.let { a -> FunFacts.holidaysOf((0 until a.length()).map { a.optString(it) }) }
                 ?: d.hiddenFacts,
             celebrate = o.optBoolean("celebrate", d.celebrate),
-            showWrapped = o.optBoolean("showWrapped", d.showWrapped),
+            showRecap = o.optBoolean("showRecap", d.showRecap),
             slides = (0 until (slides?.length() ?: 0))
                 .mapNotNull { fileName(slides?.optString(it)) }
                 .distinct()

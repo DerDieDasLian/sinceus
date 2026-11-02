@@ -6,7 +6,7 @@ import org.junit.Test
 import java.time.LocalDate
 import java.time.Month
 
-class WrappedTest {
+class YearRecapTest {
     private val start = LocalDate.of(2025, 3, 15)
     private val concert = Moment(
         "a", "Erstes Konzert", LocalDate.of(2025, 4, 1),
@@ -21,7 +21,7 @@ class WrappedTest {
     @Test
     fun countsTheYear() {
         val review = YearReviewMath.reviewOf(start, 1, all)
-        val w = WrappedMath.of(start, review, LocalDate.of(2026, 3, 16))
+        val w = YearRecapMath.of(start, review, LocalDate.of(2026, 3, 16))
         assertEquals(listOf(concert, sea, festival, moving), w.moments)
         assertEquals(365L, w.days)
         // 15.03.2025 und 14.03.2026 sind beide Samstage
@@ -41,7 +41,7 @@ class WrappedTest {
 
     @Test
     fun emptyYearHasNoHighlights() {
-        val w = WrappedMath.of(start, YearReviewMath.reviewOf(start, 1, emptyList()), LocalDate.of(2026, 3, 15))
+        val w = YearRecapMath.of(start, YearReviewMath.reviewOf(start, 1, emptyList()), LocalDate.of(2026, 3, 15))
         assertEquals(0, w.photos)
         assertNull(w.topMonth)
         assertNull(w.topPlace)
@@ -53,7 +53,7 @@ class WrappedTest {
     @Test
     fun noClearWinner() {
         // Je ein Moment im April und Juli, zwei Orte je einmal: kein Lieblingsmonat, kein Lieblingsort
-        val w = WrappedMath.of(start, YearReviewMath.reviewOf(start, 1, listOf(concert, sea)), LocalDate.of(2026, 3, 15))
+        val w = YearRecapMath.of(start, YearReviewMath.reviewOf(start, 1, listOf(concert, sea)), LocalDate.of(2026, 3, 15))
         assertNull(w.topMonth)
         assertNull(w.topPlace)
         assertEquals(2, w.places)
@@ -64,7 +64,7 @@ class WrappedTest {
         val today = LocalDate.of(2027, 6, 1)
         assertEquals(2, YearReviewMath.fullYears(start, today))
         assertEquals(0, YearReviewMath.fullYears(start, LocalDate.of(2026, 3, 14)))
-        val w = WrappedMath.of(start, YearReviewMath.reviewOf(start, 1, all), today)
+        val w = YearRecapMath.of(start, YearReviewMath.reviewOf(start, 1, all), today)
         assertEquals(LocalDate.of(2025, 3, 15), w.review.from)
         // Der Ausblick liegt nach heute, nicht im vergangenen Jahr
         assertEquals(true, w.next!!.date.isAfter(today))
@@ -73,11 +73,11 @@ class WrappedTest {
     @Test
     fun collageSpreadsOverTheYear() {
         val moments = (1..8).map { Moment("$it", "M$it", start.plusDays(it * 10L), photos = listOf("/x/$it.jpg")) }
-        val photos = WrappedMath.collage(moments)
-        assertEquals(WrappedMath.MAX_PHOTOS, photos.size)
+        val photos = YearRecapMath.collage(moments)
+        assertEquals(YearRecapMath.MAX_PHOTOS, photos.size)
         assertEquals("/x/1.jpg", photos.first())
         assertEquals("/x/8.jpg", photos.last())
         // Wenige Titelbilder: die weiteren Fotos füllen auf
-        assertEquals(listOf("/x/a.jpg", "/x/c.jpg", "/x/b.jpg"), WrappedMath.collage(listOf(concert, sea)))
+        assertEquals(listOf("/x/a.jpg", "/x/c.jpg", "/x/b.jpg"), YearRecapMath.collage(listOf(concert, sea)))
     }
 }

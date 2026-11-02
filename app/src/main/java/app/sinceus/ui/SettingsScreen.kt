@@ -204,7 +204,7 @@ fun SettingsScreen(
     onShowFacts: (Boolean) -> Unit = {},
     onHiddenFacts: (Set<FunFacts.Kind>) -> Unit = {},
     onCelebrate: (Boolean) -> Unit = {},
-    onShowWrapped: (Boolean) -> Unit = {},
+    onShowRecap: (Boolean) -> Unit = {},
     /** Download-Fortschritt eines Updates in Prozent (-1 = unbekannt), null = kein Download */
     updateProgress: Int? = null,
     onOpenLicenses: () -> Unit = {},
@@ -456,12 +456,12 @@ fun SettingsScreen(
                         )
                         Divider()
                         ListItem(
-                            headlineContent = { Text(stringResource(R.string.wrapped_show)) },
-                            supportingContent = { Text(stringResource(R.string.wrapped_show_summary)) },
+                            headlineContent = { Text(stringResource(R.string.recap_show)) },
+                            supportingContent = { Text(stringResource(R.string.recap_show_summary)) },
                             leadingContent = { Icon(Icons.Rounded.History, null) },
-                            trailingContent = { Switch(checked = settings.showWrapped, onCheckedChange = onShowWrapped) },
+                            trailingContent = { Switch(checked = settings.showRecap, onCheckedChange = onShowRecap) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { onShowWrapped(!settings.showWrapped) },
+                            modifier = Modifier.clickable { onShowRecap(!settings.showRecap) },
                         )
                         Divider()
                         Row(Icons.Rounded.Widgets, stringResource(R.string.add_widget), null, onClick = onAddWidget)

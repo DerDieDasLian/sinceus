@@ -58,8 +58,8 @@ import app.sinceus.data.LoveSettings
 import app.sinceus.data.Moment
 import app.sinceus.data.Names
 import app.sinceus.data.Texts
-import app.sinceus.data.Wrapped
-import app.sinceus.data.WrappedMath
+import app.sinceus.data.YearRecap
+import app.sinceus.data.YearRecapMath
 import app.sinceus.data.formatNumber
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
@@ -70,18 +70,18 @@ import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 /** Die Seiten des Rückblicks; Seiten ohne Inhalt fallen weg */
-private enum class WrappedPage { Intro, Time, Moments, Tags, Photos, FirstLast, Next }
+private enum class RecapPage { Intro, Time, Moments, Tags, Photos, FirstLast, Next }
 
-private fun pagesOf(w: Wrapped, withMoments: Boolean): List<WrappedPage> = buildList {
-    add(WrappedPage.Intro)
-    add(WrappedPage.Time)
+private fun pagesOf(w: YearRecap, withMoments: Boolean): List<RecapPage> = buildList {
+    add(RecapPage.Intro)
+    add(RecapPage.Time)
     if (withMoments) {
-        add(WrappedPage.Moments)
-        if (w.topTags.isNotEmpty() || w.places > 0) add(WrappedPage.Tags)
-        if (w.photos > 0) add(WrappedPage.Photos)
-        if (w.first != null) add(WrappedPage.FirstLast)
+        add(RecapPage.Moments)
+        if (w.topTags.isNotEmpty() || w.places > 0) add(RecapPage.Tags)
+        if (w.photos > 0) add(RecapPage.Photos)
+        if (w.first != null) add(RecapPage.FirstLast)
     }
-    add(WrappedPage.Next)
+    add(RecapPage.Next)
 }
 
 /**
@@ -89,9 +89,9 @@ private fun pagesOf(w: Wrapped, withMoments: Boolean): List<WrappedPage> = build
  * Ohne Momente (ausgeblendet oder keine gespeichert) bleiben nur Zeit und Ausblick.
  */
 @Composable
-fun WrappedScreen(settings: LoveSettings, wrapped: Wrapped, today: LocalDate, onShare: () -> Unit, onClose: () -> Unit) {
+fun YearRecapScreen(settings: LoveSettings, recap: YearRecap, today: LocalDate, onShare: () -> Unit, onClose: () -> Unit) {
     BackHandler(onBack = onClose)
-    val pages = remember(wrapped, settings.showMoments) { pagesOf(wrapped, settings.showMoments) }
+    val pages = remember(recap, settings.showMoments) { pagesOf(recap, settings.showMoments) }
     val pager = rememberPagerState { pages.size }
     val scope = rememberCoroutineScope()
     val first = settings.presetIndex.coerceIn(0, Presets.lastIndex)
@@ -119,13 +119,13 @@ fun WrappedScreen(settings: LoveSettings, wrapped: Wrapped, today: LocalDate, on
             ) {
                 FadeIn(active = pager.currentPage == index) {
                     when (pages[index]) {
-                        WrappedPage.Intro -> IntroPage(settings, wrapped)
-                        WrappedPage.Time -> TimePage(wrapped)
-                        WrappedPage.Moments -> MomentsPage(wrapped)
-                        WrappedPage.Tags -> TagsPage(wrapped)
-                        WrappedPage.Photos -> PhotosPage(wrapped)
-                        WrappedPage.FirstLast -> FirstLastPage(wrapped)
-                        WrappedPage.Next -> NextPage(wrapped, today, onShare, onClose)
+                        RecapPage.Intro -> IntroPage(settings, recap)
+                        RecapPage.Time -> TimePage(recap)
+                        RecapPage.Moments -> MomentsPage(recap)
+                        RecapPage.Tags -> TagsPage(recap)
+                        RecapPage.Photos -> PhotosPage(recap)
+                        RecapPage.FirstLast -> FirstLastPage(recap)
+                        RecapPage.Next -> NextPage(recap, today, onShare, onClose)
                     }
                 }
             }
@@ -154,11 +154,11 @@ fun WrappedScreen(settings: LoveSettings, wrapped: Wrapped, today: LocalDate, on
                 }
             }
             IconButton(onClick = onClose) {
-                Icon(Icons.Rounded.Close, stringResource(R.string.wrapped_close), tint = Color.White)
+                Icon(Icons.Rounded.Close, stringResource(R.string.recap_close), tint = Color.White)
             }
         }
         Text(
-            stringResource(R.string.wrapped_page, pager.currentPage + 1, pages.size),
+            stringResource(R.string.recap_page, pager.currentPage + 1, pages.size),
             style = MaterialTheme.typography.labelMedium,
             color = Color.White.copy(alpha = 0.7f),
             modifier = Modifier
@@ -218,11 +218,11 @@ private fun Line(text: String, strong: Boolean = false) {
 }
 
 @Composable
-private fun IntroPage(settings: LoveSettings, w: Wrapped) {
+private fun IntroPage(settings: LoveSettings, w: YearRecap) {
     Column {
         Icon(settings.relationship.kind.icon, null, tint = Color.White, modifier = Modifier.size(36.dp))
         Spacer(Modifier.height(20.dp))
-        Label(stringResource(R.string.wrapped_intro_label))
+        Label(stringResource(R.string.recap_intro_label))
         Big(stringResource(R.string.year_review_title, w.review.year.toString()))
         Line(Names.join(settings.memberNames()), strong = true)
         Line(stringResource(R.string.year_review_range, Texts.longDate(w.review.from), Texts.longDate(w.review.to)))
@@ -230,40 +230,40 @@ private fun IntroPage(settings: LoveSettings, w: Wrapped) {
 }
 
 @Composable
-private fun TimePage(w: Wrapped) {
+private fun TimePage(w: YearRecap) {
     Column {
-        Label(stringResource(R.string.wrapped_time_label))
+        Label(stringResource(R.string.recap_time_label))
         Big(formatNumber(w.days))
-        Line(pluralStringResource(R.plurals.wrapped_days, w.days.toInt()), strong = true)
+        Line(pluralStringResource(R.plurals.recap_days, w.days.toInt()), strong = true)
         Spacer(Modifier.height(24.dp))
-        Line(pluralStringResource(R.plurals.wrapped_weekends, w.weekends.toInt(), formatNumber(w.weekends)))
-        Line(pluralStringResource(R.plurals.wrapped_full_moons, w.fullMoons.toInt(), formatNumber(w.fullMoons)))
+        Line(pluralStringResource(R.plurals.recap_weekends, w.weekends.toInt(), formatNumber(w.weekends)))
+        Line(pluralStringResource(R.plurals.recap_full_moons, w.fullMoons.toInt(), formatNumber(w.fullMoons)))
     }
 }
 
 @Composable
-private fun MomentsPage(w: Wrapped) {
+private fun MomentsPage(w: YearRecap) {
     Column {
-        Label(stringResource(R.string.wrapped_moments_label))
+        Label(stringResource(R.string.recap_moments_label))
         if (w.moments.isEmpty()) {
-            Line(stringResource(R.string.wrapped_no_moments), strong = true)
+            Line(stringResource(R.string.recap_no_moments), strong = true)
             return@Column
         }
         Big(formatNumber(w.moments.size.toLong()))
-        Line(pluralStringResource(R.plurals.wrapped_moments, w.moments.size), strong = true)
-        if (w.photos > 0) Line(pluralStringResource(R.plurals.wrapped_photos, w.photos, formatNumber(w.photos.toLong())))
+        Line(pluralStringResource(R.plurals.recap_moments, w.moments.size), strong = true)
+        if (w.photos > 0) Line(pluralStringResource(R.plurals.recap_photos, w.photos, formatNumber(w.photos.toLong())))
         w.topMonth?.let { month ->
             val name = month.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault())
-            Line(pluralStringResource(R.plurals.wrapped_top_month, w.topMonthCount, name, formatNumber(w.topMonthCount.toLong())))
+            Line(pluralStringResource(R.plurals.recap_top_month, w.topMonthCount, name, formatNumber(w.topMonthCount.toLong())))
         }
     }
 }
 
 @Composable
-private fun TagsPage(w: Wrapped) {
+private fun TagsPage(w: YearRecap) {
     Column {
         if (w.topTags.isNotEmpty()) {
-            Label(stringResource(R.string.wrapped_tags_label))
+            Label(stringResource(R.string.recap_tags_label))
             w.topTags.forEachIndexed { i, (tag, count) ->
                 Row(Modifier.padding(top = if (i == 0) 12.dp else 6.dp), verticalAlignment = Alignment.Bottom) {
                     Text(
@@ -276,7 +276,7 @@ private fun TagsPage(w: Wrapped) {
                         modifier = Modifier.weight(1f, fill = false),
                     )
                     Text(
-                        pluralStringResource(R.plurals.wrapped_times, count, formatNumber(count.toLong())),
+                        pluralStringResource(R.plurals.recap_times, count, formatNumber(count.toLong())),
                         style = MaterialTheme.typography.titleMedium,
                         color = Color.White.copy(alpha = 0.8f),
                         modifier = Modifier.padding(start = 12.dp, bottom = 4.dp),
@@ -286,18 +286,18 @@ private fun TagsPage(w: Wrapped) {
         }
         if (w.places > 0) {
             if (w.topTags.isNotEmpty()) Spacer(Modifier.height(36.dp))
-            Label(stringResource(R.string.wrapped_places_label))
-            Line(pluralStringResource(R.plurals.wrapped_places, w.places, formatNumber(w.places.toLong())), strong = true)
-            w.topPlace?.let { Line(stringResource(R.string.wrapped_top_place, it)) }
+            Label(stringResource(R.string.recap_places_label))
+            Line(pluralStringResource(R.plurals.recap_places, w.places, formatNumber(w.places.toLong())), strong = true)
+            w.topPlace?.let { Line(stringResource(R.string.recap_top_place, it)) }
         }
     }
 }
 
 @Composable
-private fun PhotosPage(w: Wrapped) {
-    val photos = remember(w) { WrappedMath.collage(w.moments) }
+private fun PhotosPage(w: YearRecap) {
+    val photos = remember(w) { YearRecapMath.collage(w.moments) }
     Column {
-        Label(stringResource(R.string.wrapped_photos_label))
+        Label(stringResource(R.string.recap_photos_label))
         Spacer(Modifier.height(16.dp))
         // Zwei Spalten, damit die Fotos groß genug bleiben
         photos.chunked(2).forEach { row ->
@@ -325,12 +325,12 @@ private fun PhotosPage(w: Wrapped) {
 }
 
 @Composable
-private fun FirstLastPage(w: Wrapped) {
+private fun FirstLastPage(w: YearRecap) {
     Column {
-        w.first?.let { MomentLine(stringResource(R.string.wrapped_first_label), it) }
+        w.first?.let { MomentLine(stringResource(R.string.recap_first_label), it) }
         w.last?.let {
             Spacer(Modifier.height(40.dp))
-            MomentLine(stringResource(R.string.wrapped_last_label), it)
+            MomentLine(stringResource(R.string.recap_last_label), it)
         }
     }
 }
@@ -370,19 +370,19 @@ private fun MomentLine(label: String, m: Moment) {
 }
 
 @Composable
-private fun NextPage(w: Wrapped, today: LocalDate, onShare: () -> Unit, onClose: () -> Unit) {
+private fun NextPage(w: YearRecap, today: LocalDate, onShare: () -> Unit, onClose: () -> Unit) {
     val context = LocalContext.current
     Column(Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
         w.next?.let { next ->
-            Label(stringResource(R.string.wrapped_next_label))
+            Label(stringResource(R.string.recap_next_label))
             Big(Texts.milestoneTitle(context, next))
             Line(Texts.longDate(next.date), strong = true)
             val days = ChronoUnit.DAYS.between(today, next.date)
-            if (days > 0) Line(pluralStringResource(R.plurals.wrapped_in_days, days.toInt(), formatNumber(days)))
+            if (days > 0) Line(pluralStringResource(R.plurals.recap_in_days, days.toInt(), formatNumber(days)))
             Spacer(Modifier.height(40.dp))
         }
         Text(
-            stringResource(R.string.wrapped_end),
+            stringResource(R.string.recap_end),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
             color = Color.White,
@@ -397,7 +397,7 @@ private fun NextPage(w: Wrapped, today: LocalDate, onShare: () -> Unit, onClose:
                 Text(stringResource(R.string.year_review_share), Modifier.padding(start = 8.dp))
             }
             TextButton(onClick = onClose) {
-                Text(stringResource(R.string.wrapped_close), color = Color.White)
+                Text(stringResource(R.string.recap_close), color = Color.White)
             }
         }
     }

@@ -2,11 +2,12 @@
 
 What is planned for Since Us. This list is a plan, not a promise, and it changes when new ideas come in. Why some ideas won't be added is explained in [SCOPE.md](SCOPE.md).
 
-*Last updated: November 1, 2026*
+*Last updated: November 2, 2026*
 
 ## Next version
 
-- A look back at your year together, like a small "Wrapped": page by page around your anniversary, earlier years under Moments, and easy to turn off
+- Report a bug, suggest an idea or help translate right from the settings
+- A year in review to swipe through: page by page around your anniversary, earlier years under Moments, and easy to turn off
 
 ## Soon
 
@@ -20,5 +21,5 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 
 ## Recently done
 
-- 2.15.0: choose how you travel to each other on long distance ([#23](https://github.com/DerDieDasLian/sinceus/issues/23)), Italian and Chinese, and reporting a bug, suggesting an idea or helping translate right from the settings
+- 2.15.0: choose how you travel to each other on long distance ([#23](https://github.com/DerDieDasLian/sinceus/issues/23)) and Italian and Chinese
 - 2.14.0: moments with tags and places, a memory widget, a photo book as PDF, a title of your own for your first day, holidays you can turn off one by one, and the day you have been together for half of someone's life

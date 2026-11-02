@@ -14,7 +14,7 @@ import androidx.compose.material.icons.rounded.History
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import app.sinceus.data.WrappedMath
+import app.sinceus.data.YearRecapMath
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.aspectRatio
@@ -140,7 +140,7 @@ fun HomeScreen(
     val pager = rememberPagerState(initialPage = settings.homePage.coerceIn(0, pageCount - 1)) { pageCount }
     val scope = rememberCoroutineScope()
     // Gerade geöffneter Jahresrückblick (Nummer des Jahres), 0 = keiner
-    var wrappedYear by rememberSaveable { mutableIntStateOf(0) }
+    var recapYear by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(pager) {
         snapshotFlow { pager.settledPage }.drop(1).collect(onPageChange)
     }
@@ -160,7 +160,7 @@ fun HomeScreen(
                 HomePage.Overview -> if (settings.showAll) {
                     PolyOverview(settings, today, onSelect)
                 } else {
-                    Overview(settings, today, onSelect, onOpenWrapped = { wrappedYear = it })
+                    Overview(settings, today, onSelect, onOpenRecap = { recapYear = it })
                 }
                 HomePage.Live -> LiveScreen(settings, active = pager.currentPage == page)
                 HomePage.Moments -> MomentsScreen(
@@ -170,7 +170,7 @@ fun HomeScreen(
                     onOpen = onOpenMoment,
                     onNewestFirst = onNewestFirst,
                     onPhotobook = onPhotobook,
-                    onOpenWrapped = { wrappedYear = it },
+                    onOpenRecap = { recapYear = it },
                 )
             }
         }
@@ -209,19 +209,19 @@ fun HomeScreen(
                 )
             }
         }
-        if (settings.showWrapped && wrappedYear > 0) {
+        if (settings.showRecap && recapYear > 0) {
             val context = LocalContext.current
             val start = settings.startDate
-            val review = remember(settings, wrappedYear) {
-                YearReviewMath.reviewOf(start, wrappedYear, if (settings.showMoments) settings.visibleMoments else emptyList())
+            val review = remember(settings, recapYear) {
+                YearReviewMath.reviewOf(start, recapYear, if (settings.showMoments) settings.visibleMoments else emptyList())
             }
-            val wrapped = remember(review, today) { WrappedMath.of(start, review, today) }
-            WrappedScreen(
+            val recap = remember(review, today) { YearRecapMath.of(start, review, today) }
+            YearRecapScreen(
                 settings,
-                wrapped,
+                recap,
                 today,
                 onShare = { ShareCard.shareYear(context, settings, review) },
-                onClose = { wrappedYear = 0 },
+                onClose = { recapYear = 0 },
             )
         }
     }
@@ -269,7 +269,7 @@ private fun ModeSwitch(selected: Int, pages: List<HomePage>, onSelect: (Int) -> 
 }
 
 @Composable
-private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String) -> Unit, onOpenWrapped: (Int) -> Unit) {
+private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String) -> Unit, onOpenRecap: (Int) -> Unit) {
     val start = settings.startDate
     val kind = settings.relationship.kind
     val together = LoveMath.together(start, today)
@@ -290,7 +290,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
     val context = LocalContext.current
     val share = { ShareCard.share(context, settings, today, ShareCard.defaultText(context, settings, today)) }
     // Rückblick am Jahrestag und in der Woche danach, lässt sich in den Einstellungen abschalten
-    val review = if (settings.showWrapped) YearReviewMath.reviewFor(start, today, moments) else null
+    val review = if (settings.showRecap) YearReviewMath.reviewFor(start, today, moments) else null
 
     Column(
         Modifier
@@ -328,7 +328,7 @@ private fun Overview(settings: LoveSettings, today: LocalDate, onSelect: (String
             if (settings.relationship.distance) DistanceCard(settings.relationship, today)
 
             review?.let {
-                YearReviewCard(it, withMoments = settings.showMoments, onOpen = { onOpenWrapped(it.year) }) {
+                YearReviewCard(it, withMoments = settings.showMoments, onOpen = { onOpenRecap(it.year) }) {
                     ShareCard.shareYear(context, settings, it)
                 }
             }
@@ -617,7 +617,7 @@ private fun YearReviewCard(review: YearReview, withMoments: Boolean, onOpen: () 
             ) {
                 Button(onClick = onOpen) {
                     Icon(Icons.Rounded.History, null)
-                    Text(stringResource(R.string.wrapped_open), Modifier.padding(start = 8.dp))
+                    Text(stringResource(R.string.recap_open), Modifier.padding(start = 8.dp))
                 }
                 FilledTonalButton(onClick = onShare) {
                     Icon(Icons.Rounded.Share, null)

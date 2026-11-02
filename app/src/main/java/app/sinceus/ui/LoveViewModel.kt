@@ -102,7 +102,7 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun setHiddenFacts(hidden: Set<FunFacts.Kind>) = viewModelScope.launch { repo.setHiddenFacts(hidden) }
     fun setCelebrate(on: Boolean) = viewModelScope.launch { repo.setCelebrate(on) }
 
-    fun setShowWrapped(show: Boolean) = viewModelScope.launch { repo.setShowWrapped(show) }
+    fun setShowRecap(show: Boolean) = viewModelScope.launch { repo.setShowRecap(show) }
     fun addSlides(uris: List<Uri>) = viewModelScope.launch { repo.addSlides(uris) }
     fun removeSlide(path: String) = viewModelScope.launch { repo.removeSlide(path) }
 

@@ -135,7 +135,7 @@ fun MomentsScreen(
     onNewestFirst: (Boolean) -> Unit = {},
     onPhotobook: (List<Moment>) -> Unit = {},
     /** Großen Jahresrückblick für dieses Jahr der Beziehung öffnen (ab 1) */
-    onOpenWrapped: (Int) -> Unit = {},
+    onOpenRecap: (Int) -> Unit = {},
 ) {
     val context = LocalContext.current
     // Mit mehreren Beziehungen steht an jedem Eintrag, zu wem er gehört
@@ -426,7 +426,7 @@ fun MomentsScreen(
                 Icon(Icons.Rounded.PictureAsPdf, null)
                 Text(stringResource(R.string.photobook_save), Modifier.padding(start = 8.dp))
             }
-            WrappedYearsButton(settings, today, onOpenWrapped)
+            RecapYearsButton(settings, today, onOpenRecap)
             Text(
                 stringResource(R.string.photobook_hint),
                 style = MaterialTheme.typography.bodySmall,
@@ -841,8 +841,8 @@ private const val MAX_DOTS = 6
 
 /** Frühere Jahresrückblicke, sobald das erste Jahr vorbei ist; bei mehreren Jahren mit Auswahl */
 @Composable
-private fun WrappedYearsButton(settings: LoveSettings, today: LocalDate, onOpen: (Int) -> Unit) {
-    if (!settings.showWrapped) return
+private fun RecapYearsButton(settings: LoveSettings, today: LocalDate, onOpen: (Int) -> Unit) {
+    if (!settings.showRecap) return
     val years = YearReviewMath.fullYears(settings.startDate, today)
     if (years < 1) return
     var picking by rememberSaveable { mutableStateOf(false) }
@@ -853,12 +853,12 @@ private fun WrappedYearsButton(settings: LoveSettings, today: LocalDate, onOpen:
             .padding(top = 8.dp),
     ) {
         Icon(Icons.Rounded.History, null)
-        Text(stringResource(R.string.wrapped_years), Modifier.padding(start = 8.dp))
+        Text(stringResource(R.string.recap_years), Modifier.padding(start = 8.dp))
     }
     if (picking) {
         AlertDialog(
             onDismissRequest = { picking = false },
-            title = { Text(stringResource(R.string.wrapped_pick_year)) },
+            title = { Text(stringResource(R.string.recap_pick_year)) },
             text = {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     // Das neueste Jahr zuerst
@@ -878,7 +878,7 @@ private fun WrappedYearsButton(settings: LoveSettings, today: LocalDate, onOpen:
                     }
                 }
             },
-            confirmButton = { TextButton(onClick = { picking = false }) { Text(stringResource(R.string.wrapped_close)) } },
+            confirmButton = { TextButton(onClick = { picking = false }) { Text(stringResource(R.string.recap_close)) } },
         )
     }
 }

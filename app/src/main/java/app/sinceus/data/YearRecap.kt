@@ -6,10 +6,10 @@ import java.time.Month
 import java.time.temporal.ChronoUnit
 
 /**
- * Alles für den großen Jahresrückblick („Wrapped“), nur aus den Daten auf dem Handy berechnet.
+ * Alles für den großen Jahresrückblick zum Durchwischen, nur aus den Daten auf dem Handy berechnet.
  * Zahlen, die es in dem Jahr nicht gibt (keine Fotos, keine Orte), sind 0, leer oder null.
  */
-data class Wrapped(
+data class YearRecap(
     val review: YearReview,
     /** Tage in diesem Beziehungsjahr, meist 365 oder 366 */
     val days: Long,
@@ -33,12 +33,12 @@ data class Wrapped(
     val last: Moment? get() = moments.lastOrNull()?.takeIf { moments.size > 1 }
 }
 
-object WrappedMath {
+object YearRecapMath {
     /** So viele Fotos zeigt die Collage höchstens */
     const val MAX_PHOTOS = 6
 
     /** Rückblick auf [review]; der Ausblick schaut ab [today] nach vorn, frühestens ab dem Jahrestag */
-    fun of(start: LocalDate, review: YearReview, today: LocalDate): Wrapped {
+    fun of(start: LocalDate, review: YearReview, today: LocalDate): YearRecap {
         val moments = review.moments
         // Der Tag vor dem Jahr zählt nicht mit, so wie bei den lustigen Zahlen
         val before = review.from.minusDays(1)
@@ -53,7 +53,7 @@ object WrappedMath {
         val places = moments.map { it.place.trim() }.filter { it.isNotEmpty() }
             .groupBy { it.lowercase() }
         val topPlace = places.values.maxByOrNull { it.size }?.takeIf { top -> top.size >= 2 && places.values.count { it.size == top.size } == 1 }
-        return Wrapped(
+        return YearRecap(
             review = review,
             days = ChronoUnit.DAYS.between(review.from, review.to) + 1,
             weekends = FunFacts.count(before, review.to) { it.dayOfWeek == DayOfWeek.SATURDAY },
