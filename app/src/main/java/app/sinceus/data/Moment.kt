@@ -231,14 +231,25 @@ object YearReviewMath {
 
     /** Rückblick am Jahrestag und in der Woche danach, sonst null */
     fun reviewFor(start: LocalDate, today: LocalDate, moments: List<Moment>): YearReview? {
+        val years = fullYears(start, today)
+        if (years < 1) return null
+        if (ChronoUnit.DAYS.between(start.plusYears(years.toLong()), today) >= DAYS_SHOWN) return null
+        return reviewOf(start, years, moments)
+    }
+
+    /** Wie viele ganze Jahre bis [today] vorbei sind, also für wie viele Jahre es einen Rückblick gibt */
+    fun fullYears(start: LocalDate, today: LocalDate): Int {
         var years = today.year - start.year
         // plusYears klemmt den 29.02. auf den 28.02., so wie die Jahrestage in der App
         if (start.plusYears(years.toLong()).isAfter(today)) years--
-        if (years < 1) return null
-        val anniversary = start.plusYears(years.toLong())
-        if (ChronoUnit.DAYS.between(anniversary, today) >= DAYS_SHOWN) return null
-        val from = start.plusYears(years - 1L)
+        return years.coerceAtLeast(0)
+    }
+
+    /** Rückblick auf das [year]. Jahr (ab 1), egal wie lange es her ist */
+    fun reviewOf(start: LocalDate, year: Int, moments: List<Moment>): YearReview {
+        val from = start.plusYears(year - 1L)
+        val anniversary = start.plusYears(year.toLong())
         val inYear = moments.filter { !it.date.isBefore(from) && it.date.isBefore(anniversary) }.sortedBy { it.date }
-        return YearReview(years, from, anniversary.minusDays(1), inYear)
+        return YearReview(year, from, anniversary.minusDays(1), inYear)
     }
 }

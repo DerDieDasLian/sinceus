@@ -589,4 +589,60 @@
     <string name="help_translate_summary">Auf Weblate, ganz ohne Programmieren</string>
     <string name="about_scope">Was Since Us ist (und was nicht)</string>
     <string name="about_scope_summary">Warum manche Ideen nicht dazukommen</string>
+    <!-- Großer Jahresrückblick zum Durchwischen -->
+    <string name="recap_show">Jahresrückblick</string>
+    <string name="recap_show_summary">Rund um euren Jahrestag ein Rückblick auf euer Jahr, frühere Jahre bei den Momenten</string>
+    <string name="recap_open">Ansehen</string>
+    <string name="recap_close">Schließen</string>
+    <string name="recap_page">%1$d von %2$d</string>
+    <string name="recap_years">Eure Jahresrückblicke</string>
+    <string name="recap_pick_year">Welches Jahr?</string>
+    <string name="recap_intro_label">Rückblick</string>
+    <string name="recap_time_label">Eure Zeit</string>
+    <plurals name="recap_days">
+        <item quantity="one">gemeinsamer Tag</item>
+        <item quantity="other">gemeinsame Tage</item>
+    </plurals>
+    <plurals name="recap_weekends">
+        <item quantity="one">%1$s Wochenende</item>
+        <item quantity="other">%1$s Wochenenden</item>
+    </plurals>
+    <plurals name="recap_full_moons">
+        <item quantity="one">%1$s Vollmond</item>
+        <item quantity="other">%1$s Vollmonde</item>
+    </plurals>
+    <string name="recap_moments_label">Eure Momente</string>
+    <string name="recap_no_moments">Für dieses Jahr sind keine Momente gespeichert. Vielleicht stehen nächstes Jahr welche hier.</string>
+    <plurals name="recap_moments">
+        <item quantity="one">Moment in diesem Jahr</item>
+        <item quantity="other">Momente in diesem Jahr</item>
+    </plurals>
+    <plurals name="recap_photos">
+        <item quantity="one">mit %1$s Foto</item>
+        <item quantity="other">mit %1$s Fotos</item>
+    </plurals>
+    <plurals name="recap_top_month">
+        <item quantity="one">%2$s davon im %1$s</item>
+        <item quantity="other">%2$s davon im %1$s</item>
+    </plurals>
+    <string name="recap_tags_label">Eure Schlagwörter</string>
+    <plurals name="recap_times">
+        <item quantity="one">%1$s-mal</item>
+        <item quantity="other">%1$s-mal</item>
+    </plurals>
+    <string name="recap_places_label">Eure Orte</string>
+    <plurals name="recap_places">
+        <item quantity="one">%1$s Ort</item>
+        <item quantity="other">%1$s verschiedene Orte</item>
+    </plurals>
+    <string name="recap_top_place">Am öftesten: %1$s</string>
+    <string name="recap_photos_label">Eure Fotos</string>
+    <string name="recap_first_label">Erster Moment des Jahres</string>
+    <string name="recap_last_label">Letzter Moment des Jahres</string>
+    <string name="recap_next_label">Als Nächstes</string>
+    <plurals name="recap_in_days">
+        <item quantity="one">in %1$s Tag</item>
+        <item quantity="other">in %1$s Tagen</item>
+    </plurals>
+    <string name="recap_end">Auf das nächste Jahr.</string>
 </resources>

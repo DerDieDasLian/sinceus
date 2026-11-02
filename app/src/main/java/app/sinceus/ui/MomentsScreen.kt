@@ -7,6 +7,11 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material.icons.rounded.History
+import app.sinceus.data.YearReviewMath
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -129,6 +134,8 @@ fun MomentsScreen(
     onOpen: (Moment) -> Unit,
     onNewestFirst: (Boolean) -> Unit = {},
     onPhotobook: (List<Moment>) -> Unit = {},
+    /** Großen Jahresrückblick für dieses Jahr der Beziehung öffnen (ab 1) */
+    onOpenRecap: (Int) -> Unit = {},
 ) {
     val context = LocalContext.current
     // Mit mehreren Beziehungen steht an jedem Eintrag, zu wem er gehört
@@ -419,6 +426,7 @@ fun MomentsScreen(
                 Icon(Icons.Rounded.PictureAsPdf, null)
                 Text(stringResource(R.string.photobook_save), Modifier.padding(start = 8.dp))
             }
+            RecapYearsButton(settings, today, onOpenRecap)
             Text(
                 stringResource(R.string.photobook_hint),
                 style = MaterialTheme.typography.bodySmall,
@@ -830,3 +838,47 @@ private fun MomentPhotos(photos: List<String>) {
 
 /** Ab so vielen Fotos zeigt die Galerie einen Zähler statt Punkten */
 private const val MAX_DOTS = 6
+
+/** Frühere Jahresrückblicke, sobald das erste Jahr vorbei ist; bei mehreren Jahren mit Auswahl */
+@Composable
+private fun RecapYearsButton(settings: LoveSettings, today: LocalDate, onOpen: (Int) -> Unit) {
+    if (!settings.showRecap) return
+    val years = YearReviewMath.fullYears(settings.startDate, today)
+    if (years < 1) return
+    var picking by rememberSaveable { mutableStateOf(false) }
+    OutlinedButton(
+        onClick = { if (years == 1) onOpen(1) else picking = true },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+    ) {
+        Icon(Icons.Rounded.History, null)
+        Text(stringResource(R.string.recap_years), Modifier.padding(start = 8.dp))
+    }
+    if (picking) {
+        AlertDialog(
+            onDismissRequest = { picking = false },
+            title = { Text(stringResource(R.string.recap_pick_year)) },
+            text = {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
+                    // Das neueste Jahr zuerst
+                    (years downTo 1).forEach { year ->
+                        val review = YearReviewMath.reviewOf(settings.startDate, year, emptyList())
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.year_review_title, year.toString())) },
+                            supportingContent = {
+                                Text(stringResource(R.string.year_review_range, Texts.longDate(review.from), Texts.longDate(review.to)))
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable {
+                                picking = false
+                                onOpen(year)
+                            },
+                        )
+                    }
+                }
+            },
+            confirmButton = { TextButton(onClick = { picking = false }) { Text(stringResource(R.string.recap_close)) } },
+        )
+    }
+}
