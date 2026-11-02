@@ -74,4 +74,5 @@
     <string name="privacy_text">Vos noms, dates, photos et moments sont stockés dans l\'appareil. L\'appli n\'a pas d\'accès internet et ne contient aucun système de pistage et aucune pub. Vos données ne quittent votre téléphone que si vous créez une sauvegarde, envoyez un fichier de synchronisation un téléphone appairé, ou utilisez la sauvegarde Android (sauvegarde Google).</string>
     <string name="delete_all">Supprimer toutes les données</string>
     <string name="delete_all_summary">Remise à zéro complète des paramètres de l\'appli</string>
+    <string name="ob_notify_sub">L\'appli vous rappelle des anniversaires en mois et en années, et des nombres ronds comme 100, 200 ou 300 et les nombres à répétition comme 222.</string>
 </resources>
