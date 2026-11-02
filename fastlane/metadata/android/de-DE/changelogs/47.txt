@@ -1,3 +1,2 @@
 • Fernbeziehung: Wählt, wie ihr zueinander reist, z. B. Zug, Auto oder Flugzeug. Das Symbol erscheint auf der Startseite.
 • Neu auf Italienisch und Chinesisch, dank der Übersetzer:innen auf Weblate.
-• Neu in den Einstellungen unter „Über die App“: Fehler melden (auf GitHub oder per Mail, Version und Handy werden automatisch eingetragen), Ideen vorschlagen und beim Übersetzen helfen.

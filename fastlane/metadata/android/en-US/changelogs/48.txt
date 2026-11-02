@@ -1,0 +1,1 @@
+• New under Settings, About the app: report a bug (on GitHub or by email, version and phone are filled in for you), suggest an idea and help translate.

@@ -14,8 +14,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Im PR: keine alten Notizen ändern, und bei App-Änderungen die Notiz für die nächste Version
+      - name: Release notes in pull request
+        if: github.event_name == 'pull_request'
+        run: .github/scripts/check-changelogs.sh "origin/${{ github.base_ref }}"
+
       # Erinnert daran, die Änderungsnotizen für das nächste Release zu schreiben
       - name: Release notes for next version
+        if: github.event_name != 'pull_request'
         run: |
           last_tag=$(git describe --tags --abbrev=0 --match 'v[0-9]*' 2>/dev/null || true)
           if [ -n "$last_tag" ] && ! git diff --quiet "$last_tag" HEAD -- app/ ':!app/src/test'; then
