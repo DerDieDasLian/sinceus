@@ -588,6 +588,7 @@
     <string name="bug_mail_subject">Since Us bug report</string>
     <string name="bug_mail_body">What happened?\n\n\nWhat did you expect?\n\n\n%1$s</string>
     <string name="no_mail_app">No email app found. You can write to %1$s.</string>
+    <string name="no_browser">No browser found. You can open this link yourself: %1$s</string>
     <string name="suggest_idea">Suggest an idea</string>
     <string name="suggest_idea_summary">Since Us is made for couples. Ideas that fit have the best chance.</string>
     <string name="help_translate">Help translate</string>

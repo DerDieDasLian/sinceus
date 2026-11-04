@@ -40,18 +40,49 @@ object Feedback {
 
     fun ideaUrl(): String = "$REPO/issues/new?template=feature_request.yml"
 
-    /** Öffnet die Mail-App mit einer vorbereiteten Fehlermeldung */
+    /**
+     * Öffnet einen Link im Browser. Ist die GitHub-App installiert, fängt sie github.com-Links ab
+     * und zeigt statt der ausgefüllten Vorlage nur die Startseite. Deshalb zuerst gezielt einen
+     * Browser fragen, erst danach jede App, die den Link kann.
+     */
+    fun openWeb(context: Context, url: String) {
+        val view = Intent(Intent.ACTION_VIEW, Uri.parse(url)).addCategory(Intent.CATEGORY_BROWSABLE)
+        val inBrowser = Intent(view).apply {
+            // Nur Apps, die jeden https-Link öffnen, also Browser
+            selector = Intent(Intent.ACTION_VIEW, Uri.parse("https://")).addCategory(Intent.CATEGORY_BROWSABLE)
+        }
+        if (start(context, inBrowser) || start(context, view)) return
+        Toast.makeText(context, context.getString(R.string.no_browser, url), Toast.LENGTH_LONG).show()
+    }
+
+    /**
+     * Öffnet die Mail-App mit einer vorbereiteten Fehlermeldung. Empfänger, Betreff und Text stehen
+     * im mailto-Link selbst, denn viele Mail-Apps (z. B. Tuta, Proton, K-9) lesen die Zusatzangaben
+     * im Intent nicht und öffneten bisher nur eine leere Mail oder gar nichts.
+     */
     fun mailBug(context: Context) {
         val info = "Since Us ${BuildConfig.VERSION_NAME} ($source)\n$device"
-        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).apply {
+        val subject = context.getString(R.string.bug_mail_subject)
+        val body = context.getString(R.string.bug_mail_body, info)
+        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(mailto(subject, body))).apply {
             putExtra(Intent.EXTRA_EMAIL, arrayOf(MAIL))
-            putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.bug_mail_subject))
-            putExtra(Intent.EXTRA_TEXT, context.getString(R.string.bug_mail_body, info))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
         }
-        try {
-            context.startActivity(intent)
-        } catch (_: ActivityNotFoundException) {
-            Toast.makeText(context, context.getString(R.string.no_mail_app, MAIL), Toast.LENGTH_LONG).show()
-        }
+        if (start(context, intent)) return
+        Toast.makeText(context, context.getString(R.string.no_mail_app, MAIL), Toast.LENGTH_LONG).show()
+    }
+
+    /** mailto-Link mit Empfänger, Betreff und Text */
+    fun mailto(subject: String, body: String): String =
+        "mailto:$MAIL?subject=" + Uri.encode(subject) + "&body=" + Uri.encode(body)
+
+    private fun start(context: Context, intent: Intent): Boolean = try {
+        context.startActivity(intent)
+        true
+    } catch (_: ActivityNotFoundException) {
+        false
+    } catch (_: SecurityException) {
+        false
     }
 }

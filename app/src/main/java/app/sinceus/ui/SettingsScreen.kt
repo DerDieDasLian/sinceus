@@ -588,7 +588,7 @@ fun SettingsScreen(
                                 supportingContent = { Text(stringResource(R.string.suggest_idea_summary)) },
                                 leadingContent = { Icon(Icons.Rounded.Lightbulb, null) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable { uri.openUri(Feedback.ideaUrl()) },
+                                modifier = Modifier.clickable { Feedback.openWeb(context, Feedback.ideaUrl()) },
                             )
                             Divider()
                             ListItem(
@@ -596,7 +596,7 @@ fun SettingsScreen(
                                 supportingContent = { Text(stringResource(R.string.help_translate_summary)) },
                                 leadingContent = { Icon(Icons.Rounded.Translate, null) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable { uri.openUri(Feedback.WEBLATE) },
+                                modifier = Modifier.clickable { Feedback.openWeb(context, Feedback.WEBLATE) },
                             )
                             Divider()
                             ListItem(
@@ -604,7 +604,7 @@ fun SettingsScreen(
                                 supportingContent = { Text(stringResource(R.string.about_scope_summary)) },
                                 leadingContent = { Icon(Icons.Rounded.Favorite, null) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable { uri.openUri(Feedback.SCOPE) },
+                                modifier = Modifier.clickable { Feedback.openWeb(context, Feedback.SCOPE) },
                             )
                         }
                     }
@@ -808,7 +808,7 @@ fun SettingsScreen(
             title = { Text(stringResource(R.string.report_bug)) },
             text = { Text(stringResource(R.string.report_bug_text)) },
             confirmButton = {
-                TextButton(onClick = { dialog = null; uri.openUri(Feedback.bugUrl()) }) { Text(stringResource(R.string.report_github)) }
+                TextButton(onClick = { dialog = null; Feedback.openWeb(context, Feedback.bugUrl()) }) { Text(stringResource(R.string.report_github)) }
             },
             dismissButton = {
                 TextButton(onClick = { dialog = null; Feedback.mailBug(context) }) { Text(stringResource(R.string.report_email)) }
