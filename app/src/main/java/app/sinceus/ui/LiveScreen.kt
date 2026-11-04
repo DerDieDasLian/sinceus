@@ -52,6 +52,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
@@ -86,8 +87,10 @@ private fun LiveSpan.rows(): List<LiveRow> = buildList {
 @Composable
 fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = null) {
     var current by remember { mutableStateOf(now ?: LocalDateTime.now()) }
-    LaunchedEffect(active, now) {
-        while (active && now == null) {
+    // Nur zählen, solange die Seite gezeigt wird und die App sichtbar ist
+    val visible = appVisible()
+    LaunchedEffect(active, visible, now) {
+        while (active && visible && now == null) {
             current = LocalDateTime.now()
             delay(1000 - System.currentTimeMillis() % 1000)
         }
@@ -217,6 +220,8 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
 /** Langsam aufsteigende, halbtransparente Herzen im Hintergrund. */
 @Composable
 private fun FloatingHearts() {
+    // Reine Dekoration: mit "Animationen entfernen" am Handy fällt sie weg
+    if (!animationsEnabled()) return
     val transition = rememberInfiniteTransition(label = "hearts")
     // x-Position (Anteil der Breite), Größe, Dauer, Versatz
     val hearts = remember {
@@ -231,20 +236,26 @@ private fun FloatingHearts() {
         val w = maxWidth
         val h = maxHeight
         hearts.forEachIndexed { i, (x, size, duration, phase) ->
-            val progress by transition.animateFloat(
+            val progress = transition.animateFloat(
                 initialValue = 0f,
                 targetValue = 1f,
                 animationSpec = infiniteRepeatable(tween(duration.toInt(), easing = LinearEasing), RepeatMode.Restart),
                 label = "heart$i",
             )
-            val p = (progress + phase) % 1f
+            // Position und Deckkraft werden erst beim Zeichnen gelesen: so bewegt sich nur das Herz,
+            // statt dass jedes Bild den ganzen Live-Zähler neu aufbaut
             Icon(
                 Icons.Rounded.Favorite,
                 contentDescription = null,
-                tint = Color(0xFFFF8FA3).copy(alpha = 0.16f * (1f - p)),
+                tint = Color(0xFFFF8FA3).copy(alpha = 0.16f),
                 modifier = Modifier
-                    .offset(x = w * x, y = h * (1f - p) - size.dp)
-                    .size(size.dp),
+                    .offset(x = w * x, y = h - size.dp)
+                    .size(size.dp)
+                    .graphicsLayer {
+                        val p = (progress.value + phase) % 1f
+                        translationY = -h.toPx() * p
+                        alpha = 1f - p
+                    },
             )
         }
     }

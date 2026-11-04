@@ -30,8 +30,9 @@ class DailyReceiver : BroadcastReceiver() {
                     }
                 }
                 LoveWidget.refresh(app)
-                // Wöchentliche automatische Sicherung, falls ein Ordner gewählt ist
-                if (settings.onboardingDone) runCatching { AutoBackup.runIfDue(app) }
+                // Wöchentliche automatische Sicherung, falls ein Ordner gewählt ist. Sie läuft als eigene
+                // Hintergrundaufgabe, weil der Wecker nur wenig Zeit hat und viele Fotos dauern können.
+                if (settings.onboardingDone) runCatching { AutoBackup.scheduleIfDue(app) }
                 if (intent.action == DailyScheduler.ACTION_MIDNIGHT) {
                     runCatching { UpdateChecker.checkIfDue(app) }
                 }

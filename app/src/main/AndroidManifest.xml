@@ -93,6 +93,12 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- Wöchentliche automatische Sicherung als Hintergrundaufgabe -->
+        <service
+            android:name=".data.AutoBackupJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <receiver
             android:name=".notify.DailyReceiver"
             android:exported="false">

@@ -1,3 +1,4 @@
-• Year in review: around your anniversary, the app looks back at your year page by page, with days, moments, tags, places and photos. Earlier years are under Moments.
-• Like it simple? Turn it off under Settings, Home screen.
-• Fixed bug reports: the button now opens the filled-in form in your browser, even with the GitHub app installed, and the email arrives with address, subject and text.
+• Year in review: around your anniversary, the app looks back at your year page by page. Earlier years are under Moments, and you can turn it off under Settings, Home screen.
+• Fixed bug reports: the form opens in your browser and the email arrives complete.
+• Easier on the battery, the weekly backup is more reliable and backups keep all settings.
+• With "Remove animations" turned on, the hearts stay still.

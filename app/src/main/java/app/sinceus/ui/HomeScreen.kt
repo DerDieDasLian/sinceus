@@ -85,9 +85,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.material3.IconButton
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -415,12 +415,17 @@ fun NamesRow(names: List<String>, style: TextStyle, heart: Dp, modifier: Modifie
 
 @Composable
 fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp, icon: ImageVector = Icons.Rounded.Favorite) {
-    val beat by rememberInfiniteTransition(label = "heart").animateFloat(
-        initialValue = 1f,
-        targetValue = 1.18f,
-        animationSpec = infiniteRepeatable(tween(650), RepeatMode.Reverse),
-        label = "beat",
-    )
+    // Mit "Animationen entfernen" am Handy bleibt das Herz still
+    val beat = if (animationsEnabled()) {
+        rememberInfiniteTransition(label = "heart").animateFloat(
+            initialValue = 1f,
+            targetValue = 1.18f,
+            animationSpec = infiniteRepeatable(tween(650), RepeatMode.Reverse),
+            label = "beat",
+        )
+    } else {
+        null
+    }
     val pride = LocalPrideMonth.current
     Icon(
         icon,
@@ -428,7 +433,12 @@ fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp, icon: ImageVec
         tint = if (pride) Color.White else Color(0xFFFF5C77),
         modifier = modifier
             .size(size)
-            .scale(beat)
+            // Der Schlag wird erst beim Zeichnen gelesen, so baut nicht jedes Bild den Bildschirm neu auf
+            .graphicsLayer {
+                val scale = beat?.value ?: 1f
+                scaleX = scale
+                scaleY = scale
+            }
             .then(if (pride) Modifier.rainbow() else Modifier),
     )
 }

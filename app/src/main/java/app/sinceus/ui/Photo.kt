@@ -110,7 +110,9 @@ fun HeroPhoto(settings: LoveSettings, modifier: Modifier = Modifier) {
     val slides = settings.slides
     val count = 1 + slides.size
     var index by remember(slides) { mutableIntStateOf(0) }
-    if (count > 1) {
+    // Im Hintergrund pausiert die Diashow
+    val visible = appVisible()
+    if (count > 1 && visible) {
         LaunchedEffect(slides) {
             while (true) {
                 delay(SLIDE_MS)
