@@ -7,9 +7,11 @@ import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
@@ -20,20 +22,22 @@ import kotlinx.coroutines.launch
 class AutoBackupJob : JobService() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    /** Die laufende Sicherung. Android kann denselben Dienst für einen neuen Versuch weiterverwenden. */
+    private var running: Job? = null
+
     override fun onStartJob(params: JobParameters): Boolean {
-        scope.launch {
-            try {
-                AutoBackup.runIfDue(applicationContext)
-            } finally {
-                jobFinished(params, false)
-            }
+        running = scope.launch {
+            AutoBackup.runIfDue(applicationContext)
+            // Nur melden, wenn Android die Aufgabe nicht schon selbst gestoppt hat
+            if (isActive) jobFinished(params, false)
         }
         return true
     }
 
     /** Unterbrochen (z. B. Speicher wird knapp): abgebrochene Datei räumt [AutoBackup.run] weg, später neu versuchen */
     override fun onStopJob(params: JobParameters): Boolean {
-        scope.cancel()
+        running?.cancel()
+        running = null
         return true
     }
 
