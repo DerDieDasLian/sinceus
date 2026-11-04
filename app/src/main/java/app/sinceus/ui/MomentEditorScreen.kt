@@ -8,6 +8,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import app.sinceus.data.PhotoDate
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -124,8 +128,23 @@ fun MomentEditorScreen(
     var dateDialog by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
 
+    // Neuer Moment: Solange niemand das Datum selbst gewählt hat, kommt es vom ersten Foto
+    var dateChosen by rememberSaveable { mutableStateOf(existing != null) }
+    var dateFromPhoto by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
-        if (uris.isNotEmpty()) photos = ArrayList((photos + uris.map { it.toString() }).distinct())
+        if (uris.isEmpty()) return@rememberLauncherForActivityResult
+        val first = photos.isEmpty()
+        photos = ArrayList((photos + uris.map { it.toString() }).distinct())
+        if (first && !dateChosen) {
+            scope.launch {
+                val taken = PhotoDate.read(context, uris.first()) ?: return@launch
+                if (dateChosen) return@launch
+                epochDay = taken.toEpochDay()
+                dateFromPhoto = true
+            }
+        }
     }
     fun pick() = picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
 
@@ -173,7 +192,16 @@ fun MomentEditorScreen(
             ListItem(
                 headlineContent = { Text(stringResource(R.string.moment_field_date)) },
                 supportingContent = {
-                    Text(Texts.longDate(LocalDate.ofEpochDay(epochDay)), color = MaterialTheme.colorScheme.primary)
+                    Column {
+                        Text(Texts.longDate(LocalDate.ofEpochDay(epochDay)), color = MaterialTheme.colorScheme.primary)
+                        if (dateFromPhoto) {
+                            Text(
+                                stringResource(R.string.moment_date_from_photo),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
                 },
                 leadingContent = { Icon(Icons.Rounded.CalendarMonth, null) },
                 colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
@@ -317,6 +345,8 @@ fun MomentEditorScreen(
             title = R.string.moment_field_date,
         ) {
             epochDay = it.toEpochDay()
+            dateChosen = true
+            dateFromPhoto = false
             dateDialog = false
         }
     }
