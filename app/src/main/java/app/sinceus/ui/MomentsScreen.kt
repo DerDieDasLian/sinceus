@@ -60,6 +60,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -187,224 +191,233 @@ fun MomentsScreen(
     // Die Zeitleiste lässt sich umdrehen, der Kalender bleibt immer gleich
     val timeline = if (settings.newestFirst) entries.asReversed() else entries
 
-    Column(
+    // Als Liste, die nur lädt, was gerade zu sehen ist: Bei vielen Momenten werden so nicht alle
+    // Fotos auf einmal geladen. Kopf und Fuß sind je ein Eintrag, dazwischen die Zeitleiste.
+    val top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val showTimeline = !(calendar && moments.isNotEmpty())
+    LazyColumn(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(horizontal = 20.dp),
+            .background(MaterialTheme.colorScheme.background),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = top),
     ) {
-        Text(
-            stringResource(R.string.moments_title),
-            style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.padding(top = 28.dp),
-        )
-        Text(
-            if (moments.isEmpty()) {
-                ""
-            } else {
-                pluralStringResource(R.plurals.moments_count, moments.size, formatNumber(moments.size.toLong()))
-            },
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp, bottom = 20.dp),
-        )
+        item(contentType = "header") {
+            Column(Modifier.fillMaxWidth()) {
+                Text(
+                    stringResource(R.string.moments_title),
+                    style = MaterialTheme.typography.displaySmall,
+                    modifier = Modifier.padding(top = 28.dp),
+                )
+                Text(
+                    if (moments.isEmpty()) {
+                        ""
+                    } else {
+                        pluralStringResource(R.plurals.moments_count, moments.size, formatNumber(moments.size.toLong()))
+                    },
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 20.dp),
+                )
 
-        if (moments.isEmpty()) {
-            Card(
-                shape = RoundedCornerShape(28.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Column(Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(
-                        Modifier
-                            .size(72.dp)
-                            .clip(CircleShape)
-                            .background(Presets[0].brush),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        BeatingHeart(size = 34.dp)
-                    }
-                    Text(
-                        stringResource(R.string.moments_empty_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 16.dp),
-                    )
-                    Text(
-                        stringResource(R.string.moments_empty_sub),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
-                    )
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                if (moments.isEmpty()) {
+                    Card(
+                        shape = RoundedCornerShape(28.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        MomentSuggestions.forEach { id ->
-                            val label = stringResource(id)
-                            SuggestionChip(onClick = { onAdd(label) }, label = { Text(label) })
+                        Column(Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Box(
+                                Modifier
+                                    .size(72.dp)
+                                    .clip(CircleShape)
+                                    .background(Presets[0].brush),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                BeatingHeart(size = 34.dp)
+                            }
+                            Text(
+                                stringResource(R.string.moments_empty_title),
+                                style = MaterialTheme.typography.titleLarge,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(top = 16.dp),
+                            )
+                            Text(
+                                stringResource(R.string.moments_empty_sub),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
+                            )
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                MomentSuggestions.forEach { id ->
+                                    val label = stringResource(id)
+                                    SuggestionChip(onClick = { onAdd(label) }, label = { Text(label) })
+                                }
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(16.dp))
+                }
+
+                FilledTonalButton(
+                    onClick = { onAdd(null) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp),
+                ) {
+                    Icon(Icons.Rounded.Add, null)
+                    Text(stringResource(R.string.moment_add), Modifier.padding(start = 8.dp))
+                }
+
+                if (moments.isNotEmpty()) {
+                    SingleChoiceSegmentedButtonRow(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                    ) {
+                        listOf(false to R.string.moments_view_list, true to R.string.moments_view_calendar).forEachIndexed { i, (value, label) ->
+                            SegmentedButton(
+                                selected = calendar == value,
+                                onClick = { calendar = value },
+                                shape = SegmentedButtonDefaults.itemShape(i, 2),
+                                icon = {
+                                    SegmentedButtonDefaults.Icon(calendar == value) {
+                                        Icon(
+                                            if (value) Icons.Rounded.CalendarMonth else Icons.AutoMirrored.Rounded.ViewList,
+                                            null,
+                                            modifier = Modifier.size(SegmentedButtonDefaults.IconSize),
+                                        )
+                                    }
+                                },
+                            ) { Text(stringResource(label)) }
                         }
                     }
                 }
-            }
-            Spacer(Modifier.height(16.dp))
-        }
 
-        FilledTonalButton(
-            onClick = { onAdd(null) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 20.dp),
-        ) {
-            Icon(Icons.Rounded.Add, null)
-            Text(stringResource(R.string.moment_add), Modifier.padding(start = 8.dp))
-        }
-
-        if (moments.isNotEmpty()) {
-            SingleChoiceSegmentedButtonRow(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-            ) {
-                listOf(false to R.string.moments_view_list, true to R.string.moments_view_calendar).forEachIndexed { i, (value, label) ->
-                    SegmentedButton(
-                        selected = calendar == value,
-                        onClick = { calendar = value },
-                        shape = SegmentedButtonDefaults.itemShape(i, 2),
-                        icon = {
-                            SegmentedButtonDefaults.Icon(calendar == value) {
-                                Icon(
-                                    if (value) Icons.Rounded.CalendarMonth else Icons.AutoMirrored.Rounded.ViewList,
-                                    null,
-                                    modifier = Modifier.size(SegmentedButtonDefaults.IconSize),
+                if (searchable) {
+                    OutlinedTextField(
+                        query,
+                        { query = it },
+                        placeholder = { Text(stringResource(R.string.moments_search)) },
+                        leadingIcon = { Icon(Icons.Rounded.Search, null) },
+                        trailingIcon = if (query.isNotEmpty()) {
+                            {
+                                IconButton(onClick = { query = "" }) {
+                                    Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.moments_search_clear))
+                                }
+                            }
+                        } else {
+                            null
+                        },
+                        singleLine = true,
+                        shape = CircleShape,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(top = 8.dp, bottom = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        if (filterRelationships) {
+                            settings.relationships.forEach { r ->
+                                FilterChip(
+                                    selected = relationship == r.id,
+                                    onClick = { relationship = if (relationship == r.id) null else r.id },
+                                    label = { Text(settings.namesOf(r)) },
                                 )
                             }
-                        },
-                    ) { Text(stringResource(label)) }
-                }
-            }
-        }
-
-        if (searchable) {
-            OutlinedTextField(
-                query,
-                { query = it },
-                placeholder = { Text(stringResource(R.string.moments_search)) },
-                leadingIcon = { Icon(Icons.Rounded.Search, null) },
-                trailingIcon = if (query.isNotEmpty()) {
-                    {
-                        IconButton(onClick = { query = "" }) {
-                            Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.moments_search_clear))
+                        }
+                        MomentFilter.years(moments).forEach { y ->
+                            FilterChip(
+                                selected = year == y,
+                                onClick = { year = if (year == y) null else y },
+                                label = { Text(y.toString()) },
+                            )
                         }
                     }
-                } else {
-                    null
-                },
-                singleLine = true,
-                shape = CircleShape,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(top = 8.dp, bottom = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                if (filterRelationships) {
-                    settings.relationships.forEach { r ->
-                        FilterChip(
-                            selected = relationship == r.id,
-                            onClick = { relationship = if (relationship == r.id) null else r.id },
-                            label = { Text(settings.namesOf(r)) },
+                    if (filtering && shown.isEmpty()) {
+                        Text(
+                            stringResource(R.string.moments_no_results),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 24.dp),
                         )
                     }
                 }
-                MomentFilter.years(moments).forEach { y ->
-                    FilterChip(
-                        selected = year == y,
-                        onClick = { year = if (year == y) null else y },
-                        label = { Text(y.toString()) },
-                    )
+
+                if (tags.isNotEmpty()) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(bottom = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        tags.forEach { t ->
+                            val on = activeTag.equals(t, ignoreCase = true)
+                            FilterChip(
+                                selected = on,
+                                onClick = { tag = if (on) null else t },
+                                label = { Text(t) },
+                                leadingIcon = { Icon(Icons.Rounded.Sell, null, modifier = Modifier.size(16.dp)) },
+                            )
+                        }
+                    }
                 }
-            }
-            if (filtering && shown.isEmpty()) {
-                Text(
-                    stringResource(R.string.moments_no_results),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 24.dp),
-                )
-            }
-        }
 
-        if (tags.isNotEmpty()) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                tags.forEach { t ->
-                    val on = activeTag.equals(t, ignoreCase = true)
-                    FilterChip(
-                        selected = on,
-                        onClick = { tag = if (on) null else t },
-                        label = { Text(t) },
-                        leadingIcon = { Icon(Icons.Rounded.Sell, null, modifier = Modifier.size(16.dp)) },
-                    )
-                }
-            }
-        }
-
-        // Hinweis, wenn nur der Schlagwort-Filter nichts findet (die Suche zeigt ihren eigenen)
-        if (!searchable && filtering && shown.isEmpty()) {
-            Text(
-                stringResource(R.string.moments_no_results),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp),
-            )
-        }
-
-        if (calendar && moments.isNotEmpty()) {
-            val month = YearMonth.of(monthIndex / 12, monthIndex % 12 + 1)
-            CalendarView(
-                month = month,
-                today = today,
-                entries = entries,
-                anniversaries = MomentCalendar.anniversaries(shown, month),
-                onMonth = { monthIndex += it },
-                onToday = { monthIndex = today.year * 12 + today.monthValue - 1 },
-                onOpen = onOpen,
-            )
-        } else {
-            if (timeline.size > 1) {
-                TextButton(
-                    onClick = { onNewestFirst(!settings.newestFirst) },
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(bottom = 8.dp),
-                ) {
-                    Icon(Icons.Rounded.SwapVert, null, modifier = Modifier.size(18.dp))
+                // Hinweis, wenn nur der Schlagwort-Filter nichts findet (die Suche zeigt ihren eigenen)
+                if (!searchable && filtering && shown.isEmpty()) {
                     Text(
-                        stringResource(if (settings.newestFirst) R.string.moments_newest_first else R.string.moments_oldest_first),
-                        Modifier.padding(start = 8.dp),
+                        stringResource(R.string.moments_no_results),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 24.dp),
                     )
                 }
+
+                if (calendar && moments.isNotEmpty()) {
+                    val month = YearMonth.of(monthIndex / 12, monthIndex % 12 + 1)
+                    CalendarView(
+                        month = month,
+                        today = today,
+                        entries = entries,
+                        anniversaries = MomentCalendar.anniversaries(shown, month),
+                        onMonth = { monthIndex += it },
+                        onToday = { monthIndex = today.year * 12 + today.monthValue - 1 },
+                        onOpen = onOpen,
+                    )
+                } else {
+                    if (timeline.size > 1) {
+                        TextButton(
+                            onClick = { onNewestFirst(!settings.newestFirst) },
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(bottom = 8.dp),
+                        ) {
+                            Icon(Icons.Rounded.SwapVert, null, modifier = Modifier.size(18.dp))
+                            Text(
+                                stringResource(if (settings.newestFirst) R.string.moments_newest_first else R.string.moments_oldest_first),
+                                Modifier.padding(start = 8.dp),
+                            )
+                        }
+                    }
+                }
             }
-            timeline.forEachIndexed { index, entry ->
+        }
+
+        if (showTimeline) {
+            itemsIndexed(timeline, contentType = { _, entry -> entry::class }) { index, entry ->
                 TimelineItem(
                     entry = entry,
                     today = today,
@@ -416,31 +429,35 @@ fun MomentsScreen(
             }
         }
 
-        if (shown.isNotEmpty()) {
-            OutlinedButton(
-                onClick = { onPhotobook(shown.sortedBy { it.date }) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-            ) {
-                Icon(Icons.Rounded.PictureAsPdf, null)
-                Text(stringResource(R.string.photobook_save), Modifier.padding(start = 8.dp))
-            }
-            RecapYearsButton(settings, today, onOpenRecap)
-            Text(
-                stringResource(R.string.photobook_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 6.dp),
-            )
-        }
+        item(contentType = "footer") {
+            Column(Modifier.fillMaxWidth()) {
+                if (shown.isNotEmpty()) {
+                    OutlinedButton(
+                        onClick = { onPhotobook(shown.sortedBy { it.date }) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                    ) {
+                        Icon(Icons.Rounded.PictureAsPdf, null)
+                        Text(stringResource(R.string.photobook_save), Modifier.padding(start = 8.dp))
+                    }
+                    RecapYearsButton(settings, today, onOpenRecap)
+                    Text(
+                        stringResource(R.string.photobook_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 6.dp),
+                    )
+                }
 
-        // Platz für die schwebende Leiste
-        Spacer(Modifier.height(96.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+                // Platz für die schwebende Leiste
+                Spacer(Modifier.height(96.dp))
+                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+            }
+        }
     }
 }
 

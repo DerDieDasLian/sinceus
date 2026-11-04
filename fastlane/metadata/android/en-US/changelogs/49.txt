@@ -1,4 +1,4 @@
 • Year in review: around your anniversary, the app looks back at your year page by page. Earlier years are under Moments, and you can turn it off under Settings, Home screen.
 • Fixed bug reports: the form opens in your browser and the email arrives complete.
-• Easier on the battery, the weekly backup is more reliable and backups keep all settings.
+• Easier on the battery, faster with many moments, the weekly backup is more reliable and backups keep all settings.
 • With "Remove animations" turned on, the hearts stay still.
