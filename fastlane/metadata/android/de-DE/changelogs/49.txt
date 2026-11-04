@@ -1,3 +1,4 @@
-• Jahresrückblick: Rund um euren Jahrestag blickt die App Seite für Seite auf euer Jahr zurück, mit Tagen, Momenten, Schlagwörtern, Orten und Fotos. Frühere Jahre findet ihr bei den Momenten.
-• Wer es schlicht mag, schaltet den Rückblick unter Einstellungen, Startseite aus.
-• Fehler melden repariert: Der Knopf öffnet die ausgefüllte Vorlage jetzt im Browser, auch wenn die GitHub-App installiert ist, und die Mail kommt mit Empfänger, Betreff und Text an.
+• Jahresrückblick: Rund um euren Jahrestag blickt die App Seite für Seite auf euer Jahr zurück. Frühere Jahre findet ihr bei den Momenten, abschalten geht unter Einstellungen, Startseite.
+• Fehler melden repariert: Die Vorlage öffnet im Browser, die Mail kommt vollständig an.
+• Sparsamer mit dem Akku, die Wochensicherung läuft zuverlässiger und Sicherungen behalten alle Einstellungen.
+• Mit "Animationen entfernen" am Handy bleiben die Herzen still.

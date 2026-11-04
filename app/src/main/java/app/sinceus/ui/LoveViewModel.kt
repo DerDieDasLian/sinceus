@@ -23,7 +23,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,13 +43,13 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     val today: StateFlow<LocalDate> = _today.asStateFlow()
 
     init {
-        // Bei jeder Änderung: Wecker neu planen und Widget aktualisieren
+        // Beim Öffnen und danach nur, wenn sich etwas geändert hat, das Widgets und Wecker brauchen:
+        // Wecker neu planen und Widgets aktualisieren. Seite wechseln, Sortierung oder Update-Suche
+        // zeichnen die Widgets nicht mehr neu.
         viewModelScope.launch {
-            settings.drop(1).collect { s ->
-                if (s != null) {
-                    DailyScheduler.schedule(app, s)
-                    LoveWidget.refresh(app)
-                }
+            settings.filterNotNull().map { it.forBackground() }.distinctUntilChanged().collect { s ->
+                DailyScheduler.schedule(app, s)
+                LoveWidget.refresh(app)
             }
         }
         // Große Fotos (z. B. aus älteren Versionen) einmal verkleinern, damit Sicherungen klein bleiben
@@ -297,3 +299,29 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
         settings.value?.let { Notifier.showTest(getApplication(), it) }
     }
 }
+
+/**
+ * Die Daten ohne das, was nur die App selbst zeigt. Widgets und Mitteilungen brauchen diese Felder
+ * nicht, eine Änderung daran muss also nichts im Hintergrund neu zeichnen oder planen.
+ * Unbekannte neue Felder bleiben drin, im Zweifel wird also lieber einmal zu oft aktualisiert.
+ */
+internal fun LoveSettings.forBackground(): LoveSettings = copy(
+    selected = widget.id,
+    homePage = 0,
+    focusX = 0f,
+    focusY = 0f,
+    zoom = 1f,
+    updateCheck = true,
+    updateVersion = null,
+    updateUrl = null,
+    updateApkUrl = null,
+    showLive = true,
+    showFacts = true,
+    hiddenFacts = emptySet(),
+    celebrate = true,
+    showRecap = true,
+    slides = emptyList(),
+    changelogSeen = 0,
+    showChangelog = true,
+    newestFirst = false,
+)

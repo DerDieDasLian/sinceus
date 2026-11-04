@@ -1,6 +1,5 @@
 package app.sinceus.ui
 
-import android.provider.Settings
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -18,7 +17,6 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.PathParser
-import androidx.compose.ui.platform.LocalContext
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -55,10 +53,7 @@ private class Piece(
  */
 @Composable
 internal fun Confetti(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    val animationsOff = remember {
-        Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
-    }
+    val animationsOff = !animationsEnabled()
     if (celebratedThisLaunch || animationsOff) return
     val pieces = remember {
         val random = Random(System.nanoTime())

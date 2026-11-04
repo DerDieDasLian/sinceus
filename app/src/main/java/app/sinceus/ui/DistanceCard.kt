@@ -42,10 +42,12 @@ import kotlin.math.abs
 internal fun DistanceCard(r: Relationship, today: LocalDate) {
     val context = LocalContext.current
     var now by remember { mutableStateOf(Instant.now()) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(20_000)
+    // Uhr am anderen Ort: läuft nur, solange die App sichtbar ist, und stimmt beim Zurückkommen sofort
+    val visible = appVisible()
+    LaunchedEffect(visible) {
+        while (visible) {
             now = Instant.now()
+            delay(20_000)
         }
     }
     val days = Distance.daysUntil(r.nextMeeting, today)

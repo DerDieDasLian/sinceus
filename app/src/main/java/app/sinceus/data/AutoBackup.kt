@@ -40,6 +40,7 @@ object AutoBackup {
     }
 
     fun disable(context: Context) {
+        AutoBackupJob.cancel(context)
         val state = load(context)
         if (state != null) {
             runCatching {
@@ -54,6 +55,12 @@ object AutoBackup {
 
     fun isDue(state: State, now: Long): Boolean = now - state.last >= WEEK_MS - SLACK_MS
 
+    /** Plant die Sicherung als Hintergrundaufgabe ([AutoBackupJob]), wenn eine Woche um ist */
+    fun scheduleIfDue(context: Context, now: Long = System.currentTimeMillis()) {
+        val state = load(context) ?: return
+        if (isDue(state, now)) AutoBackupJob.schedule(context)
+    }
+
     /** Sichert, wenn eine Woche um ist. true = gesichert */
     suspend fun runIfDue(context: Context, now: Long = System.currentTimeMillis()): Boolean {
         val state = load(context) ?: return false
@@ -62,17 +69,28 @@ object AutoBackup {
     }
 
     /** Legt jetzt eine Sicherung im gewählten Ordner an und räumt alte auf. true = gesichert */
-    suspend fun run(context: Context, state: State, now: Long = System.currentTimeMillis()): Boolean = runCatching {
+    suspend fun run(context: Context, state: State, now: Long = System.currentTimeMillis()): Boolean {
         val resolver = context.contentResolver
-        val parent = DocumentsContract.buildDocumentUriUsingTree(state.folder, DocumentsContract.getTreeDocumentId(state.folder))
-        val name = PREFIX + LocalDate.now() + ".zip"
-        val file = DocumentsContract.createDocument(resolver, parent, Backup.MIME, name) ?: return false
-        val out = resolver.openOutputStream(file) ?: return false
-        LoveRepository(context).exportBackup(out)
+        val file = runCatching {
+            val parent = DocumentsContract.buildDocumentUriUsingTree(state.folder, DocumentsContract.getTreeDocumentId(state.folder))
+            DocumentsContract.createDocument(resolver, parent, Backup.MIME, PREFIX + LocalDate.now() + ".zip")
+        }.getOrNull() ?: return false
+        val written = try {
+            val out = resolver.openOutputStream(file) ?: throw java.io.IOException("no output stream")
+            LoveRepository(context).exportBackup(out)
+            true
+        } catch (_: Exception) {
+            // Auch beim Abbruch: nie eine halbe Sicherung im Ordner liegen lassen, die wie eine echte aussieht
+            false
+        }
+        if (!written) {
+            runCatching { DocumentsContract.deleteDocument(resolver, file) }
+            return false
+        }
         prefs(context).edit().putLong("last", now).apply()
-        cleanUp(context, state.folder)
-        true
-    }.getOrDefault(false)
+        runCatching { cleanUp(context, state.folder) }
+        return true
+    }
 
     /** Nur die neuesten [KEEP] automatischen Sicherungen behalten, eigene Dateien bleiben unberührt */
     private fun cleanUp(context: Context, tree: Uri) {

@@ -16,6 +16,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -236,7 +237,8 @@ const val MAX_SLIDES = 20
 
 class LoveRepository(private val context: Context) {
 
-    val settings: Flow<LoveSettings> = context.dataStore.data.map { it.toSettings() }
+    /** Liest im Hintergrund: Momente-JSON entpacken und Fotos prüfen soll den Bildschirm nie bremsen */
+    val settings: Flow<LoveSettings> = context.dataStore.data.map { it.toSettings() }.flowOn(Dispatchers.IO)
 
     suspend fun current(): LoveSettings = settings.first()
 
@@ -656,6 +658,8 @@ class LoveRepository(private val context: Context) {
             p[Keys.celebrate] = restored.celebrate
             p[Keys.showRecap] = restored.showRecap
             p[Keys.slides] = PathListCodec.encode(restored.slides)
+            p[Keys.newestFirst] = restored.newestFirst
+            p[Keys.showChangelog] = restored.showChangelog
         }
     }
 

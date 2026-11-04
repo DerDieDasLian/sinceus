@@ -44,6 +44,8 @@ class BackupTest {
         showLive = false,
         hiddenFacts = setOf(FunFacts.Kind.CHRISTMAS, FunFacts.Kind.HALLOWEENS),
         slides = listOf("/data/x/files/slides/slide_1_0.jpg"),
+        newestFirst = true,
+        showChangelog = false,
     )
 
     @After
@@ -82,6 +84,8 @@ class BackupTest {
         repo.setNames(listOf("Alex", "Sam"))
         repo.setStartDate(LocalDate.of(2025, 3, 15))
         repo.saveMoment(Moment("1", "Erstes Date", LocalDate.of(2025, 2, 14), "Kino"), emptyList())
+        repo.setNewestFirst(true)
+        repo.setShowChangelog(false)
         val file = ByteArrayOutputStream()
         repo.exportBackup(file)
 
@@ -94,6 +98,9 @@ class BackupTest {
         assertEquals(LocalDate.of(2025, 3, 15), s.startDate)
         assertEquals(listOf("Erstes Date"), s.moments.map { it.title })
         assertTrue(s.onboardingDone)
+        // Auch kleine Einstellungen kommen zurück
+        assertTrue(s.newestFirst)
+        assertFalse(s.showChangelog)
     }
 
     @Test
