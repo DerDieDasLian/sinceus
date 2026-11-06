@@ -42,6 +42,8 @@ import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.rounded.Widgets
+import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.Forum
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -236,11 +238,42 @@ fun SettingsScreen(
     sync: SyncActions = SyncActions(),
     /** Geöffnete Unterseite beim Start (für Tests), null = Übersicht */
     initialPage: SettingsPage? = null,
+    /** Geöffnete Beziehung beim Start (für Tests), null = keine */
+    initialRelationship: String? = null,
+    /** Suchtext beim Start (für Tests) */
+    initialQuery: String = "",
 ) {
     var dialog by remember { mutableStateOf<String?>(null) }
     var page by rememberSaveable { mutableStateOf(initialPage) }
+    // Geöffnete Beziehung: ihre ID, "" = neue Beziehung, null = keine
+    var editing by rememberSaveable { mutableStateOf(initialRelationship) }
+    // Suchtext auf der Übersicht, bleibt beim Zurückkommen erhalten
+    var query by rememberSaveable { mutableStateOf(initialQuery) }
     BackHandler(enabled = page != null) { page = null }
     val context = LocalContext.current
+
+    val editingId = editing
+    if (editingId != null) {
+        val existing = settings.relationships.firstOrNull { it.id == editingId }
+        val fresh = remember(editingId) { Relationship(newId(), emptyList(), LocalDate.now()) }
+        key(editingId) {
+            RelationshipPage(
+                settings = settings,
+                relationship = existing ?: fresh,
+                isNew = existing == null,
+                onClose = { editing = null },
+                onDelete = {
+                    onDeleteRelationship(editingId)
+                    editing = null
+                },
+                onWidget = onWidgetRelationship,
+            ) {
+                onSaveRelationship(it)
+                editing = null
+            }
+        }
+        return
+    }
     val uri = androidx.compose.ui.platform.LocalUriHandler.current
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -275,7 +308,9 @@ fun SettingsScreen(
                         pairing,
                         appLock = appLock,
                         languageLabel = languageLabel(language),
-                        onLanguage = { dialog = "language" },
+                        query = query,
+                        onQuery = { query = it },
+                        onDialog = { dialog = it },
                         onOpen = { page = it },
                     )
                     SettingsPage.Couple -> {
@@ -321,13 +356,14 @@ fun SettingsScreen(
                                         )
                                     },
                                     leadingContent = { Icon(r.kind.icon, null) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) },
                                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                    modifier = Modifier.clickable { dialog = "rel:${r.id}" },
+                                    modifier = Modifier.clickable { editing = r.id },
                                 )
                             }
                             if (settings.relationships.size < MAX_RELATIONSHIPS) {
                                 Divider()
-                                Row(Icons.Rounded.Add, stringResource(R.string.add_relationship), null) { dialog = "rel:" }
+                                Row(Icons.Rounded.Add, stringResource(R.string.add_relationship), null) { editing = "" }
                             }
                         }
                     }
@@ -351,8 +387,6 @@ fun SettingsScreen(
                         ) { dialog = "slides" }
                         Divider()
                         Row(Icons.Rounded.RestartAlt, stringResource(R.string.reset_photo), null, onClick = onResetPhoto)
-                        Divider()
-                        Row(Icons.Rounded.TextFields, stringResource(R.string.font_title), AppFonts.find(settings.font).label()) { dialog = "font" }
                     }
                     SettingsPage.Privacy -> Section(null) {
                         ListItem(
@@ -428,43 +462,56 @@ fun SettingsScreen(
                             modifier = Modifier.clickable { onShowLive(!settings.showLive) },
                         )
                         Divider()
-                        ListItem(
-                            headlineContent = { Text(stringResource(R.string.facts_show)) },
-                            supportingContent = { Text(stringResource(R.string.facts_show_summary)) },
-                            leadingContent = { Icon(Icons.Rounded.Calculate, null) },
-                            trailingContent = { Switch(checked = settings.showFacts, onCheckedChange = onShowFacts) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { onShowFacts(!settings.showFacts) },
-                        )
-                        if (settings.showFacts) {
-                            Divider()
-                            val shown = FunFacts.HOLIDAYS.filterNot { it in settings.hiddenFacts }.map { stringResource(it.holidayName()) }
-                            Row(
-                                Icons.Rounded.Event,
-                                stringResource(R.string.holidays_title),
-                                shown.joinToString(", ").ifBlank { stringResource(R.string.holidays_none) },
-                            ) { dialog = "holidays" }
-                        }
-                        Divider()
-                        ListItem(
-                            headlineContent = { Text(stringResource(R.string.celebrate_show)) },
-                            supportingContent = { Text(stringResource(R.string.celebrate_show_summary)) },
-                            leadingContent = { Icon(Icons.Rounded.Celebration, null) },
-                            trailingContent = { Switch(checked = settings.celebrate, onCheckedChange = onCelebrate) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { onCelebrate(!settings.celebrate) },
-                        )
-                        Divider()
-                        ListItem(
-                            headlineContent = { Text(stringResource(R.string.recap_show)) },
-                            supportingContent = { Text(stringResource(R.string.recap_show_summary)) },
-                            leadingContent = { Icon(Icons.Rounded.History, null) },
-                            trailingContent = { Switch(checked = settings.showRecap, onCheckedChange = onShowRecap) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { onShowRecap(!settings.showRecap) },
-                        )
-                        Divider()
                         Row(Icons.Rounded.Widgets, stringResource(R.string.add_widget), null, onClick = onAddWidget)
+                    }
+                    SettingsPage.Days -> {
+                        Section(null) {
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.facts_show)) },
+                                supportingContent = { Text(stringResource(R.string.facts_show_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.Calculate, null) },
+                                trailingContent = { Switch(checked = settings.showFacts, onCheckedChange = onShowFacts) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { onShowFacts(!settings.showFacts) },
+                            )
+                        }
+                        // Feiertage direkt auf der Seite statt in einem eigenen Fenster
+                        if (settings.showFacts) {
+                            Section(stringResource(R.string.holidays_title)) {
+                                Text(
+                                    stringResource(R.string.holidays_text),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp),
+                                )
+                                HolidayChecks(settings.hiddenFacts, onHiddenFacts)
+                            }
+                        }
+                        Section(stringResource(R.string.section_extras)) {
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.celebrate_show)) },
+                                supportingContent = { Text(stringResource(R.string.celebrate_show_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.Celebration, null) },
+                                trailingContent = { Switch(checked = settings.celebrate, onCheckedChange = onCelebrate) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { onCelebrate(!settings.celebrate) },
+                            )
+                            Divider()
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.recap_show)) },
+                                supportingContent = { Text(stringResource(R.string.recap_show_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.History, null) },
+                                trailingContent = { Switch(checked = settings.showRecap, onCheckedChange = onShowRecap) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { onShowRecap(!settings.showRecap) },
+                            )
+                        }
+                        Text(
+                            stringResource(R.string.days_birthday_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        )
                     }
                     SettingsPage.Sync -> SyncPage(settings, pairing, sync)
                     SettingsPage.Backup -> Section(null) {
@@ -507,9 +554,9 @@ fun SettingsScreen(
                             modifier = Modifier.clickable { onAutoBackup(autoBackup == null) },
                         )
                     }
-                    SettingsPage.About -> {
+                    SettingsPage.Updates -> {
                         if (BuildConfig.UPDATE_CHECK) {
-                            Section(stringResource(R.string.section_updates)) {
+                            Section(null) {
                             // Nach einem Update kann noch die alte Meldung gespeichert sein
                             if (settings.updateVersion != null &&
                                 app.sinceus.update.UpdateChecker.isNewer(settings.updateVersion, BuildConfig.VERSION_NAME)
@@ -549,7 +596,9 @@ fun SettingsScreen(
                             Row(Icons.Rounded.Refresh, stringResource(R.string.update_check_now), null, onClick = onCheckUpdates)
                             }
                         }
-                        Section(if (BuildConfig.UPDATE_CHECK) stringResource(R.string.settings_about) else null) {
+                    }
+                    SettingsPage.About -> {
+                        Section(null) {
                             ListItem(
                                 headlineContent = { Text(stringResource(R.string.changelog_setting)) },
                                 supportingContent = { Text(stringResource(R.string.changelog_setting_summary)) },
@@ -574,7 +623,9 @@ fun SettingsScreen(
                                 onClick = onOpenChangelog,
                             )
                         }
-                        Section(stringResource(R.string.section_feedback)) {
+                    }
+                    SettingsPage.Feedback -> {
+                        Section(null) {
                             ListItem(
                                 headlineContent = { Text(stringResource(R.string.report_bug)) },
                                 supportingContent = { Text(stringResource(R.string.report_bug_summary)) },
@@ -673,57 +724,8 @@ fun SettingsScreen(
                 dialog = null
             }
         }
-        current.startsWith("rel:") -> {
-            val id = current.removePrefix("rel:")
-            val existing = settings.relationships.firstOrNull { it.id == id }
-            val fresh = remember(current) { Relationship(newId(), emptyList(), LocalDate.now()) }
-            RelationshipDialog(
-                settings = settings,
-                relationship = existing ?: fresh,
-                isNew = existing == null,
-                onDismiss = { dialog = null },
-                onDelete = {
-                    onDeleteRelationship(id)
-                    dialog = null
-                },
-                onWidget = onWidgetRelationship,
-            ) {
-                onSaveRelationship(it)
-                dialog = null
-            }
-        }
     }
     when (current) {
-        "holidays" -> AlertDialog(
-            onDismissRequest = { dialog = null },
-            icon = { Icon(Icons.Rounded.Event, null) },
-            title = { Text(stringResource(R.string.holidays_title)) },
-            text = {
-                Column {
-                    Text(
-                        stringResource(R.string.holidays_text),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 8.dp),
-                    )
-                    FunFacts.HOLIDAYS.forEach { k ->
-                        val on = k !in settings.hiddenFacts
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .toggleable(value = on, role = Role.Checkbox) {
-                                    onHiddenFacts(if (on) settings.hiddenFacts + k else settings.hiddenFacts - k)
-                                }
-                                .padding(vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Checkbox(checked = on, onCheckedChange = null)
-                            Text(stringResource(k.holidayName()), Modifier.padding(start = 16.dp))
-                        }
-                    }
-                }
-            },
-            confirmButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.close)) } },
-        )
         "remind" -> AlertDialog(
             onDismissRequest = { dialog = null },
             icon = { Icon(Icons.Rounded.Alarm, null) },
@@ -855,7 +857,6 @@ private fun Credit() {
     }
 }
 
-/** Unterseiten der Einstellungen */
 /** Bereiche der Einstellungen, auf der Übersicht in Gruppen sortiert (Reihenfolge = Anzeige) */
 enum class SettingsPage(
     @androidx.annotation.StringRes val title: Int,
@@ -864,16 +865,93 @@ enum class SettingsPage(
 ) {
     Couple(R.string.settings_couple, Icons.Rounded.People, R.string.settings_group_love),
     Notifications(R.string.section_notifications, Icons.Rounded.NotificationsActive, R.string.settings_group_love),
-    Photo(R.string.section_photo, Icons.Rounded.Palette, R.string.settings_group_app),
-    Home(R.string.settings_home, Icons.Rounded.Dashboard, R.string.settings_group_app),
-    Privacy(R.string.section_privacy, Icons.Rounded.Lock, R.string.settings_group_app),
-    Backup(R.string.section_backup, Icons.Rounded.Backup, R.string.settings_group_data),
-    Sync(R.string.section_sync, Icons.Rounded.Sync, R.string.settings_group_data),
-    Reset(R.string.section_reset, Icons.Rounded.RestartAlt, R.string.settings_group_data),
-    About(R.string.settings_about, Icons.Rounded.Info, R.string.settings_group_info),
+    Days(R.string.settings_days, Icons.Rounded.Celebration, R.string.settings_group_love),
+    Photo(R.string.settings_photo, Icons.Rounded.Image, R.string.section_photo),
+    Home(R.string.settings_home, Icons.Rounded.Dashboard, R.string.section_photo),
+    Privacy(R.string.section_privacy, Icons.Rounded.Lock, R.string.settings_group_privacy),
+    Backup(R.string.section_backup, Icons.Rounded.Backup, R.string.settings_group_privacy),
+    Sync(R.string.section_sync, Icons.Rounded.Sync, R.string.settings_group_privacy),
+    Reset(R.string.section_reset, Icons.Rounded.RestartAlt, R.string.settings_group_privacy),
+    Updates(R.string.section_updates, Icons.Rounded.SystemUpdate, R.string.settings_group_help),
+    Feedback(R.string.section_feedback, Icons.Rounded.Forum, R.string.settings_group_help),
+    About(R.string.settings_about, Icons.Rounded.Info, R.string.settings_group_help),
+    ;
+
+    /** Updates gibt es nur in der GitHub-Version, F-Droid und Play aktualisieren selbst */
+    val visible: Boolean get() = this != Updates || BuildConfig.UPDATE_CHECK
 }
 
-/** Startseite der Einstellungen: ein Eintrag pro Bereich mit kurzer Zusammenfassung */
+/**
+ * Ein Eintrag für die Suche: Titel, wohin er führt (Seite oder Fenster auf der Übersicht)
+ * und weitere Wörter, unter denen man ihn findet.
+ */
+private class SearchEntry(
+    @androidx.annotation.StringRes val title: Int,
+    val page: SettingsPage? = null,
+    val dialog: String? = null,
+    val words: List<Int> = emptyList(),
+)
+
+/** Alles, was die Suche kennt; neue Einstellungen hier mit eintragen */
+private val SEARCH = listOf(
+    SearchEntry(R.string.add_person, SettingsPage.Couple, words = listOf(R.string.name, R.string.section_people)),
+    SearchEntry(R.string.pronouns, SettingsPage.Couple),
+    SearchEntry(R.string.birthday, SettingsPage.Couple),
+    SearchEntry(R.string.add_relationship, SettingsPage.Couple, words = listOf(R.string.section_relationships, R.string.relationship_kind)),
+    SearchEntry(R.string.together_since_date, SettingsPage.Couple, words = listOf(R.string.start_time_optional)),
+    SearchEntry(R.string.distance_mode, SettingsPage.Couple, words = listOf(R.string.travel_title, R.string.distance_zone, R.string.distance_meeting)),
+    SearchEntry(R.string.relationship_before, SettingsPage.Couple, words = listOf(R.string.relationship_before_summary)),
+    SearchEntry(R.string.relationship_start_title, SettingsPage.Couple),
+    SearchEntry(R.string.notify_special, SettingsPage.Notifications),
+    SearchEntry(R.string.notify_time, SettingsPage.Notifications),
+    SearchEntry(R.string.remind_before, SettingsPage.Notifications),
+    SearchEntry(R.string.send_test, SettingsPage.Notifications),
+    SearchEntry(R.string.facts_show, SettingsPage.Days, words = listOf(R.string.facts_show_summary)),
+    SearchEntry(
+        R.string.holidays_title,
+        SettingsPage.Days,
+        words = listOf(R.string.holiday_valentines, R.string.holiday_halloween, R.string.holiday_christmas, R.string.holiday_new_year),
+    ),
+    SearchEntry(R.string.celebrate_show, SettingsPage.Days, words = listOf(R.string.celebrate_show_summary)),
+    SearchEntry(R.string.recap_show, SettingsPage.Days),
+    SearchEntry(R.string.pick_own_photo, SettingsPage.Photo),
+    SearchEntry(R.string.pick_preset, SettingsPage.Photo),
+    SearchEntry(R.string.slideshow, SettingsPage.Photo),
+    SearchEntry(R.string.adjust_crop, SettingsPage.Photo),
+    SearchEntry(R.string.reset_photo, SettingsPage.Photo),
+    SearchEntry(R.string.font_title, dialog = "font"),
+    SearchEntry(R.string.language, dialog = "language"),
+    SearchEntry(R.string.moments_show, SettingsPage.Home),
+    SearchEntry(R.string.live_show, SettingsPage.Home),
+    SearchEntry(R.string.add_widget, SettingsPage.Home),
+    SearchEntry(R.string.discreet, SettingsPage.Privacy, words = listOf(R.string.discreet_summary)),
+    SearchEntry(R.string.app_lock, SettingsPage.Privacy, words = listOf(R.string.app_lock_summary)),
+    SearchEntry(R.string.backup_export, SettingsPage.Backup),
+    SearchEntry(R.string.backup_import, SettingsPage.Backup),
+    SearchEntry(R.string.backup_auto, SettingsPage.Backup),
+    SearchEntry(R.string.section_sync, SettingsPage.Sync),
+    SearchEntry(R.string.restart_setup, SettingsPage.Reset),
+    SearchEntry(R.string.delete_all, SettingsPage.Reset),
+    SearchEntry(R.string.update_auto, SettingsPage.Updates),
+    SearchEntry(R.string.update_check_now, SettingsPage.Updates),
+    SearchEntry(R.string.report_bug, SettingsPage.Feedback),
+    SearchEntry(R.string.suggest_idea, SettingsPage.Feedback),
+    SearchEntry(R.string.help_translate, SettingsPage.Feedback),
+    SearchEntry(R.string.about_scope, SettingsPage.Feedback),
+    SearchEntry(R.string.changelog_setting, SettingsPage.About),
+    SearchEntry(R.string.website, SettingsPage.About),
+    SearchEntry(R.string.privacy, SettingsPage.About),
+    SearchEntry(R.string.imprint, SettingsPage.About),
+    SearchEntry(R.string.licenses, SettingsPage.About),
+    SearchEntry(R.string.version, SettingsPage.About),
+)
+
+/** Vergleich ohne Groß-/Kleinschreibung und ohne Akzente, damit „uber“ auch „Über“ findet */
+private fun fold(text: String): String =
+    java.text.Normalizer.normalize(text.lowercase(Locale.ROOT), java.text.Normalizer.Form.NFD)
+        .replace(Regex("\\p{M}+"), "")
+
+/** Startseite der Einstellungen: Suche und ein Eintrag pro Bereich mit kurzer Zusammenfassung */
 @Composable
 private fun Overview(
     settings: LoveSettings,
@@ -881,10 +959,71 @@ private fun Overview(
     pairing: Pairing?,
     appLock: Boolean,
     languageLabel: String,
-    onLanguage: () -> Unit,
+    query: String,
+    onQuery: (String) -> Unit,
+    onDialog: (String) -> Unit,
     onOpen: (SettingsPage) -> Unit,
 ) {
     val context = LocalContext.current
+    OutlinedTextField(
+        query,
+        onQuery,
+        placeholder = { Text(stringResource(R.string.settings_search)) },
+        leadingIcon = { Icon(Icons.Rounded.Search, null) },
+        trailingIcon = if (query.isNotEmpty()) {
+            {
+                IconButton(onClick = { onQuery("") }) {
+                    Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.settings_search_clear))
+                }
+            }
+        } else {
+            null
+        },
+        singleLine = true,
+        shape = RoundedCornerShape(28.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+            .testTag("settings_search"),
+    )
+    if (query.isNotBlank()) {
+        val needle = fold(query.trim())
+        val hits = SEARCH.filter { e ->
+            (e.page?.visible ?: true) &&
+                (listOf(e.title) + e.words + listOfNotNull(e.page?.title)).any { fold(context.getString(it)).contains(needle) }
+        }
+        if (hits.isEmpty()) {
+            Text(
+                stringResource(R.string.settings_search_none),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(16.dp),
+            )
+        } else {
+            Section(null) {
+                hits.forEachIndexed { i, e ->
+                    if (i > 0) Divider()
+                    ListItem(
+                        headlineContent = { Text(stringResource(e.title)) },
+                        supportingContent = {
+                            Text(
+                                stringResource(e.page?.title ?: R.string.section_photo),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        },
+                        leadingContent = { Icon(e.page?.icon ?: if (e.dialog == "font") Icons.Rounded.TextFields else Icons.Rounded.Language, null) },
+                        trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        modifier = Modifier.clickable {
+                            if (e.page != null) onOpen(e.page) else e.dialog?.let(onDialog)
+                        },
+                    )
+                }
+            }
+        }
+        return
+    }
+
     val updateReady = BuildConfig.UPDATE_CHECK && settings.updateVersion != null &&
         app.sinceus.update.UpdateChecker.isNewer(settings.updateVersion, BuildConfig.VERSION_NAME)
     val photo = buildList {
@@ -899,14 +1038,24 @@ private fun Overview(
             add(pluralStringResource(R.plurals.slideshow_count, settings.slides.size, settings.slides.size.toString()))
         }
     }.joinToString(", ")
+    val shownHolidays = FunFacts.HOLIDAYS.filterNot { it in settings.hiddenFacts }.map { stringResource(it.holidayName()) }
     val summaries = mapOf(
         SettingsPage.Couple to if (settings.relationships.size > 1) {
             pluralStringResource(R.plurals.relationships_count, settings.relationships.size, settings.relationships.size.toString()) +
                 ", " + Names.join(settings.people.map { it.name })
         } else {
-            "${settings.names}, ${Texts.mediumDate(settings.startDate)}"
+            listOfNotNull(
+                settings.names,
+                Texts.mediumDate(settings.startDate),
+                if (settings.relationship.distance) stringResource(R.string.distance_mode) else null,
+            ).joinToString(", ")
         },
-        SettingsPage.Photo to photo + ", " + AppFonts.find(settings.font).label(),
+        SettingsPage.Days to if (settings.showFacts) {
+            shownHolidays.joinToString(", ").ifBlank { stringResource(R.string.settings_days_summary) }
+        } else {
+            stringResource(R.string.settings_days_summary)
+        },
+        SettingsPage.Photo to photo,
         SettingsPage.Privacy to listOfNotNull(
             stringResource(if (appLock) R.string.app_lock_on else R.string.app_lock_off),
             if (settings.discreet) stringResource(R.string.discreet) else null,
@@ -923,17 +1072,19 @@ private fun Overview(
         SettingsPage.Backup to stringResource(R.string.settings_backup_summary),
         SettingsPage.Sync to stringResource(if (pairing != null) R.string.sync_paired else R.string.sync_summary),
         SettingsPage.Reset to stringResource(R.string.reset_summary),
-        SettingsPage.About to if (updateReady) {
+        SettingsPage.Updates to if (updateReady) {
             stringResource(R.string.update_available, settings.updateVersion.orEmpty())
         } else {
-            stringResource(R.string.version_value, BuildConfig.VERSION_NAME, BuildConfig.FLAVOR)
+            stringResource(if (settings.updateCheck) R.string.updates_auto_on else R.string.updates_auto_off)
         },
+        SettingsPage.Feedback to stringResource(R.string.settings_feedback_summary),
+        SettingsPage.About to stringResource(R.string.version_value, BuildConfig.VERSION_NAME, BuildConfig.FLAVOR),
     )
-    SettingsPage.entries.groupBy { it.group }.forEach { (group, pages) ->
+    SettingsPage.entries.filter { it.visible }.groupBy { it.group }.forEach { (group, pages) ->
       Section(stringResource(group)) {
         pages.forEachIndexed { i, p ->
             if (i > 0) Divider()
-            val highlight = p == SettingsPage.About && updateReady
+            val highlight = p == SettingsPage.Updates && updateReady
             ListItem(
                 headlineContent = { Text(stringResource(p.title)) },
                 supportingContent = {
@@ -949,24 +1100,54 @@ private fun Overview(
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 modifier = Modifier.clickable { onOpen(p) },
             )
+            // Schrift und Sprache direkt hier, ohne eigene Unterseite
+            if (p == SettingsPage.Photo) {
+                Divider()
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.font_title)) },
+                    supportingContent = { Text(AppFonts.find(settings.font).label(), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    leadingContent = { Icon(Icons.Rounded.TextFields, null) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { onDialog("font") },
+                )
+            }
         }
-        // Sprache direkt hier, ohne eigene Unterseite
-        if (group == R.string.settings_group_app) {
+        if (group == R.string.section_photo) {
             Divider()
             ListItem(
                 headlineContent = { Text(stringResource(R.string.language)) },
                 supportingContent = { Text(languageLabel, color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 leadingContent = { Icon(Icons.Rounded.Language, null) },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                modifier = Modifier.clickable(onClick = onLanguage),
+                modifier = Modifier.clickable { onDialog("language") },
             )
         }
       }
     }
 }
 
+/** Feiertage zum An- und Abhaken, in den Einstellungen und in der Einrichtung */
 @Composable
-private fun Section(title: String?, content: @Composable () -> Unit) {
+internal fun HolidayChecks(hidden: Set<FunFacts.Kind>, onHidden: (Set<FunFacts.Kind>) -> Unit) {
+    Column(Modifier.padding(vertical = 4.dp)) {
+        FunFacts.HOLIDAYS.forEach { k ->
+            val on = k !in hidden
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .toggleable(value = on, role = Role.Checkbox) { onHidden(if (on) hidden + k else hidden - k) }
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(checked = on, onCheckedChange = null)
+                Text(stringResource(k.holidayName()), Modifier.padding(start = 16.dp))
+            }
+        }
+    }
+}
+
+@Composable
+internal fun Section(title: String?, content: @Composable () -> Unit) {
     if (title != null) {
         Text(
             title.uppercase(),
@@ -985,7 +1166,7 @@ private fun Section(title: String?, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun Divider() = HorizontalDivider(
+internal fun Divider() = HorizontalDivider(
     Modifier.padding(horizontal = 16.dp),
     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
 )
@@ -1052,7 +1233,7 @@ private fun PersonDialog(
                     placeholder = { Text(stringResource(R.string.pronouns_hint)) },
                     singleLine = true,
                 )
-                // Geburtstag ist freiwillig und wird nur hier gefragt, nicht beim Einrichten
+                // Geburtstag ist freiwillig (auch in der Einrichtung überspringbar)
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.birthday_optional)) },
                     supportingContent = {
@@ -1102,268 +1283,9 @@ private fun PersonDialog(
     }
 }
 
-/** Wer gehört zur Beziehung, seit wann, wie heißt sie und gibt es Mitteilungen */
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun RelationshipDialog(
-    settings: LoveSettings,
-    relationship: Relationship,
-    isNew: Boolean,
-    onDismiss: () -> Unit,
-    onDelete: () -> Unit,
-    onWidget: (String) -> Unit,
-    onSave: (Relationship) -> Unit,
-) {
-    var draft by remember { mutableStateOf(relationship) }
-    var pick by remember { mutableStateOf<String?>(null) }
-    var confirmDelete by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val canDelete = !isNew && settings.relationships.size > 1
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(if (isNew) R.string.add_relationship else R.string.edit_relationship)) },
-        text = {
-            Column(
-                Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(stringResource(R.string.relationship_members), style = MaterialTheme.typography.titleSmall)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    settings.people.forEach { p ->
-                        val selected = p.id in draft.members
-                        FilterChip(
-                            selected = selected,
-                            onClick = {
-                                draft = draft.copy(members = if (selected) draft.members - p.id else draft.members + p.id)
-                            },
-                            label = { Text(p.name) },
-                        )
-                    }
-                }
-                Text(stringResource(R.string.relationship_kind), style = MaterialTheme.typography.titleSmall)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    RelationKind.entries.forEach { k ->
-                        FilterChip(
-                            selected = draft.kind == k,
-                            // Hat die frühere Phase dieselbe Art, tauschen beide
-                            onClick = { draft = draft.copy(kind = k, before = if (draft.before == k) draft.kind else draft.before) },
-                            label = { Text(stringResource(k.title)) },
-                            leadingIcon = { Icon(k.icon, null, Modifier.size(18.dp)) },
-                        )
-                    }
-                }
-                OutlinedTextField(
-                    draft.label,
-                    { draft = draft.copy(label = it) },
-                    label = { Text(stringResource(R.string.relationship_label)) },
-                    placeholder = { Text(stringResource(R.string.relationship_label_hint)) },
-                    singleLine = true,
-                )
-                OutlinedTextField(
-                    draft.startTitle,
-                    { draft = draft.copy(startTitle = it.take(PeopleCodec.MAX_TITLE)) },
-                    label = { Text(stringResource(R.string.relationship_start_title)) },
-                    placeholder = { Text(stringResource(R.string.relationship_start_title_hint)) },
-                    supportingText = { Text(stringResource(R.string.relationship_start_title_help)) },
-                    singleLine = true,
-                )
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.together_since_date)) },
-                    supportingContent = { Text(Texts.mediumDate(draft.startDate), color = MaterialTheme.colorScheme.primary) },
-                    leadingContent = { Icon(Icons.Rounded.CalendarMonth, null) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { pick = "date" },
-                )
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.start_time_optional)) },
-                    supportingContent = {
-                        Text(
-                            draft.startTime?.let { Texts.time(context, it) } ?: stringResource(R.string.not_set),
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    },
-                    leadingContent = { Icon(Icons.Rounded.Schedule, null) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { pick = "time" },
-                )
-                // Frühere Phase, z. B. erst befreundet und dann ein Paar
-                val hasBefore = draft.before != null
-                val toggleBefore = {
-                    draft = if (hasBefore) {
-                        draft.copy(before = null, beforeStart = null)
-                    } else {
-                        draft.copy(
-                            before = RelationKind.entries.first { it != draft.kind },
-                            beforeStart = draft.beforeStart ?: draft.startDate.minusYears(1),
-                        )
-                    }
-                }
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.relationship_before)) },
-                    supportingContent = { Text(stringResource(R.string.relationship_before_summary)) },
-                    leadingContent = { Icon(Icons.Rounded.History, null) },
-                    trailingContent = { Switch(checked = hasBefore, onCheckedChange = { toggleBefore() }) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { toggleBefore() },
-                )
-                if (hasBefore) {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        RelationKind.entries.filter { it != draft.kind }.forEach { k ->
-                            FilterChip(
-                                selected = draft.before == k,
-                                onClick = { draft = draft.copy(before = k) },
-                                label = { Text(stringResource(k.title)) },
-                                leadingIcon = { Icon(k.icon, null, Modifier.size(18.dp)) },
-                            )
-                        }
-                    }
-                    val beforeStart = draft.beforeStart ?: draft.startDate
-                    val valid = beforeStart.isBefore(draft.startDate)
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.relationship_before_since)) },
-                        supportingContent = {
-                            Text(
-                                if (valid) Texts.mediumDate(beforeStart) else stringResource(R.string.relationship_before_invalid),
-                                color = if (valid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                            )
-                        },
-                        leadingContent = { Icon(Icons.Rounded.CalendarMonth, null) },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable { pick = "before" },
-                    )
-                }
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.relationship_notify)) },
-                    leadingContent = { Icon(Icons.Rounded.NotificationsActive, null) },
-                    trailingContent = { Switch(checked = draft.notify, onCheckedChange = { draft = draft.copy(notify = it) }) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { draft = draft.copy(notify = !draft.notify) },
-                )
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.distance_mode)) },
-                    supportingContent = { Text(stringResource(R.string.distance_mode_summary)) },
-                    leadingContent = { Icon(draft.travel.icon, null) },
-                    trailingContent = { Switch(checked = draft.distance, onCheckedChange = { draft = draft.copy(distance = it) }) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    modifier = Modifier.clickable { draft = draft.copy(distance = !draft.distance) },
-                )
-                if (draft.distance) {
-                    Text(stringResource(R.string.travel_title), style = MaterialTheme.typography.titleSmall)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Travel.entries.forEach { t ->
-                            FilterChip(
-                                selected = draft.travel == t,
-                                onClick = { draft = draft.copy(travel = t) },
-                                label = { Text(stringResource(t.title)) },
-                                leadingIcon = { Icon(t.icon, null, Modifier.size(18.dp)) },
-                            )
-                        }
-                    }
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.distance_zone)) },
-                        supportingContent = {
-                            Text(
-                                draft.farZone?.let(Distance::cityName) ?: stringResource(R.string.distance_zone_none),
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        },
-                        leadingContent = { Icon(Icons.Rounded.Public, null) },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable { pick = "zone" },
-                    )
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.distance_meeting)) },
-                        supportingContent = {
-                            Text(
-                                draft.nextMeeting?.let(Texts::mediumDate) ?: stringResource(R.string.not_set),
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        },
-                        leadingContent = { Icon(Icons.Rounded.Event, null) },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable { pick = "meet" },
-                    )
-                }
-                if (!isNew && settings.relationships.size > 1) {
-                    val inWidget = settings.widget.id == relationship.id
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.relationship_widget)) },
-                        leadingContent = { Icon(Icons.Rounded.Widgets, null) },
-                        trailingContent = {
-                            RadioButton(selected = inWidget, onClick = { onWidget(relationship.id) })
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        modifier = Modifier.clickable { onWidget(relationship.id) },
-                    )
-                }
-                if (canDelete) {
-                    TextButton(
-                        onClick = { if (confirmDelete) onDelete() else confirmDelete = true },
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                    ) {
-                        Text(
-                            stringResource(
-                                if (confirmDelete) R.string.remove_relationship_confirm else R.string.remove_relationship,
-                            ),
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            val beforeOk = draft.before == null || draft.earlier != null
-            TextButton(onClick = { onSave(draft) }, enabled = draft.members.size >= 2 && beforeOk) {
-                Text(stringResource(R.string.save))
-            }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
-    )
-    when (pick) {
-        "date" -> DateDialog(draft.startDate, onDismiss = { pick = null }) {
-            draft = draft.copy(startDate = it)
-            pick = null
-        }
-        "before" -> DateDialog(
-            draft.beforeStart ?: draft.startDate.minusYears(1),
-            onDismiss = { pick = null },
-            title = R.string.relationship_before_since,
-        ) {
-            draft = draft.copy(beforeStart = it)
-            pick = null
-        }
-        "time" -> TimeDialog(
-            stringResource(R.string.start_time_optional),
-            draft.startTime,
-            onDismiss = { pick = null },
-            onClear = {
-                draft = draft.copy(startTime = null)
-                pick = null
-            },
-        ) {
-            draft = draft.copy(startTime = it)
-            pick = null
-        }
-        "zone" -> ZoneDialog(
-            current = draft.farZone,
-            onDismiss = { pick = null },
-        ) {
-            draft = draft.copy(farZone = it)
-            pick = null
-        }
-        "meet" -> DateDialog(
-            draft.nextMeeting ?: LocalDate.now().plusDays(7),
-            onDismiss = { pick = null },
-            title = R.string.distance_meeting,
-        ) {
-            draft = draft.copy(nextMeeting = it)
-            pick = null
-        }
-    }
-}
-
 /** Auswahl des Orts der anderen Seite: Liste aller Städte mit Zeitzone und Suchfeld */
 @Composable
-private fun ZoneDialog(current: String?, onDismiss: () -> Unit, onPick: (String?) -> Unit) {
+internal fun ZoneDialog(current: String?, onDismiss: () -> Unit, onPick: (String?) -> Unit) {
     val locale = LocalConfiguration.current.locales[0]
     val cities = remember(locale) { Distance.cities(locale) }
     var query by remember { mutableStateOf("") }
@@ -1702,7 +1624,7 @@ private object Web {
 }
 
 /** Name eines Feiertags aus [FunFacts.HOLIDAYS] */
-private fun FunFacts.Kind.holidayName(): Int = when (this) {
+internal fun FunFacts.Kind.holidayName(): Int = when (this) {
     FunFacts.Kind.VALENTINES -> R.string.holiday_valentines
     FunFacts.Kind.HALLOWEENS -> R.string.holiday_halloween
     FunFacts.Kind.CHRISTMAS -> R.string.holiday_christmas

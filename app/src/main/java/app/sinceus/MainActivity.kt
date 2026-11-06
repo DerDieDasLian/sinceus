@@ -328,6 +328,9 @@ class MainActivity : ComponentActivity() {
                                     step = onboardingStep,
                                     onStep = { onboardingStep = it },
                                     onRestoreBackup = ::loadBackup,
+                                    onSaveRelationship = vm::saveRelationship,
+                                    onSavePerson = vm::savePerson,
+                                    onHiddenFacts = vm::setHiddenFacts,
                                 )
                                 "settings" -> SettingsScreen(
                                     settings = s,

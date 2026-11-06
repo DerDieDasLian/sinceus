@@ -77,10 +77,24 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
+import androidx.compose.material.icons.rounded.CardGiftcard
+import androidx.compose.material.icons.rounded.Event
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Public
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import app.sinceus.data.Distance
+import app.sinceus.data.FunFacts
+import app.sinceus.data.Person
+import app.sinceus.data.Relationship
 
-private const val STEPS = 5
+private const val STEPS = 7
 
-/** Einrichtung beim ersten Start: Namen, Datum, Foto, Mitteilungen. */
+/** Schritte, die man überspringen kann: Fernbeziehung, besondere Tage, Foto */
+private val OPTIONAL = setOf(3, 4, 5)
+
+/** Einrichtung beim ersten Start: Namen, Datum, Fernbeziehung, besondere Tage, Foto, Mitteilungen. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(
@@ -99,12 +113,20 @@ fun OnboardingScreen(
     onStep: (Int) -> Unit,
     /** Daten aus einer Sicherungsdatei laden, z. B. auf einem neuen Handy */
     onRestoreBackup: (() -> Unit)? = null,
+    /** Fernbeziehung und Verkehrsmittel der ersten Beziehung */
+    onSaveRelationship: (Relationship) -> Unit = {},
+    /** Geburtstage */
+    onSavePerson: (Person) -> Unit = {},
+    /** Feiertage, die nicht mitgezählt werden */
+    onHiddenFacts: (Set<FunFacts.Kind>) -> Unit = {},
 ) {
     // Alle Namen; mit „Weitere Person“ kommen Felder dazu (Poly-Modus)
     var names by rememberSaveable { mutableStateOf(ArrayList(settings.people.map { it.name })) }
     var presets by remember { mutableStateOf(false) }
     var time by remember { mutableStateOf(false) }
     var startTime by remember { mutableStateOf(false) }
+    // Offenes Fenster im Schritt Fernbeziehung oder Geburtstage: "zone", "meet" oder "birthday:<id>"
+    var pick by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val date = rememberDatePickerState(
         initialSelectedDateMillis = settings.startDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
@@ -216,7 +238,100 @@ fun OnboardingScreen(
                             )
                         }
                     }
-                    3 -> Step(stringResource(R.string.ob_photo_title), stringResource(R.string.ob_photo_sub)) {
+                    3 -> Step(stringResource(R.string.ob_distance_title), stringResource(R.string.ob_distance_sub)) {
+                        val rel = settings.relationships.first()
+                        Choice(
+                            selected = !rel.distance,
+                            icon = Icons.Rounded.Home,
+                            text = stringResource(R.string.ob_distance_no),
+                        ) { onSaveRelationship(rel.copy(distance = false)) }
+                        Spacer(Modifier.height(12.dp))
+                        Choice(
+                            selected = rel.distance,
+                            icon = rel.travel.icon,
+                            text = stringResource(R.string.ob_distance_yes),
+                        ) { onSaveRelationship(rel.copy(distance = true)) }
+                        if (rel.distance) {
+                            Text(
+                                stringResource(R.string.travel_title),
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 24.dp, bottom = 8.dp),
+                            )
+                            TravelChips(rel.travel) { onSaveRelationship(rel.copy(travel = it)) }
+                            FilledTonalButton(
+                                onClick = { pick = "zone" },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp),
+                            ) {
+                                Icon(Icons.Rounded.Public, null)
+                                Text(
+                                    rel.farZone?.let(Distance::cityName) ?: stringResource(R.string.distance_zone),
+                                    Modifier.padding(start = 8.dp),
+                                )
+                            }
+                            FilledTonalButton(
+                                onClick = { pick = "meet" },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp),
+                            ) {
+                                Icon(Icons.Rounded.Event, null)
+                                Text(
+                                    rel.nextMeeting?.let { stringResource(R.string.ob_meeting_on, Texts.mediumDate(it)) }
+                                        ?: stringResource(R.string.ob_meeting_optional),
+                                    Modifier.padding(start = 8.dp),
+                                )
+                            }
+                        }
+                    }
+                    4 -> Step(stringResource(R.string.ob_days_title), stringResource(R.string.ob_days_sub)) {
+                        Text(
+                            stringResource(R.string.ob_birthdays),
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                        )
+                        settings.people.forEach { p ->
+                            FilledTonalButton(
+                                onClick = { pick = "birthday:${p.id}" },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp),
+                            ) {
+                                Icon(Icons.Rounded.CardGiftcard, null)
+                                Text(
+                                    p.birthday?.let { "${p.name}: ${Texts.mediumDate(it)}" }
+                                        ?: stringResource(R.string.ob_birthday_add, p.name),
+                                    Modifier.padding(start = 8.dp),
+                                )
+                            }
+                        }
+                        Text(
+                            stringResource(R.string.holidays_title),
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                        )
+                        Text(
+                            stringResource(R.string.holidays_text),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        Card(
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                        ) { HolidayChecks(settings.hiddenFacts, onHiddenFacts) }
+                    }
+                    5 -> Step(stringResource(R.string.ob_photo_title), stringResource(R.string.ob_photo_sub)) {
                         Box(
                             Modifier
                                 .fillMaxWidth(0.75f)
@@ -320,8 +435,8 @@ fun OnboardingScreen(
                     .padding(24.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                // Namen und Datum sind Pflicht, nur das Foto kann warten
-                if (step == 3) {
+                // Namen und Datum sind Pflicht, Fernbeziehung, besondere Tage und Foto können warten
+                if (step in OPTIONAL) {
                     TextButton(onClick = { onStep(step + 1) }) { Text(stringResource(R.string.skip)) }
                 }
                 Spacer(Modifier.weight(1f))
@@ -349,6 +464,34 @@ fun OnboardingScreen(
         ) {
             onNotifyTime(it.hour, it.minute)
             time = false
+        }
+    }
+    val current = pick
+    when {
+        current == "zone" -> ZoneDialog(current = settings.relationships.first().farZone, onDismiss = { pick = null }) {
+            onSaveRelationship(settings.relationships.first().copy(farZone = it))
+            pick = null
+        }
+        current == "meet" -> DateDialog(
+            settings.relationships.first().nextMeeting ?: LocalDate.now().plusDays(7),
+            onDismiss = { pick = null },
+            title = R.string.distance_meeting,
+        ) {
+            onSaveRelationship(settings.relationships.first().copy(nextMeeting = it))
+            pick = null
+        }
+        current != null && current.startsWith("birthday:") -> {
+            val person = settings.person(current.removePrefix("birthday:"))
+            if (person != null) {
+                DateDialog(
+                    person.birthday ?: LocalDate.now().minusYears(25),
+                    onDismiss = { pick = null },
+                    title = R.string.birthday,
+                ) {
+                    onSavePerson(person.copy(birthday = it))
+                    pick = null
+                }
+            }
         }
     }
     if (startTime) {
@@ -391,6 +534,33 @@ private fun Welcome() {
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(top = 12.dp, start = 16.dp, end = 16.dp),
     )
+}
+
+/** Große Auswahlkarte, z. B. „Wir wohnen nah beieinander“ */
+@Composable
+private fun Choice(selected: Boolean, icon: ImageVector, text: String, onClick: () -> Unit) {
+    Card(
+        onClick = onClick,
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics { this.selected = selected },
+    ) {
+        Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(icon, null, tint = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primary)
+            Text(
+                text,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 16.dp),
+            )
+            if (selected) Icon(Icons.Rounded.CheckCircle, null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
+        }
+    }
 }
 
 @Composable
