@@ -1,4 +1,5 @@
-• Year in review: around your anniversary, the app looks back at your year page by page. Earlier years are under Moments, and you can turn it off under Settings, Home screen.
+• Year in review: around your anniversary, the app looks back at your year. Earlier years are under Moments.
+• Settings are reorganized and searchable. Setup now also asks about long distance, birthdays and holidays.
 • Fixed bug reports: the form opens in your browser and the email arrives complete.
-• Easier on the battery, faster with many moments, the weekly backup is more reliable and backups keep all settings.
+• Easier on the battery, faster with many moments, backups are more reliable.
 • With "Remove animations" turned on, the hearts stay still.

@@ -1,4 +1,5 @@
-• Jahresrückblick: Rund um euren Jahrestag blickt die App Seite für Seite auf euer Jahr zurück. Frühere Jahre findet ihr bei den Momenten, abschalten geht unter Einstellungen, Startseite.
+• Jahresrückblick: Rund um euren Jahrestag blickt die App auf euer Jahr zurück. Frühere Jahre stehen bei den Momenten.
+• Einstellungen neu geordnet, mit Suche. Die Einrichtung fragt jetzt auch nach Fernbeziehung, Geburtstagen und Feiertagen.
 • Fehler melden repariert: Vorlage öffnet im Browser, Mail kommt vollständig an.
-• Sparsamer mit dem Akku, schneller bei vielen Momenten, die Wochensicherung läuft zuverlässiger und Sicherungen behalten alle Einstellungen.
+• Sparsamer mit dem Akku, schneller bei vielen Momenten, Sicherungen laufen zuverlässiger.
 • Mit "Animationen entfernen" am Handy bleiben die Herzen still.
