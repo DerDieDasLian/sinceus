@@ -467,6 +467,7 @@ class LoveRepository(private val context: Context) {
             val zipFile = File(dir, "sync.zip")
             zipFile.outputStream().buffered().use { SyncCrypto.decrypt(input.buffered(), it, pairing.key) }
             var json: String? = null
+            var budget = Backup.budget(context.cacheDir)
             ZipInputStream(zipFile.inputStream().buffered()).use { zip ->
                 while (true) {
                     val entry = zip.nextEntry ?: break
@@ -475,7 +476,9 @@ class LoveRepository(private val context: Context) {
                     if (entry.name == SyncCodec.JSON) {
                         json = Backup.readLimited(zip).toString(Charsets.UTF_8)
                     } else if (parts.size == 2 && parts[0] == Backup.MOMENTS && Backup.isSafeName(parts[1])) {
-                        File(File(dir, Backup.MOMENTS).apply { mkdirs() }, parts[1]).outputStream().use { zip.copyTo(it) }
+                        File(File(dir, Backup.MOMENTS).apply { mkdirs() }, parts[1]).outputStream().use {
+                            budget -= Backup.copyLimited(zip, it, minOf(Backup.MAX_PHOTO_BYTES, budget))
+                        }
                     }
                 }
             }
@@ -590,6 +593,7 @@ class LoveRepository(private val context: Context) {
         val data = withContext(Dispatchers.IO) {
             restore.deleteRecursively()
             var json: String? = null
+            var budget = Backup.budget(context.cacheDir)
             ZipInputStream(input.buffered()).use { zip ->
                 while (true) {
                     val entry = zip.nextEntry ?: break
@@ -600,7 +604,7 @@ class LoveRepository(private val context: Context) {
                     } else if (parts.size == 2 && parts[0] in Backup.FOLDERS && Backup.isSafeName(parts[1])) {
                         // Nur einfache Dateinamen in den bekannten Ordnern, nie Pfade nach außerhalb
                         val target = File(File(restore, parts[0]).apply { mkdirs() }, parts[1])
-                        target.outputStream().use { zip.copyTo(it) }
+                        target.outputStream().use { budget -= Backup.copyLimited(zip, it, minOf(Backup.MAX_PHOTO_BYTES, budget)) }
                     }
                 }
             }

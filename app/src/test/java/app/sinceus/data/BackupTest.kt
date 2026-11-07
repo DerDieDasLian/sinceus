@@ -69,6 +69,15 @@ class BackupTest {
     }
 
     @Test
+    fun copyStopsAtTheLimit() {
+        val out = ByteArrayOutputStream()
+        assertEquals(10L, Backup.copyLimited(ByteArrayInputStream(ByteArray(10)), out, 10))
+        assertThrows(java.io.IOException::class.java) {
+            Backup.copyLimited(ByteArrayInputStream(ByteArray(11)), ByteArrayOutputStream(), 10)
+        }
+    }
+
+    @Test
     fun onlySimpleFileNamesAreAllowed() {
         assertTrue(Backup.isSafeName("photo_123.jpg"))
         assertFalse(Backup.isSafeName("../evil.jpg"))

@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
+import java.io.OutputStream
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -27,6 +28,33 @@ object Backup {
 
     /** Nur einfache Dateinamen ohne Ordner oder „..“, damit nichts außerhalb des App-Speichers landet */
     fun isSafeName(name: String) = SAFE_NAME.matches(name) && name != "." && name != ".."
+
+    /** Größtes erlaubtes Foto in einer Sicherung oder Abgleich-Datei; verkleinerte Fotos sind weit darunter */
+    const val MAX_PHOTO_BYTES = 50L * 1024 * 1024
+
+    /** So viel Platz bleibt beim Einspielen immer frei, damit das Handy nicht volläuft */
+    private const val KEEP_FREE_BYTES = 200L * 1024 * 1024
+
+    /** Wie viel eine Sicherung beim Einspielen insgesamt in [dir] schreiben darf */
+    fun budget(dir: File): Long = (dir.usableSpace - KEEP_FREE_BYTES).coerceAtLeast(0)
+
+    /**
+     * Kopiert höchstens [max] Bytes und wirft, wenn es mehr sind. Schützt vor kaputten oder
+     * präparierten Dateien, die beim Einspielen sonst den Speicher füllen könnten.
+     * Liefert die Zahl der kopierten Bytes.
+     */
+    internal fun copyLimited(input: InputStream, out: OutputStream, max: Long): Long {
+        val buffer = ByteArray(8192)
+        var total = 0L
+        while (true) {
+            val n = input.read(buffer)
+            if (n < 0) break
+            total += n
+            if (total > max) throw IOException("file too large")
+            out.write(buffer, 0, n)
+        }
+        return total
+    }
 
     internal fun readLimited(input: InputStream): ByteArray {
         val out = ByteArrayOutputStream()

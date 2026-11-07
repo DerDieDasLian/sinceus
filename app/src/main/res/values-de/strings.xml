@@ -187,6 +187,7 @@
     <string name="moment_edit">Moment bearbeiten</string>
     <string name="moment_field_title">Was ist passiert?</string>
     <string name="moment_field_date">Datum</string>
+    <string name="moment_date_from_photo">Datum vom Foto übernommen</string>
     <string name="moment_field_note">Notiz (optional)</string>
     <string name="moment_add_photo">Fotos hinzufügen</string>
     <string name="moment_more_photos">Weitere Fotos hinzufügen</string>
