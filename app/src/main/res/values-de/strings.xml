@@ -647,4 +647,34 @@
         <item quantity="other">in %1$s Tagen</item>
     </plurals>
     <string name="recap_end">Auf das nächste Jahr.</string>
+    <!-- Einstellungen neu geordnet, Suche, Beziehungsseite, Einrichtung mit Fernbeziehung und besonderen Tagen -->
+    <string name="settings_search">Einstellungen durchsuchen</string>
+    <string name="settings_search_clear">Suche löschen</string>
+    <string name="settings_search_none">Nichts gefunden. Versuch es mit einem anderen Wort.</string>
+    <string name="settings_group_privacy">Privatsphäre &amp; Daten</string>
+    <string name="settings_group_help">Hilfe &amp; Info</string>
+    <string name="settings_photo">Foto &amp; Diashow</string>
+    <string name="settings_days">Besondere Tage</string>
+    <string name="settings_days_summary">Feiertage, Zahlen, Konfetti, Jahresrückblick</string>
+    <string name="settings_feedback_summary">Fehler melden, Idee vorschlagen, übersetzen</string>
+    <string name="updates_auto_on">Sucht automatisch</string>
+    <string name="updates_auto_off">Nur wenn du selbst suchst</string>
+    <string name="section_extras">Extras</string>
+    <string name="days_birthday_hint">Geburtstage trägst du bei jeder Person unter Menschen &amp; Beziehungen ein.</string>
+    <string name="rel_section_general">Allgemein</string>
+    <string name="rel_section_before">Davor</string>
+    <string name="unsaved_title">Änderungen speichern?</string>
+    <string name="unsaved_text">Du hast an dieser Beziehung etwas geändert.</string>
+    <string name="unsaved_invalid">Deine Änderungen lassen sich noch nicht speichern: Es braucht mindestens zwei Menschen, und eine frühere Phase muss vor dem Startdatum beginnen.</string>
+    <string name="discard">Verwerfen</string>
+    <string name="ob_distance_title">Wohnt ihr weit voneinander entfernt?</string>
+    <string name="ob_distance_sub">Bei einer Fernbeziehung zeigt die Startseite die Uhrzeit bei der anderen Seite und zählt bis zum nächsten Treffen.</string>
+    <string name="ob_distance_no">Wir wohnen nah beieinander</string>
+    <string name="ob_distance_yes">Wir führen eine Fernbeziehung</string>
+    <string name="ob_meeting_optional">Nächstes Treffen (optional)</string>
+    <string name="ob_meeting_on">Nächstes Treffen: %1$s</string>
+    <string name="ob_days_title">Besondere Tage</string>
+    <string name="ob_days_sub">Tragt Geburtstage ein und wählt, welche Feiertage mitzählen. Alles ist freiwillig.</string>
+    <string name="ob_birthdays">Geburtstage</string>
+    <string name="ob_birthday_add">Geburtstag von %1$s eintragen</string>
 </resources>

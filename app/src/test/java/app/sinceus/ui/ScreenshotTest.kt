@@ -198,10 +198,45 @@ class ScreenshotTest {
     fun onboardingDate() = onboarding(2)
 
     @Test
-    fun onboardingPhoto() = onboarding(3)
+    fun onboardingDistance() = onboarding(3)
 
     @Test
-    fun onboardingNotify() = onboarding(4)
+    fun onboardingDistanceOnGerman() = shot("onboarding_3_on", lang = "de") {
+        OnboardingScreen(
+            settings.copy(relationships = settings.relationships.map { it.copy(distance = true, travel = app.sinceus.data.Travel.TRAIN) }),
+            false, {}, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
+            step = 3, onStep = {},
+        )
+    }
+
+    @Test
+    fun onboardingDays() = onboarding(4)
+
+    @Test
+    fun onboardingPhoto() = onboarding(5)
+
+    @Test
+    fun onboardingNotify() = onboarding(6)
+
+    @Test
+    fun settingsDaysGerman() = shot("settings_days", lang = "de") {
+        SettingsScreen(settings, true, initialPage = SettingsPage.Days)
+    }
+
+    @Test
+    fun settingsSearchGerman() = shot("settings_search", lang = "de") {
+        SettingsScreen(settings, true, initialQuery = "fern")
+    }
+
+    @Test
+    fun relationshipPageGerman() = shot("relationship_page", lang = "de") {
+        SettingsScreen(
+            settings.copy(relationships = settings.relationships.map { it.copy(distance = true) }),
+            true,
+            initialPage = SettingsPage.Couple,
+            initialRelationship = settings.relationships.first().id,
+        )
+    }
 
     private val withMoments = settings.copy(
         moments = listOf(
@@ -255,10 +290,10 @@ class ScreenshotTest {
     fun editor() = shot("editor") { PhotoEditorScreen(settings, {}, {}, { _, _, _ -> }) }
 
     @Test
-    fun onboardingPhotoGerman() = shot("onboarding_3", lang = "de") {
+    fun onboardingPhotoGerman() = shot("onboarding_5", lang = "de") {
         OnboardingScreen(
             settings, false, {}, {}, {}, {}, {}, {}, { _, _ -> }, {}, {},
-            step = 3, onStep = {},
+            step = 5, onStep = {},
         )
     }
 

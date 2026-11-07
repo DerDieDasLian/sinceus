@@ -1,0 +1,3 @@
+• Settings are reorganized and searchable. Holidays, fun numbers, confetti and the year in review are now under "Special days".
+• Each relationship has its own page instead of a long window.
+• Setup now also asks about long distance, birthdays and holidays. You can skip all of it.

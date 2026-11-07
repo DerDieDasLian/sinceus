@@ -652,4 +652,34 @@
         <item quantity="other">in %1$s days</item>
     </plurals>
     <string name="recap_end">Here\'s to the next year.</string>
+    <!-- Einstellungen neu geordnet, Suche, Beziehungsseite, Einrichtung mit Fernbeziehung und besonderen Tagen -->
+    <string name="settings_search">Search settings</string>
+    <string name="settings_search_clear">Clear search</string>
+    <string name="settings_search_none">Nothing found. Try another word.</string>
+    <string name="settings_group_privacy">Privacy &amp; data</string>
+    <string name="settings_group_help">Help &amp; info</string>
+    <string name="settings_photo">Photo &amp; slideshow</string>
+    <string name="settings_days">Special days</string>
+    <string name="settings_days_summary">Holidays, fun numbers, confetti, year in review</string>
+    <string name="settings_feedback_summary">Report a bug, suggest an idea, help translate</string>
+    <string name="updates_auto_on">Checks automatically</string>
+    <string name="updates_auto_off">Only when you check yourself</string>
+    <string name="section_extras">Extras</string>
+    <string name="days_birthday_hint">Birthdays are set for each person under People &amp; relationships.</string>
+    <string name="rel_section_general">General</string>
+    <string name="rel_section_before">Before that</string>
+    <string name="unsaved_title">Save changes?</string>
+    <string name="unsaved_text">You changed something on this relationship.</string>
+    <string name="unsaved_invalid">Your changes can\'t be saved yet: at least two people are needed and an earlier phase has to start before the start date.</string>
+    <string name="discard">Discard</string>
+    <string name="ob_distance_title">Do you live far apart?</string>
+    <string name="ob_distance_sub">For long distance, the home screen shows the time on the other side and counts down to your next meeting.</string>
+    <string name="ob_distance_no">We live close by</string>
+    <string name="ob_distance_yes">We\'re long distance</string>
+    <string name="ob_meeting_optional">Next meeting (optional)</string>
+    <string name="ob_meeting_on">Next meeting: %1$s</string>
+    <string name="ob_days_title">Special days</string>
+    <string name="ob_days_sub">Add birthdays and choose which holidays count. Everything is optional.</string>
+    <string name="ob_birthdays">Birthdays</string>
+    <string name="ob_birthday_add">Add %1$s\'s birthday</string>
 </resources>

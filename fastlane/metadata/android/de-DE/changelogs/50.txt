@@ -1,0 +1,3 @@
+• Einstellungen neu geordnet und mit Suche. Feiertage, Zahlen, Konfetti und Jahresrückblick stehen jetzt unter "Besondere Tage".
+• Jede Beziehung hat ihre eigene Seite statt eines langen Fensters.
+• Die Einrichtung fragt jetzt auch nach Fernbeziehung, Geburtstagen und Feiertagen. Alles lässt sich überspringen.
