@@ -2,12 +2,15 @@
 
 What is planned for Since Us. This list is a plan, not a promise, and it changes when new ideas come in. Why some ideas won't be added is explained in [SCOPE.md](SCOPE.md).
 
-*Last updated: November 2, 2026*
+*Last updated: November 4, 2026*
 
 ## Next version
 
 - Report a bug, suggest an idea or help translate right from the settings
 - A year in review to swipe through: page by page around your anniversary, earlier years under Moments, and easy to turn off
+- New moments take their date from the first photo
+- Easier on the battery and faster with many moments, a more reliable weekly backup, and backups that keep all settings
+- Hearts stay still when animations are turned off on your phone
 
 ## Soon
 
