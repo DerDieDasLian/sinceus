@@ -186,7 +186,7 @@
     <string name="moments_title">I vostri momenti</string>
     <string name="moment_add">Aggiungi un momento</string>
     <string name="moments_empty_title">Conservate i vostri momenti speciali</string>
-    <string name="moments_empty_sub">Il primo appuntamento, il primo bacio, il primo viaggio: salva ogni momento che per voi significa qualcosa. Tocca un suggerimento per iniziare.</string>
+    <string name="moments_empty_sub">Il primo appuntamento, il primo bacio, il primo viaggio: salvate ogni momento che per voi significa qualcosa. Tocca un suggerimento per iniziare.</string>
     <string name="suggest_met">Il primo incontro</string>
     <string name="suggest_first_date">Il primo appuntamento</string>
     <string name="suggest_first_kiss">Il primo bacio</string>
@@ -198,10 +198,10 @@
     <string name="moment_edit">Modifica momento</string>
     <string name="moment_field_title">Cos\'è successo?</string>
     <string name="moment_field_date">Data</string>
-    <string name="moment_field_note">Note (opzionale)</string>
+    <string name="moment_field_note">Note (facoltativo)</string>
     <string name="moment_add_photo">Aggiungi foto</string>
     <string name="moment_more_photos">Aggiungi altre foto</string>
-    <string name="moment_cover_hint">La prima foto farà da copertina. Puoi sceglierne un\'altra toccando un\'altra foto.</string>
+    <string name="moment_cover_hint">La prima foto farà da copertina; se vuoi cambiarla, tocca la foto che vuoi come copertina.</string>
     <string name="moment_make_cover">Imposta come copertina</string>
     <string name="moment_photo_position">Foto %1$d di %2$d</string>
     <string name="moment_remove_photo">Rimuovi foto</string>
@@ -226,10 +226,10 @@
     </plurals>
     <string name="moments_show">Mostra momenti</string>
     <string name="live_show">Mostra contatore live</string>
-    <string name="live_show_summary">Conteggia il vostro tempo insieme, secondo per secondo</string>
-    <string name="moments_show_summary">Cronologia dei momenti importanti. Nasconderla manterrà comunque i momenti salvati.</string>
+    <string name="live_show_summary">Tiene conto del vostro tempo insieme, secondo per secondo</string>
+    <string name="moments_show_summary">Cronologia dei momenti importanti. Nasconderla non eliminerà i momenti salvati.</string>
     <string name="slideshow">Presentazione</string>
-    <string name="slideshow_off">Off: solo la vostra foto principale</string>
+    <string name="slideshow_off">Off: mostra solo la foto principale</string>
     <plurals name="slideshow_count">
         <item quantity="one">%s altra foto</item>
         <item quantity="many">%s altre foto</item>
@@ -282,7 +282,7 @@
     <string name="edit_person">Modifica persona</string>
     <string name="remove_person">Rimuovi persona</string>
     <string name="remove_person_confirm">Tocca di nuovo per rimuovere</string>
-    <string name="pronouns">Pronomi (opzionale)</string>
+    <string name="pronouns">Pronomi (facoltativo)</string>
     <string name="pronouns_hint">e.g. lei/essa, loro/essi</string>
     <string name="ob_names_poly_hint">Più di due? Aggiungi più persone. Più tardi potrai impostare altre relazioni con le relative date dalle impostazioni.</string>
     <string name="poly_all">Tutti</string>
@@ -295,9 +295,9 @@
     <string name="remove_relationship">Rimuovi relazione</string>
     <string name="remove_relationship_confirm">Tocca di nuovo per rimuovere</string>
     <string name="relationship_members">Chi ne fa parte?</string>
-    <string name="relationship_label">Nome (opzionale)</string>
+    <string name="relationship_label">Nome (facoltativo)</string>
     <string name="relationship_label_hint">e.g. nesting partner</string>
-    <string name="relationship_start_title">Titolo del vostro primo giorno (opzionale)</string>
+    <string name="relationship_start_title">Titolo del vostro primo giorno (facoltativo)</string>
     <string name="relationship_start_title_hint">e.g. Ci siamo sposati</string>
     <string name="relationship_start_title_help">Mostra nella cronologia al posto di \"Vi siete messi insieme\"</string>
     <string name="relationship_kind">Tipo di relazione</string>
@@ -357,7 +357,7 @@
     <string name="sync_done">Sincronizzato: %1$d nuovi, %2$d modificati, %3$d rimossi</string>
     <string name="moment_added_by">Aggiunto da %1$s</string>
     <string name="birthday">Data di nascita</string>
-    <string name="birthday_optional">Data di nascita (opzionale)</string>
+    <string name="birthday_optional">Data di nascita (facoltativo)</string>
     <string name="birthday_remove">Rimuovi data di nascita</string>
     <string name="birthday_title">Compleanno di %1$s</string>
     <string name="msg_birthday">Oggi compie gli anni %1$s.</string>
@@ -370,10 +370,10 @@
     <string name="shortcut_live_long">Apri il contatore live</string>
     <string name="widget_preview_label">giorni insieme</string>
     <string name="widget_preview_next">Prossimo: 6 mesi</string>
-    <string name="facts_show">Statistiche simpatiche</string>
+    <string name="facts_show">Statistiche e curiosità</string>
     <string name="facts_show_summary">Fine settimana, lune piene e altro nella panoramica</string>
     <string name="celebrate_show">Celebrazioni</string>
-    <string name="celebrate_show_summary">Gettiamo coriandoli negli anniversari e nei giorni tondi</string>
+    <string name="celebrate_show_summary">Festeggiamo anniversari e giorni tondi</string>
     <string name="facts_title">Lo sapevi?</string>
     <string name="facts_next">Mostra statistica successiva</string>
     <string name="facts_previous">Mostra statistica precedente</string>
@@ -498,7 +498,7 @@
         <item quantity="other">giorni mancanti</item>
     </plurals>
     <string name="msg_planned">È il grande giorno: %1$s</string>
-    <string name="remind_before">Avvisami prima</string>
+    <string name="remind_before">Avviso anticipato</string>
     <string name="remind_off">Solo il giorno stesso</string>
     <string name="remind_day">Anche il giorno prima</string>
     <string name="remind_week">Anche una settimana prima</string>
@@ -540,7 +540,7 @@
     <string name="licenses_fonts_show">Mostra avvisi sui font</string>
     <string name="font_classic">Classico</string>
     <string name="section_privacy">Privacy</string>
-    <string name="settings_group_love">Voi due</string>
+    <string name="settings_group_love">Voi</string>
     <string name="settings_group_app">App</string>
     <string name="settings_group_data">Dati</string>
     <string name="settings_group_info">Informazioni</string>
@@ -549,7 +549,7 @@
     <string name="website">Sito</string>
     <string name="imprint">Avviso legale</string>
     <string name="privacy_full">Policy completa</string>
-    <string name="moment_field_place">Luogo (opzionale)</string>
+    <string name="moment_field_place">Luogo (facoltativo)</string>
     <string name="moment_open_place">Apri %1$s in maps</string>
     <string name="moment_no_maps">Nessuna app mappe trovata</string>
     <string name="moment_tags">Tag</string>
