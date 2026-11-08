@@ -2,12 +2,13 @@
 
 What is planned for Since Us. This list is a plan, not a promise, and it changes when new ideas come in. Why some ideas won't be added is explained in [SCOPE.md](SCOPE.md).
 
-*Last updated: November 7, 2026*
+*Last updated: November 8, 2026*
 
 ## Next version
 
 - Clearer settings with a search field, special days on their own page and each relationship on its own page
 - Setup also asks about long distance, birthdays and holidays (all optional)
+- Color themes: Ocean, Jade and Lavender besides Wine, or the colors of your wallpaper on Android 12 and newer ([#43](https://github.com/DerDieDasLian/sinceus/issues/43))
 
 ## Soon
 

@@ -114,7 +114,7 @@ private fun SwitchChip(label: String, active: Boolean, showIcon: Boolean = false
             Icon(
                 Icons.Rounded.Groups,
                 contentDescription = null,
-                tint = if (active) Wine else Color.White,
+                tint = if (active) LocalAccent.current.strong else Color.White,
                 modifier = Modifier
                     .padding(end = 6.dp)
                     .size(18.dp),
@@ -123,7 +123,7 @@ private fun SwitchChip(label: String, active: Boolean, showIcon: Boolean = false
         Text(
             label,
             style = MaterialTheme.typography.labelLarge,
-            color = if (active) Wine else Color.White,
+            color = if (active) LocalAccent.current.strong else Color.White,
             maxLines = 1,
         )
     }

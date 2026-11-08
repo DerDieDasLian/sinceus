@@ -186,7 +186,7 @@ fun HomeScreen(
                 .padding(bottom = 16.dp)
                 .shadow(8.dp, CircleShape)
                 .clip(CircleShape)
-                .background(Color(0xFF2A1D1F))
+                .background(LocalAccent.current.bar)
                 .padding(BarPadding),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp),
@@ -261,7 +261,7 @@ private fun ModeSwitch(selected: Int, pages: List<HomePage>, onSelect: (Int) -> 
                 Text(
                     label,
                     style = MaterialTheme.typography.labelLarge,
-                    color = if (active) Wine else Color.White,
+                    color = if (active) LocalAccent.current.strong else Color.White,
                 )
             }
         }
@@ -430,7 +430,7 @@ fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp, icon: ImageVec
     Icon(
         icon,
         contentDescription = null,
-        tint = if (pride) Color.White else Color(0xFFFF5C77),
+        tint = if (pride) Color.White else LocalAccent.current.heart,
         modifier = modifier
             .size(size)
             // Der Schlag wird erst beim Zeichnen gelesen, so baut nicht jedes Bild den Bildschirm neu auf

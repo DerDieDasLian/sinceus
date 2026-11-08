@@ -391,7 +391,7 @@ private fun NextPage(w: YearRecap, today: LocalDate, onShare: () -> Unit, onClos
         Row(Modifier.padding(top = 24.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
                 onClick = onShare,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Wine),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = LocalAccent.current.strong),
             ) {
                 Icon(Icons.Rounded.Share, null)
                 Text(stringResource(R.string.year_review_share), Modifier.padding(start = 8.dp))

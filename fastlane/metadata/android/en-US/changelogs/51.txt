@@ -1,0 +1,1 @@
+• New colors: Settings > Colors now offers Ocean, Jade and Lavender besides Wine. On Android 12 and newer the app can also use the colors of your wallpaper.

@@ -120,7 +120,7 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
     Box(
         Modifier
             .fillMaxSize()
-            .background(Color(0xFF120B0C)),
+            .background(LocalAccent.current.night),
     ) {
         CouplePhoto(
             settings,
@@ -154,7 +154,7 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
                     },
                 ).uppercase(),
                 style = LabelCaps,
-                color = Color(0xFFFFB2B9),
+                color = LocalAccent.current.soft,
                 modifier = Modifier.padding(top = 32.dp, bottom = 16.dp),
             )
             span.rows().forEach { row ->
@@ -178,7 +178,7 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
                             onLongClick = shareLive,
                         ),
                 ) { t ->
-                    val base = if (total) Color(0xFFFFB2B9) else Color.White
+                    val base = if (total) LocalAccent.current.soft else Color.White
                     Text(
                         t,
                         style = MaterialTheme.typography.displaySmall.copy(
@@ -247,7 +247,7 @@ private fun FloatingHearts() {
             Icon(
                 Icons.Rounded.Favorite,
                 contentDescription = null,
-                tint = Color(0xFFFF8FA3).copy(alpha = 0.16f),
+                tint = LocalAccent.current.glow.copy(alpha = 0.16f),
                 modifier = Modifier
                     .offset(x = w * x, y = h - size.dp)
                     .size(size.dp)
