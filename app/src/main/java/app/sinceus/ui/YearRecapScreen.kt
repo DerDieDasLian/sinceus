@@ -1,6 +1,5 @@
 package app.sinceus.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -90,7 +89,7 @@ private fun pagesOf(w: YearRecap, withMoments: Boolean): List<RecapPage> = build
  */
 @Composable
 fun YearRecapScreen(settings: LoveSettings, recap: YearRecap, today: LocalDate, onShare: () -> Unit, onClose: () -> Unit) {
-    BackHandler(onBack = onClose)
+    val backPreview = rememberBackPreview(onBack = onClose)
     val pages = remember(recap, settings.showMoments) { pagesOf(recap, settings.showMoments) }
     val pager = rememberPagerState { pages.size }
     val scope = rememberCoroutineScope()
@@ -99,6 +98,7 @@ fun YearRecapScreen(settings: LoveSettings, recap: YearRecap, today: LocalDate, 
     Box(
         Modifier
             .fillMaxSize()
+            .backPreview(backPreview)
             .background(Color.Black),
     ) {
         HorizontalPager(pager, Modifier.fillMaxSize()) { index ->

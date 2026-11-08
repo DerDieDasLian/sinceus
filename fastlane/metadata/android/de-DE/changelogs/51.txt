@@ -1,0 +1,1 @@
+• Zurückwischen zeigt jetzt auch auf den Seiten in der App eine Vorschau: Die Seite wird beim Wischen etwas kleiner. Lässt du los, geht es zurück, wischst du zurück zur Mitte, bleibst du auf der Seite.

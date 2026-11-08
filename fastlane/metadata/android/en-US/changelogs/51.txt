@@ -1,0 +1,1 @@
+• Swiping back now shows a preview on the pages inside the app too: the page shrinks a little as you swipe. Let go to go back, or swipe back to stay on the page.

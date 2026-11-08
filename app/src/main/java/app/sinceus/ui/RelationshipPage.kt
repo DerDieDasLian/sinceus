@@ -1,6 +1,5 @@
 package app.sinceus.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -85,12 +84,13 @@ internal fun RelationshipPage(
     val valid = draft.members.size >= 2 && (draft.before == null || draft.earlier != null)
     val changed = draft != relationship
     val back = { if (changed) askSave = true else onClose() }
-    BackHandler(onBack = back)
+    // Bei Änderungen bleibt die Seite stehen und fragt nach
+    val backPreview = rememberBackPreview(stays = changed, onBack = back)
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val clear = ListItemDefaults.colors(containerColor = Color.Transparent)
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scroll.nestedScrollConnection),
+        modifier = Modifier.backPreview(backPreview).nestedScroll(scroll.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = { Text(stringResource(if (isNew) R.string.add_relationship else R.string.edit_relationship)) },
