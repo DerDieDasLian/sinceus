@@ -275,6 +275,11 @@ fun SettingsScreen(
         }
         return
     }
+    // Die Schriftauswahl ist eine eigene Seite, kein Fenster: so passt die lange Liste auf den ganzen Bildschirm
+    if (dialog == "font") {
+        FontPage(settings.font, onSelect = onFont, onClose = { dialog = null })
+        return
+    }
     val uri = androidx.compose.ui.platform.LocalUriHandler.current
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -781,7 +786,6 @@ fun SettingsScreen(
             dialog = null
             onLanguage(it)
         }
-        "font" -> FontDialog(settings.font, onSelect = onFont, onDismiss = { dialog = null })
         "colors" -> ColorsDialog(settings.colors, onSelect = onColors, onDismiss = { dialog = null })
         "presets" -> PresetDialog(settings.presetIndex, onDismiss = { dialog = null }) {
             onPreset(it)
