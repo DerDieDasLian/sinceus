@@ -19,6 +19,13 @@ class AppFontsTest {
     }
 
     @Test
+    fun removedFontsGetASimilarOne() {
+        assertEquals("quicksand", AppFonts.find("nunito").id)
+        assertEquals("space_grotesk", AppFonts.find("host_grotesk").id)
+        assertEquals("great_vibes", AppFonts.find("sacramento").id)
+    }
+
+    @Test
     fun everyFontHasWidgetFiles() {
         AppFonts.all.filter { it.id != AppFonts.CLASSIC_ID }.forEach { font ->
             assertNotNull("Keine Widget-Schrift für ${font.id}", AppFonts.files(font).first)

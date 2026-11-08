@@ -526,6 +526,12 @@
     <string name="colors_lavender">Lavendel</string>
     <string name="colors_system">Systemfarben</string>
     <string name="colors_system_summary">Passend zu deinem Hintergrundbild</string>
+    <string name="colors_custom">Eigene Farbe</string>
+    <string name="colors_custom_summary">Farbton frei wählen</string>
+    <string name="colors_custom_hue">Farbton</string>
+    <string name="relationship_color">Farbe</string>
+    <string name="relationship_color_auto">Automatisch</string>
+    <string name="relationship_color_number">Farbe %1$d</string>
     <string name="font_group_standard">Klassisch</string>
     <string name="font_group_round">Rund und weich</string>
     <string name="font_group_modern">Modern und klar</string>

@@ -144,7 +144,7 @@ fun LiveScreen(settings: LoveSettings, active: Boolean, now: LocalDateTime? = nu
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            NamesRow(settings.memberNames(), MaterialTheme.typography.headlineSmall, heart = 22.dp, kind = settings.relationship.kind)
+            NamesRow(settings.memberNames(), MaterialTheme.typography.headlineSmall, heart = 22.dp, kind = settings.relationship.kind, tint = settings.heartTint())
             Text(
                 stringResource(
                     when {

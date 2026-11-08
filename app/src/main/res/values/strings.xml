@@ -531,6 +531,12 @@
     <string name="colors_lavender">Lavender</string>
     <string name="colors_system">System colors</string>
     <string name="colors_system_summary">Matches your wallpaper</string>
+    <string name="colors_custom">Own color</string>
+    <string name="colors_custom_summary">Pick any hue</string>
+    <string name="colors_custom_hue">Hue</string>
+    <string name="relationship_color">Color</string>
+    <string name="relationship_color_auto">Automatic</string>
+    <string name="relationship_color_number">Color %1$d</string>
     <string name="font_group_standard">Classic</string>
     <string name="font_group_round">Round and soft</string>
     <string name="font_group_modern">Modern and clear</string>

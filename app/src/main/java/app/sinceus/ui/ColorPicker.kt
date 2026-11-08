@@ -33,6 +33,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import app.sinceus.R
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import kotlin.math.roundToInt
 
 /** Name des gewählten Farbthemas für die Zeile in den Einstellungen */
 @Composable
@@ -45,23 +58,27 @@ fun colorsLabel(id: String): String =
 
 /**
  * Auswahl des Farbthemas. Ein Tipp färbt die ganze App sofort um, so sieht man direkt, wie es wirkt.
+ * "Eigene Farbe" dreht das Wein-Thema auf einen frei gewählten Farbton, so bleibt alles gut lesbar.
  * Die Systemfarben (Material You) gibt es erst ab Android 12.
  */
 @Composable
 fun ColorsDialog(selected: String, onSelect: (String) -> Unit, onDismiss: () -> Unit) {
     val dark = isSystemInDarkTheme()
     val context = LocalContext.current
-    val current = if (selected == AppColorThemes.SYSTEM && AppColorThemes.systemAvailable) {
-        AppColorThemes.SYSTEM
-    } else {
-        AppColorThemes.find(selected).id
+    val customHue = AppColorThemes.customHue(selected)
+    val current = when {
+        selected == AppColorThemes.SYSTEM && AppColorThemes.systemAvailable -> AppColorThemes.SYSTEM
+        customHue != null -> CUSTOM
+        else -> AppColorThemes.find(selected).id
     }
+    // Letzter eigener Farbton, damit er beim Hin- und Herwechseln erhalten bleibt
+    var hue by rememberSaveable { mutableFloatStateOf((customHue ?: DEFAULT_CUSTOM_HUE).toFloat()) }
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Rounded.Palette, null) },
         title = { Text(stringResource(R.string.colors_title)) },
         text = {
-            Column {
+            Column(Modifier.heightIn(max = 520.dp).verticalScroll(rememberScrollState())) {
                 AppColorThemes.all.forEach { theme ->
                     val scheme = if (dark) theme.dark else theme.light
                     ColorsOption(
@@ -71,6 +88,32 @@ fun ColorsDialog(selected: String, onSelect: (String) -> Unit, onDismiss: () -> 
                         heart = theme.accent.heart,
                         selected = theme.id == current,
                         onClick = { onSelect(theme.id) },
+                    )
+                }
+                val custom = AppColorThemes.custom(hue.roundToInt())
+                ColorsOption(
+                    name = stringResource(R.string.colors_custom),
+                    summary = stringResource(R.string.colors_custom_summary),
+                    background = (if (dark) custom.dark else custom.light).primaryContainer,
+                    heart = custom.accent.heart,
+                    selected = current == CUSTOM,
+                    onClick = { onSelect(AppColorThemes.customId(hue.roundToInt())) },
+                )
+                if (current == CUSTOM) {
+                    Slider(
+                        value = hue,
+                        onValueChange = { hue = it },
+                        onValueChangeFinished = { onSelect(AppColorThemes.customId(hue.roundToInt())) },
+                        valueRange = 0f..359f,
+                        colors = SliderDefaults.colors(
+                            thumbColor = custom.accent.heart,
+                            activeTrackColor = Color.Transparent,
+                            inactiveTrackColor = Color.Transparent,
+                        ),
+                        modifier = Modifier
+                            .padding(start = 8.dp, end = 8.dp)
+                            .background(Brush.horizontalGradient(rainbow(dark)), CircleShape)
+                            .semantics { contentDescription = context.getString(R.string.colors_custom_hue) },
                     )
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -88,6 +131,17 @@ fun ColorsDialog(selected: String, onSelect: (String) -> Unit, onDismiss: () -> 
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.done)) } },
     )
+}
+
+private const val CUSTOM = "custom"
+
+/** Startfarbton für die eigene Farbe: ein Türkis */
+private const val DEFAULT_CUSTOM_HUE = 190
+
+/** Leiste hinter dem Regler: alle Farbtöne in der Helligkeit der Herzen */
+private fun rainbow(dark: Boolean): List<Color> = (0..12).map { i ->
+    val theme = AppColorThemes.custom(i * 30)
+    if (dark) theme.dark.primary else theme.accent.heart
 }
 
 @Composable

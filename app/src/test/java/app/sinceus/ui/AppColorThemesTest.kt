@@ -26,8 +26,27 @@ class AppColorThemesTest {
     }
 
     @Test
+    fun customHueIsStoredAndRead() {
+        assertEquals("hue:200", AppColorThemes.customId(200))
+        assertEquals("hue:10", AppColorThemes.customId(370))
+        assertEquals(200, AppColorThemes.customHue("hue:200"))
+        assertEquals(null, AppColorThemes.customHue("jade"))
+        assertEquals(null, AppColorThemes.customHue("hue:abc"))
+        assertEquals("hue:200", AppColorThemes.find("hue:200").id)
+        assertEquals("", AppColorThemes.find("hue:abc").id)
+    }
+
+    @Test
+    fun wineIsUnchanged() {
+        val wine = AppColorThemes.find("")
+        assertEquals(Color(0xFF8B1E31), wine.light.primary)
+        assertEquals(Color(0xFFFFB2B9), wine.dark.primary)
+        assertEquals(Color(0xFFFF5C77), wine.accent.heart)
+    }
+
+    @Test
     fun textStaysReadable() {
-        AppColorThemes.all.forEach { theme ->
+        (AppColorThemes.all + (0 until 360 step 15).map { AppColorThemes.custom(it) }).forEach { theme ->
             listOf(theme.light, theme.dark).forEach { s ->
                 assertTrue("${theme.id}: Text auf Primärfarbe", contrast(s.primary, s.onPrimary) >= 4.5f)
                 assertTrue("${theme.id}: Text auf Hintergrund", contrast(s.background, s.onBackground) >= 7f)

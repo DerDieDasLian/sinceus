@@ -389,6 +389,10 @@ internal fun Hero(settings: LoveSettings, onSelect: (String) -> Unit) {
     }
 }
 
+/** Herzfarbe der gezeigten Beziehung, wenn sie eine eigene Farbe hat; sonst die des Farbthemas */
+internal fun LoveSettings.heartTint(): Color? =
+    if (showAll) null else relationship.color?.let { RelationshipColors.getOrNull(it) }
+
 @Composable
 fun NamesOverlay(settings: LoveSettings, modifier: Modifier = Modifier) {
     val names = if (settings.showAll) settings.people.map { it.name } else settings.memberNames()
@@ -397,6 +401,7 @@ fun NamesOverlay(settings: LoveSettings, modifier: Modifier = Modifier) {
         if (names.size > 2) MaterialTheme.typography.displaySmall else MaterialTheme.typography.displayMedium,
         heart = if (names.size > 2) 24.dp else 30.dp,
         kind = if (settings.showAll) RelationKind.LOVE else settings.relationship.kind,
+        tint = settings.heartTint(),
         modifier = modifier.padding(start = 24.dp, end = 24.dp, bottom = 48.dp),
     )
 }
@@ -404,17 +409,24 @@ fun NamesOverlay(settings: LoveSettings, modifier: Modifier = Modifier) {
 /** Namen mit schlagendem Herz dazwischen (bei Freundschaft und Familie ein anderes Symbol); bei mehr als zwei Menschen mit Zeilenumbruch */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun NamesRow(names: List<String>, style: TextStyle, heart: Dp, modifier: Modifier = Modifier, kind: RelationKind = RelationKind.LOVE) {
+fun NamesRow(
+    names: List<String>,
+    style: TextStyle,
+    heart: Dp,
+    modifier: Modifier = Modifier,
+    kind: RelationKind = RelationKind.LOVE,
+    tint: Color? = null,
+) {
     FlowRow(modifier, itemVerticalAlignment = Alignment.CenterVertically) {
         names.forEachIndexed { i, name ->
-            if (i > 0) BeatingHeart(Modifier.padding(horizontal = heart * 0.4f), size = heart, icon = kind.icon)
+            if (i > 0) BeatingHeart(Modifier.padding(horizontal = heart * 0.4f), size = heart, icon = kind.icon, tint = tint)
             Text(name, style = style, color = Color.White, maxLines = 1)
         }
     }
 }
 
 @Composable
-fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp, icon: ImageVector = Icons.Rounded.Favorite) {
+fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp, icon: ImageVector = Icons.Rounded.Favorite, tint: Color? = null) {
     // Mit "Animationen entfernen" am Handy bleibt das Herz still
     val beat = if (animationsEnabled()) {
         rememberInfiniteTransition(label = "heart").animateFloat(
@@ -430,7 +442,7 @@ fun BeatingHeart(modifier: Modifier = Modifier, size: Dp = 30.dp, icon: ImageVec
     Icon(
         icon,
         contentDescription = null,
-        tint = if (pride) Color.White else LocalAccent.current.heart,
+        tint = if (pride) Color.White else tint ?: LocalAccent.current.heart,
         modifier = modifier
             .size(size)
             // Der Schlag wird erst beim Zeichnen gelesen, so baut nicht jedes Bild den Bildschirm neu auf

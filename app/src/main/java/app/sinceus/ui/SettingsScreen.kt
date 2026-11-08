@@ -904,6 +904,7 @@ private val SEARCH = listOf(
     SearchEntry(R.string.distance_mode, SettingsPage.Couple, words = listOf(R.string.travel_title, R.string.distance_zone, R.string.distance_meeting)),
     SearchEntry(R.string.relationship_before, SettingsPage.Couple, words = listOf(R.string.relationship_before_summary)),
     SearchEntry(R.string.relationship_start_title, SettingsPage.Couple),
+    SearchEntry(R.string.relationship_color, SettingsPage.Couple, words = listOf(R.string.colors_title)),
     SearchEntry(R.string.notify_special, SettingsPage.Notifications),
     SearchEntry(R.string.notify_time, SettingsPage.Notifications),
     SearchEntry(R.string.remind_before, SettingsPage.Notifications),
