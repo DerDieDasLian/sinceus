@@ -2,6 +2,7 @@ package app.sinceus.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -66,17 +67,27 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-/** Farben der Beziehungen in der Übersicht, damit Linien und Karten zusammenpassen */
-private val RelationshipColors = listOf(
+/**
+ * Farben der Beziehungen in der Übersicht, damit Linien und Karten zusammenpassen.
+ * Die ersten sechs sind die bisherigen automatischen Farben, die Reihenfolge darf sich nicht ändern.
+ */
+internal val RelationshipColors = listOf(
     Color(0xFFFF8FA3),
     Color(0xFFB39DDB),
     Color(0xFF80CBC4),
     Color(0xFFFFCC80),
     Color(0xFF90CAF9),
     Color(0xFFF48FB1),
+    Color(0xFFA5D6A7),
+    Color(0xFFE6EE9C),
 )
 
-private fun colorOf(index: Int) = RelationshipColors[index % RelationshipColors.size]
+/** Farbe einer Beziehung: die selbst gewählte oder eine nach der Reihenfolge */
+internal fun LoveSettings.colorOf(r: Relationship): Color {
+    // Eine neue Beziehung, die noch nicht gespeichert ist, kommt ans Ende
+    val index = r.color ?: relationships.indexOfFirst { it.id == r.id }.takeIf { it >= 0 } ?: relationships.size
+    return RelationshipColors[index % RelationshipColors.size]
+}
 
 /** Name einer Beziehung für Auswahl und Listen: die eigene Bezeichnung oder die Namen */
 internal fun LoveSettings.titleOf(r: Relationship): String = r.label.ifBlank { namesOf(r) }
@@ -94,13 +105,13 @@ internal fun RelationshipSwitch(settings: LoveSettings, onSelect: (String) -> Un
     ) {
         SwitchChip(stringResource(R.string.poly_all), settings.showAll, showIcon = true) { onSelect(ALL_RELATIONSHIPS) }
         settings.relationships.forEach { r ->
-            SwitchChip(settings.titleOf(r), !settings.showAll && settings.relationship.id == r.id) { onSelect(r.id) }
+            SwitchChip(settings.titleOf(r), !settings.showAll && settings.relationship.id == r.id, dot = settings.colorOf(r)) { onSelect(r.id) }
         }
     }
 }
 
 @Composable
-private fun SwitchChip(label: String, active: Boolean, showIcon: Boolean = false, onClick: () -> Unit) {
+private fun SwitchChip(label: String, active: Boolean, showIcon: Boolean = false, dot: Color? = null, onClick: () -> Unit) {
     Row(
         Modifier
             .height(36.dp)
@@ -110,11 +121,21 @@ private fun SwitchChip(label: String, active: Boolean, showIcon: Boolean = false
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (dot != null) {
+            Box(
+                Modifier
+                    .padding(end = 8.dp)
+                    .size(10.dp)
+                    .clip(CircleShape)
+                    .background(dot)
+                    .border(1.dp, Color.Black.copy(alpha = 0.15f), CircleShape),
+            )
+        }
         if (showIcon) {
             Icon(
                 Icons.Rounded.Groups,
                 contentDescription = null,
-                tint = if (active) Wine else Color.White,
+                tint = if (active) LocalAccent.current.strong else Color.White,
                 modifier = Modifier
                     .padding(end = 6.dp)
                     .size(18.dp),
@@ -123,7 +144,7 @@ private fun SwitchChip(label: String, active: Boolean, showIcon: Boolean = false
         Text(
             label,
             style = MaterialTheme.typography.labelLarge,
-            color = if (active) Wine else Color.White,
+            color = if (active) LocalAccent.current.strong else Color.White,
             maxLines = 1,
         )
     }
@@ -171,8 +192,8 @@ internal fun PolyOverview(settings: LoveSettings, today: LocalDate, onSelect: (S
             if (LocalPrideMonth.current) {
                 RainbowCard(stringResource(R.string.pride_title), stringResource(R.string.all_couples_text))
             }
-            settings.relationships.forEachIndexed { i, r ->
-                RelationshipCard(settings, r, colorOf(i), today) { onSelect(r.id) }
+            settings.relationships.forEach { r ->
+                RelationshipCard(settings, r, settings.colorOf(r), today) { onSelect(r.id) }
             }
             if (upcoming.isNotEmpty()) UpcomingCard(upcoming, today)
         }
@@ -221,11 +242,11 @@ private fun PolyculeCard(settings: LoveSettings) {
             }
             val stroke = with(density) { 5.dp.toPx() }
             Canvas(Modifier.fillMaxSize()) {
-                settings.relationships.forEachIndexed { k, r ->
+                settings.relationships.forEach { r ->
                     val points = r.members.mapNotNull { positions[it] }
                     for (a in points.indices) {
                         for (b in a + 1 until points.size) {
-                            drawLine(colorOf(k), points[a], points[b], strokeWidth = stroke, cap = StrokeCap.Round)
+                            drawLine(settings.colorOf(r), points[a], points[b], strokeWidth = stroke, cap = StrokeCap.Round)
                         }
                     }
                 }

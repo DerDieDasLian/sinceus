@@ -1,1 +1,4 @@
-• Swiping back now shows a preview on the pages inside the app too: the page shrinks a little as you swipe. Let go to go back, or swipe back to stay on the page.
+• New colors: Settings > Colors now offers Ocean, Jade, Lavender and a color of your own besides Wine, and on Android 12 and newer the colors of your wallpaper.
+• Each relationship can have its own color, so you can tell them apart at a glance.
+• Fewer fonts that clearly differ, now on their own page instead of a small window. If you used a removed font, you get a similar one.
+• Swiping back now shows a preview inside the app too.

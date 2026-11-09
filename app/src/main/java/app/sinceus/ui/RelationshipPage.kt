@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.History
@@ -52,6 +53,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.sinceus.R
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import app.sinceus.data.Distance
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.PeopleCodec
@@ -140,6 +151,14 @@ internal fun RelationshipPage(
                                 leadingIcon = { Icon(k.icon, null, Modifier.size(18.dp)) },
                             )
                         }
+                    }
+                    // Farbe nur, wenn es mehrere Beziehungen gibt: dann erkennt man sie auf einen Blick
+                    if (settings.relationships.any { it.id != draft.id }) {
+                        Text(stringResource(R.string.relationship_color), style = MaterialTheme.typography.titleSmall)
+                        RelationshipColorPicker(
+                            selected = draft.color,
+                            automatic = settings.colorOf(draft.copy(color = null)),
+                        ) { draft = draft.copy(color = it) }
                     }
                     OutlinedTextField(
                         draft.label,
@@ -393,5 +412,38 @@ internal fun TravelChips(selected: Travel, onPick: (Travel) -> Unit) {
                 leadingIcon = { Icon(t.icon, null, Modifier.size(18.dp)) },
             )
         }
+    }
+}
+
+/** Farbwahl einer Beziehung: automatisch oder eine der festen Farben */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun RelationshipColorPicker(selected: Int?, automatic: Color, onPick: (Int?) -> Unit) {
+    val auto = stringResource(R.string.relationship_color_auto)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        ColorDot(automatic, selected == null, auto, showAuto = true) { onPick(null) }
+        RelationshipColors.forEachIndexed { i, color ->
+            ColorDot(color, selected == i, stringResource(R.string.relationship_color_number, i + 1)) { onPick(i) }
+        }
+    }
+}
+
+@Composable
+private fun ColorDot(color: Color, selected: Boolean, description: String, showAuto: Boolean = false, onClick: () -> Unit) {
+    Box(
+        Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(color)
+            .border(
+                if (selected) 3.dp else 1.dp,
+                if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outlineVariant,
+                CircleShape,
+            )
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .semantics { contentDescription = description },
+        contentAlignment = Alignment.Center,
+    ) {
+        if (showAuto) Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(18.dp), tint = Color.Black.copy(alpha = 0.6f))
     }
 }

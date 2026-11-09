@@ -81,6 +81,8 @@ data class Relationship(
     val beforeStart: LocalDate? = null,
     /** Eigener Titel für den Starttag in der Zeitleiste, z. B. „Wir haben geheiratet“, leer = Standardtext */
     val startTitle: String = "",
+    /** Eigene Farbe der Beziehung (Platz in der Farbliste, 0 bis [RELATIONSHIP_COLORS] - 1), null = automatisch */
+    val color: Int? = null,
 ) {
     val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
 
@@ -92,6 +94,9 @@ data class Relationship(
             null
         }
 }
+
+/** Anzahl der Farben, aus denen eine Beziehung wählen kann */
+const val RELATIONSHIP_COLORS = 8
 
 /** Höchstzahl Menschen und Beziehungen, damit Startseite und Widget lesbar bleiben */
 const val MAX_PEOPLE = 8
@@ -166,7 +171,8 @@ object PeopleCodec {
                     .put("kind", r.kind.id)
                     .put("before", r.before?.id ?: JSONObject.NULL)
                     .put("beforeStart", r.beforeStart?.toEpochDay() ?: JSONObject.NULL)
-                    .put("startTitle", r.startTitle),
+                    .put("startTitle", r.startTitle)
+                    .put("color", r.color ?: JSONObject.NULL),
             )
         }
     }.toString()
@@ -192,6 +198,7 @@ object PeopleCodec {
                     before = if (o.isNull("before")) null else RelationKind.entries.firstOrNull { it.id == o.optString("before") },
                     beforeStart = if (o.isNull("beforeStart")) null else LocalDate.ofEpochDay(o.getLong("beforeStart")),
                     startTitle = o.optString("startTitle", "").trim().take(MAX_TITLE),
+                    color = if (o.isNull("color")) null else o.optInt("color", -1).takeIf { it in 0 until RELATIONSHIP_COLORS },
                 )
             }.getOrNull()
         }.distinctBy { it.id }

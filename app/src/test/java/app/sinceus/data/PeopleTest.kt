@@ -222,6 +222,16 @@ class PeopleTest {
     }
 
     @Test
+    fun colorRoundTripsAndInvalidOrOldIsAutomatic() {
+        val r = Relationship("p", listOf("a", "b"), LocalDate.of(2025, 3, 15), color = 6)
+        assertEquals(6, PeopleCodec.decodeRelationships(PeopleCodec.encodeRelationships(listOf(r)))!!.single().color)
+        val auto = Relationship("q", listOf("a", "b"), LocalDate.of(2025, 3, 15))
+        assertEquals(null, PeopleCodec.decodeRelationships(PeopleCodec.encodeRelationships(listOf(auto)))!!.single().color)
+        val broken = """[{"id":"p","members":["a","b"],"start":20162,"color":99}]"""
+        assertEquals(null, PeopleCodec.decodeRelationships(broken)!!.single().color)
+    }
+
+    @Test
     fun startTitleRoundTripsAndOldDataHasNone() {
         val r = Relationship("p", listOf("a", "b"), LocalDate.of(2025, 3, 15), startTitle = "Wir haben geheiratet")
         assertEquals("Wir haben geheiratet", PeopleCodec.decodeRelationships(PeopleCodec.encodeRelationships(listOf(r)))!!.single().startTitle)
