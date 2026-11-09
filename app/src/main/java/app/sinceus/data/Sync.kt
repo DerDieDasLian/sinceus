@@ -50,10 +50,15 @@ data class Pairing(
         fun qrText(p: Pairing): String =
             PREFIX + Base64.encodeToString(p.key, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
 
-        /** Schlüssel aus einem gescannten QR-Code, null = kein Kopplungscode von Since Us */
+        private val CODE = Regex(Regex.escape(PREFIX) + "([A-Za-z0-9_-]+)")
+
+        /**
+         * Schlüssel aus einem gescannten QR-Code oder einem eingefügten Text, null = kein Kopplungscode
+         * von Since Us. Der Code darf mitten im Text stehen, zum Beispiel in einer weitergeleiteten Nachricht.
+         */
         fun keyFromQr(text: String?): ByteArray? {
-            if (text == null || !text.startsWith(PREFIX)) return null
-            val key = runCatching { Base64.decode(text.removePrefix(PREFIX), Base64.URL_SAFE) }.getOrNull()
+            val code = text?.let { CODE.find(it) }?.groupValues?.get(1) ?: return null
+            val key = runCatching { Base64.decode(code, Base64.URL_SAFE) }.getOrNull()
             return key?.takeIf { it.size == 32 }
         }
     }

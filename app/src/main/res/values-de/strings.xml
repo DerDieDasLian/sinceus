@@ -313,7 +313,7 @@
     </plurals>
     <string name="section_sync">Abgleich</string>
     <string name="sync_summary">Momente zwischen euren Handys teilen</string>
-    <string name="sync_intro">Haltet eure Momente auf beiden Handys gleich, ganz ohne Cloud und Konto. Koppelt die Handys einmal per QR-Code und schickt dann eine Abgleich-Datei, zum Beispiel per Messenger. Nur eure gekoppelten Handys können sie öffnen.</string>
+    <string name="sync_intro">Haltet eure Momente auf beiden Handys gleich, ganz ohne Cloud und Konto. Koppelt die Handys einmal per QR-Code oder geteiltem Code und schickt dann eine Abgleich-Datei, zum Beispiel per Messenger. Nur eure gekoppelten Handys können sie öffnen.</string>
     <string name="sync_intro_paired">Schickt eine Abgleich-Datei, wenn ihr etwas hinzugefügt habt. Das andere Handy öffnet sie direkt in Since Us und übernimmt, was neu ist. Fotos kommen mit.</string>
     <string name="sync_who">Wer nutzt dieses Handy?</string>
     <string name="sync_show_qr">QR-Code zeigen</string>
@@ -322,6 +322,14 @@
     <string name="sync_scan_summary">Den Code vom anderen Handy scannen</string>
     <string name="sync_scan_prompt">Scannt den QR-Code von Since Us auf dem anderen Handy</string>
     <string name="sync_qr_text">Öffnet auf dem anderen Handy den Abgleich und tippt auf "QR-Code scannen". Zeigt diesen Code nur den Menschen, mit denen ihr koppelt.</string>
+    <string name="sync_paste_code">Code einfügen</string>
+    <string name="sync_paste_code_summary">Wenn ihr nicht zusammen seid, zum Beispiel in einer Fernbeziehung</string>
+    <string name="sync_paste_code_text">Füge die Nachricht mit dem Kopplungscode ein, die dir das andere Handy geschickt hat. Du kannst die ganze Nachricht einfügen.</string>
+    <string name="sync_paste_code_field">Kopplungscode</string>
+    <string name="sync_pair">Koppeln</string>
+    <string name="sync_share_code">Code teilen</string>
+    <string name="sync_share_code_hint">Nicht zusammen? Teilt stattdessen den Code, zum Beispiel per Messenger. Wer diesen Code hat, kann eure Abgleich-Dateien öffnen. Schickt ihn deshalb nur in einem privaten Chat.</string>
+    <string name="sync_code_message">Mein Kopplungscode für Since Us. Öffne in Since Us Einstellungen, Abgleich, Code einfügen und füge diese ganze Nachricht ein:\n\n%1$s</string>
     <string name="sync_paired">Gekoppelt</string>
     <string name="sync_paired_since">Gekoppelt seit %1$s</string>
     <string name="sync_last">Zuletzt abgeglichen am %1$s</string>

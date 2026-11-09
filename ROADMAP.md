@@ -8,6 +8,7 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 
 - Colors: Ocean, Jade, Lavender or a color of your own besides Wine, or the colors of your wallpaper on Android 12 and newer, and a color for each relationship ([#43](https://github.com/DerDieDasLian/sinceus/issues/43))
 - Fewer fonts that clearly differ from each other
+- Pair your phones from afar by sharing a code, for example in a long-distance relationship
 
 ## Soon
 

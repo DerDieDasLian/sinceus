@@ -316,7 +316,7 @@
     </plurals>
     <string name="section_sync">Sync</string>
     <string name="sync_summary">Share moments between your phones</string>
-    <string name="sync_intro">Keep your moments the same on your phones, without a cloud or account. Pair both phones once with a QR code, then send a sync file, for example through a messenger. Only your paired phones can open it.</string>
+    <string name="sync_intro">Keep your moments the same on your phones, without a cloud or account. Pair both phones once with a QR code or a code you share, then send a sync file, for example through a messenger. Only your paired phones can open it.</string>
     <string name="sync_intro_paired">Send a sync file whenever you have added something. The other phone opens it directly in Since Us and adds what is new. Photos come along.</string>
     <string name="sync_who">Who uses this phone?</string>
     <string name="sync_show_qr">Show QR code</string>
@@ -325,6 +325,14 @@
     <string name="sync_scan_summary">Scan the code shown on the other phone</string>
     <string name="sync_scan_prompt">Scan the QR code from Since Us on the other phone</string>
     <string name="sync_qr_text">Open Sync on the other phone and tap "Scan QR code". Only show this code to the people you are pairing with.</string>
+    <string name="sync_paste_code">Paste code</string>
+    <string name="sync_paste_code_summary">If you are not together, for example in a long-distance relationship</string>
+    <string name="sync_paste_code_text">Paste the message with the pairing code that the other phone sent you. You can paste the whole message.</string>
+    <string name="sync_paste_code_field">Pairing code</string>
+    <string name="sync_pair">Pair</string>
+    <string name="sync_share_code">Share code</string>
+    <string name="sync_share_code_hint">Not together? Share the code instead, for example in a messenger. Anyone who has this code can open your sync files, so only send it in a private chat.</string>
+    <string name="sync_code_message">My pairing code for Since Us. Open Settings, Sync, Paste code in Since Us and paste this whole message:\n\n%1$s</string>
     <string name="sync_paired">Paired</string>
     <string name="sync_paired_since">Paired since %1$s</string>
     <string name="sync_last">Last synced on %1$s</string>
