@@ -30,6 +30,7 @@ class BackupTest {
     private val sample = LoveSettings.couple("Alex", "Sam", LocalDate.of(2025, 3, 15), LocalTime.of(20, 30)).copy(
         photoPath = "/data/x/files/photos/photo_1.jpg",
         presetIndex = 2,
+        colors = "jade",
         notificationsEnabled = false,
         notifyHour = 8,
         notifyMinute = 15,

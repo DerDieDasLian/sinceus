@@ -2,12 +2,12 @@
 
 What is planned for Since Us. This list is a plan, not a promise, and it changes when new ideas come in. Why some ideas won't be added is explained in [SCOPE.md](SCOPE.md).
 
-*Last updated: November 7, 2026*
+*Last updated: November 8, 2026*
 
 ## Next version
 
-- Clearer settings with a search field, special days on their own page and each relationship on its own page
-- Setup also asks about long distance, birthdays and holidays (all optional)
+- Colors: Ocean, Jade, Lavender or a color of your own besides Wine, or the colors of your wallpaper on Android 12 and newer, and a color for each relationship ([#43](https://github.com/DerDieDasLian/sinceus/issues/43))
+- Fewer fonts that clearly differ from each other
 
 ## Soon
 
@@ -21,6 +21,7 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 
 ## Recently done
 
+- 3.1.0: clearer settings with a search field, special days and each relationship on their own page, and setup also asks about long distance, birthdays and holidays
 - 3.0.0: a year in review around your anniversary, report a bug or suggest an idea right from the settings, new moments take their date from the first photo, easier on the battery and more reliable backups
 - 2.15.0: choose how you travel to each other on long distance ([#23](https://github.com/DerDieDasLian/sinceus/issues/23)) and Italian and Chinese
 - 2.14.0: moments with tags and places, a memory widget, a photo book as PDF, a title of your own for your first day, holidays you can turn off one by one, and the day you have been together for half of someone's life

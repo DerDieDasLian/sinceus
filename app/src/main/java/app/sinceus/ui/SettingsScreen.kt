@@ -230,6 +230,7 @@ fun SettingsScreen(
     onWidgetRelationship: (String) -> Unit = {},
     onDiscreet: (Boolean) -> Unit = {},
     onFont: (String) -> Unit = {},
+    onColors: (String) -> Unit = {},
     /** App-Sperre mit Fingerabdruck, Gesicht oder PIN */
     appLock: Boolean = false,
     onAppLock: (Boolean) -> Unit = {},
@@ -272,6 +273,11 @@ fun SettingsScreen(
                 editing = null
             }
         }
+        return
+    }
+    // Die Schriftauswahl ist eine eigene Seite, kein Fenster: so passt die lange Liste auf den ganzen Bildschirm
+    if (dialog == "font") {
+        FontPage(settings.font, onSelect = onFont, onClose = { dialog = null })
         return
     }
     val uri = androidx.compose.ui.platform.LocalUriHandler.current
@@ -780,7 +786,7 @@ fun SettingsScreen(
             dialog = null
             onLanguage(it)
         }
-        "font" -> FontDialog(settings.font, onSelect = onFont, onDismiss = { dialog = null })
+        "colors" -> ColorsDialog(settings.colors, onSelect = onColors, onDismiss = { dialog = null })
         "presets" -> PresetDialog(settings.presetIndex, onDismiss = { dialog = null }) {
             onPreset(it)
             dialog = null
@@ -847,7 +853,7 @@ private fun Credit() {
         Icon(
             Icons.Rounded.Favorite,
             contentDescription = stringResource(R.string.credit_heart),
-            tint = if (LocalPrideMonth.current) Color.White else Color(0xFFFF5C77),
+            tint = if (LocalPrideMonth.current) Color.White else LocalAccent.current.heart,
             modifier = Modifier
                 .padding(horizontal = 4.dp)
                 .size(14.dp)
@@ -902,6 +908,7 @@ private val SEARCH = listOf(
     SearchEntry(R.string.distance_mode, SettingsPage.Couple, words = listOf(R.string.travel_title, R.string.distance_zone, R.string.distance_meeting)),
     SearchEntry(R.string.relationship_before, SettingsPage.Couple, words = listOf(R.string.relationship_before_summary)),
     SearchEntry(R.string.relationship_start_title, SettingsPage.Couple),
+    SearchEntry(R.string.relationship_color, SettingsPage.Couple, words = listOf(R.string.colors_title)),
     SearchEntry(R.string.notify_special, SettingsPage.Notifications),
     SearchEntry(R.string.notify_time, SettingsPage.Notifications),
     SearchEntry(R.string.remind_before, SettingsPage.Notifications),
@@ -920,6 +927,7 @@ private val SEARCH = listOf(
     SearchEntry(R.string.adjust_crop, SettingsPage.Photo),
     SearchEntry(R.string.reset_photo, SettingsPage.Photo),
     SearchEntry(R.string.font_title, dialog = "font"),
+    SearchEntry(R.string.colors_title, dialog = "colors", words = listOf(R.string.colors_search)),
     SearchEntry(R.string.language, dialog = "language"),
     SearchEntry(R.string.moments_show, SettingsPage.Home),
     SearchEntry(R.string.live_show, SettingsPage.Home),
@@ -1011,7 +1019,14 @@ private fun Overview(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         },
-                        leadingContent = { Icon(e.page?.icon ?: if (e.dialog == "font") Icons.Rounded.TextFields else Icons.Rounded.Language, null) },
+                        leadingContent = {
+                            val icon = e.page?.icon ?: when (e.dialog) {
+                                "font" -> Icons.Rounded.TextFields
+                                "colors" -> Icons.Rounded.Palette
+                                else -> Icons.Rounded.Language
+                            }
+                            Icon(icon, null)
+                        },
                         trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         modifier = Modifier.clickable {
@@ -1100,7 +1115,7 @@ private fun Overview(
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 modifier = Modifier.clickable { onOpen(p) },
             )
-            // Schrift und Sprache direkt hier, ohne eigene Unterseite
+            // Schrift, Farben und Sprache direkt hier, ohne eigene Unterseite
             if (p == SettingsPage.Photo) {
                 Divider()
                 ListItem(
@@ -1109,6 +1124,14 @@ private fun Overview(
                     leadingContent = { Icon(Icons.Rounded.TextFields, null) },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     modifier = Modifier.clickable { onDialog("font") },
+                )
+                Divider()
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.colors_title)) },
+                    supportingContent = { Text(colorsLabel(settings.colors), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    leadingContent = { Icon(Icons.Rounded.Palette, null) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { onDialog("colors") },
                 )
             }
         }
