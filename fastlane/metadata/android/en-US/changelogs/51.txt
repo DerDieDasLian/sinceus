@@ -1,3 +1,4 @@
-• New colors: Settings > Colors now offers Ocean, Jade, Lavender and a color of your own besides Wine, and on Android 12 and newer the colors of your wallpaper.
-• Each relationship can have its own color, so you can tell them apart at a glance.
-• Fewer fonts that clearly differ, now on their own page instead of a small window. If you used a removed font, you get a similar one.
+• New colors under Settings > Colors: Ocean, Jade, Lavender, a color of your own and on Android 12 and newer the colors of your wallpaper.
+• Each relationship can have its own color.
+• Fewer fonts that clearly differ, on their own page. Removed fonts are replaced with similar ones.
+• Pair from afar: share the code, for example in a messenger, and paste it on the other phone.

@@ -1,3 +1,4 @@
-• Neue Farben: Unter Einstellungen > Farben gibt es neben Wein jetzt Ozean, Jade, Lavendel, eine eigene Farbe nach Wahl und ab Android 12 die Farben deines Hintergrundbilds.
-• Jede Beziehung kann eine eigene Farbe bekommen, so erkennt ihr sie auf einen Blick.
-• Weniger, dafür klar unterschiedliche Schriften, jetzt auf einer eigenen Seite statt in einem kleinen Fenster. Wer eine entfernte Schrift genutzt hat, bekommt eine ähnliche.
+• Neue Farben unter Einstellungen > Farben: Ozean, Jade, Lavendel, eine eigene Farbe und ab Android 12 die Farben deines Hintergrundbilds.
+• Jede Beziehung kann eine eigene Farbe bekommen.
+• Weniger, dafür klar unterschiedliche Schriften auf einer eigenen Seite. Entfernte Schriften werden durch ähnliche ersetzt.
+• Koppeln geht jetzt auch aus der Ferne: Code teilen, zum Beispiel per Messenger, und auf dem anderen Handy einfügen.

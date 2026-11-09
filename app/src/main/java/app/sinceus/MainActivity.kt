@@ -398,6 +398,14 @@ class MainActivity : ComponentActivity() {
                                     sync = SyncActions(
                                         onCreate = vm::createPairing,
                                         onScan = ::scanPairing,
+                                        onShareCode = vm::shareCode,
+                                        onPasteCode = { text, me ->
+                                            vm.acceptPairing(text, me).also { ok ->
+                                                if (ok) {
+                                                    Toast.makeText(this@MainActivity, getString(R.string.sync_paired_now), Toast.LENGTH_LONG).show()
+                                                }
+                                            }
+                                        },
                                         onMe = vm::setMe,
                                         onUnpair = vm::unpair,
                                         onSend = { vm.shareSync() },
