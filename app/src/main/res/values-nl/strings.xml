@@ -637,4 +637,24 @@
     <string name="recap_close">Sluiten</string>
     <string name="recap_page">%1$d van %2$d</string>
     <string name="recap_years">Jouw jaaroverzichten</string>
+    <string name="settings_days_summary">Feestdagen, leuke cijfers, confetti, jaaroverzicht</string>
+    <string name="settings_feedback_summary">Meld een fout, draag een idee aan, help met vertalen</string>
+    <string name="updates_auto_on">Controleert automatisch</string>
+    <string name="updates_auto_off">Alleen als jijzelf het controleert</string>
+    <string name="section_extras">Extra\'s</string>
+    <string name="days_birthday_hint">Verjaardagen worden voor elke persoon ingesteld onder ‘Mensen en relaties’.</string>
+    <string name="rel_section_general">Algemeen</string>
+    <string name="rel_section_before">Daarvoor</string>
+    <string name="unsaved_title">Wijzigingen opslaan?</string>
+    <string name="unsaved_text">Jij hebt iets aan deze relatie veranderd.</string>
+    <string name="unsaved_invalid">Jouw wijzigingen kunnen nog niet worden opgeslagen: ten minste twee personen zijn nodig en een eerdere fase moet vóór de startdatum beginnen.</string>
+    <string name="discard">Verwijderen</string>
+    <string name="ob_distance_title">Wonen jullie ver uit elkaar?</string>
+    <string name="settings_search">Zoekinstellingen</string>
+    <string name="settings_search_clear">Wis zoekresultaten</string>
+    <string name="settings_search_none">Niets gevonden. Probeer een ander woord.</string>
+    <string name="settings_group_privacy">Privacy en gegevens</string>
+    <string name="settings_group_help">Hulp en informatie</string>
+    <string name="settings_photo">Foto\'s en diavoorstelling</string>
+    <string name="settings_days">Speciale dagen</string>
 </resources>
