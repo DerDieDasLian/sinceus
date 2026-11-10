@@ -1,7 +1,6 @@
 package app.sinceus.ui
 
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -148,9 +147,10 @@ fun MomentEditorScreen(
     }
     fun pick() = picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
 
-    BackHandler(onBack = onClose)
+    val backPreview = rememberBackPreview(onBack = onClose)
 
     Scaffold(
+        modifier = Modifier.backPreview(backPreview),
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(if (existing == null) R.string.moment_new else R.string.moment_edit)) },

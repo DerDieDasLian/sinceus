@@ -1,6 +1,5 @@
 package app.sinceus.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -71,9 +70,10 @@ fun LicensesScreen(onBack: () -> Unit) {
         context.resources.openRawResource(R.raw.apache_license_2_0).bufferedReader().use { it.readText() }
     }
 
-    BackHandler(onBack = onBack)
+    val backPreview = rememberBackPreview(onBack = onBack)
 
     Scaffold(
+        modifier = Modifier.backPreview(backPreview),
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.licenses)) },

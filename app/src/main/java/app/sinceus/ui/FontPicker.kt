@@ -1,6 +1,5 @@
 package app.sinceus.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -42,12 +41,12 @@ import app.sinceus.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FontPage(selected: String, onSelect: (String) -> Unit, onClose: () -> Unit) {
-    BackHandler(onBack = onClose)
+    val backPreview = rememberBackPreview(onBack = onClose)
     val current = AppFonts.find(selected).id
     val fonts = AppFonts.all
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     Scaffold(
-        modifier = Modifier.nestedScroll(scroll.nestedScrollConnection),
+        modifier = Modifier.backPreview(backPreview).nestedScroll(scroll.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = { Text(stringResource(R.string.font_title)) },

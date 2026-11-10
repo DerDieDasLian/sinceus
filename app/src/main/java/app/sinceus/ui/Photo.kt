@@ -180,10 +180,12 @@ fun PhotoEditorScreen(
     var zoom by remember(settings.photoPath) { mutableFloatStateOf(settings.zoom) }
     var frame by remember { mutableStateOf(IntSize.Zero) }
     var image by remember { mutableStateOf(Size.Unspecified) }
+    val backPreview = rememberBackPreview(onBack = onCancel)
 
     Column(
         Modifier
             .fillMaxSize()
+            .backPreview(backPreview)
             .background(Color.Black),
     ) {
         Box(

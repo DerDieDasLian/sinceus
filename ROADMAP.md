@@ -2,12 +2,13 @@
 
 What is planned for Since Us. This list is a plan, not a promise, and it changes when new ideas come in. Why some ideas won't be added is explained in [SCOPE.md](SCOPE.md).
 
-*Last updated: November 8, 2026*
+*Last updated: November 9, 2026*
 
 ## Next version
 
 - Colors: Ocean, Jade, Lavender or a color of your own besides Wine, or the colors of your wallpaper on Android 12 and newer, and a color for each relationship ([#43](https://github.com/DerDieDasLian/sinceus/issues/43))
 - Fewer fonts that clearly differ from each other
+- A preview when you swipe back inside the app (predictive back)
 
 ## Soon
 
@@ -18,6 +19,7 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 ## Maybe, one day
 
 - Sync over the internet, but only with storage you control yourself (for example your own Nextcloud), never with a Since Us cloud
+- A countdown in the status bar (Live Updates on Android 16) when you are on your way to each other or a planned moment is coming up today
 
 ## Recently done
 

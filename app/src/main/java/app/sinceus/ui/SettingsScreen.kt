@@ -103,7 +103,6 @@ import androidx.compose.material.icons.rounded.Update
 import app.sinceus.data.Texts
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.Favorite
@@ -250,7 +249,8 @@ fun SettingsScreen(
     var editing by rememberSaveable { mutableStateOf(initialRelationship) }
     // Suchtext auf der Übersicht, bleibt beim Zurückkommen erhalten
     var query by rememberSaveable { mutableStateOf(initialQuery) }
-    BackHandler(enabled = page != null) { page = null }
+    // Zurück schließt erst die Unterseite, dann die Einstellungen
+    val backPreview = rememberBackPreview(stays = page != null) { if (page != null) page = null else onBack() }
     val context = LocalContext.current
 
     val editingId = editing
@@ -284,7 +284,7 @@ fun SettingsScreen(
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scroll.nestedScrollConnection),
+        modifier = Modifier.backPreview(backPreview).nestedScroll(scroll.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = { Text(stringResource(page?.title ?: R.string.settings)) },
