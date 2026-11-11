@@ -346,4 +346,21 @@
     <string name="sync_show_qr_again_summary">Vuelve a mostrar el código QR, por ejemplo, para un teléfono nuevo</string>
     <string name="sync_unpair">Desemparejar</string>
     <string name="sync_unpair_question">Desemparejar?</string>
+    <string name="moment_date_from_photo">Fecha extraída de la foto</string>
+    <string name="sync_intro">Mantened vuestros recuerdos sincronizados en ambos teléfonos, sin necesidad de una nube ni de una cuenta. Vinculad los dos teléfonos una sola vez mediante un código QR y después enviad un archivo de sincronización, por ejemplo, a través de una aplicación de mensajería. Solo los teléfonos vinculados pueden abrirlo.</string>
+    <string name="sync_intro_paired">Enviad un archivo de sincronización cada vez que añadáis algo. El otro teléfono lo abre directamente en Since Us e incorpora las novedades. Las fotos también se incluyen.</string>
+    <string name="sync_paired_since">Vinculados desde %1$s</string>
+    <string name="sync_last">Última sincronización: %1$s</string>
+    <string name="sync_open_summary">Si al tocar el archivo no se ha abierto Since Us</string>
+    <string name="sync_unpair_text">Este teléfono ya no podrá abrir archivos de sincronización de los otros teléfonos. Tus datos se conservarán. Puedes volver a vincularlo cuando quieras.</string>
+    <string name="sync_not_paired">Vinculad primero vuestros teléfonos: Ajustes → Sincronización.</string>
+    <string name="sync_failed">No se ha podido sincronizar el archivo. Puede que pertenezca a otra vinculación o esté dañado.</string>
+    <string name="sync_done">Sincronizados: %1$d nuevos, %2$d modificados, %3$d eliminados.</string>
+    <string name="moment_added_by">Añadido por %1$s</string>
+    <string name="birthday">Cumpleaños</string>
+    <string name="birthday_optional">Cumpleaños (opcional)</string>
+    <string name="birthday_remove">Eliminar cumpleaños</string>
+    <string name="birthday_title">Cumpleaños de %1$s</string>
+    <string name="msg_birthday">Hoy es el cumpleaños de %1$s.</string>
+    <string name="moments_search">Buscar recuerdos</string>
 </resources>
