@@ -1,3 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    </resources>
+    <string name="widget_days_name">Столькі дзён мы разам</string>
+    <string name="widget_days_description">Паказвае, колькі дзён вы ўжо разам</string>
+    <string name="widget_photo_name">Картка кахання</string>
+    <string name="widget_photo_description">Вашы імёны, вашы дні разам і наступны асаблівы дзень</string>
+    <string name="channel_name">Асаблівыя дні</string>
+    <string name="channel_description">Круглыя даты (месяцы і гады)</string>
+    <string name="settings">Налады</string>
+    <string name="back">Назад</string>
+    <string name="names">Імёны</string>
+    <string name="together_since_date">Разам з</string>
+    <string name="start_time_optional">Час (неабавязкова)</string>
+    <string name="not_set">Не задана</string>
+    <string name="section_photo">Знешні выгляд</string>
+    <string name="pick_own_photo">Выберыце сваё фота</string>
+</resources>
