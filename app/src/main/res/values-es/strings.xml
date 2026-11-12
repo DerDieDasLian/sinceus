@@ -346,4 +346,137 @@
     <string name="sync_show_qr_again_summary">Vuelve a mostrar el código QR, por ejemplo, para un teléfono nuevo</string>
     <string name="sync_unpair">Desemparejar</string>
     <string name="sync_unpair_question">Desemparejar?</string>
+    <string name="moment_date_from_photo">Fecha extraída de la foto</string>
+    <string name="sync_intro">Mantened vuestros recuerdos sincronizados en ambos teléfonos, sin necesidad de una nube ni de una cuenta. Vinculad los dos teléfonos una sola vez mediante un código QR y después enviad un archivo de sincronización, por ejemplo, a través de una aplicación de mensajería. Solo los teléfonos vinculados pueden abrirlo.</string>
+    <string name="sync_intro_paired">Enviad un archivo de sincronización cada vez que añadáis algo. El otro teléfono lo abre directamente en Since Us e incorpora las novedades. Las fotos también se incluyen.</string>
+    <string name="sync_paired_since">Vinculados desde %1$s</string>
+    <string name="sync_last">Última sincronización: %1$s</string>
+    <string name="sync_open_summary">Si al tocar el archivo no se ha abierto Since Us</string>
+    <string name="sync_unpair_text">Este teléfono ya no podrá abrir archivos de sincronización de los otros teléfonos. Tus datos se conservarán. Puedes volver a vincularlo cuando quieras.</string>
+    <string name="sync_not_paired">Vinculad primero vuestros teléfonos: Ajustes → Sincronización.</string>
+    <string name="sync_failed">No se ha podido sincronizar el archivo. Puede que pertenezca a otra vinculación o esté dañado.</string>
+    <string name="sync_done">Sincronizados: %1$d nuevos, %2$d modificados, %3$d eliminados.</string>
+    <string name="moment_added_by">Añadido por %1$s</string>
+    <string name="birthday">Cumpleaños</string>
+    <string name="birthday_optional">Cumpleaños (opcional)</string>
+    <string name="birthday_remove">Eliminar cumpleaños</string>
+    <string name="birthday_title">Cumpleaños de %1$s</string>
+    <string name="msg_birthday">Hoy es el cumpleaños de %1$s.</string>
+    <string name="moments_search">Buscar recuerdos</string>
+    <string name="moments_search_clear">Borrar búsqueda</string>
+    <string name="moments_no_results">No se han encontrado recuerdos</string>
+    <string name="shortcut_moment">Nuevo recuerdo</string>
+    <string name="shortcut_moment_long">Añadir un nuevo recuerdo</string>
+    <string name="shortcut_live">En directo</string>
+    <string name="shortcut_live_long">Abrir el contador en directo</string>
+    <string name="widget_preview_label">días juntos</string>
+    <string name="widget_preview_next">Próximo: 6 meses</string>
+    <string name="facts_show">Cifras curiosas</string>
+    <string name="facts_show_summary">Fines de semana, lunas llenas y mucho más en el resumen</string>
+    <string name="celebrate_show">Celebración</string>
+    <string name="celebrate_show_summary">Un poco de confeti en los aniversarios y en los días señalados</string>
+    <string name="facts_title">¿Sabías que...?</string>
+    <string name="facts_next">Mostrar la siguiente cifra</string>
+    <string name="facts_previous">Mostrar la cifra anterior</string>
+    <string name="holidays_title">Festivos en las cifras</string>
+    <string name="holidays_text">Solo se cuentan los festivos que celebráis.</string>
+    <string name="holidays_none">Ninguno</string>
+    <string name="holiday_valentines">San Valentín</string>
+    <string name="holiday_halloween">Halloween</string>
+    <string name="holiday_christmas">Navidad</string>
+    <string name="holiday_new_year">Año Nuevo</string>
+    <string name="fact_life_share">El %1$s%% de la vida de %2$s</string>
+    <string name="fact_life_share_sub">que habéis pasado juntos</string>
+    <string name="half_life_title">La mitad de la vida de %1$s juntos</string>
+    <string name="msg_half_life">Hoy cumplís la mitad de la vida de %1$s juntos.</string>
+    <string name="fact_weekends_sub">que habéis pasado juntos</string>
+    <string name="fact_full_moons_sub">desde que empezasteis vuestra relación</string>
+    <string name="fact_christmas_sub">que habéis celebrado juntos</string>
+    <string name="fact_new_years_sub">que habéis celebrado juntos</string>
+    <string name="fact_seasons_sub">que habéis vivido juntos</string>
+    <string name="fact_heartbeats_sub">de cada uno de vuestros corazones desde que empezasteis vuestra relación</string>
+    <string name="fact_valentines_sub">que habéis pasado juntos</string>
+    <string name="fact_pride_months_sub">que habéis celebrado juntos</string>
+    <string name="fact_halloweens_sub">que habéis pasado juntos</string>
+    <string name="fact_friday_13th_sub">que habéis sobrevivido juntos</string>
+    <string name="fact_earth_km_sub">vueltas que la Tierra ha dado alrededor del Sol mientras estabais juntos</string>
+    <string name="fact_breaths_sub">que ha dado cada uno desde que empezasteis vuestra relación</string>
+    <plurals name="fact_weekends">
+        <item quantity="one">%s fin de semana</item>
+        <item quantity="many">%s fines de semana</item>
+        <item quantity="other">%s fines de semana</item>
+    </plurals>
+    <plurals name="fact_full_moons">
+        <item quantity="one">%s luna llena</item>
+        <item quantity="many">%s lunas llenas</item>
+        <item quantity="other">%s lunas llenas</item>
+    </plurals>
+    <plurals name="fact_valentines">
+        <item quantity="one">%s San Valentín</item>
+        <item quantity="many">%s Días de San Valentín</item>
+        <item quantity="other">%s Días de San Valentín</item>
+    </plurals>
+    <plurals name="fact_pride_months">
+        <item quantity="one">%s Mes del Orgullo</item>
+        <item quantity="many">%s Meses del Orgullo</item>
+        <item quantity="other">%s Meses del Orgullo</item>
+    </plurals>
+    <plurals name="fact_halloweens">
+        <item quantity="one">%s Halloween</item>
+        <item quantity="many">%s Días de Halloween</item>
+        <item quantity="other">%s Días de Halloween</item>
+    </plurals>
+    <plurals name="fact_friday_13th">
+        <item quantity="one">%s Viernes 13</item>
+        <item quantity="many">%s Viernes 13</item>
+        <item quantity="other">%s Viernes 13</item>
+    </plurals>
+    <plurals name="fact_earth_km">
+        <item quantity="one">Alrededor de %s kilómetro</item>
+        <item quantity="many">Alrededor de %s kilómetros</item>
+        <item quantity="other">Alrededor de %s kilómetros</item>
+    </plurals>
+    <plurals name="fact_breaths">
+        <item quantity="one">Aproximadamente %s respiración</item>
+        <item quantity="many">Aproximadamente %s respiraciones</item>
+        <item quantity="other">Aproximadamente %s respiraciones</item>
+    </plurals>
+    <plurals name="fact_christmas">
+        <item quantity="one">%s Navidad</item>
+        <item quantity="many">%s Navidades</item>
+        <item quantity="other">%s Navidades</item>
+    </plurals>
+    <plurals name="fact_new_years">
+        <item quantity="one">%s Año Nuevo</item>
+        <item quantity="many">%s Días de Año Nuevo</item>
+        <item quantity="other">%s Días de Año Nuevo</item>
+    </plurals>
+    <plurals name="fact_seasons">
+        <item quantity="one">%s cambio de estación</item>
+        <item quantity="many">%s cambios de estación</item>
+        <item quantity="other">%s cambios de estación</item>
+    </plurals>
+    <plurals name="fact_heartbeats">
+        <item quantity="one">Aproximadamente %s latido del corazón</item>
+        <item quantity="many">Aproximadamente %s latidos del corazón</item>
+        <item quantity="other">Aproximadamente %s latidos del corazón</item>
+    </plurals>
+    <string name="distance_mode">A distancia</string>
+    <string name="distance_mode_summary">Cuenta atrás para vuestro próximo encuentro y la hora en el otro lugar</string>
+    <string name="travel_title">Cómo viajáis para veros</string>
+    <string name="travel_plane">Avión</string>
+    <string name="travel_train">Tren</string>
+    <string name="travel_car">Coche</string>
+    <string name="travel_bus">Autobús</string>
+    <string name="travel_motorcycle">Moto</string>
+    <string name="travel_bike">Bici</string>
+    <string name="travel_boat">Barco</string>
+    <string name="travel_luggage">Equipaje</string>
+    <string name="distance_zone">¿Dónde está la otra persona?</string>
+    <string name="distance_zone_none">La misma hora que aquí</string>
+    <string name="distance_zone_search">Buscar una ciudad</string>
+    <string name="distance_meeting">Próximo encuentro</string>
+    <string name="distance_no_meeting">Añade vuestro próximo encuentro en los ajustes, en «Personas y relaciones»</string>
+    <string name="distance_today">Os veis hoy</string>
+    <string name="distance_time">Ahora son las %2$s en %1$s</string>
 </resources>
