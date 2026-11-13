@@ -195,6 +195,8 @@
     <string name="moment_cover_hint">The first photo is the cover. Tap another photo to make it the cover.</string>
     <string name="moment_make_cover">Make cover photo</string>
     <string name="moment_photo_position">Photo %1$d of %2$d</string>
+    <string name="moment_crop_pick">Tap a photo to choose the part that is shown. It is used everywhere, also in the photo book.</string>
+    <string name="photo_show_full">Show photo in full size</string>
     <string name="moment_remove_photo">Remove photo</string>
     <string name="moment_remind">Yearly reminder</string>
     <string name="moment_remind_summary">Get a notification on the anniversary</string>

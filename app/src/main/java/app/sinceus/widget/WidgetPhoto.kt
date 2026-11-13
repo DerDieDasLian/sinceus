@@ -12,6 +12,7 @@ import android.graphics.Shader
 import android.os.Build
 import androidx.compose.ui.graphics.toArgb
 import app.sinceus.data.LoveSettings
+import app.sinceus.data.PhotoFrame
 import app.sinceus.ui.Presets
 import java.io.File
 import kotlin.math.max
@@ -40,9 +41,16 @@ object WidgetPhoto {
         return crop(source, w, h, s.focusX, s.focusY, s.zoom)
     }
 
-    /** Beliebiges Foto (z. B. eines Moments) mittig zugeschnitten auf [w] x [h], null = nicht lesbar */
-    fun photo(path: String, w: Int, h: Int, focusY: Float = 0f): Bitmap? =
-        decode(File(path), max(w, h))?.let { crop(it, w, h, 0f, focusY, 1f) }
+    /**
+     * Beliebiges Foto (z. B. eines Moments) zugeschnitten auf [w] x [h], null = nicht lesbar.
+     * Mit [frame] gilt der in der App gewählte Ausschnitt, sonst mittig mit [focusY].
+     */
+    fun photo(path: String, w: Int, h: Int, focusY: Float = 0f, frame: PhotoFrame? = null): Bitmap? {
+        val f = frame ?: PhotoFrame(0f, focusY, 1f)
+        // Beim Zoomen braucht es mehr Bildpunkte, sonst wird der Ausschnitt unscharf
+        val side = (max(w, h) * f.zoom).roundToInt()
+        return decode(File(path), side)?.let { crop(it, w, h, f.x, f.y, f.zoom) }
+    }
 
     private fun decode(file: File, targetSide: Int): Bitmap? {
         if (Build.VERSION.SDK_INT >= 28) {

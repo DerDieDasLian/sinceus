@@ -194,6 +194,8 @@
     <string name="moment_cover_hint">Das erste Foto ist das Titelbild. Tippe auf ein anderes Foto, um es zum Titelbild zu machen.</string>
     <string name="moment_make_cover">Zum Titelbild machen</string>
     <string name="moment_photo_position">Foto %1$d von %2$d</string>
+    <string name="moment_crop_pick">Tippe auf ein Foto, um seinen Ausschnitt zu wählen. Er gilt überall, auch im Fotobuch.</string>
+    <string name="photo_show_full">Foto in voller Größe ansehen</string>
     <string name="moment_remove_photo">Foto entfernen</string>
     <string name="moment_remind">Jährlich erinnern</string>
     <string name="moment_remind_summary">Mitteilung am Jahrestag</string>

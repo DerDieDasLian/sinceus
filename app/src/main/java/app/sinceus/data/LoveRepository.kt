@@ -381,16 +381,21 @@ class LoveRepository(private val context: Context) {
         val old = current().moments.firstOrNull { it.id == moment.id }
         val oldPhotos = old?.photos.orEmpty()
         val stamp = System.currentTimeMillis()
-        val kept = withContext(Dispatchers.IO) {
-            photos.mapIndexedNotNull { i, item ->
-                if (item in oldPhotos) return@mapIndexedNotNull item
+        // Ausschnitte hängen am Eintrag aus dem Editor (Pfad oder content-Uri) und wandern mit
+        val placed = withContext(Dispatchers.IO) {
+            photos.distinct().mapIndexedNotNull { i, item ->
+                if (item in oldPhotos) return@mapIndexedNotNull item to item
                 val uri = Uri.parse(item).takeIf { it.scheme == "content" } ?: return@mapIndexedNotNull null
                 val file = File(momentDir(), "${moment.id}_${stamp}_$i.jpg")
-                if (PhotoShrink.copy(context, uri, file)) file.absolutePath else null
-            }.distinct()
+                if (PhotoShrink.copy(context, uri, file)) item to file.absolutePath else null
+            }
         }
+        val kept = placed.map { it.second }
         val saved = moment.copy(
             photos = kept,
+            frames = placed.mapNotNull { (item, path) ->
+                moment.frames[item]?.clean()?.takeIf { it != PhotoFrame.CENTER }?.let { path to it }
+            }.toMap(),
             updatedAt = System.currentTimeMillis(),
             addedBy = old?.addedBy ?: moment.addedBy ?: PairingStore.load(context)?.me,
         )

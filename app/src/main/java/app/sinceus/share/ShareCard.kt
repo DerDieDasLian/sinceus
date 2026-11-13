@@ -21,6 +21,7 @@ import app.sinceus.data.DEFAULT_FOCUS_Y
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.Moment
 import app.sinceus.data.Names
+import app.sinceus.data.PhotoFrame
 import app.sinceus.data.Texts
 import app.sinceus.data.YearReview
 import app.sinceus.data.formatNumber
@@ -276,7 +277,7 @@ object ShareCard {
     @Synchronized
     fun renderMoment(context: Context, s: LoveSettings, m: Moment, today: LocalDate): Bitmap {
         useFont(context, s)
-        val photo = m.photoPath?.let { WidgetPhoto.photo(it, WIDTH, HEIGHT, DEFAULT_FOCUS_Y / 2) }
+        val photo = m.photoPath?.let { WidgetPhoto.photo(it, WIDTH, HEIGHT, DEFAULT_FOCUS_Y / 2, m.frameOf(it)) }
         val (out, canvas) = canvasWith(context, s, photo)
         val w = WIDTH.toFloat()
         val maxWidth = w - 2 * MARGIN
@@ -313,7 +314,7 @@ object ShareCard {
     @Synchronized
     fun renderYear(context: Context, s: LoveSettings, review: YearReview): Bitmap {
         useFont(context, s)
-        val photos = review.moments.mapNotNull { it.photoPath }.take(4)
+        val photos = review.moments.mapNotNull { m -> m.photoPath?.let { it to m.frameOf(it) } }.take(4)
         val collage = if (photos.isEmpty()) null else collage(photos)
         val (out, canvas) = canvasWith(context, s, collage)
         val w = WIDTH.toFloat()
@@ -339,7 +340,7 @@ object ShareCard {
     }
 
     /** Ein bis vier Fotos als Raster über das ganze Bild */
-    private fun collage(paths: List<String>): Bitmap? {
+    private fun collage(paths: List<Pair<String, PhotoFrame?>>): Bitmap? {
         val out = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(out)
         val cells = when (paths.size) {
@@ -352,8 +353,8 @@ object ShareCard {
             )
         }
         var drawn = 0
-        paths.zip(cells).forEach { (path, cell) ->
-            val bmp = WidgetPhoto.photo(path, cell.width(), cell.height()) ?: return@forEach
+        paths.zip(cells).forEach { (photo, cell) ->
+            val bmp = WidgetPhoto.photo(photo.first, cell.width(), cell.height(), frame = photo.second) ?: return@forEach
             canvas.drawBitmap(bmp, null, cell, Paint(Paint.FILTER_BITMAP_FLAG))
             drawn++
         }

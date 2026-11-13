@@ -52,12 +52,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import app.sinceus.R
 import app.sinceus.data.Moment
+import app.sinceus.data.PhotoFrame
+import androidx.compose.runtime.remember
+import androidx.compose.material.icons.rounded.OpenWith
 import app.sinceus.data.MomentTags
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.rounded.Add
@@ -66,7 +68,6 @@ import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.ui.text.input.ImeAction
 import app.sinceus.data.Texts
-import coil3.compose.AsyncImage
 import java.io.File
 import java.time.LocalDate
 import java.util.UUID
@@ -124,6 +125,10 @@ fun MomentEditorScreen(
     }
     // Bisherige Fotos als Pfad, neu gewählte als content-Uri
     var photos by rememberSaveable { mutableStateOf(ArrayList(existing?.photos.orEmpty())) }
+    // Gewählte Bildausschnitte je Foto (Issue #49), als Text, damit sie Drehen überstehen
+    var framesText by rememberSaveable { mutableStateOf(PhotoFrame.encodeMap(existing?.frames.orEmpty())) }
+    val frames = remember(framesText) { PhotoFrame.decodeMap(framesText) }
+    var framing by rememberSaveable { mutableStateOf<Int?>(null) }
     var dateDialog by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -240,20 +245,40 @@ fun MomentEditorScreen(
             )
 
             if (photos.isNotEmpty()) {
-                AsyncImage(
-                    model = photoModel(photos.first()),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
+                val adjust = stringResource(R.string.adjust_crop)
+                Box(
+                    Modifier
                         .fillMaxWidth()
-                        .aspectRatio(16f / 10f)
-                        .clip(RoundedCornerShape(20.dp)),
-                )
+                        .aspectRatio(MOMENT_PHOTO_RATIO)
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable(onClickLabel = adjust) { framing = 0 },
+                ) {
+                    FramedPhoto(photoModel(photos.first()), frames[photos.first()], Modifier.fillMaxSize())
+                    // Hinweis unten rechts: hier lässt sich der Ausschnitt verschieben
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(10.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(Color.Black.copy(alpha = 0.5f))
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                    ) {
+                        Icon(Icons.Rounded.OpenWith, null, tint = Color.White, modifier = Modifier.size(16.dp))
+                        Text(
+                            adjust,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 6.dp),
+                        )
+                    }
+                }
                 if (photos.size > 1) {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         itemsIndexed(photos, key = { _, item -> item }) { index, item ->
                             PhotoThumb(
                                 model = photoModel(item),
+                                frame = frames[item],
                                 isCover = index == 0,
                                 position = stringResource(R.string.moment_photo_position, index + 1, photos.size),
                                 onClick = { photos = ArrayList(listOf(item) + (photos - item)) },
@@ -327,6 +352,7 @@ fun MomentEditorScreen(
                         // Ein angefangenes Schlagwort ohne Tippen auf Hinzufügen nicht verlieren
                         tags = MomentTags.clean(tags + newTag),
                         place = place.trim(),
+                        frames = frames.filterKeys { it in photos },
                     )
                     onSave(moment, photos)
                 },
@@ -338,6 +364,19 @@ fun MomentEditorScreen(
         }
     }
 
+    framing?.let { start ->
+        PhotoFrameEditor(
+            photos = photos,
+            models = photos.map(::photoModel),
+            frames = frames,
+            start = start,
+            onCancel = { framing = null },
+            onDone = {
+                framesText = PhotoFrame.encodeMap(it)
+                framing = null
+            },
+        )
+    }
     if (dateDialog) {
         DateDialog(
             LocalDate.ofEpochDay(epochDay),
@@ -375,7 +414,7 @@ private fun photoModel(item: String): Any = if (item.startsWith("/")) File(item)
 
 /** Vorschaubild in der Fotoleiste: Tippen macht es zum Titelbild, das Kreuz entfernt es */
 @Composable
-private fun PhotoThumb(model: Any, isCover: Boolean, position: String, onClick: () -> Unit, onRemove: () -> Unit) {
+private fun PhotoThumb(model: Any, frame: PhotoFrame?, isCover: Boolean, position: String, onClick: () -> Unit, onRemove: () -> Unit) {
     val makeCover = stringResource(R.string.moment_make_cover)
     Box(
         Modifier
@@ -387,12 +426,7 @@ private fun PhotoThumb(model: Any, isCover: Boolean, position: String, onClick: 
             .semantics { contentDescription = position }
             .clickable(enabled = !isCover, onClickLabel = makeCover, onClick = onClick),
     ) {
-        AsyncImage(
-            model = model,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-        )
+        FramedPhoto(model, frame, Modifier.fillMaxSize())
         IconButton(
             onClick = onRemove,
             modifier = Modifier

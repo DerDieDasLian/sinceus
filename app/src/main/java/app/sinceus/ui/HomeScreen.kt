@@ -15,10 +15,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import app.sinceus.data.YearRecapMath
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.aspectRatio
-import coil3.compose.AsyncImage
 import java.io.File
 import app.sinceus.data.YearReview
 import app.sinceus.data.YearReviewMath
@@ -582,7 +580,7 @@ internal fun TodayBanner(lines: List<String>) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun YearReviewCard(review: YearReview, withMoments: Boolean, onOpen: () -> Unit, onShare: () -> Unit) {
-    val photos = review.moments.mapNotNull { it.photoPath }.take(3)
+    val photos = review.moments.mapNotNull { m -> m.photoPath?.let { it to m.frameOf(it) } }.take(3)
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
@@ -610,11 +608,10 @@ private fun YearReviewCard(review: YearReview, withMoments: Boolean, onOpen: () 
                         .padding(top = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    photos.forEach { path ->
-                        AsyncImage(
+                    photos.forEach { (path, frame) ->
+                        FramedPhoto(
                             model = File(path),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
+                            frame = frame,
                             modifier = Modifier
                                 .weight(1f)
                                 .aspectRatio(1f)
