@@ -1,4 +1,3 @@
 • Neue Farben: Unter Einstellungen > Farben gibt es neben Wein jetzt Ozean, Jade, Lavendel, eine eigene Farbe nach Wahl und ab Android 12 die Farben deines Hintergrundbilds.
 • Jede Beziehung kann eine eigene Farbe bekommen, so erkennt ihr sie auf einen Blick.
 • Weniger, dafür klar unterschiedliche Schriften, jetzt auf einer eigenen Seite statt in einem kleinen Fenster. Wer eine entfernte Schrift genutzt hat, bekommt eine ähnliche.
-• Vorschau beim Zurückwischen jetzt auch in der App.
