@@ -136,7 +136,7 @@ jobs:
           sha256sum "SinceUs-${{ steps.version.outputs.tag }}.apk" SinceUs.apk > SHA256SUMS.txt
           # Für Google Play: Bundle und fertige Versionshinweise (so wie die Play Console sie erwartet) in einem Ordner
           mkdir play
-          cp app/build/outputs/bundle/playRelease/app-play-release.aab "play/SinceUs-${{ steps.version.outputs.tag }}.aab"
+          cp app/build/outputs/bundle/playRelease/app-play-release.aab play/
           for lang in de-DE en-US; do
             echo "<$lang>"
             cat "fastlane/metadata/android/$lang/changelogs/${{ steps.version.outputs.code }}.txt"
