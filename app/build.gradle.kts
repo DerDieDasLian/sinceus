@@ -40,14 +40,18 @@ android {
         create("play") {
             dimension = "distribution"
             buildConfigField("boolean", "UPDATE_CHECK", "false")
+            // Google Play erlaubt keine Links zu Zahlungen außerhalb von Play
+            buildConfigField("boolean", "SUPPORT_LINK", "false")
         }
         create("github") {
             dimension = "distribution"
             buildConfigField("boolean", "UPDATE_CHECK", "true")
+            buildConfigField("boolean", "SUPPORT_LINK", "true")
         }
         create("fdroid") {
             dimension = "distribution"
             buildConfigField("boolean", "UPDATE_CHECK", "false")
+            buildConfigField("boolean", "SUPPORT_LINK", "true")
         }
     }
 
