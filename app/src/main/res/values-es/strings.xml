@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="widget_days_name">Días juntos</string>
-    <string name="widget_days_description">Muestra cuántos días habéis estado juntos</string>
+    <string name="widget_days_description">Muestra cuántos días han estado juntos</string>
     <string name="widget_photo_name">Tarjeta de amor</string>
-    <string name="widget_photo_description">Vuestros nombres, vuestros días juntos y el próximo día especial</string>
+    <string name="widget_photo_description">Sus nombres, sus días juntos y el próximo día especial</string>
     <string name="channel_name">Días especiales</string>
     <string name="channel_description">Aniversarios y fechas especiales, mensuales y anuales</string>
     <string name="settings">Ajustes</string>
@@ -33,7 +33,7 @@
     <string name="delete_all_question">¿Eliminar todos los datos?</string>
     <string name="delete_all_text">Se eliminarán de este dispositivo los nombres, las fechas, las fotos, los recuerdos y todos los ajustes, y la configuración se iniciará de nuevo. Esta acción no se puede deshacer.</string>
     <string name="ok">Aceptar</string>
-    <string name="your_names">Vuestros nombres</string>
+    <string name="your_names">Sus nombres</string>
     <string name="save">Guardar</string>
     <string name="cancel">Cancelar</string>
     <string name="remove">Quitar</string>
@@ -41,7 +41,7 @@
     <string name="done">Listo</string>
     <string name="next">Siguiente</string>
     <string name="skip">Omitir</string>
-    <string name="lets_go">Vamos allá!</string>
+    <string name="lets_go">¡Vamos allá!</string>
     <string name="together_since_title">Juntos desde</string>
     <string name="notify_time_title">Hora de la notificación</string>
     <string name="backgrounds">Fondos</string>
@@ -51,14 +51,14 @@
     <string name="preset_night">Cielo nocturno</string>
     <string name="preset_rose">Rosado</string>
     <string name="preset_ocean">Océano</string>
-    <string name="ob_names_title">¿Cómo os llamáis?</string>
-    <string name="ob_names_sub">Vuestros nombres aparecen en grande sobre vuestra foto.</string>
-    <string name="ob_date_title">¿Cuándo empezasteis vuestra relación?</string>
+    <string name="ob_names_title">¿Cómo se llaman ustedes?</string>
+    <string name="ob_names_sub">Sus nombres aparecen en grande sobre su foto.</string>
+    <string name="ob_date_title">¿Cuándo empezaron su relación?</string>
     <string name="ob_date_sub">La aplicación contará el tiempo a partir de este día.</string>
     <string name="add_time_optional">Añadir una hora (opcional)</string>
     <string name="time_label">Hora: %1$s</string>
-    <string name="ob_photo_title">Vuestra foto</string>
-    <string name="ob_photo_sub">Elige una foto en la que aparezcáis juntos. Después podrás ajustar el encuadre.</string>
+    <string name="ob_photo_title">Su foto</string>
+    <string name="ob_photo_sub">Elige una foto en la que aparezcan juntos. Después podrás ajustar el encuadre.</string>
     <string name="pick_photo">Elegir foto</string>
     <string name="presets_short">Fondos</string>
     <string name="adjust">Ajustar</string>
@@ -67,7 +67,7 @@
     <string name="notifications_on">Las notificaciones están activadas</string>
     <string name="allow_notifications">Permitir notificaciones</string>
     <string name="welcome">Te damos la bienvenida</string>
-    <string name="welcome_sub">Cuenta el tiempo que lleváis juntos y te recuerda todas las fechas especiales.</string>
+    <string name="welcome_sub">Cuenta el tiempo que llevan juntos y te recuerda todas las fechas especiales.</string>
     <string name="tab_overview">Resumen</string>
     <string name="tab_live">Activo</string>
     <string name="together_for">Juntos desde hace</string>
@@ -85,20 +85,20 @@
     <string name="live_together">Juntos desde hace</string>
     <string name="live_until">Faltan</string>
     <string name="share">Compartir</string>
-    <string name="share_text">%1$s lleváis juntos %2$s</string>
+    <string name="share_text">%1$s llevan juntos %2$s</string>
     <string name="live_hint">Toca un valor para ver el total.</string>
-    <string name="your_photo">Vuestra foto</string>
+    <string name="your_photo">Su foto</string>
     <string name="editor_hint">Arrastra con un dedo y pellizca con dos para ampliar o reducir.</string>
     <string name="other_photo">Otra foto</string>
     <string name="reset">Restablecer</string>
     <string name="widget_manual_hint">Mantén pulsada la pantalla de inicio, abre Widgets y selecciona Since Us</string>
-    <string name="test_notification">Así se mostrarán las notificaciones de vuestras fechas especiales.</string>
+    <string name="test_notification">Así se mostrarán las notificaciones de sus fechas especiales.</string>
     <string name="widget_days_until">días que faltan</string>
     <string name="widget_next">Siguiente: %1$s</string>
     <string name="anniversary_title">Aniversario de %1$s años</string>
-    <string name="msg_anniversary">¡Hoy celebráis vuestro %1$s! Por muchos más años juntos (%2$s).</string>
-    <string name="msg_exact">Hoy cumplís exactamente %1$s juntos.</string>
-    <string name="msg_together">Hoy lleváis juntos %1$s.</string>
+    <string name="msg_anniversary">¡Hoy celebran su %1$s! Por muchos más años juntos (%2$s).</string>
+    <string name="msg_exact">Hoy cumplen exactamente %1$s juntos.</string>
+    <string name="msg_together">Hoy llevan juntos %1$s.</string>
     <string name="and_word">" y "</string>
     <string name="update_tap_to_open">Toca para instalar</string>
     <string name="update_downloading">Descargando actualización…</string>
@@ -183,9 +183,9 @@
         <item quantity="other">días juntos</item>
     </plurals>
     <string name="tab_moments">Recuerdos</string>
-    <string name="moments_title">Vuestros recuerdos</string>
+    <string name="moments_title">Sus recuerdos</string>
     <string name="moment_add">Añadir un recuerdo</string>
-    <string name="moments_empty_title">Conservad vuestros momentos especiales</string>
+    <string name="moments_empty_title">Conserven sus momentos especiales</string>
     <string name="moments_empty_sub">Primera cita, primer beso, primer viaje: guardad los momentos que son importantes para vosotros. Toca una sugerencia para empezar.</string>
     <string name="suggest_met">Os conocisteis</string>
     <string name="suggest_first_date">Primera cita</string>
@@ -551,4 +551,9 @@
     <string name="colors_custom">Color personalizado</string>
     <string name="colors_custom_summary">Elige cualquier tono</string>
     <string name="colors_custom_hue">Tono</string>
+    <string name="relationship_color_auto">Automático</string>
+    <string name="relationship_color_number">Color %1$d</string>
+    <string name="font_group_standard">Clásico</string>
+    <string name="relationship_color">Color de la relación</string>
+    <string name="font_group_serif">Elegante</string>
 </resources>
