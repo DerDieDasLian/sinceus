@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Einstellungen für die Code-Prüfung (Lint) im Build -->
+<lint>
+    <!-- Übersetzungen kommen nach und nach über Weblate, fehlende Texte erscheinen auf Englisch -->
+    <issue id="MissingTranslation" severity="ignore" />
+    <issue id="MissingQuantity" severity="ignore" />
+    <issue id="ExtraTranslation" severity="warning" />
+</lint>
