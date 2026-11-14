@@ -2,7 +2,7 @@
 
 What is planned for Since Us. This list is a plan, not a promise, and it changes when new ideas come in. Why some ideas won't be added is explained in [SCOPE.md](SCOPE.md).
 
-*Last updated: November 13, 2026*
+*Last updated: November 14, 2026*
 
 ## Next version
 
@@ -14,6 +14,7 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 - Launch on Google Play (the closed test is running, [testers wanted](README.md#help-test-on-google-play))
 - More languages once they are (almost) complete on [Weblate](https://hosted.weblate.org/engage/since-us/): Dutch, Spanish and French are in progress
 - More reliable home screen widgets
+- An iOS version ([#53](https://github.com/DerDieDasLian/sinceus/issues/53)), once voluntary support on [Open Collective](https://opencollective.com/sinceus) covers the Apple developer fee
 
 ## Maybe, one day
 

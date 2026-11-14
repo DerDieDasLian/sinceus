@@ -9,7 +9,7 @@ Every idea is welcome. If one doesn't fit, that's never about you, it just means
 - **Made for poly relationships too, from day one.** Add as many people and relationships as you like, each with its own date, special days and reminders. Poly isn't an afterthought or a paid extra.
 - **Queer and non-binary friendly at its core.** Since Us is made by a queer, non-binary person. Texts are gender-neutral, pronouns are built in, nobody has to pick "boyfriend" or "girlfriend", and in June the app celebrates Pride Month. No matter who you are, whom you love or how many of you there are: you belong here.
 - **Open source.** All code is public under the GPL. Anyone can check what the app does, and nobody can quietly turn it into something else.
-- **Free, forever.** No ads, no subscription, no premium version, no in-app purchases and no donations. Everything is included for everyone.
+- **Free, forever.** No ads, no subscription, no premium version and no in-app purchases. Everything is included for everyone. If you like, you can support the project on [Open Collective](https://opencollective.com/sinceus). That money only pays for project costs like the App Store fee, every expense is public, and supporters get nothing extra.
 - **Private by design.** No account, no server, no tracking. Everything stays on your phone. Syncing between phones works with an encrypted file, without any cloud.
 - **Calm and simple.** A quiet design without emojis, clutter or pressure. The app is there for you, not the other way around.
 
@@ -23,7 +23,7 @@ You can mark a relationship as a friendship or as family in the settings. The te
 
 ## What won't be added
 
-- **Anything that costs money:** ads, subscriptions, premium features, in-app purchases or donations
+- **Anything that costs money:** ads, subscriptions, premium features or in-app purchases. Support on Open Collective stays voluntary and never unlocks anything
 - **Accounts, servers or a Since Us cloud.** If syncing over the internet ever comes, it will only work with storage you control yourself, using open, privacy-friendly tools
 - **Tracking or analytics** of any kind
 - **A chat between partners.** There are great apps for that already
