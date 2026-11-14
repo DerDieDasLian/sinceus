@@ -32,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -60,7 +59,6 @@ private val Libraries = listOf(
 @Composable
 fun LicensesScreen(onBack: () -> Unit) {
     val context = LocalContext.current
-    val uri = LocalUriHandler.current
     var showText by rememberSaveable { mutableStateOf(false) }
     var showFonts by rememberSaveable { mutableStateOf(false) }
     val fontText = remember {
@@ -101,7 +99,7 @@ fun LicensesScreen(onBack: () -> Unit) {
                 "github.com/${BuildConfig.GITHUB_REPO}",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { uri.openUri("https://github.com/${BuildConfig.GITHUB_REPO}") },
+                modifier = Modifier.clickable { Feedback.openWeb(context, "https://github.com/${BuildConfig.GITHUB_REPO}") },
             )
             Text(
                 stringResource(R.string.licenses_libraries),
@@ -115,7 +113,7 @@ fun LicensesScreen(onBack: () -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(20.dp))
-                        .clickable { uri.openUri(lib.url) },
+                        .clickable { Feedback.openWeb(context, lib.url) },
                 ) {
                     Column(Modifier.padding(horizontal = 18.dp, vertical = 14.dp)) {
                         Text(lib.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)

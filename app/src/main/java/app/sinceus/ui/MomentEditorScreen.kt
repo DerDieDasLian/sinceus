@@ -5,6 +5,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import app.sinceus.data.PhotoDate
@@ -131,6 +133,7 @@ fun MomentEditorScreen(
     var framing by rememberSaveable { mutableStateOf<Int?>(null) }
     var dateDialog by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
+    var askSave by rememberSaveable { mutableStateOf(false) }
 
     // Neuer Moment: Solange niemand das Datum selbst gewählt hat, kommt es vom ersten Foto
     var dateChosen by rememberSaveable { mutableStateOf(existing != null) }
@@ -152,7 +155,39 @@ fun MomentEditorScreen(
     }
     fun pick() = picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
 
-    val backPreview = rememberBackPreview(onBack = onClose)
+    // Hat sich gegenüber dem gespeicherten Moment (oder dem leeren neuen) etwas geändert?
+    val changed = title != (existing?.title ?: suggestedTitle.orEmpty()) ||
+        epochDay != (existing?.date ?: defaultDate).toEpochDay() ||
+        note != existing?.note.orEmpty() ||
+        remind != (existing?.yearlyReminder ?: true) ||
+        place != existing?.place.orEmpty() ||
+        tags.toList() != existing?.tags.orEmpty() ||
+        newTag.isNotBlank() ||
+        relationship != (if (existing != null) existing.relationshipId else defaultRelationship) ||
+        photos.toList() != existing?.photos.orEmpty() ||
+        frames.filterKeys { it in photos } != existing?.frames.orEmpty()
+    val canSave = title.isNotBlank()
+    fun save() {
+        val moment = Moment(
+            id = existing?.id ?: UUID.randomUUID().toString(),
+            title = title.trim(),
+            date = LocalDate.ofEpochDay(epochDay),
+            note = note.trim(),
+            yearlyReminder = remind,
+            relationshipId = relationship?.takeIf { id -> relationships.any { it.first == id } },
+            // Ein angefangenes Schlagwort ohne Tippen auf Hinzufügen nicht verlieren
+            tags = MomentTags.clean(tags + newTag),
+            place = place.trim(),
+            frames = frames.filterKeys { it in photos },
+        )
+        onSave(moment, photos)
+    }
+    // Zurück mit ungespeicherten Änderungen fragt erst nach, statt alles zu verwerfen
+    fun close() {
+        if (changed) askSave = true else onClose()
+    }
+
+    val backPreview = rememberBackPreview(stays = changed, onBack = ::close)
 
     Scaffold(
         modifier = Modifier.backPreview(backPreview),
@@ -160,7 +195,7 @@ fun MomentEditorScreen(
             TopAppBar(
                 title = { Text(stringResource(if (existing == null) R.string.moment_new else R.string.moment_edit)) },
                 navigationIcon = {
-                    IconButton(onClick = onClose) {
+                    IconButton(onClick = ::close) {
                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
@@ -335,28 +370,14 @@ fun MomentEditorScreen(
             ListItem(
                 headlineContent = { Text(stringResource(R.string.moment_remind)) },
                 supportingContent = { Text(stringResource(R.string.moment_remind_summary)) },
-                trailingContent = { Switch(checked = remind, onCheckedChange = { remind = it }) },
+                trailingContent = { Switch(checked = remind, onCheckedChange = null) },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                modifier = Modifier.clickable { remind = !remind },
+                modifier = Modifier.toggleable(value = remind, role = Role.Switch) { remind = it },
             )
 
             Button(
-                onClick = {
-                    val moment = Moment(
-                        id = existing?.id ?: UUID.randomUUID().toString(),
-                        title = title.trim(),
-                        date = LocalDate.ofEpochDay(epochDay),
-                        note = note.trim(),
-                        yearlyReminder = remind,
-                        relationshipId = relationship?.takeIf { id -> relationships.any { it.first == id } },
-                        // Ein angefangenes Schlagwort ohne Tippen auf Hinzufügen nicht verlieren
-                        tags = MomentTags.clean(tags + newTag),
-                        place = place.trim(),
-                        frames = frames.filterKeys { it in photos },
-                    )
-                    onSave(moment, photos)
-                },
-                enabled = title.isNotBlank(),
+                onClick = ::save,
+                enabled = canSave,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 24.dp),
@@ -388,6 +409,27 @@ fun MomentEditorScreen(
             dateFromPhoto = false
             dateDialog = false
         }
+    }
+    if (askSave) {
+        AlertDialog(
+            onDismissRequest = { askSave = false },
+            title = { Text(stringResource(R.string.unsaved_title)) },
+            text = { Text(stringResource(if (canSave) R.string.moment_unsaved_text else R.string.moment_unsaved_no_title)) },
+            confirmButton = {
+                if (canSave) {
+                    TextButton(onClick = {
+                        askSave = false
+                        save()
+                    }) { Text(stringResource(R.string.save)) }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    askSave = false
+                    onClose()
+                }) { Text(stringResource(R.string.discard)) }
+            },
+        )
     }
     if (deleteDialog && existing != null) {
         AlertDialog(

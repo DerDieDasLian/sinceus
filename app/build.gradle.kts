@@ -14,7 +14,7 @@ val releaseKeystore = rootProject.file("keystore.properties").takeIf { it.exists
 // Sprachen, die in die App kommen. Übersetzungen aus Weblate liegen schon vorher im Repo,
 // eine neue Sprache wird hier erst eingetragen, wenn sie fast vollständig ist.
 // Die Sprachauswahl in der App und in den Android-Einstellungen richtet sich nach dieser Liste.
-val appLanguages = listOf("de", "en", "it", "zh-CN")
+val appLanguages = listOf("de", "en", "it", "nl", "zh-CN")
 
 android {
     namespace = "app.sinceus"

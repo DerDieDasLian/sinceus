@@ -680,6 +680,8 @@
     <string name="unsaved_text">Du hast an dieser Beziehung etwas geändert.</string>
     <string name="unsaved_invalid">Deine Änderungen lassen sich noch nicht speichern: Es braucht mindestens zwei Menschen, und eine frühere Phase muss vor dem Startdatum beginnen.</string>
     <string name="discard">Verwerfen</string>
+    <string name="moment_unsaved_text">Du hast an diesem Moment etwas geändert.</string>
+    <string name="moment_unsaved_no_title">Deine Änderungen lassen sich noch nicht speichern: Der Moment braucht einen Titel.</string>
     <string name="ob_distance_title">Wohnt ihr weit voneinander entfernt?</string>
     <string name="ob_distance_sub">Bei einer Fernbeziehung zeigt die Startseite die Uhrzeit bei der anderen Seite und zählt bis zum nächsten Treffen.</string>
     <string name="ob_distance_no">Wir wohnen nah beieinander</string>

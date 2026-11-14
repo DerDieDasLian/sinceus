@@ -56,6 +56,18 @@ object Backup {
         return total
     }
 
+    /**
+     * Verschiebt [source] nach [target] und ersetzt eine vorhandene Datei. Im selben Speicher braucht
+     * das keinen zusätzlichen Platz. Klappt das Umbenennen nicht, wird kopiert und das Original gelöscht.
+     */
+    internal fun move(source: File, target: File) {
+        target.parentFile?.mkdirs()
+        if (target.exists()) target.delete()
+        if (source.renameTo(target)) return
+        source.copyTo(target, overwrite = true)
+        source.delete()
+    }
+
     internal fun readLimited(input: InputStream): ByteArray {
         val out = ByteArrayOutputStream()
         val buffer = ByteArray(8192)
