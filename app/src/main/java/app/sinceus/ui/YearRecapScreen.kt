@@ -44,7 +44,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -60,7 +59,6 @@ import app.sinceus.data.Texts
 import app.sinceus.data.YearRecap
 import app.sinceus.data.YearRecapMath
 import app.sinceus.data.formatNumber
-import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
@@ -296,6 +294,7 @@ private fun TagsPage(w: YearRecap) {
 @Composable
 private fun PhotosPage(w: YearRecap) {
     val photos = remember(w) { YearRecapMath.collage(w.moments) }
+    val frames = remember(w) { w.moments.flatMap { it.frames.entries }.associate { it.key to it.value } }
     Column {
         Label(stringResource(R.string.recap_photos_label))
         Spacer(Modifier.height(16.dp))
@@ -308,10 +307,9 @@ private fun PhotosPage(w: YearRecap) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 row.forEach { path ->
-                    AsyncImage(
+                    FramedPhoto(
                         model = File(path),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
+                        frame = frames[path],
                         modifier = Modifier
                             .weight(1f)
                             .aspectRatio(if (photos.size <= 2) 0.8f else 1.3f)
@@ -339,10 +337,9 @@ private fun FirstLastPage(w: YearRecap) {
 private fun MomentLine(label: String, m: Moment) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         m.photoPath?.let { path ->
-            AsyncImage(
+            FramedPhoto(
                 model = File(path),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+                frame = m.frameOf(path),
                 modifier = Modifier
                     .size(84.dp)
                     .clip(RoundedCornerShape(16.dp)),

@@ -14,6 +14,7 @@ import app.sinceus.R
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.Moment
 import app.sinceus.data.Names
+import app.sinceus.data.PhotoFrame
 import app.sinceus.data.Texts
 import app.sinceus.ui.AppFonts
 import app.sinceus.widget.WidgetPhoto
@@ -110,7 +111,7 @@ object Photobook {
         val photos = m.photos
         if (photos.isNotEmpty()) {
             val h = CONTENT_W * 0.66f
-            photo(photos[0], MARGIN, y, CONTENT_W, h)
+            photo(photos[0], m.frameOf(photos[0]), MARGIN, y, CONTENT_W, h)
             y += h
             val rest = photos.drop(1).take(3)
             if (rest.isNotEmpty()) {
@@ -118,7 +119,7 @@ object Photobook {
                 val w = (CONTENT_W - gap * (rest.size - 1)) / rest.size
                 val th = minOf(w * 0.75f, 110f)
                 y += gap
-                rest.forEachIndexed { i, p -> photo(p, MARGIN + i * (w + gap), y, w, th) }
+                rest.forEachIndexed { i, p -> photo(p, m.frameOf(p), MARGIN + i * (w + gap), y, w, th) }
                 y += th
             }
             y += 22f
@@ -155,10 +156,10 @@ object Photobook {
         drawText(n, PAGE_W - MARGIN - footer.measureText(n), PAGE_H - 22f, footer)
     }
 
-    /** Foto mittig zugeschnitten mit runden Ecken; fehlt die Datei, bleibt eine helle Fläche */
-    private fun Canvas.photo(path: String, x: Float, y: Float, w: Float, h: Float) {
+    /** Foto mit gewähltem Ausschnitt (sonst mittig) und runden Ecken; fehlt die Datei, bleibt eine helle Fläche */
+    private fun Canvas.photo(path: String, frame: PhotoFrame?, x: Float, y: Float, w: Float, h: Float) {
         val rect = RectF(x, y, x + w, y + h)
-        val bmp = WidgetPhoto.photo(path, (w * PHOTO_SCALE).toInt(), (h * PHOTO_SCALE).toInt())
+        val bmp = WidgetPhoto.photo(path, (w * PHOTO_SCALE).toInt(), (h * PHOTO_SCALE).toInt(), frame = frame)
         save()
         clipPath(android.graphics.Path().apply { addRoundRect(rect, 10f, 10f, android.graphics.Path.Direction.CW) })
         if (bmp != null) {

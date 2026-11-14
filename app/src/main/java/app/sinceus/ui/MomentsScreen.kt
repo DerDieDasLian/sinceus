@@ -81,7 +81,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -99,7 +98,6 @@ import app.sinceus.data.Moment
 import app.sinceus.data.MomentMath
 import app.sinceus.data.Texts
 import app.sinceus.data.formatNumber
-import coil3.compose.AsyncImage
 import java.io.File
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -704,7 +702,7 @@ private fun TimelineItem(
                 .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         ) {
             val moment = (entry as? TimelineEntry.Saved)?.moment
-            if (moment != null && moment.photos.isNotEmpty()) MomentPhotos(moment.photos)
+            if (moment != null && moment.photos.isNotEmpty()) MomentPhotos(moment)
             Column(Modifier.padding(horizontal = 18.dp, vertical = 14.dp)) {
                 Text(
                     "${Texts.longDate(entry.date)} · $relative".uppercase(),
@@ -794,18 +792,27 @@ fun openPlace(context: android.content.Context, place: String) {
     }
 }
 
-/** Fotos eines Moments: eins als Bild, mehrere zum Wischen mit Punkten oder Zähler unten */
+/**
+ * Fotos eines Moments mit gewähltem Ausschnitt: eins als Bild, mehrere zum Wischen mit Punkten
+ * oder Zähler unten. Antippen zeigt die Fotos in voller Größe (Issue #49), der Text darunter
+ * öffnet weiter die Bearbeitung.
+ */
 @Composable
-private fun MomentPhotos(photos: List<String>) {
+private fun MomentPhotos(moment: Moment) {
+    val photos = moment.photos
+    var viewing by rememberSaveable(moment.id) { mutableStateOf<Int?>(null) }
+    viewing?.let { start ->
+        PhotoViewer(photos.map { File(it) }, start, onClose = { viewing = null })
+    }
+    val showFull = stringResource(R.string.photo_show_full)
     val imageModifier = Modifier
         .fillMaxWidth()
-        .aspectRatio(16f / 10f)
+        .aspectRatio(MOMENT_PHOTO_RATIO)
     if (photos.size == 1) {
-        AsyncImage(
+        FramedPhoto(
             model = File(photos.first()),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = imageModifier,
+            frame = moment.frameOf(photos.first()),
+            modifier = imageModifier.clickable(onClickLabel = showFull) { viewing = 0 },
         )
         return
     }
@@ -814,11 +821,12 @@ private fun MomentPhotos(photos: List<String>) {
     // das darf den Pager nie erreichen, sonst stürzt die App ab (Issue #9)
     Box(imageModifier) {
         HorizontalPager(pager, Modifier.fillMaxSize(), key = { photos[it] }) { page ->
-            AsyncImage(
+            FramedPhoto(
                 model = File(photos[page]),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
+                frame = moment.frameOf(photos[page]),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(onClickLabel = showFull) { viewing = page },
             )
         }
         val position = stringResource(R.string.moment_photo_position, pager.currentPage + 1, photos.size)

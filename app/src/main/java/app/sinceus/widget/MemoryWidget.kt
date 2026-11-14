@@ -37,6 +37,7 @@ import app.sinceus.data.LoveRepository
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.MemoryPick
 import app.sinceus.data.Moment
+import app.sinceus.data.PhotoFrame
 import app.sinceus.data.formatNumber
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
@@ -61,15 +62,15 @@ class MemoryWidget : GlanceAppWidget() {
          * Foto des Moments mit Abdunklung unten, als JPEG-Icon. Ein großes Bitmap direkt würde das
          * Widget-Update zu groß machen, dann lädt das Widget nicht mehr. Als JPEG bleibt es weit unter 400 KB.
          */
-        internal fun photo(context: Context, path: String, widthDp: Float, heightDp: Float): ImageProvider? =
-            jpeg(context, path, widthDp, heightDp)?.let { ImageProvider(Icon.createWithData(it, 0, it.size)) }
+        internal fun photo(context: Context, path: String, widthDp: Float, heightDp: Float, frame: PhotoFrame? = null): ImageProvider? =
+            jpeg(context, path, widthDp, heightDp, frame)?.let { ImageProvider(Icon.createWithData(it, 0, it.size)) }
 
-        internal fun jpeg(context: Context, path: String, widthDp: Float, heightDp: Float): ByteArray? {
+        internal fun jpeg(context: Context, path: String, widthDp: Float, heightDp: Float, frame: PhotoFrame? = null): ByteArray? {
             val density = context.resources.displayMetrics.density
             val scale = minOf(1f, MAX_SIDE / max(widthDp * density, heightDp * density))
             val w = (widthDp * density * scale).roundToInt().coerceAtLeast(1)
             val h = (heightDp * density * scale).roundToInt().coerceAtLeast(1)
-            val bmp = WidgetPhoto.photo(path, w, h) ?: return null
+            val bmp = WidgetPhoto.photo(path, w, h, frame = frame) ?: return null
             shade(bmp)
             val bytes = ByteArrayOutputStream().use {
                 bmp.compress(Bitmap.CompressFormat.JPEG, 85, it)
@@ -120,7 +121,7 @@ private fun MemoryContent(settings: LoveSettings) {
     val room = size.width.value - 36f
     // Im diskreten Modus keine Fotos auf dem Startbildschirm
     val photo = moment?.photoPath?.takeIf { !settings.discreet }
-        ?.let { MemoryWidget.photo(context, it, size.width.value, size.height.value) }
+        ?.let { MemoryWidget.photo(context, it, size.width.value, size.height.value, moment.frameOf(it)) }
 
     // Zu lange Texte verkleinern statt abschneiden
     fun line(text: String, typeface: android.graphics.Typeface, sizeSp: Float, color: Int, weight: Int = 400): WidgetText.Line {
