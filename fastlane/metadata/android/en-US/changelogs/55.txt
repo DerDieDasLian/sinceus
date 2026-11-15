@@ -1,1 +1,2 @@
+• Pair from afar: share the code, for example in a messenger, and paste it on the other phone.
 • Updated technical foundations (Kotlin and other libraries).

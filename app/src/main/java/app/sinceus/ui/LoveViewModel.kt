@@ -200,6 +200,19 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
         return true
     }
 
+    /** Kopplungscode als Text über das Teilen-Menü verschicken, wenn ihr euch nicht gegenüber sitzt */
+    fun shareCode() {
+        val app = getApplication<Application>()
+        val p = _pairing.value ?: return
+        val send = android.content.Intent(android.content.Intent.ACTION_SEND)
+            .setType("text/plain")
+            .putExtra(android.content.Intent.EXTRA_TEXT, app.getString(R.string.sync_code_message, Pairing.qrText(p)))
+        app.startActivity(
+            android.content.Intent.createChooser(send, app.getString(R.string.sync_share_code))
+                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+        )
+    }
+
     /** Wer auf diesem Handy die App nutzt */
     fun setMe(me: String?) {
         val p = _pairing.value?.copy(me = me) ?: return
