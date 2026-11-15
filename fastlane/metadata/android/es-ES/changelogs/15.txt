@@ -1,0 +1,2 @@
+• La vista general ahora también muestra los aniversarios de sus momentos bajo próximos días especiales.
+• La tarjeta de amor ahora tiene una imagen de previsualización cuando se está añadiendo el widget.
