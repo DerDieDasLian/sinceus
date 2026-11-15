@@ -1,6 +1,5 @@
-• New: sync through a folder that another app keeps the same on your devices. Since Us stays offline, and several devices per person work too.
-• Missed reminders are caught up as soon as your phone is back on.
-• The app asks before changes to a moment get lost.
-• Restoring a backup is safe even when storage is almost full.
+• Missed reminders are caught up: if your phone was off at the chosen time, the notification comes as soon as it is back on.
+• When editing a moment, the app asks before changes get lost.
+• Restoring a backup is now safe even when storage is almost full.
 • Easier to use with a screen reader, bigger buttons in the bottom bar.
 • Now in Dutch. Thanks to everyone who translates!

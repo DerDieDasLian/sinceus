@@ -6,9 +6,6 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 
 ## Next version
 
-- Reminders you missed are caught up: if your phone was off at the chosen time, the notification comes as soon as it is back
-- The moment editor asks before it throws away changes, and restoring a backup is safer when storage is almost full
-- Easier to use with a screen reader, and Dutch as a new language
 - Sync through a folder that another app keeps the same on your devices, for example on your own server ([#46](https://github.com/DerDieDasLian/sinceus/issues/46)). Since Us itself stays offline, and several devices per person work too
 
 ## Soon
@@ -25,6 +22,7 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 
 ## Recently done
 
+- 3.4.0: missed reminders are caught up, the moment editor asks before it throws away changes, safer restoring when storage is almost full, easier to use with a screen reader, and Dutch
 - 3.3.0: choose which part of a moment's photo is shown, also in the photo book, and tap a photo to see it in full size ([#49](https://github.com/DerDieDasLian/sinceus/issues/49))
 - 3.2.0: a preview when you swipe back inside the app (predictive back)
 - 3.1.1: colors: Ocean, Jade, Lavender or a color of your own besides Wine, or the colors of your wallpaper on Android 12 and newer, a color for each relationship ([#43](https://github.com/DerDieDasLian/sinceus/issues/43)) and fewer fonts that clearly differ from each other

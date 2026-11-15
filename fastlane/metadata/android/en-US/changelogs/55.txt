@@ -1,0 +1,3 @@
+• New: sync through a folder that another app keeps the same on your devices. Since Us itself stays offline.
+• Several devices per person: just scan the QR code again on the extra device.
+• Changes to start dates, birthdays and pronouns now come along when syncing. Names, colors and home screen photos stay your own on each device.

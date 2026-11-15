@@ -1,0 +1,3 @@
+• Neu: Abgleich über einen Ordner, den eine andere App auf euren Geräten gleich hält. Since Us selbst bleibt ohne Internet.
+• Mehrere Geräte pro Person: Einfach den QR-Code auf dem weiteren Gerät noch einmal scannen.
+• Änderungen an Startdatum, Geburtstagen und Pronomen kommen jetzt auch beim Abgleich an. Namen, Farben und Fotos auf der Startseite bleiben auf jedem Gerät eigen.
