@@ -8,12 +8,16 @@ on:
     tags: ["**"]
   workflow_dispatch:
 
+# Der Lauf darf das Repository nur lesen
+permissions:
+  contents: read
+
 jobs:
   mirror:
     if: vars.FORGEJO_REPO_URL != ''
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
       - name: Push to Forgejo
