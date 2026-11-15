@@ -1,1 +1,1 @@
-• Technische Grundlagen aktualisiert (Kotlin, Compose und weitere Bibliotheken).
+• Technische Grundlagen aktualisiert (Kotlin und weitere Bibliotheken).
