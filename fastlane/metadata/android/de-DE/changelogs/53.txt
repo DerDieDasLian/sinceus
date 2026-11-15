@@ -1,0 +1,2 @@
+• Fotos in Momenten zeigen jetzt den Ausschnitt, den du willst: Beim Bearbeiten auf das Foto tippen, verschieben und zoomen. Der Ausschnitt gilt überall, auch im Fotobuch und beim Teilen.
+• Ein Foto in der Zeitleiste antippen zeigt es in voller Größe. Der Text darunter öffnet weiter die Bearbeitung.

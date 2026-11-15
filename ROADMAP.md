@@ -2,26 +2,32 @@
 
 What is planned for Since Us. This list is a plan, not a promise, and it changes when new ideas come in. Why some ideas won't be added is explained in [SCOPE.md](SCOPE.md).
 
-*Last updated: November 8, 2026*
+*Last updated: November 15, 2026*
 
 ## Next version
 
-- Colors: Ocean, Jade, Lavender or a color of your own besides Wine, or the colors of your wallpaper on Android 12 and newer, and a color for each relationship ([#43](https://github.com/DerDieDasLian/sinceus/issues/43))
-- Fewer fonts that clearly differ from each other
+- Reminders you missed are caught up: if your phone was off at the chosen time, the notification comes as soon as it is back
+- The moment editor asks before it throws away changes, and restoring a backup is safer when storage is almost full
+- Easier to use with a screen reader, and Dutch as a new language
 - Pair your phones from afar by sharing a code, for example in a long-distance relationship
 
 ## Soon
 
 - Launch on Google Play (the closed test is running, [testers wanted](README.md#help-test-on-google-play))
-- More languages once they are (almost) complete on [Weblate](https://hosted.weblate.org/engage/since-us/): Dutch, Spanish and French are in progress
+- More languages once they are (almost) complete on [Weblate](https://hosted.weblate.org/engage/since-us/): Spanish and French are in progress
 - More reliable home screen widgets
+- An iOS version ([#53](https://github.com/DerDieDasLian/sinceus/issues/53)). Voluntary support on Open Collective to cover the Apple developer fee is being set up
 
 ## Maybe, one day
 
 - Sync over the internet, but only with storage you control yourself (for example your own Nextcloud), never with a Since Us cloud
+- A countdown in the status bar (Live Updates on Android 16) when you are on your way to each other or a planned moment is coming up today
 
 ## Recently done
 
+- 3.3.0: choose which part of a moment's photo is shown, also in the photo book, and tap a photo to see it in full size ([#49](https://github.com/DerDieDasLian/sinceus/issues/49))
+- 3.2.0: a preview when you swipe back inside the app (predictive back)
+- 3.1.1: colors: Ocean, Jade, Lavender or a color of your own besides Wine, or the colors of your wallpaper on Android 12 and newer, a color for each relationship ([#43](https://github.com/DerDieDasLian/sinceus/issues/43)) and fewer fonts that clearly differ from each other
 - 3.1.0: clearer settings with a search field, special days and each relationship on their own page, and setup also asks about long distance, birthdays and holidays
 - 3.0.0: a year in review around your anniversary, report a bug or suggest an idea right from the settings, new moments take their date from the first photo, easier on the battery and more reliable backups
 - 2.15.0: choose how you travel to each other on long distance ([#23](https://github.com/DerDieDasLian/sinceus/issues/23)) and Italian and Chinese

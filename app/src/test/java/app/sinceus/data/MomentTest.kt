@@ -34,6 +34,32 @@ class MomentTest {
     }
 
     @Test
+    fun framesRoundTripAndFollowPhotos() {
+        val framed = firstDate.copy(frames = mapOf("/x/b.jpg" to PhotoFrame(0.5f, -1f, 2f)))
+        assertEquals(listOf(framed), MomentCodec.decode(MomentCodec.encode(listOf(framed))))
+        // Ohne Ausschnitte bleibt das JSON wie bisher
+        assertTrue(!MomentCodec.encode(listOf(firstDate)).contains("frames"))
+        // Backup und Abgleich ändern die Pfade, der Ausschnitt wandert mit
+        val moved = framed.mapPhotos { it.substringAfterLast('/') }
+        assertEquals(listOf("a.jpg", "b.jpg"), moved.photos)
+        assertEquals(PhotoFrame(0.5f, -1f, 2f), moved.frameOf("b.jpg"))
+        assertNull(moved.frameOf("a.jpg"))
+        // Fällt ein Foto weg, fällt sein Ausschnitt auch weg
+        assertEquals(emptyMap<String, PhotoFrame>(), framed.mapPhotos { it.takeIf { p -> p.endsWith("a.jpg") } }.frames)
+    }
+
+    @Test
+    fun framesAreCleaned() {
+        val json = """[{"id":"a","title":"A","date":19000,"photos":["/p/1.jpg","/p/2.jpg"],"frames":[{"x":5,"y":-0.2,"z":9},null]}]"""
+        val m = MomentCodec.decode(json)[0]
+        assertEquals(PhotoFrame(1f, -0.2f, PhotoFrame.MAX_ZOOM), m.frameOf("/p/1.jpg"))
+        assertNull(m.frameOf("/p/2.jpg"))
+        val map = mapOf("content://x/1" to PhotoFrame(0.1f, 0.2f, 1.5f))
+        assertEquals(map, PhotoFrame.decodeMap(PhotoFrame.encodeMap(map)))
+        assertEquals(emptyMap<String, PhotoFrame>(), PhotoFrame.decodeMap("kaputt"))
+    }
+
+    @Test
     fun tagsAreCleaned() {
         assertEquals(listOf("Urlaub", "Date"), MomentTags.clean(listOf(" Urlaub ", "", "urlaub", "Date")))
         val a = firstDate.copy(id = "1", tags = listOf("Date"))

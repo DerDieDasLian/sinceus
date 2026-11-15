@@ -14,7 +14,7 @@ val releaseKeystore = rootProject.file("keystore.properties").takeIf { it.exists
 // Sprachen, die in die App kommen. Übersetzungen aus Weblate liegen schon vorher im Repo,
 // eine neue Sprache wird hier erst eingetragen, wenn sie fast vollständig ist.
 // Die Sprachauswahl in der App und in den Android-Einstellungen richtet sich nach dieser Liste.
-val appLanguages = listOf("de", "en", "it", "zh-CN")
+val appLanguages = listOf("de", "en", "it", "nl", "zh-CN")
 
 android {
     namespace = "app.sinceus"
@@ -24,8 +24,8 @@ android {
         applicationId = "app.sinceus"
         minSdk = 26
         targetSdk = 36
-        versionCode = 50
-        versionName = "3.1.0"
+        versionCode = 54
+        versionName = "3.4.0"
         // Repository, in dem die GitHub-Version nach neuen Releases sucht
         val githubRepo = providers.gradleProperty("githubRepo").getOrElse("DerDieDasLian/sinceus")
         buildConfigField("String", "GITHUB_REPO", "\"$githubRepo\"")

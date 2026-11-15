@@ -54,7 +54,7 @@
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 a { color: var(--accent); }
-img { max-width: 100%; display: block; }
+img { max-width: 100%; height: auto; display: block; }
 svg { fill: currentColor; }
 .wrap { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
 
@@ -366,3 +366,9 @@ html, body { overflow-x: clip; }
 .fdroid-badge { display: inline-block; border-radius: 10px; transition: transform .2s ease; }
 .fdroid-badge:hover { transform: translateY(-2px); }
 .fdroid-badge img { width: 188px; height: auto; }
+
+/* Tastaturbedienung: sichtbarer Fokus und ein Link, der direkt zum Inhalt springt */
+a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.skip { position: fixed; top: 12px; left: 12px; z-index: 40; padding: 10px 18px; border-radius: 999px;
+  background: var(--fg); color: var(--bg); font-weight: 600; text-decoration: none; transform: translateY(-200%); }
+.skip:focus { transform: none; }

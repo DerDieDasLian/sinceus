@@ -1,11 +1,12 @@
 package app.sinceus.ui
 
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import app.sinceus.data.PhotoDate
@@ -53,12 +54,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import app.sinceus.R
 import app.sinceus.data.Moment
+import app.sinceus.data.PhotoFrame
+import androidx.compose.runtime.remember
+import androidx.compose.material.icons.rounded.OpenWith
 import app.sinceus.data.MomentTags
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.rounded.Add
@@ -67,7 +70,6 @@ import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.ui.text.input.ImeAction
 import app.sinceus.data.Texts
-import coil3.compose.AsyncImage
 import java.io.File
 import java.time.LocalDate
 import java.util.UUID
@@ -125,8 +127,13 @@ fun MomentEditorScreen(
     }
     // Bisherige Fotos als Pfad, neu gewählte als content-Uri
     var photos by rememberSaveable { mutableStateOf(ArrayList(existing?.photos.orEmpty())) }
+    // Gewählte Bildausschnitte je Foto (Issue #49), als Text, damit sie Drehen überstehen
+    var framesText by rememberSaveable { mutableStateOf(PhotoFrame.encodeMap(existing?.frames.orEmpty())) }
+    val frames = remember(framesText) { PhotoFrame.decodeMap(framesText) }
+    var framing by rememberSaveable { mutableStateOf<Int?>(null) }
     var dateDialog by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
+    var askSave by rememberSaveable { mutableStateOf(false) }
 
     // Neuer Moment: Solange niemand das Datum selbst gewählt hat, kommt es vom ersten Foto
     var dateChosen by rememberSaveable { mutableStateOf(existing != null) }
@@ -148,14 +155,47 @@ fun MomentEditorScreen(
     }
     fun pick() = picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
 
-    BackHandler(onBack = onClose)
+    // Hat sich gegenüber dem gespeicherten Moment (oder dem leeren neuen) etwas geändert?
+    val changed = title != (existing?.title ?: suggestedTitle.orEmpty()) ||
+        epochDay != (existing?.date ?: defaultDate).toEpochDay() ||
+        note != existing?.note.orEmpty() ||
+        remind != (existing?.yearlyReminder ?: true) ||
+        place != existing?.place.orEmpty() ||
+        tags.toList() != existing?.tags.orEmpty() ||
+        newTag.isNotBlank() ||
+        relationship != (if (existing != null) existing.relationshipId else defaultRelationship) ||
+        photos.toList() != existing?.photos.orEmpty() ||
+        frames.filterKeys { it in photos } != existing?.frames.orEmpty()
+    val canSave = title.isNotBlank()
+    fun save() {
+        val moment = Moment(
+            id = existing?.id ?: UUID.randomUUID().toString(),
+            title = title.trim(),
+            date = LocalDate.ofEpochDay(epochDay),
+            note = note.trim(),
+            yearlyReminder = remind,
+            relationshipId = relationship?.takeIf { id -> relationships.any { it.first == id } },
+            // Ein angefangenes Schlagwort ohne Tippen auf Hinzufügen nicht verlieren
+            tags = MomentTags.clean(tags + newTag),
+            place = place.trim(),
+            frames = frames.filterKeys { it in photos },
+        )
+        onSave(moment, photos)
+    }
+    // Zurück mit ungespeicherten Änderungen fragt erst nach, statt alles zu verwerfen
+    fun close() {
+        if (changed) askSave = true else onClose()
+    }
+
+    val backPreview = rememberBackPreview(stays = changed, onBack = ::close)
 
     Scaffold(
+        modifier = Modifier.backPreview(backPreview),
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(if (existing == null) R.string.moment_new else R.string.moment_edit)) },
                 navigationIcon = {
-                    IconButton(onClick = onClose) {
+                    IconButton(onClick = ::close) {
                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
@@ -240,20 +280,40 @@ fun MomentEditorScreen(
             )
 
             if (photos.isNotEmpty()) {
-                AsyncImage(
-                    model = photoModel(photos.first()),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
+                val adjust = stringResource(R.string.adjust_crop)
+                Box(
+                    Modifier
                         .fillMaxWidth()
-                        .aspectRatio(16f / 10f)
-                        .clip(RoundedCornerShape(20.dp)),
-                )
+                        .aspectRatio(MOMENT_PHOTO_RATIO)
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable(onClickLabel = adjust) { framing = 0 },
+                ) {
+                    FramedPhoto(photoModel(photos.first()), frames[photos.first()], Modifier.fillMaxSize())
+                    // Hinweis unten rechts: hier lässt sich der Ausschnitt verschieben
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(10.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(Color.Black.copy(alpha = 0.5f))
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                    ) {
+                        Icon(Icons.Rounded.OpenWith, null, tint = Color.White, modifier = Modifier.size(16.dp))
+                        Text(
+                            adjust,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 6.dp),
+                        )
+                    }
+                }
                 if (photos.size > 1) {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         itemsIndexed(photos, key = { _, item -> item }) { index, item ->
                             PhotoThumb(
                                 model = photoModel(item),
+                                frame = frames[item],
                                 isCover = index == 0,
                                 position = stringResource(R.string.moment_photo_position, index + 1, photos.size),
                                 onClick = { photos = ArrayList(listOf(item) + (photos - item)) },
@@ -310,27 +370,14 @@ fun MomentEditorScreen(
             ListItem(
                 headlineContent = { Text(stringResource(R.string.moment_remind)) },
                 supportingContent = { Text(stringResource(R.string.moment_remind_summary)) },
-                trailingContent = { Switch(checked = remind, onCheckedChange = { remind = it }) },
+                trailingContent = { Switch(checked = remind, onCheckedChange = null) },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                modifier = Modifier.clickable { remind = !remind },
+                modifier = Modifier.toggleable(value = remind, role = Role.Switch) { remind = it },
             )
 
             Button(
-                onClick = {
-                    val moment = Moment(
-                        id = existing?.id ?: UUID.randomUUID().toString(),
-                        title = title.trim(),
-                        date = LocalDate.ofEpochDay(epochDay),
-                        note = note.trim(),
-                        yearlyReminder = remind,
-                        relationshipId = relationship?.takeIf { id -> relationships.any { it.first == id } },
-                        // Ein angefangenes Schlagwort ohne Tippen auf Hinzufügen nicht verlieren
-                        tags = MomentTags.clean(tags + newTag),
-                        place = place.trim(),
-                    )
-                    onSave(moment, photos)
-                },
-                enabled = title.isNotBlank(),
+                onClick = ::save,
+                enabled = canSave,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 24.dp),
@@ -338,6 +385,19 @@ fun MomentEditorScreen(
         }
     }
 
+    framing?.let { start ->
+        PhotoFrameEditor(
+            photos = photos,
+            models = photos.map(::photoModel),
+            frames = frames,
+            start = start,
+            onCancel = { framing = null },
+            onDone = {
+                framesText = PhotoFrame.encodeMap(it)
+                framing = null
+            },
+        )
+    }
     if (dateDialog) {
         DateDialog(
             LocalDate.ofEpochDay(epochDay),
@@ -349,6 +409,27 @@ fun MomentEditorScreen(
             dateFromPhoto = false
             dateDialog = false
         }
+    }
+    if (askSave) {
+        AlertDialog(
+            onDismissRequest = { askSave = false },
+            title = { Text(stringResource(R.string.unsaved_title)) },
+            text = { Text(stringResource(if (canSave) R.string.moment_unsaved_text else R.string.moment_unsaved_no_title)) },
+            confirmButton = {
+                if (canSave) {
+                    TextButton(onClick = {
+                        askSave = false
+                        save()
+                    }) { Text(stringResource(R.string.save)) }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    askSave = false
+                    onClose()
+                }) { Text(stringResource(R.string.discard)) }
+            },
+        )
     }
     if (deleteDialog && existing != null) {
         AlertDialog(
@@ -375,7 +456,7 @@ private fun photoModel(item: String): Any = if (item.startsWith("/")) File(item)
 
 /** Vorschaubild in der Fotoleiste: Tippen macht es zum Titelbild, das Kreuz entfernt es */
 @Composable
-private fun PhotoThumb(model: Any, isCover: Boolean, position: String, onClick: () -> Unit, onRemove: () -> Unit) {
+private fun PhotoThumb(model: Any, frame: PhotoFrame?, isCover: Boolean, position: String, onClick: () -> Unit, onRemove: () -> Unit) {
     val makeCover = stringResource(R.string.moment_make_cover)
     Box(
         Modifier
@@ -387,12 +468,7 @@ private fun PhotoThumb(model: Any, isCover: Boolean, position: String, onClick: 
             .semantics { contentDescription = position }
             .clickable(enabled = !isCover, onClickLabel = makeCover, onClick = onClick),
     ) {
-        AsyncImage(
-            model = model,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-        )
+        FramedPhoto(model, frame, Modifier.fillMaxSize())
         IconButton(
             onClick = onRemove,
             modifier = Modifier

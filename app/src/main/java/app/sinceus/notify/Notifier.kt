@@ -27,7 +27,10 @@ import app.sinceus.data.Moment
 import app.sinceus.data.MomentMath
 import app.sinceus.data.Names
 import app.sinceus.data.Relationship
+import app.sinceus.data.LoveRepository
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 object Notifier {
     /** Öffnet die App und startet dort Download und Installation des Updates */
@@ -140,6 +143,28 @@ object Notifier {
         BirthdayMath.milestonesOn(celebrating, day) { if (settings.discreet) Names.initial(it.name) else it.name }
             .forEach { add(null to it) }
     }
+
+    /**
+     * Zeigt die Mitteilung für heute, sobald die gewählte Uhrzeit erreicht ist und heute noch keine kam.
+     * Läuft beim täglichen Wecker, aber auch beim Start der App und nach einem Neustart des Handys:
+     * War das Handy zur Uhrzeit aus oder hat der Akkusparer die App beendet, wird sie so nachgeholt.
+     */
+    suspend fun notifyIfDue(
+        context: Context,
+        repo: LoveRepository,
+        settings: LoveSettings,
+        now: LocalDateTime = LocalDateTime.now(),
+    ) {
+        if (!isTime(settings, now)) return
+        val today = now.toLocalDate()
+        val due = dueToday(context, settings, today) ?: return
+        if (repo.markNotified(today)) show(context, due.first, due.second)
+    }
+
+    /** Mitteilungen sind an, die App ist eingerichtet und die gewählte Uhrzeit ist heute schon erreicht */
+    internal fun isTime(settings: LoveSettings, now: LocalDateTime): Boolean =
+        settings.notificationsEnabled && settings.onboardingDone &&
+            !now.toLocalTime().isBefore(LocalTime.of(settings.notifyHour, settings.notifyMinute))
 
     fun show(context: Context, title: String, lines: List<String>) {
         if (lines.isEmpty() || !canNotify(context)) return

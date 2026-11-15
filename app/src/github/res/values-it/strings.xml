@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="privacy_text">Nomi, date, foto e momenti sono salvati in locale. Questa versione dell\'app può connettersi solo a GitHub ed esclusivamente per controllare la presenza di aggiornamenti (disattivabile dalle impostazioni). Nessun tracker, nessuna pubblicità. I tuoi dati possono lasciare il dispositivo solo in caso di salvataggio di un backup, invio di un file di sincronizzazione ad un dispositivo accoppiato o tramite backup Android (backup Google).</string>
+</resources>

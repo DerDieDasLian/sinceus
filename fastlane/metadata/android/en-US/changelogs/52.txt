@@ -1,0 +1,2 @@
+• Swiping back now shows a preview inside the app too.
+• More of the Italian translation, thanks to everyone helping on Weblate.

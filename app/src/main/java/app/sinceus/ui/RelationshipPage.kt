@@ -1,6 +1,5 @@
 package app.sinceus.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -58,6 +57,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
@@ -96,12 +96,13 @@ internal fun RelationshipPage(
     val valid = draft.members.size >= 2 && (draft.before == null || draft.earlier != null)
     val changed = draft != relationship
     val back = { if (changed) askSave = true else onClose() }
-    BackHandler(onBack = back)
+    // Bei Änderungen bleibt die Seite stehen und fragt nach
+    val backPreview = rememberBackPreview(stays = changed, onBack = back)
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val clear = ListItemDefaults.colors(containerColor = Color.Transparent)
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scroll.nestedScrollConnection),
+        modifier = Modifier.backPreview(backPreview).nestedScroll(scroll.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = { Text(stringResource(if (isNew) R.string.add_relationship else R.string.edit_relationship)) },
@@ -218,9 +219,9 @@ internal fun RelationshipPage(
                     headlineContent = { Text(stringResource(R.string.relationship_before)) },
                     supportingContent = { Text(stringResource(R.string.relationship_before_summary)) },
                     leadingContent = { Icon(Icons.Rounded.History, null) },
-                    trailingContent = { Switch(checked = hasBefore, onCheckedChange = { toggleBefore() }) },
+                    trailingContent = { Switch(checked = hasBefore, onCheckedChange = null) },
                     colors = clear,
-                    modifier = Modifier.clickable { toggleBefore() },
+                    modifier = Modifier.toggleable(value = hasBefore, role = Role.Switch) { toggleBefore() },
                 )
                 if (hasBefore) {
                     FlowRow(
@@ -258,9 +259,9 @@ internal fun RelationshipPage(
                     headlineContent = { Text(stringResource(R.string.distance_mode)) },
                     supportingContent = { Text(stringResource(R.string.distance_mode_summary)) },
                     leadingContent = { Icon(draft.travel.icon, null) },
-                    trailingContent = { Switch(checked = draft.distance, onCheckedChange = { draft = draft.copy(distance = it) }) },
+                    trailingContent = { Switch(checked = draft.distance, onCheckedChange = null) },
                     colors = clear,
-                    modifier = Modifier.clickable { draft = draft.copy(distance = !draft.distance) },
+                    modifier = Modifier.toggleable(value = draft.distance, role = Role.Switch) { draft = draft.copy(distance = it) },
                 )
                 if (draft.distance) {
                     Divider()
@@ -301,9 +302,9 @@ internal fun RelationshipPage(
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.relationship_notify)) },
                     leadingContent = { Icon(Icons.Rounded.NotificationsActive, null) },
-                    trailingContent = { Switch(checked = draft.notify, onCheckedChange = { draft = draft.copy(notify = it) }) },
+                    trailingContent = { Switch(checked = draft.notify, onCheckedChange = null) },
                     colors = clear,
-                    modifier = Modifier.clickable { draft = draft.copy(notify = !draft.notify) },
+                    modifier = Modifier.toggleable(value = draft.notify, role = Role.Switch) { draft = draft.copy(notify = it) },
                 )
                 if (!isNew && settings.relationships.size > 1) {
                     val inWidget = settings.widget.id == relationship.id

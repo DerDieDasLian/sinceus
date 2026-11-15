@@ -1,0 +1,18 @@
+# Öffnet einmal im Monat je einen gesammelten PR, wenn es neuere Versionen gibt:
+# einen für die Werkzeuge der Build-Abläufe und einen für die Bibliotheken der App.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      gradle:
+        patterns: ["*"]

@@ -194,6 +194,8 @@
     <string name="moment_cover_hint">Das erste Foto ist das Titelbild. Tippe auf ein anderes Foto, um es zum Titelbild zu machen.</string>
     <string name="moment_make_cover">Zum Titelbild machen</string>
     <string name="moment_photo_position">Foto %1$d von %2$d</string>
+    <string name="moment_crop_pick">Tippe auf ein Foto, um seinen Ausschnitt zu wählen. Er gilt überall, auch im Fotobuch.</string>
+    <string name="photo_show_full">Foto in voller Größe ansehen</string>
     <string name="moment_remove_photo">Foto entfernen</string>
     <string name="moment_remind">Jährlich erinnern</string>
     <string name="moment_remind_summary">Mitteilung am Jahrestag</string>
@@ -234,7 +236,7 @@
     <string name="backup_import_question">Sicherung wiederherstellen?</string>
     <string name="backup_import_text">Alle aktuellen Daten auf diesem Gerät werden durch die Daten aus der Sicherung ersetzt.</string>
     <string name="backup_import_confirm">Wiederherstellen</string>
-    <string name="backup_restore_onboarding">Sicherung wiederherstellen</string>
+    <string name="backup_restore_onboarding">Eine Sicherung wiederherstellen</string>
     <string name="backup_saved">Sicherung gespeichert</string>
     <string name="backup_save_failed">Sicherung konnte nicht gespeichert werden</string>
     <string name="backup_restored">Sicherung wiederhergestellt</string>
@@ -349,7 +351,6 @@
     <string name="sync_failed">Die Datei konnte nicht abgeglichen werden. Vielleicht gehört sie zu einer anderen Kopplung oder ist beschädigt.</string>
     <string name="sync_done">Abgeglichen: %1$d neu, %2$d geändert, %3$d entfernt</string>
     <string name="moment_added_by">Hinzugefügt von %1$s</string>
-
     <!-- Geburtstage -->
     <string name="birthday">Geburtstag</string>
     <string name="birthday_optional">Geburtstag (optional)</string>
@@ -392,9 +393,9 @@
     <string name="fact_new_years_sub">habt ihr schon zusammen gefeiert</string>
     <string name="fact_seasons_sub">habt ihr schon zusammen erlebt</string>
     <string name="fact_heartbeats_sub">hat jedes eurer Herzen geschlagen, seit ihr zusammen seid</string>
-    <string name="fact_valentines_sub">habt ihr schon zusammen erlebt</string>
+    <string name="fact_valentines_sub">habt ihr schon zusammen verbracht</string>
     <string name="fact_pride_months_sub">habt ihr schon zusammen gefeiert</string>
-    <string name="fact_halloweens_sub">habt ihr schon zusammen erlebt</string>
+    <string name="fact_halloweens_sub">habt ihr schon zusammen verbracht</string>
     <string name="fact_friday_13th_sub">habt ihr schon gemeinsam überstanden</string>
     <string name="fact_earth_km_sub">ist die Erde mit euch um die Sonne gereist</string>
     <string name="fact_breaths_sub">habt ihr jeweils genommen, seit ihr zusammen seid</string>
@@ -572,7 +573,6 @@
     <string name="tag_milestone">Meilenstein</string>
     <string name="tag_celebration">Feier</string>
     <string name="tag_everyday">Alltag</string>
-
     <!-- Erinnerungs-Widget -->
     <string name="widget_memory_name">Erinnerung</string>
     <string name="widget_memory_description">Jeden Tag ein anderer Moment aus eurer gemeinsamen Zeit</string>
@@ -588,7 +588,6 @@
         <item quantity="one">vor %s Monat</item>
         <item quantity="other">vor %s Monaten</item>
     </plurals>
-
     <!-- Fotobuch als PDF -->
     <string name="photobook_save">Als Fotobuch speichern (PDF)</string>
     <string name="photobook_hint">Enthält die Momente, die oben angezeigt werden, zum Ausdrucken oder Verschenken</string>
@@ -689,6 +688,8 @@
     <string name="unsaved_text">Du hast an dieser Beziehung etwas geändert.</string>
     <string name="unsaved_invalid">Deine Änderungen lassen sich noch nicht speichern: Es braucht mindestens zwei Menschen, und eine frühere Phase muss vor dem Startdatum beginnen.</string>
     <string name="discard">Verwerfen</string>
+    <string name="moment_unsaved_text">Du hast an diesem Moment etwas geändert.</string>
+    <string name="moment_unsaved_no_title">Deine Änderungen lassen sich noch nicht speichern: Der Moment braucht einen Titel.</string>
     <string name="ob_distance_title">Wohnt ihr weit voneinander entfernt?</string>
     <string name="ob_distance_sub">Bei einer Fernbeziehung zeigt die Startseite die Uhrzeit bei der anderen Seite und zählt bis zum nächsten Treffen.</string>
     <string name="ob_distance_no">Wir wohnen nah beieinander</string>

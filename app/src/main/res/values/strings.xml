@@ -195,6 +195,8 @@
     <string name="moment_cover_hint">The first photo is the cover. Tap another photo to make it the cover.</string>
     <string name="moment_make_cover">Make cover photo</string>
     <string name="moment_photo_position">Photo %1$d of %2$d</string>
+    <string name="moment_crop_pick">Tap a photo to choose the part that is shown. It is used everywhere, also in the photo book.</string>
+    <string name="photo_show_full">Show photo in full size</string>
     <string name="moment_remove_photo">Remove photo</string>
     <string name="moment_remind">Yearly reminder</string>
     <string name="moment_remind_summary">Get a notification on the anniversary</string>
@@ -694,6 +696,8 @@
     <string name="unsaved_text">You changed something on this relationship.</string>
     <string name="unsaved_invalid">Your changes can\'t be saved yet: at least two people are needed and an earlier phase has to start before the start date.</string>
     <string name="discard">Discard</string>
+    <string name="moment_unsaved_text">You changed something on this moment.</string>
+    <string name="moment_unsaved_no_title">Your changes can\'t be saved yet: the moment needs a title.</string>
     <string name="ob_distance_title">Do you live far apart?</string>
     <string name="ob_distance_sub">For long distance, the home screen shows the time on the other side and counts down to your next meeting.</string>
     <string name="ob_distance_no">We live close by</string>

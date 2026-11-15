@@ -6,11 +6,15 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Der Lauf darf das Repository nur lesen
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -29,24 +33,34 @@ jobs:
             .github/scripts/check-release.sh "$next" 2>&1 | sed 's/^::error/::warning/' || true
           fi
 
-      - uses: actions/setup-java@v6
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6
         with:
           distribution: temurin
           java-version: 17
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6
 
       - name: Tests
         run: ./gradlew testGithubDebugUnitTest
       - name: Build all variants
         run: ./gradlew assembleGithubRelease assembleFdroidRelease bundlePlayRelease
+      # Findet z. B. Aufrufe, die auf älteren Android-Versionen abstürzen, und kaputte Platzhalter
+      # in Übersetzungen. Nur Fehler lassen den Lauf scheitern, Einstellungen dazu in lint.xml.
+      - name: Lint
+        run: ./gradlew lintGithubDebug
+      # Zeigt die gefundenen Fehler direkt im Protokoll, ohne den Bericht herunterzuladen
+      - name: Lint-Fehler anzeigen
+        if: failure()
+        run: |
+          report=app/build/intermediates/lint_intermediate_text_report/githubDebug/lintReportGithubDebug/lint-results-githubDebug.txt
+          [ -f "$report" ] && grep -A3 "Error:" "$report" || true
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: since-us-apks
           path: app/build/outputs/apk/*/release/*.apk
           # Nur zum kurzen Nachschauen, spart Actions-Speicher
           retention-days: 3
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: always()
         with:
           name: screenshots-and-store-graphics

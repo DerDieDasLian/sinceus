@@ -27,12 +27,27 @@ data class Moment(
     val tags: List<String> = emptyList(),
     /** Wo der Moment war, frei geschrieben, leer = kein Ort */
     val place: String = "",
+    /** Gewählter Bildausschnitt je Foto (Schlüssel: Pfad aus [photos]); fehlt einer, ist das Foto mittig */
+    val frames: Map<String, PhotoFrame> = emptyMap(),
 ) {
     /** Titelbild für Zeitleiste, Teilen-Bild und Rückblick, null = kein Foto */
     val photoPath: String? get() = photos.firstOrNull()
 
-    /** Wendet [f] auf jeden Fotopfad an; null fällt weg, doppelte Pfade auch */
-    fun mapPhotos(f: (String) -> String?): Moment = copy(photos = photos.mapNotNull(f).distinct())
+    /** Ausschnitt für [path], null = nie gewählt */
+    fun frameOf(path: String): PhotoFrame? = frames[path]
+
+    /** Wendet [f] auf jeden Fotopfad an; null fällt weg, doppelte Pfade auch. Die Ausschnitte wandern mit. */
+    fun mapPhotos(f: (String) -> String?): Moment {
+        val mapped = linkedMapOf<String, PhotoFrame?>()
+        photos.forEach { old ->
+            val new = f(old) ?: return@forEach
+            if (new !in mapped) mapped[new] = frames[old]
+        }
+        return copy(
+            photos = mapped.keys.toList(),
+            frames = mapped.mapNotNull { (path, frame) -> frame?.let { path to it } }.toMap(),
+        )
+    }
 }
 
 object MomentCodec {
@@ -52,7 +67,8 @@ object MomentCodec {
                     .put("updated", m.updatedAt)
                     .put("by", m.addedBy ?: JSONObject.NULL)
                     .put("tags", JSONArray().apply { m.tags.forEach { put(it) } })
-                    .put("place", m.place),
+                    .put("place", m.place)
+                    .apply { PhotoFrame.encode(m.photos, m.frames)?.let { put("frames", it) } },
             )
         }
     }.toString()
@@ -64,18 +80,20 @@ object MomentCodec {
         return (0 until array.length()).mapNotNull { i ->
             runCatching {
                 val o = array.getJSONObject(i)
+                val photos = decodePhotos(o)
                 Moment(
                     id = o.getString("id"),
                     title = o.getString("title"),
                     date = LocalDate.ofEpochDay(o.getLong("date")),
                     note = o.optString("note", ""),
-                    photos = decodePhotos(o),
+                    photos = photos,
                     yearlyReminder = o.optBoolean("remind", true),
                     relationshipId = if (o.isNull("rel")) null else o.optString("rel").ifBlank { null },
                     updatedAt = o.optLong("updated", 0),
                     addedBy = if (o.isNull("by")) null else o.optString("by").ifBlank { null },
                     tags = decodeTags(o),
                     place = o.optString("place", "").trim(),
+                    frames = PhotoFrame.decode(photos, o.optJSONArray("frames")),
                 )
             }.getOrNull()
         }

@@ -1,3 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="privacy_text">Sus nombres, fechas, fotos y recuerdos se almacenan en este dispositivo. Esta versión solo se conecta a GitHub para comprobar la existencia de nuevas versiones (se puede desactivar en la configuración). No hay rastreo ni anuncios. Tus datos solo salen del teléfono si guardas una copia de seguridad, envías un archivo de sincronización al teléfono vinculado o utilizas la copia de seguridad de Android (Google Backup).</string>
 </resources>

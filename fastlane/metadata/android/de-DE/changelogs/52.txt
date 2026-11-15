@@ -1,0 +1,2 @@
+• Vorschau beim Zurückwischen jetzt auch in der App.
+• Italienische Übersetzung ergänzt, danke an alle, die auf Weblate mithelfen.
