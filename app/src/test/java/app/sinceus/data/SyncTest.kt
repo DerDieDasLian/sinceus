@@ -81,6 +81,15 @@ class SyncTest {
     }
 
     @Test
+    fun pastedCodeMayStandInsideAMessage() {
+        val p = Pairing.create("a")
+        val message = "Pairing code for Since Us:\n\n${Pairing.qrText(p)}\n\nOnly share it in a private chat."
+        assertArrayEquals(p.key, Pairing.keyFromQr(message))
+        assertArrayEquals(p.key, Pairing.keyFromQr("  ${Pairing.qrText(p)}\n"))
+        assertNull(Pairing.keyFromQr("Pairing code for Since Us: sinceus:pair:1:"))
+    }
+
+    @Test
     fun codecRoundtrip() {
         val data = SyncData(
             people = listOf(Person("a", "Alex"), Person("b", "Sam", "they/them")),
