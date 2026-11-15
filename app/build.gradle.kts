@@ -173,7 +173,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.3.0")
     implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.glance:glance-material3:1.1.1")
-    implementation("io.coil-kt.coil3:coil-compose:3.4.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.5.0")
     // QR-Code für die Kopplung zum Abgleich (erzeugen und scannen, Apache 2.0)
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.5.4")
