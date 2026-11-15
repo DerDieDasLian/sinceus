@@ -14,5 +14,8 @@ updates:
     schedule:
       interval: monthly
     groups:
+      # Kleine Updates gesammelt. Große Sprünge (z. B. Android Gradle Plugin 9, Gradle 9)
+      # kommen als eigener PR, weil sie oft Umbauten am Build brauchen.
       gradle:
         patterns: ["*"]
+        update-types: ["minor", "patch"]

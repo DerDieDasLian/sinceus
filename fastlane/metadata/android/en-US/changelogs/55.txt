@@ -1,0 +1,1 @@
+• Updated technical foundations (Kotlin, Compose and other libraries).
