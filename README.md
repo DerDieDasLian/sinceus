@@ -22,7 +22,7 @@ Counts how long you have been together and reminds you of every special day.
 
 </div>
 
-Available in English, German, Italian and Chinese, more languages are [being translated](#help-translate).
+Available in English, German, Italian, Dutch and Chinese, more languages are [being translated](#help-translate).
 
 ## Why Since Us
 
@@ -43,7 +43,7 @@ Available in English, German, Italian and Chinese, more languages are [being tra
 - Guided setup, optional start time, one-tap "delete all data"
 - Backup as a file (all data and photos) to move to a new phone, without internet
 - Sync between phones without a server: pair once with a QR code, then send each other an encrypted file (AES-256-GCM) that opens right in the app and only on your paired phones
-- Light and dark mode, English, German, Italian and Chinese (more on the way), language can be changed right in the app
+- Light and dark mode, English, German, Italian, Dutch and Chinese (more on the way), language can be changed right in the app
 - No account, no ads, no tracking, all data stays on the device
 - Poly mode: more than two people and several relationships, each with its own date, special days and reminders, plus a discreet mode with initials only
 - For every kind of love, no matter who you are, whom you love or how many of you there are, with a little rainbow decoration in Pride Month (June)

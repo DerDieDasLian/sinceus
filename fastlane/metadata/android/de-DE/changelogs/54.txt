@@ -1,0 +1,5 @@
+• Verpasste Erinnerungen werden nachgeholt: War das Handy zur gewählten Uhrzeit aus, kommt die Mitteilung, sobald es wieder an ist.
+• Beim Bearbeiten eines Moments fragt die App nach, bevor Änderungen verloren gehen.
+• Sicherung einspielen klappt jetzt auch bei fast vollem Speicher sicher.
+• Besser mit Screenreader bedienbar, größere Knöpfe in der unteren Leiste.
+• Neu auf Niederländisch. Danke an alle, die übersetzen!

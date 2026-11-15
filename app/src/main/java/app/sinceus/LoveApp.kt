@@ -20,7 +20,11 @@ class LoveApp : Application() {
         super.onCreate()
         Notifier.createChannel(this)
         CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {
-            DailyScheduler.schedule(this@LoveApp, LoveRepository(this@LoveApp).current())
+            val repo = LoveRepository(this@LoveApp)
+            val settings = repo.current()
+            DailyScheduler.schedule(this@LoveApp, settings)
+            // Verpasste Mitteilung für heute nachholen (Handy war aus oder die App wurde beendet)
+            runCatching { Notifier.notifyIfDue(this@LoveApp, repo, settings) }
             runCatching { UpdateChecker.checkIfDue(this@LoveApp) }
             runCatching { CacheCleanup.run(this@LoveApp) }
         }

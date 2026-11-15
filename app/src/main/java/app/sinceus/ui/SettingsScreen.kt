@@ -280,7 +280,6 @@ fun SettingsScreen(
         FontPage(settings.font, onSelect = onFont, onClose = { dialog = null })
         return
     }
-    val uri = androidx.compose.ui.platform.LocalUriHandler.current
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
@@ -399,18 +398,18 @@ fun SettingsScreen(
                             headlineContent = { Text(stringResource(R.string.discreet)) },
                             supportingContent = { Text(stringResource(R.string.discreet_summary)) },
                             leadingContent = { Icon(Icons.Rounded.VisibilityOff, null) },
-                            trailingContent = { Switch(checked = settings.discreet, onCheckedChange = onDiscreet) },
+                            trailingContent = { Switch(checked = settings.discreet, onCheckedChange = null) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { onDiscreet(!settings.discreet) },
+                            modifier = Modifier.toggleable(value = settings.discreet, role = Role.Switch, onValueChange = onDiscreet),
                         )
                         Divider()
                         ListItem(
                             headlineContent = { Text(stringResource(R.string.app_lock)) },
                             supportingContent = { Text(stringResource(R.string.app_lock_summary)) },
                             leadingContent = { Icon(Icons.Rounded.Lock, null) },
-                            trailingContent = { Switch(checked = appLock, onCheckedChange = onAppLock) },
+                            trailingContent = { Switch(checked = appLock, onCheckedChange = null) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { onAppLock(!appLock) },
+                            modifier = Modifier.toggleable(value = appLock, role = Role.Switch, onValueChange = onAppLock),
                         )
                     }
                     SettingsPage.Notifications -> Section(null) {
@@ -427,10 +426,10 @@ fun SettingsScreen(
                             },
                             leadingContent = { Icon(Icons.Rounded.NotificationsActive, null) },
                             trailingContent = {
-                                Switch(checked = settings.notificationsEnabled, onCheckedChange = onNotifications)
+                                Switch(checked = settings.notificationsEnabled, onCheckedChange = null)
                             },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { onNotifications(!settings.notificationsEnabled) },
+                            modifier = Modifier.toggleable(value = settings.notificationsEnabled, role = Role.Switch, onValueChange = onNotifications),
                         )
                         if (settings.notificationsEnabled) {
                             Divider()
@@ -454,18 +453,18 @@ fun SettingsScreen(
                             headlineContent = { Text(stringResource(R.string.moments_show)) },
                             supportingContent = { Text(stringResource(R.string.moments_show_summary)) },
                             leadingContent = { Icon(Icons.Rounded.AutoStories, null) },
-                            trailingContent = { Switch(checked = settings.showMoments, onCheckedChange = onShowMoments) },
+                            trailingContent = { Switch(checked = settings.showMoments, onCheckedChange = null) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { onShowMoments(!settings.showMoments) },
+                            modifier = Modifier.toggleable(value = settings.showMoments, role = Role.Switch, onValueChange = onShowMoments),
                         )
                         Divider()
                         ListItem(
                             headlineContent = { Text(stringResource(R.string.live_show)) },
                             supportingContent = { Text(stringResource(R.string.live_show_summary)) },
                             leadingContent = { Icon(Icons.Rounded.Timer, null) },
-                            trailingContent = { Switch(checked = settings.showLive, onCheckedChange = onShowLive) },
+                            trailingContent = { Switch(checked = settings.showLive, onCheckedChange = null) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { onShowLive(!settings.showLive) },
+                            modifier = Modifier.toggleable(value = settings.showLive, role = Role.Switch, onValueChange = onShowLive),
                         )
                         Divider()
                         Row(Icons.Rounded.Widgets, stringResource(R.string.add_widget), null, onClick = onAddWidget)
@@ -476,9 +475,9 @@ fun SettingsScreen(
                                 headlineContent = { Text(stringResource(R.string.facts_show)) },
                                 supportingContent = { Text(stringResource(R.string.facts_show_summary)) },
                                 leadingContent = { Icon(Icons.Rounded.Calculate, null) },
-                                trailingContent = { Switch(checked = settings.showFacts, onCheckedChange = onShowFacts) },
+                                trailingContent = { Switch(checked = settings.showFacts, onCheckedChange = null) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable { onShowFacts(!settings.showFacts) },
+                                modifier = Modifier.toggleable(value = settings.showFacts, role = Role.Switch, onValueChange = onShowFacts),
                             )
                         }
                         // Feiertage direkt auf der Seite statt in einem eigenen Fenster
@@ -498,18 +497,18 @@ fun SettingsScreen(
                                 headlineContent = { Text(stringResource(R.string.celebrate_show)) },
                                 supportingContent = { Text(stringResource(R.string.celebrate_show_summary)) },
                                 leadingContent = { Icon(Icons.Rounded.Celebration, null) },
-                                trailingContent = { Switch(checked = settings.celebrate, onCheckedChange = onCelebrate) },
+                                trailingContent = { Switch(checked = settings.celebrate, onCheckedChange = null) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable { onCelebrate(!settings.celebrate) },
+                                modifier = Modifier.toggleable(value = settings.celebrate, role = Role.Switch, onValueChange = onCelebrate),
                             )
                             Divider()
                             ListItem(
                                 headlineContent = { Text(stringResource(R.string.recap_show)) },
                                 supportingContent = { Text(stringResource(R.string.recap_show_summary)) },
                                 leadingContent = { Icon(Icons.Rounded.History, null) },
-                                trailingContent = { Switch(checked = settings.showRecap, onCheckedChange = onShowRecap) },
+                                trailingContent = { Switch(checked = settings.showRecap, onCheckedChange = null) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable { onShowRecap(!settings.showRecap) },
+                                modifier = Modifier.toggleable(value = settings.showRecap, role = Role.Switch, onValueChange = onShowRecap),
                             )
                         }
                         Text(
@@ -555,9 +554,9 @@ fun SettingsScreen(
                                 )
                             },
                             leadingContent = { Icon(Icons.Rounded.EventRepeat, null) },
-                            trailingContent = { Switch(checked = autoBackup != null, onCheckedChange = onAutoBackup) },
+                            trailingContent = { Switch(checked = autoBackup != null, onCheckedChange = null) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            modifier = Modifier.clickable { onAutoBackup(autoBackup == null) },
+                            modifier = Modifier.toggleable(value = autoBackup != null, role = Role.Switch, onValueChange = onAutoBackup),
                         )
                     }
                     SettingsPage.Updates -> {
@@ -594,9 +593,9 @@ fun SettingsScreen(
                                 headlineContent = { Text(stringResource(R.string.update_auto)) },
                                 supportingContent = { Text(stringResource(R.string.update_auto_summary)) },
                                 leadingContent = { Icon(Icons.Rounded.Update, null) },
-                                trailingContent = { Switch(checked = settings.updateCheck, onCheckedChange = onUpdateCheck) },
+                                trailingContent = { Switch(checked = settings.updateCheck, onCheckedChange = null) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable { onUpdateCheck(!settings.updateCheck) },
+                                modifier = Modifier.toggleable(value = settings.updateCheck, role = Role.Switch, onValueChange = onUpdateCheck),
                             )
                             Divider()
                             Row(Icons.Rounded.Refresh, stringResource(R.string.update_check_now), null, onClick = onCheckUpdates)
@@ -609,16 +608,16 @@ fun SettingsScreen(
                                 headlineContent = { Text(stringResource(R.string.changelog_setting)) },
                                 supportingContent = { Text(stringResource(R.string.changelog_setting_summary)) },
                                 leadingContent = { Icon(Icons.Rounded.NewReleases, null) },
-                                trailingContent = { Switch(checked = settings.showChangelog, onCheckedChange = onShowChangelog) },
+                                trailingContent = { Switch(checked = settings.showChangelog, onCheckedChange = null) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.clickable { onShowChangelog(!settings.showChangelog) },
+                                modifier = Modifier.toggleable(value = settings.showChangelog, role = Role.Switch, onValueChange = onShowChangelog),
                             )
                             Divider()
-                            Row(Icons.Rounded.Public, stringResource(R.string.website), null) { uri.openUri(Web.page("index", context)) }
+                            Row(Icons.Rounded.Public, stringResource(R.string.website), null) { Feedback.openWeb(context, Web.page("index", context)) }
                             Divider()
                             Row(Icons.Rounded.Shield, stringResource(R.string.privacy), null) { dialog = "privacy" }
                             Divider()
-                            Row(Icons.Rounded.Gavel, stringResource(R.string.imprint), null) { uri.openUri(Web.page("imprint", context)) }
+                            Row(Icons.Rounded.Gavel, stringResource(R.string.imprint), null) { Feedback.openWeb(context, Web.page("imprint", context)) }
                             Divider()
                             Row(Icons.Rounded.Description, stringResource(R.string.licenses), null, onClick = onOpenLicenses)
                             Divider()
@@ -831,7 +830,7 @@ fun SettingsScreen(
             },
             confirmButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.ok)) } },
             dismissButton = {
-                TextButton(onClick = { uri.openUri(Web.page("privacy", context)) }) { Text(stringResource(R.string.privacy_full)) }
+                TextButton(onClick = { Feedback.openWeb(context, Web.page("privacy", context)) }) { Text(stringResource(R.string.privacy_full)) }
             },
         )
     }
@@ -1504,11 +1503,11 @@ private fun LanguageDialog(current: String, onDismiss: () -> Unit, onPick: (Stri
                         Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable { onPick(tag) }
+                            .selectable(selected = tag == current, role = Role.RadioButton) { onPick(tag) }
                             .padding(vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        RadioButton(selected = tag == current, onClick = { onPick(tag) })
+                        RadioButton(selected = tag == current, onClick = null, modifier = Modifier.padding(14.dp))
                         Text(languageLabel(tag))
                     }
                 }

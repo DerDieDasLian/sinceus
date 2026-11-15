@@ -688,6 +688,8 @@
     <string name="unsaved_text">You changed something on this relationship.</string>
     <string name="unsaved_invalid">Your changes can\'t be saved yet: at least two people are needed and an earlier phase has to start before the start date.</string>
     <string name="discard">Discard</string>
+    <string name="moment_unsaved_text">You changed something on this moment.</string>
+    <string name="moment_unsaved_no_title">Your changes can\'t be saved yet: the moment needs a title.</string>
     <string name="ob_distance_title">Do you live far apart?</string>
     <string name="ob_distance_sub">For long distance, the home screen shows the time on the other side and counts down to your next meeting.</string>
     <string name="ob_distance_no">We live close by</string>

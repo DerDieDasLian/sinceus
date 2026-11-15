@@ -14,6 +14,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
@@ -470,6 +471,15 @@ class LoveRepository(private val context: Context) {
      */
     suspend fun importSync(input: InputStream, pairing: Pairing): MergeResult {
         val dir = File(context.cacheDir, "sync-in")
+        try {
+            return mergeSync(input, pairing, dir)
+        } finally {
+            // Auch nach einem Fehler nichts im Zwischenspeicher liegen lassen
+            withContext(NonCancellable + Dispatchers.IO) { dir.deleteRecursively() }
+        }
+    }
+
+    private suspend fun mergeSync(input: InputStream, pairing: Pairing, dir: File): MergeResult {
         val remote = withContext(Dispatchers.IO) {
             dir.deleteRecursively()
             dir.mkdirs()
@@ -506,12 +516,16 @@ class LoveRepository(private val context: Context) {
         // Fotos der übernommenen Momente in den App-Speicher holen, alte Fotos aufräumen
         val takenIds = result.taken.map { it.id }.toSet()
         val moments = withContext(Dispatchers.IO) {
+            val moved = mutableSetOf<String>()
             val merged = result.moments.map { m ->
                 if (m.id !in takenIds) return@map m
                 m.mapPhotos { name ->
+                    val target = File(momentDir(), name)
+                    // Dasselbe Foto in einem zweiten Moment: Es wurde schon verschoben
+                    if (name in moved) return@mapPhotos target.absolutePath
                     val source = File(File(dir, Backup.MOMENTS), name).takeIf { it.isFile } ?: return@mapPhotos null
-                    val target = File(momentDir(), source.name)
-                    source.copyTo(target, overwrite = true)
+                    Backup.move(source, target)
+                    moved += name
                     target.absolutePath
                 }
             }
@@ -599,6 +613,15 @@ class LoveRepository(private val context: Context) {
      */
     suspend fun importBackup(input: InputStream) {
         val restore = File(context.cacheDir, "restore")
+        try {
+            restoreBackup(input, restore)
+        } finally {
+            // Auch nach einem Fehler nichts im Zwischenspeicher liegen lassen
+            withContext(NonCancellable + Dispatchers.IO) { restore.deleteRecursively() }
+        }
+    }
+
+    private suspend fun restoreBackup(input: InputStream, restore: File) {
         val data = withContext(Dispatchers.IO) {
             restore.deleteRecursively()
             var json: String? = null
@@ -622,10 +645,17 @@ class LoveRepository(private val context: Context) {
 
         // Ab hier ist die Sicherung gültig: alte Dateien durch die aus der Sicherung ersetzen
         val restored = withContext(Dispatchers.IO) {
+            // Verschieben statt kopieren: Das braucht keinen zusätzlichen Platz und kann deshalb nicht
+            // mittendrin am vollen Speicher scheitern, nachdem die alten Fotos schon gelöscht sind
+            val moved = mutableSetOf<String>()
             fun move(folder: String, dir: File, name: String?): String? {
-                val source = name?.let { File(File(restore, folder), it) }?.takeIf { it.isFile } ?: return null
+                if (name == null) return null
                 val target = File(dir, name)
-                source.copyTo(target, overwrite = true)
+                // Dasselbe Foto ein zweites Mal: Es wurde schon verschoben
+                if ("$folder/$name" in moved) return target.absolutePath
+                val source = File(File(restore, folder), name).takeIf { it.isFile } ?: return null
+                Backup.move(source, target)
+                moved += "$folder/$name"
                 return target.absolutePath
             }
             deletePhotos()

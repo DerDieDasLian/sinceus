@@ -1,0 +1,5 @@
+• Missed reminders are caught up: if your phone was off at the chosen time, the notification comes as soon as it is back on.
+• When editing a moment, the app asks before changes get lost.
+• Restoring a backup is now safe even when storage is almost full.
+• Easier to use with a screen reader, bigger buttons in the bottom bar.
+• Now in Dutch. Thanks to everyone who translates!
