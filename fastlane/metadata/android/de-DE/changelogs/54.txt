@@ -1,5 +1,6 @@
-• Verpasste Erinnerungen werden nachgeholt: War das Handy zur gewählten Uhrzeit aus, kommt die Mitteilung, sobald es wieder an ist.
-• Beim Bearbeiten eines Moments fragt die App nach, bevor Änderungen verloren gehen.
-• Sicherung einspielen klappt jetzt auch bei fast vollem Speicher sicher.
-• Besser mit Screenreader bedienbar, größere Knöpfe in der unteren Leiste.
+• Neu: Abgleich über einen Ordner, den eine andere App auf euren Geräten gleich hält. Since Us bleibt ohne Internet, auch mehrere Geräte pro Person gehen.
+• Verpasste Erinnerungen kommen nach, sobald das Handy wieder an ist.
+• Nachfrage, bevor Änderungen an einem Moment verloren gehen.
+• Sicherung einspielen klappt auch bei fast vollem Speicher.
+• Besser mit Screenreader bedienbar, größere Knöpfe unten.
 • Neu auf Niederländisch. Danke an alle, die übersetzen!

@@ -225,8 +225,18 @@ private fun Preferences.model(): Pair<List<Person>, List<Relationship>> {
     return PeopleCodec.sanitize(people, relationships, start)
 }
 
-private fun MutablePreferences.writeModel(people: List<Person>, relationships: List<Relationship>) {
-    val (p, r) = PeopleCodec.sanitize(people, relationships, LocalDate.now())
+/**
+ * Schreibt Menschen und Beziehungen. Mit [stamp] bekommen geänderte Angaben einen neuen Zeitstempel
+ * für den Abgleich; beim Übernehmen von Abgleich oder Sicherung bleiben die mitgebrachten Zeitstempel.
+ */
+private fun MutablePreferences.writeModel(people: List<Person>, relationships: List<Relationship>, stamp: Boolean = true) {
+    val (cleanPeople, cleanRelationships) = PeopleCodec.sanitize(people, relationships, LocalDate.now())
+    val (p, r) = if (stamp) {
+        val (oldPeople, oldRelationships) = model()
+        PeopleCodec.stamp(oldPeople, oldRelationships, cleanPeople, cleanRelationships, System.currentTimeMillis())
+    } else {
+        cleanPeople to cleanRelationships
+    }
     this[Keys.people] = PeopleCodec.encodePeople(p)
     this[Keys.relationships] = PeopleCodec.encodeRelationships(r)
     // Die alten Einträge stehen jetzt in den neuen
@@ -465,6 +475,18 @@ class LoveRepository(private val context: Context) {
     }
 
     /**
+     * Fingerabdruck dessen, was [exportSync] gerade schreiben würde. Der Ordner-Abgleich schreibt
+     * seine Datei nur neu, wenn er sich geändert hat, damit die Ordner-App nicht ständig hochlädt.
+     */
+    suspend fun syncFingerprint(pairing: Pairing): String {
+        val s = current()
+        val deleted = decodeDeleted(context.dataStore.data.first()[Keys.deleted])
+        val json = SyncCodec.encode(SyncData(s.people, s.relationships, s.moments, deleted, pairing.me))
+        return java.security.MessageDigest.getInstance("SHA-256").digest(json.toByteArray(Charsets.UTF_8))
+            .joinToString("") { "%02x".format(it) }
+    }
+
+    /**
      * Übernimmt eine Abgleich-Datei vom gekoppelten Handy und führt sie mit den eigenen Daten
      * zusammen. Gehört die Datei zu keiner Kopplung mit diesem Handy oder ist sie beschädigt,
      * wird eine Exception geworfen und nichts verändert.
@@ -535,7 +557,7 @@ class LoveRepository(private val context: Context) {
             merged
         }
         context.dataStore.edit { prefs ->
-            prefs.writeModel(result.people, result.relationships)
+            prefs.writeModel(result.people, result.relationships, stamp = false)
             prefs[Keys.moments] = MomentCodec.encode(moments)
             prefs[Keys.deleted] = encodeDeleted(result.deleted)
         }
@@ -675,7 +697,7 @@ class LoveRepository(private val context: Context) {
             val lastNotified = p[Keys.lastNotified]
             p.clear()
             lastNotified?.let { p[Keys.lastNotified] = it }
-            p.writeModel(restored.people, restored.relationships)
+            p.writeModel(restored.people, restored.relationships, stamp = false)
             p[Keys.selected] = restored.selected
             if (restored.widgetRelationship.isNotEmpty()) p[Keys.widgetRelationship] = restored.widgetRelationship
             p[Keys.discreet] = restored.discreet
@@ -719,6 +741,7 @@ class LoveRepository(private val context: Context) {
         }
         // Mit allen Daten verschwindet auch die Kopplung mit dem anderen Handy und die automatische Sicherung
         PairingStore.clear(context)
+        FolderSync.disable(context)
         AutoBackup.disable(context)
     }
 

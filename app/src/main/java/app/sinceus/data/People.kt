@@ -16,7 +16,15 @@ data class Person(
     val pronouns: String = "",
     /** Geburtstag, null = keine Angabe */
     val birthday: LocalDate? = null,
-)
+    /** Letzte Änderung an den gemeinsamen Angaben ([shared]) in Millisekunden, 0 = unbekannt (ältere Daten) */
+    val updatedAt: Long = 0,
+) {
+    /**
+     * Was beim Abgleich mit anderen Geräten gilt: Pronomen und Geburtstag. Den Namen kann jedes
+     * Gerät für sich ändern (z. B. einen Spitznamen), er kommt nur bei neuen Menschen mit.
+     */
+    val shared: Person get() = Person(id, "", pronouns, birthday)
+}
 
 /** Art einer Beziehung: Liebe (Standard), Freundschaft oder Familie. [id] wird gespeichert. */
 enum class RelationKind(val id: String) {
@@ -83,7 +91,18 @@ data class Relationship(
     val startTitle: String = "",
     /** Eigene Farbe der Beziehung (Platz in der Farbliste, 0 bis [RELATIONSHIP_COLORS] - 1), null = automatisch */
     val color: Int? = null,
+    /** Letzte Änderung an den gemeinsamen Angaben ([shared]) in Millisekunden, 0 = unbekannt (ältere Daten) */
+    val updatedAt: Long = 0,
 ) {
+    /**
+     * Was beim Abgleich mit anderen Geräten gilt: Menschen, Daten, Fernbeziehung, Art und Titel.
+     * Bezeichnung, Mitteilungen und Farbe bleiben auf jedem Gerät, wie man sie dort eingestellt hat.
+     */
+    val shared: Relationship get() = copy(label = "", notify = true, color = null, updatedAt = 0)
+
+    /** Übernimmt die gemeinsamen Angaben von [other], die eigenen Einstellungen bleiben */
+    fun withSharedFrom(other: Relationship): Relationship = other.copy(label = label, notify = notify, color = color)
+
     val startDateTime: LocalDateTime get() = startDate.atTime(startTime ?: LocalTime.MIDNIGHT)
 
     /** Die frühere Phase, nur wenn sie vollständig ist, eine andere Art hat und vor dem Start liegt */
@@ -133,7 +152,8 @@ object PeopleCodec {
                     .put("id", it.id)
                     .put("name", it.name)
                     .put("pronouns", it.pronouns)
-                    .put("birthday", it.birthday?.toEpochDay() ?: JSONObject.NULL),
+                    .put("birthday", it.birthday?.toEpochDay() ?: JSONObject.NULL)
+                    .put("updated", it.updatedAt),
             )
         }
     }.toString()
@@ -149,6 +169,7 @@ object PeopleCodec {
                     name = o.getString("name").trim().take(MAX_NAME),
                     pronouns = o.optString("pronouns", "").trim().take(MAX_NAME),
                     birthday = if (o.isNull("birthday")) null else LocalDate.ofEpochDay(o.getLong("birthday")),
+                    updatedAt = o.optLong("updated", 0).coerceAtLeast(0),
                 )
             }.getOrNull()
         }.distinctBy { it.id }
@@ -172,7 +193,8 @@ object PeopleCodec {
                     .put("before", r.before?.id ?: JSONObject.NULL)
                     .put("beforeStart", r.beforeStart?.toEpochDay() ?: JSONObject.NULL)
                     .put("startTitle", r.startTitle)
-                    .put("color", r.color ?: JSONObject.NULL),
+                    .put("color", r.color ?: JSONObject.NULL)
+                    .put("updated", r.updatedAt),
             )
         }
     }.toString()
@@ -199,6 +221,7 @@ object PeopleCodec {
                     beforeStart = if (o.isNull("beforeStart")) null else LocalDate.ofEpochDay(o.getLong("beforeStart")),
                     startTitle = o.optString("startTitle", "").trim().take(MAX_TITLE),
                     color = if (o.isNull("color")) null else o.optInt("color", -1).takeIf { it in 0 until RELATIONSHIP_COLORS },
+                    updatedAt = o.optLong("updated", 0).coerceAtLeast(0),
                 )
             }.getOrNull()
         }.distinctBy { it.id }
@@ -223,6 +246,37 @@ object PeopleCodec {
             .take(MAX_RELATIONSHIPS)
             .ifEmpty { listOf(Relationship(MAIN_ID, persons.map { it.id }, fallbackStart)) }
         return persons to rels
+    }
+
+    /**
+     * Setzt [Person.updatedAt] und [Relationship.updatedAt] auf [now], wenn sich die gemeinsamen
+     * Angaben gegenüber [oldPeople] und [oldRelationships] geändert haben oder etwas neu ist.
+     * So weiß der Abgleich, welche Änderung die neuere ist.
+     */
+    fun stamp(
+        oldPeople: List<Person>,
+        oldRelationships: List<Relationship>,
+        people: List<Person>,
+        relationships: List<Relationship>,
+        now: Long,
+    ): Pair<List<Person>, List<Relationship>> {
+        val p = people.map { n ->
+            val o = oldPeople.firstOrNull { it.id == n.id }
+            when {
+                o == null -> n.copy(updatedAt = maxOf(n.updatedAt, now))
+                o.shared != n.shared -> n.copy(updatedAt = now)
+                else -> n.copy(updatedAt = maxOf(n.updatedAt, o.updatedAt))
+            }
+        }
+        val r = relationships.map { n ->
+            val o = oldRelationships.firstOrNull { it.id == n.id }
+            when {
+                o == null -> n.copy(updatedAt = maxOf(n.updatedAt, now))
+                o.shared != n.shared -> n.copy(updatedAt = now)
+                else -> n.copy(updatedAt = maxOf(n.updatedAt, o.updatedAt))
+            }
+        }
+        return p to r
     }
 
     const val MAX_NAME = 40

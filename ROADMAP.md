@@ -9,6 +9,7 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 - Reminders you missed are caught up: if your phone was off at the chosen time, the notification comes as soon as it is back
 - The moment editor asks before it throws away changes, and restoring a backup is safer when storage is almost full
 - Easier to use with a screen reader, and Dutch as a new language
+- Sync through a folder that another app keeps the same on your devices, for example on your own server ([#46](https://github.com/DerDieDasLian/sinceus/issues/46)). Since Us itself stays offline, and several devices per person work too
 
 ## Soon
 
@@ -19,7 +20,7 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 
 ## Maybe, one day
 
-- Sync over the internet, but only with storage you control yourself (for example your own Nextcloud), never with a Since Us cloud
+- Syncing with your own server right inside the app, only if the folder sync is not enough. Never with a Since Us cloud
 - A countdown in the status bar (Live Updates on Android 16) when you are on your way to each other or a planned moment is coming up today
 
 ## Recently done

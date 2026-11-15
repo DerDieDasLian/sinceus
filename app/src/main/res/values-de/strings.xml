@@ -230,7 +230,7 @@
     <string name="slideshow_remove">Foto entfernen</string>
     <string name="section_backup">Sicherung</string>
     <string name="backup_export">Sicherung speichern</string>
-    <string name="backup_export_summary">Alle Daten und Fotos in einer Datei, z. B. für ein neues Handy</string>
+    <string name="backup_export_summary">Alle Daten und Fotos in einer Datei, z. B. für ein neues Handy oder ein zweites eigenes Gerät</string>
     <string name="backup_import">Sicherung wiederherstellen</string>
     <string name="backup_import_summary">Eine gespeicherte Sicherungsdatei laden</string>
     <string name="backup_import_question">Sicherung wiederherstellen?</string>
@@ -335,13 +335,27 @@
     <string name="sync_open">Abgleich-Datei öffnen</string>
     <string name="sync_open_summary">Falls sich Since Us beim Antippen der Datei nicht geöffnet hat</string>
     <string name="sync_show_qr_again">Weiteres Handy koppeln</string>
-    <string name="sync_show_qr_again_summary">Zeigt den QR-Code noch einmal, z. B. für ein neues Handy</string>
+    <string name="sync_show_qr_again_summary">Zeigt den QR-Code noch einmal, z. B. für ein neues Handy oder ein zweites eigenes Gerät</string>
     <string name="sync_unpair">Kopplung aufheben</string>
     <string name="sync_unpair_question">Kopplung aufheben?</string>
     <string name="sync_unpair_text">Dieses Handy kann dann keine Abgleich-Dateien mehr öffnen. Eure Daten bleiben erhalten. Ihr könnt jederzeit neu koppeln.</string>
     <string name="sync_not_paired">Koppelt zuerst die Handys: Einstellungen, Abgleich.</string>
     <string name="sync_failed">Die Datei konnte nicht abgeglichen werden. Vielleicht gehört sie zu einer anderen Kopplung oder ist beschädigt.</string>
     <string name="sync_done">Abgeglichen: %1$d neu, %2$d geändert, %3$d entfernt</string>
+    <string name="sync_folder">Über einen Ordner abgleichen</string>
+    <string name="sync_folder_summary">Wählt einen Ordner, den eine andere App auf euren Geräten gleich hält. Since Us selbst bleibt ohne Internet.</string>
+    <string name="sync_folder_on">Abgleich-Ordner: %1$s</string>
+    <string name="sync_folder_last">Zuletzt abgeglichen am %1$s um %2$s</string>
+    <string name="sync_folder_never">Noch nicht abgeglichen</string>
+    <string name="sync_folder_error">Der Ordner war beim letzten Mal nicht erreichbar. Tippt hier, um ihn neu zu wählen.</string>
+    <string name="sync_folder_now">Jetzt abgleichen</string>
+    <string name="sync_folder_now_summary">Passiert von selbst beim Öffnen der App, nach Änderungen und einmal am Tag</string>
+    <string name="sync_folder_off">Ordner-Abgleich ausschalten</string>
+    <string name="sync_folder_off_summary">Die Dateien im Ordner bleiben liegen</string>
+    <string name="sync_folder_hint">Jedes Gerät legt eine eigene verschlüsselte Datei in den Ordner und liest die Dateien der anderen. Startdaten, Geburtstage und Momente sind gemeinsam. Namen, die Fotos auf der Startseite, Farben und Mitteilungen bleiben auf jedem Gerät so, wie ihr sie dort eingestellt habt.</string>
+    <string name="sync_folder_failed">Der Abgleich-Ordner war nicht erreichbar.</string>
+    <string name="sync_folder_nothing_new">Abgeglichen. Nichts Neues von den anderen Geräten.</string>
+    <string name="sync_folder_done">Abgeglichen. Momente neu, geändert oder entfernt: %1$d</string>
     <string name="moment_added_by">Hinzugefügt von %1$s</string>
     <!-- Geburtstage -->
     <string name="birthday">Geburtstag</string>

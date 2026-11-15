@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import app.sinceus.data.AutoBackup
+import app.sinceus.data.FolderSync
 import app.sinceus.data.LoveRepository
 import app.sinceus.update.UpdateChecker
 import app.sinceus.widget.LoveWidget
@@ -28,6 +29,8 @@ class DailyReceiver : BroadcastReceiver() {
                 // Wöchentliche automatische Sicherung, falls ein Ordner gewählt ist. Sie läuft als eigene
                 // Hintergrundaufgabe, weil der Wecker nur wenig Zeit hat und viele Fotos dauern können.
                 if (settings.onboardingDone) runCatching { AutoBackup.scheduleIfDue(app) }
+                // Abgleich über den Ordner auch dann, wenn die App länger nicht geöffnet wurde
+                if (settings.onboardingDone) runCatching { FolderSync.schedule(app) }
                 if (intent.action == DailyScheduler.ACTION_MIDNIGHT) {
                     runCatching { UpdateChecker.checkIfDue(app) }
                 }

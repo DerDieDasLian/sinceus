@@ -12,6 +12,7 @@ import app.sinceus.data.LoveRepository
 import app.sinceus.update.UpdateChecker
 import app.sinceus.update.UpdateInstaller
 import app.sinceus.data.LoveSettings
+import app.sinceus.data.FolderSync
 import app.sinceus.data.Pairing
 import app.sinceus.data.PairingStore
 import app.sinceus.data.SyncCodec
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -52,6 +54,12 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
                 LoveWidget.refresh(app)
             }
         }
+        // Ordner-Abgleich: nach einer Änderung an gemeinsamen Daten kurz warten und dann abgleichen
+        viewModelScope.launch {
+            settings.filterNotNull().map { Triple(it.people, it.relationships, it.moments) }.distinctUntilChanged().drop(1).collect {
+                FolderSync.schedule(app, FolderSync.AFTER_CHANGE_MS)
+            }
+        }
         // Große Fotos (z. B. aus älteren Versionen) einmal verkleinern, damit Sicherungen klein bleiben
         viewModelScope.launch { if (repo.shrinkPhotos() > 0) LoveWidget.refresh(app) }
     }
@@ -63,6 +71,9 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
         _today.value = LocalDate.now()
         // Die automatische Sicherung läuft im Hintergrund, ihr Datum hier auffrischen
         _autoBackup.value = AutoBackup.load(getApplication())
+        // Beim Öffnen schauen, ob andere Geräte etwas Neues in den Abgleich-Ordner gelegt haben
+        _folderSync.value = FolderSync.load(getApplication())
+        FolderSync.schedule(getApplication())
     }
 
     fun setNames(names: List<String>) = viewModelScope.launch { repo.setNames(names) }
@@ -79,6 +90,7 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
         repo.resetAll()
         _pairing.value = null
         _autoBackup.value = null
+        _folderSync.value = null
     }
     fun setNotifications(enabled: Boolean) = viewModelScope.launch { repo.setNotifications(enabled) }
     fun setNotifyTime(h: Int, m: Int) = viewModelScope.launch { repo.setNotifyTime(h, m) }
@@ -210,6 +222,49 @@ class LoveViewModel(app: Application) : AndroidViewModel(app) {
     fun unpair() {
         PairingStore.clear(getApplication())
         _pairing.value = null
+        // Ohne Kopplung gibt es nichts mehr abzugleichen
+        FolderSync.disable(getApplication())
+        _folderSync.value = null
+    }
+
+    private val _folderSync = MutableStateFlow(FolderSync.load(app))
+    val folderSync: StateFlow<FolderSync.State?> = _folderSync.asStateFlow()
+
+    /** Ordner-Abgleich mit dem gewählten Ordner einschalten und gleich zum ersten Mal abgleichen */
+    fun enableFolderSync(tree: Uri) = viewModelScope.launch {
+        val app = getApplication<Application>()
+        try {
+            FolderSync.enable(app, tree)
+        } catch (e: Exception) {
+            android.util.Log.w("SinceUs", "Ordner nicht übernommen", e)
+            Toast.makeText(app, app.getString(R.string.sync_folder_failed), Toast.LENGTH_LONG).show()
+            return@launch
+        }
+        syncFolderNow().join()
+    }
+
+    fun disableFolderSync() {
+        FolderSync.disable(getApplication())
+        _folderSync.value = null
+    }
+
+    /** Jetzt über den Ordner abgleichen und das Ergebnis kurz anzeigen */
+    fun syncFolderNow() = viewModelScope.launch {
+        val app = getApplication<Application>()
+        val message = try {
+            val outcome = FolderSync.run(app)
+            _pairing.value = PairingStore.load(app)
+            when {
+                outcome == null -> null
+                outcome.read == 0 -> app.getString(R.string.sync_folder_nothing_new)
+                else -> app.getString(R.string.sync_folder_done, outcome.changes)
+            }
+        } catch (e: Exception) {
+            android.util.Log.w("SinceUs", "Ordner-Abgleich fehlgeschlagen", e)
+            app.getString(R.string.sync_folder_failed)
+        }
+        _folderSync.value = FolderSync.load(app)
+        if (message != null) Toast.makeText(app, message, Toast.LENGTH_LONG).show()
     }
 
     /** Abgleich-Datei erstellen und über das Teilen-Menü verschicken (z. B. per Messenger) */
