@@ -47,6 +47,12 @@ jobs:
       # in Übersetzungen. Nur Fehler lassen den Lauf scheitern, Einstellungen dazu in lint.xml.
       - name: Lint
         run: ./gradlew lintGithubDebug
+      # Zeigt die gefundenen Fehler direkt im Protokoll, ohne den Bericht herunterzuladen
+      - name: Lint-Fehler anzeigen
+        if: failure()
+        run: |
+          report=app/build/intermediates/lint_intermediate_text_report/githubDebug/lintReportGithubDebug/lint-results-githubDebug.txt
+          [ -f "$report" ] && grep -A3 "Error:" "$report" || true
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:

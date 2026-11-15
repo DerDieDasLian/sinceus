@@ -5,4 +5,8 @@
     <issue id="MissingTranslation" severity="ignore" />
     <issue id="MissingQuantity" severity="ignore" />
     <issue id="ExtraTranslation" severity="warning" />
+    <!-- Der Dienst wird im Manifest absichtlich entfernt, die Klasse fehlt deshalb zu Recht -->
+    <issue id="MissingClass">
+        <ignore regexp="SystemForegroundService" />
+    </issue>
 </lint>
