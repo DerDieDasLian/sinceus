@@ -9,6 +9,7 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 - Reminders you missed are caught up: if your phone was off at the chosen time, the notification comes as soon as it is back
 - The moment editor asks before it throws away changes, and restoring a backup is safer when storage is almost full
 - Easier to use with a screen reader, and Dutch as a new language
+- Pair your phones from afar by sharing a code, for example in a long-distance relationship
 
 ## Soon
 
