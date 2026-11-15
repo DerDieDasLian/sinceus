@@ -1,30 +1,24 @@
-# Öffnet einmal im Monat je einen gesammelten PR, wenn es neuere Versionen gibt:
-# einen für die Werkzeuge der Build-Abläufe und einen für die Bibliotheken der App.
+# Nur Sicherheits-Updates: Dependabot öffnet einen PR, wenn eine genutzte Bibliothek oder
+# ein Werkzeug der Build-Abläufe eine bekannte Sicherheitslücke hat.
+# Normale Versions-Updates sind aus (open-pull-requests-limit: 0). Dafür muss in den
+# Repo-Einstellungen unter "Advanced Security" die Option "Dependabot security updates" an sein.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    open-pull-requests-limit: 0
     groups:
-      actions:
+      actions-security:
+        applies-to: security-updates
         patterns: ["*"]
   - package-ecosystem: gradle
     directory: /
     schedule:
       interval: monthly
+    open-pull-requests-limit: 0
     groups:
-      # Kleine Updates gesammelt. Große Sprünge (z. B. Android Gradle Plugin 9, Gradle 9)
-      # kommen als eigener PR, weil sie oft Umbauten am Build brauchen.
-      gradle:
+      gradle-security:
+        applies-to: security-updates
         patterns: ["*"]
-        update-types: ["minor", "patch"]
-    # Brauchen Android Gradle Plugin 9 und compileSdk 37. Erst nach diesem Umbau wieder freigeben,
-    # sonst ist jeder Sammel-PR rot.
-    ignore:
-      - dependency-name: "androidx.compose:compose-bom"
-        versions: [">=2026.09.0"]
-      - dependency-name: "androidx.core:core-ktx"
-        versions: [">=1.19.0"]
-      - dependency-name: "io.coil-kt.coil3:*"
-        versions: [">=3.6.0"]
