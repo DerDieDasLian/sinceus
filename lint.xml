@@ -9,4 +9,13 @@
     <issue id="MissingClass">
         <ignore regexp="SystemForegroundService" />
     </issue>
+    <!-- Die App-Sperre prüft die Android-Version schon in prompt(), bevor sie den Systemdialog aufruft -->
+    <issue id="NewApi">
+        <ignore regexp="AppLock\.kt" />
+    </issue>
+    <!-- Mehrzahl-Formen in Übersetzungen pflegen die Übersetzer:innen auf Weblate -->
+    <issue id="ImpliedQuantity" severity="warning" />
+    <!-- Kein Absturz: Texte könnten nach einem Sprachwechsel kurz veraltet sein. Bleibt als Hinweis sichtbar -->
+    <issue id="LocalContextGetResourceValueCall" severity="warning" />
+    <issue id="NonObservableLocale" severity="warning" />
 </lint>
