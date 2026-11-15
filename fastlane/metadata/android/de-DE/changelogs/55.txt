@@ -1,2 +1,4 @@
-• Koppeln geht jetzt auch aus der Ferne: Code teilen, zum Beispiel per Messenger, und auf dem anderen Handy einfügen.
-• Technische Grundlagen aktualisiert (Kotlin und weitere Bibliotheken).
+• Neu: Abgleich über einen Ordner, den eine andere App auf euren Geräten gleich hält. Since Us bleibt ohne Internet, auch mehrere Geräte pro Person gehen.
+• Änderungen an Startdatum, Geburtstagen und Pronomen kommen beim Abgleich jetzt an. Namen und Fotos bleiben auf jedem Gerät eigen.
+• Koppeln geht auch aus der Ferne: Code teilen, zum Beispiel per Messenger, und auf dem anderen Handy einfügen.
+• Technische Grundlagen aktualisiert.

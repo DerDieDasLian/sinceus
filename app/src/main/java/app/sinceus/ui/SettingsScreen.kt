@@ -236,6 +236,7 @@ fun SettingsScreen(
     /** Kopplung für den Abgleich, null = nicht gekoppelt */
     pairing: Pairing? = null,
     sync: SyncActions = SyncActions(),
+    folderSync: app.sinceus.data.FolderSync.State? = null,
     /** Geöffnete Unterseite beim Start (für Tests), null = Übersicht */
     initialPage: SettingsPage? = null,
     /** Geöffnete Beziehung beim Start (für Tests), null = keine */
@@ -518,7 +519,7 @@ fun SettingsScreen(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         )
                     }
-                    SettingsPage.Sync -> SyncPage(settings, pairing, sync)
+                    SettingsPage.Sync -> SyncPage(settings, pairing, sync, folderSync)
                     SettingsPage.Backup -> Section(null) {
                         ListItem(
                             headlineContent = { Text(stringResource(R.string.backup_export)) },

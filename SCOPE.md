@@ -10,7 +10,7 @@ Every idea is welcome. If one doesn't fit, that's never about you, it just means
 - **Queer and non-binary friendly at its core.** Since Us is made by a queer, non-binary person. Texts are gender-neutral, pronouns are built in, nobody has to pick "boyfriend" or "girlfriend", and in June the app celebrates Pride Month. No matter who you are, whom you love or how many of you there are: you belong here.
 - **Open source.** All code is public under the GPL. Anyone can check what the app does, and nobody can quietly turn it into something else.
 - **Free, forever.** No ads, no subscription, no premium version and no in-app purchases. Everything is included for everyone. Voluntary support for project costs, like the App Store fee for an iOS version, is being set up on Open Collective. Supporters will get nothing extra.
-- **Private by design.** No account, no server, no tracking. Everything stays on your phone. Syncing between phones works with an encrypted file, without any cloud.
+- **Private by design.** No account, no server, no tracking. Everything stays on your phone. Syncing between phones works with an encrypted file, without any cloud. Automatic sync goes through a folder that another app of your choice keeps in sync, so Since Us itself never needs internet access.
 - **Calm and simple.** A quiet design without emojis, clutter or pressure. The app is there for you, not the other way around.
 
 ## What Since Us is

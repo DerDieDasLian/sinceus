@@ -346,13 +346,27 @@
     <string name="sync_open">Open sync file</string>
     <string name="sync_open_summary">If tapping the file did not open Since Us</string>
     <string name="sync_show_qr_again">Pair another phone</string>
-    <string name="sync_show_qr_again_summary">Shows the QR code again, for example for a new phone</string>
+    <string name="sync_show_qr_again_summary">Shows the QR code again, for example for a new phone or a second device of yours</string>
     <string name="sync_unpair">Unpair</string>
     <string name="sync_unpair_question">Unpair?</string>
     <string name="sync_unpair_text">This phone can no longer open sync files from the other phones. Your data stays. You can pair again any time.</string>
     <string name="sync_not_paired">Pair your phones first: Settings, Sync.</string>
     <string name="sync_failed">The file could not be synced. It may belong to a different pairing or be damaged.</string>
     <string name="sync_done">Synced: %1$d new, %2$d changed, %3$d removed</string>
+    <string name="sync_folder">Sync through a folder</string>
+    <string name="sync_folder_summary">Pick a folder that another app keeps the same on your devices. Since Us itself stays offline.</string>
+    <string name="sync_folder_on">Sync folder: %1$s</string>
+    <string name="sync_folder_last">Last synced on %1$s at %2$s</string>
+    <string name="sync_folder_never">Not synced yet</string>
+    <string name="sync_folder_error">The folder could not be reached last time. Tap to pick it again.</string>
+    <string name="sync_folder_now">Sync now</string>
+    <string name="sync_folder_now_summary">Happens by itself when you open the app, after changes and once a day</string>
+    <string name="sync_folder_off">Turn off folder sync</string>
+    <string name="sync_folder_off_summary">The files in the folder stay</string>
+    <string name="sync_folder_hint">Each device keeps its own encrypted file in the folder and reads the files of the others. Start dates, birthdays and moments are shared. Names, the photos on the home screen, colors and notifications stay the way you set them on each device.</string>
+    <string name="sync_folder_failed">The sync folder could not be reached.</string>
+    <string name="sync_folder_nothing_new">Synced. Nothing new from the other devices.</string>
+    <string name="sync_folder_done">Synced. Moments added, changed or removed: %1$d</string>
     <string name="moment_added_by">Added by %1$s</string>
 
     <!-- Geburtstage -->

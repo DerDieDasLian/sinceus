@@ -199,4 +199,62 @@ class SyncTest {
         assertEquals(sam, result.people[1].birthday)
         assertEquals(remote.people, SyncCodec.decode(SyncCodec.encode(remote)).people)
     }
+
+    @Test
+    fun newerSharedChangesWinButOwnSettingsStay() {
+        val start = LocalDate.of(2025, 3, 15)
+        val local = Relationship("r", listOf("a", "b"), start, label = "Schatz", color = 2, notify = false, updatedAt = 100)
+        val remote = Relationship("r", listOf("a", "b"), start.minusDays(1), label = "Liebling", color = 5, distance = true, updatedAt = 200)
+        val merged = SyncMerge.mergeRelationship(local, remote)
+        assertEquals(start.minusDays(1), merged.startDate)
+        assertTrue(merged.distance)
+        assertEquals(200L, merged.updatedAt)
+        // Bezeichnung, Farbe und Mitteilungen bleiben auf diesem Gerät
+        assertEquals("Schatz", merged.label)
+        assertEquals(2, merged.color)
+        assertFalse(merged.notify)
+        // Ältere Änderung vom anderen Gerät ändert nichts
+        assertEquals(local, SyncMerge.mergeRelationship(local, remote.copy(updatedAt = 50)))
+
+        val me = Person("a", "Alexchen", "sie/ihr", updatedAt = 100)
+        val there = Person("a", "Alex", "they/them", LocalDate.of(1998, 8, 20), updatedAt = 300)
+        val person = SyncMerge.mergePerson(me, there)
+        assertEquals("Alexchen", person.name)
+        assertEquals("they/them", person.pronouns)
+        assertEquals(LocalDate.of(1998, 8, 20), person.birthday)
+    }
+
+    @Test
+    fun onlySharedChangesGetANewTimestamp() {
+        val people = listOf(Person("a", "Alex", updatedAt = 10))
+        val rels = listOf(Relationship("r", listOf("a", "b"), LocalDate.of(2025, 3, 15), updatedAt = 10))
+        // Name und Farbe ändern: kein neuer Zeitstempel
+        val (p1, r1) = PeopleCodec.stamp(people, rels, listOf(people[0].copy(name = "Al")), listOf(rels[0].copy(color = 3)), 99)
+        assertEquals(10L, p1[0].updatedAt)
+        assertEquals(10L, r1[0].updatedAt)
+        // Geburtstag und Startdatum ändern: neuer Zeitstempel
+        val (p2, r2) = PeopleCodec.stamp(
+            people,
+            rels,
+            listOf(people[0].copy(birthday = LocalDate.of(2000, 1, 1))),
+            listOf(rels[0].copy(startDate = LocalDate.of(2025, 3, 16))),
+            99,
+        )
+        assertEquals(99L, p2[0].updatedAt)
+        assertEquals(99L, r2[0].updatedAt)
+        // Zeitstempel überstehen Speichern und Laden
+        assertEquals(p2, PeopleCodec.decodePeople(PeopleCodec.encodePeople(p2)))
+        assertEquals(r2, PeopleCodec.decodeRelationships(PeopleCodec.encodeRelationships(r2)))
+    }
+
+    @Test
+    fun folderSyncReadsOnlyFilesOfOtherDevices() {
+        assertEquals("since-us-sync-abc123.sinceus", FolderSync.fileName("abc123"))
+        assertTrue(FolderSync.isOtherDevice("since-us-sync-def456.sinceus", "abc123"))
+        assertFalse(FolderSync.isOtherDevice("since-us-sync-abc123.sinceus", "abc123"))
+        // Konfliktkopien und andere Dateien zählen nicht
+        assertFalse(FolderSync.isOtherDevice("since-us-sync-def456.sync-conflict-20261115.sinceus", "abc123"))
+        assertFalse(FolderSync.isOtherDevice("since-us-sync-def456 (1).sinceus", "abc123"))
+        assertFalse(FolderSync.isOtherDevice("since-us-2026-11-15.sinceus", "abc123"))
+    }
 }

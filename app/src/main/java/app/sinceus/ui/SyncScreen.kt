@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ContentPaste
 import androidx.compose.material.icons.rounded.FileOpen
+import androidx.compose.material.icons.rounded.FolderOff
+import androidx.compose.material.icons.rounded.FolderOpen
 import androidx.compose.material.icons.rounded.LinkOff
 import androidx.compose.material.icons.rounded.QrCode2
 import androidx.compose.material.icons.rounded.QrCodeScanner
@@ -44,9 +46,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.sinceus.R
+import app.sinceus.data.FolderSync
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.Pairing
 import app.sinceus.data.Texts
@@ -70,12 +74,16 @@ class SyncActions(
     val onUnpair: () -> Unit = {},
     val onSend: () -> Unit = {},
     val onOpen: () -> Unit = {},
+    /** Ordner für den Abgleich wählen (true) oder den Ordner-Abgleich ausschalten (false) */
+    val onFolder: (Boolean) -> Unit = {},
+    /** Jetzt über den Ordner abgleichen */
+    val onSyncNow: () -> Unit = {},
 )
 
 /** Abgleich mit dem Handy des anderen Menschen: koppeln per QR-Code oder geteiltem Code, dann Dateien austauschen */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun SyncPage(settings: LoveSettings, pairing: Pairing?, actions: SyncActions) {
+internal fun SyncPage(settings: LoveSettings, pairing: Pairing?, actions: SyncActions, folder: FolderSync.State? = null) {
     var me by remember(pairing) { mutableStateOf(pairing?.me) }
     var showQr by remember { mutableStateOf(false) }
     var confirmUnpair by remember { mutableStateOf(false) }
@@ -138,6 +146,42 @@ internal fun SyncPage(settings: LoveSettings, pairing: Pairing?, actions: SyncAc
             Line()
             SyncRow(Icons.Rounded.FileOpen, stringResource(R.string.sync_open), stringResource(R.string.sync_open_summary), onClick = actions.onOpen)
         }
+        SyncCard {
+            if (folder == null) {
+                SyncRow(Icons.Rounded.FolderOpen, stringResource(R.string.sync_folder), stringResource(R.string.sync_folder_summary)) {
+                    actions.onFolder(true)
+                }
+            } else {
+                SyncRow(
+                    Icons.Rounded.FolderOpen,
+                    stringResource(R.string.sync_folder_on, folder.folderName.ifBlank { "?" }),
+                    when {
+                        folder.failed -> stringResource(R.string.sync_folder_error)
+                        folder.last > 0 -> {
+                            val at = Instant.ofEpochMilli(folder.last).atZone(ZoneId.systemDefault())
+                            stringResource(
+                                R.string.sync_folder_last,
+                                Texts.mediumDate(at.toLocalDate()),
+                                Texts.time(LocalContext.current, at.toLocalTime()),
+                            )
+                        }
+                        else -> stringResource(R.string.sync_folder_never)
+                    },
+                ) { actions.onFolder(true) }
+                Line()
+                SyncRow(Icons.Rounded.Sync, stringResource(R.string.sync_folder_now), stringResource(R.string.sync_folder_now_summary), onClick = actions.onSyncNow)
+                Line()
+                SyncRow(Icons.Rounded.FolderOff, stringResource(R.string.sync_folder_off), stringResource(R.string.sync_folder_off_summary)) {
+                    actions.onFolder(false)
+                }
+            }
+        }
+        Text(
+            stringResource(R.string.sync_folder_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        )
         SyncCard {
             SyncRow(Icons.Rounded.QrCode2, stringResource(R.string.sync_show_qr_again), stringResource(R.string.sync_show_qr_again_summary)) {
                 showQr = true
