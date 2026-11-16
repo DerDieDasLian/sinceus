@@ -295,7 +295,7 @@
     </plurals>
     <string name="section_sync">同步</string>
     <string name="sync_summary">在你们的手机之间分享时光</string>
-    <string name="sync_intro">无需云端或账号，也能让你们手机上的时光记录保持一致。先通过二维码为手机完成一次配对，再通过聊天软件等方式发送同步文件。只有已配对的手机才能打开。</string>
+    <string name="sync_intro">无需云端或账号，也能让你们手机上的时光记录保持一致。先通过分享的二维码或配对码为手机完成一次配对，再通过聊天软件等方式发送同步文件。只有已配对的手机才能打开。</string>
     <string name="sync_intro_paired">每当添加了新内容，就可以发送同步文件。另一部手机会直接在 Since Us 中打开文件并导入新增内容，照片也会一并同步。</string>
     <string name="sync_who">这部手机由谁使用？</string>
     <string name="sync_show_qr">显示二维码</string>
@@ -315,7 +315,7 @@
     <string name="sync_open">打开同步文件</string>
     <string name="sync_open_summary">轻点文件未能打开 Since Us 时，可从此处打开</string>
     <string name="sync_show_qr_again">配对另一部手机</string>
-    <string name="sync_show_qr_again_summary">重新显示二维码，方便为新手机等设备配对</string>
+    <string name="sync_show_qr_again_summary">重新显示二维码，方便为新手机或第二设备等配对</string>
     <string name="sync_unpair">取消配对</string>
     <string name="sync_unpair_question">取消配对？</string>
     <string name="sync_unpair_text">这部手机将无法再打开其他手机发来的同步文件。现有数据会保留，你随时可以重新配对。</string>
@@ -517,4 +517,20 @@
     <string name="photobook_failed">无法保存相册</string>
     <string name="photobook_made_with">使用 Since Us 制作</string>
     <string name="photobook_moments_title">我们的时光</string>
+    <string name="moment_date_from_photo">自照片拍摄以来</string>
+    <string name="moment_crop_pick">点击照片来选择展示其中的一部分。这将应用于所有地方，包括相册。</string>
+    <string name="photo_show_full">显示完整的照片</string>
+    <string name="sync_paste_code">粘贴配对码</string>
+    <string name="sync_paste_code_summary">如果你们没待在一起，比如一段异地关系</string>
+    <string name="sync_paste_code_text">粘贴其他手机发送给你的配对码。你可以直接粘贴整条消息。</string>
+    <string name="sync_paste_code_field">配对码</string>
+    <string name="sync_pair">配对</string>
+    <string name="sync_share_code">分享配对码</string>
+    <string name="sync_share_code_hint">异地中？那么通过分享配对码的方式来实现吧，比如通过消息分享。任何拥有这段配对码的人都可以打开你的同步文件，所以请通过私聊发送。</string>
+    <string name="sync_code_message">我用于Since Us的配对码。打开“设置-同步-在 Since Us 中粘贴配对码”选项，将整条消息粘贴进去。\n\n%1$s</string>
+    <string name="sync_folder">通过文件夹同步</string>
+    <string name="sync_folder_summary">请选择一个可跨设备同步的文件夹，Since Us 为离线应用。</string>
+    <string name="sync_folder_on">同步文件夹：%1$s</string>
+    <string name="sync_folder_last">上次同步于 %1$s %2$s</string>
+    <string name="sync_folder_never">尚未同步</string>
 </resources>
