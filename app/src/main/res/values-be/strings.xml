@@ -231,7 +231,7 @@
     <string name="notify_moment">Сёння %1$s таму: %2$s</string>
     <plurals name="moments_count">
         <item quantity="one">%s момант</item>
-        <item quantity="few">%s моманту</item>
+        <item quantity="few">%s моманты</item>
         <item quantity="many">%s момантаў</item>
         <item quantity="other">%s момантаў</item>
     </plurals>
@@ -685,4 +685,108 @@
     <string name="about_scope_summary">Чаму некаторыя ідэі не дададуць</string>
     <string name="support_project">Падтрымаць Since Us</string>
     <string name="support_project_summary">Добрвахвотна, на такія траты, як версія для iPhone і вэб-сайт</string>
+    <string name="recap_show">Наш год</string>
+    <string name="recap_show_summary">Агляд вашага года разам, і гадоў раней з момантаў</string>
+    <string name="recap_open">У мінулае</string>
+    <string name="recap_close">Закрыць</string>
+    <string name="recap_page">%1$d з %2$d</string>
+    <string name="recap_years">Агляд вашых гадоў</string>
+    <string name="recap_pick_year">За які год?</string>
+    <string name="recap_intro_label">Азірнёмся на мінулае</string>
+    <string name="recap_time_label">Ваш час</string>
+    <plurals name="recap_days">
+        <item quantity="one">дзень разам</item>
+        <item quantity="few">дні разам</item>
+        <item quantity="many">дзён разам</item>
+        <item quantity="other">дзён разам</item>
+    </plurals>
+    <plurals name="recap_weekends">
+        <item quantity="one">%1$s выхадныя</item>
+        <item quantity="few">%1$s выхадных</item>
+        <item quantity="many">%1$s выхадных</item>
+        <item quantity="other">%1$s выхадных</item>
+    </plurals>
+    <plurals name="recap_full_moons">
+        <item quantity="one">%1$s поўня</item>
+        <item quantity="few">%1$s поўні</item>
+        <item quantity="many">%1$s поўняў</item>
+        <item quantity="other">%1$s поўняў</item>
+    </plurals>
+    <string name="recap_moments_label">Вашы моманты</string>
+    <string name="recap_no_moments">У гэты год вы не захавалі момантаў. Мабыць, у наступным годзе тут штосьці будзе.</string>
+    <plurals name="recap_moments">
+        <item quantity="one">момант за гэты год</item>
+        <item quantity="few">моманты за гэты год</item>
+        <item quantity="many">момантаў за гэты год</item>
+        <item quantity="other">момантаў за гэты год</item>
+    </plurals>
+    <plurals name="recap_photos">
+        <item quantity="one">з %1$s фота</item>
+        <item quantity="few">з %1$s фота</item>
+        <item quantity="many">з %1$s фота</item>
+        <item quantity="other">з %1$s фота</item>
+    </plurals>
+    <plurals name="recap_top_month">
+        <item quantity="one">%2$s з іх у %1$s</item>
+        <item quantity="few">%2$s з іх у %1$s</item>
+        <item quantity="many">%2$s з іх у %1$s</item>
+        <item quantity="other">%2$s з іх у %1$s</item>
+    </plurals>
+    <string name="recap_tags_label">Вашы цэтлікі</string>
+    <plurals name="recap_times">
+        <item quantity="one">%1$s раз</item>
+        <item quantity="few">%1$s разы</item>
+        <item quantity="many">%1$s разоў</item>
+        <item quantity="other">%1$s разоў</item>
+    </plurals>
+    <string name="recap_places_label">Вашы месцы</string>
+    <plurals name="recap_places">
+        <item quantity="one">%1$s месца</item>
+        <item quantity="few">%1$s месца</item>
+        <item quantity="many">%1$s розных месцаў</item>
+        <item quantity="other">%1$s розных месцаў</item>
+    </plurals>
+    <string name="recap_top_place">Больш за ўсё: %1$s</string>
+    <string name="recap_photos_label">Вашы фота</string>
+    <string name="recap_first_label">Першы момант года</string>
+    <string name="recap_last_label">Апошні момант года</string>
+    <string name="recap_next_label">Што далей</string>
+    <plurals name="recap_in_days">
+        <item quantity="one">праз %1$s дзень</item>
+        <item quantity="few">праз %1$s дні</item>
+        <item quantity="many">праз %1$s дзён</item>
+        <item quantity="other">праз %1$s дзён</item>
+    </plurals>
+    <string name="recap_end">За ваш наступны год.</string>
+    <string name="settings_search">Пошук праз налады</string>
+    <string name="settings_search_clear">Ачысціць пошук</string>
+    <string name="settings_search_none">Нічога не знойдзена. Паспрабуйце іншыя словы.</string>
+    <string name="settings_group_privacy">Прыватнасць і даныя</string>
+    <string name="settings_group_help">Дапамога і звесткі</string>
+    <string name="settings_photo">Фота і слайд-шоў</string>
+    <string name="settings_days">Асаблівыя дні</string>
+    <string name="settings_days_summary">Святы, цікавыя лічбы, канфеці, «Наш год»</string>
+    <string name="settings_feedback_summary">Памылкі, прапановы ідэй, пераклад</string>
+    <string name="updates_auto_on">Аўтаматычныя праверкі</string>
+    <string name="updates_auto_off">Толькі калі правяраеце вы</string>
+    <string name="section_extras">Дадатковыя</string>
+    <string name="days_birthday_hint">Дні нараджэння задаюцца кожнаму чалавеку ў «Людзі і стасункі».</string>
+    <string name="rel_section_general">Агульнае</string>
+    <string name="rel_section_before">Да гэтага</string>
+    <string name="unsaved_title">Захаваць змены?</string>
+    <string name="unsaved_text">Вы змянілі штосьці ў гэтых стасунках.</string>
+    <string name="unsaved_invalid">Змены пакуль што нельга захаваць: партэбны прынамсі два чалавека, ранейшыя стасункі павінны пачынацца да даты пачатку спаткання.</string>
+    <string name="discard">Адхіліць</string>
+    <string name="moment_unsaved_text">Вы змянілі штосьці ў гэтым моманце.</string>
+    <string name="moment_unsaved_no_title">Змены пакуль што нельга захаваць: момант патрабуе назвы.</string>
+    <string name="ob_distance_title">Вы жывяце далёка адно ад аднаго?</string>
+    <string name="ob_distance_sub">Для адлеглых зносін, на дамашнім экране будзе паказвацца час на іншым баку і адлік да вашай насупнай сустрэчы.</string>
+    <string name="ob_distance_no">Мы жывем блізка</string>
+    <string name="ob_distance_yes">Мы далёка</string>
+    <string name="ob_meeting_optional">Наступная сустрэча (неабавязкова)</string>
+    <string name="ob_meeting_on">Наступная сустрэча: %1$s</string>
+    <string name="ob_days_title">Асаблівыя дні</string>
+    <string name="ob_days_sub">Дадайце дні нараджэння і выберыце, якія святы падлічваць. Усё неабавязкова.</string>
+    <string name="ob_birthdays">Дні нараджэння</string>
+    <string name="ob_birthday_add">Дадаць дзень нараджэння для %1$s</string>
 </resources>
