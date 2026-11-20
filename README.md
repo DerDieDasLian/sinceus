@@ -59,15 +59,22 @@ Bug reports, ideas, translations and small fixes are welcome. See [CONTRIBUTING.
 
 ## Support the project
 
-Since Us is and stays free. If you want to help with the costs, you can support it on **[Open Collective](https://opencollective.com/sinceus)**.
+<a href="https://opencollective.com/sinceus">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/readme/support-dark.png">
+    <img src=".github/readme/support-light.png" width="720" alt="Support Since Us on Open Collective. The money only pays for project costs: the Apple developer account for an iPhone version (99 euros a year), web hosting for sinceus.de and a postal address for the legal notice. No payment for working time, every expense is public, and supporting unlocks nothing.">
+  </picture>
+</a>
 
-The money only pays for what the project itself costs:
+Since Us is and stays free, with no ads, no subscription and no premium version. Supporting it on **[Open Collective](https://opencollective.com/sinceus)** is completely voluntary. The money is held by the nonprofit Open Source Europe and only pays for what the project itself costs:
 
-- the Apple developer account for an iPhone version (99 euros a year)
-- web hosting for [sinceus.de](https://sinceus.de/)
-- a postal address for the legal notice, so no private address has to be public
+| What | Why | Cost |
+| --- | --- | --- |
+| Apple developer account | Needed to publish the iPhone version ([#53](https://github.com/DerDieDasLian/sinceus/issues/53)) | 99 euros a year |
+| Web hosting | Keeps [sinceus.de](https://sinceus.de/) online with help, privacy policy and downloads | a share of the hosting |
+| Postal address | For the legal notice, so no private home address has to be public | a share of the service |
 
-Working time is not paid from it. The money is managed by the nonprofit Open Source Europe, and every expense is public on Open Collective. Supporting is completely voluntary and never unlocks anything in the app.
+Working time is not paid from it, and every expense is public on [Open Collective](https://opencollective.com/sinceus).
 
 ## Third-party libraries
 
