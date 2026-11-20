@@ -29,7 +29,7 @@ Available in English, German, Italian, Dutch and Chinese, more languages are [be
 - **Poly friendly from day one:** as many people and relationships as you like, each with its own date, special days and reminders
 - **Queer and non-binary friendly at its core:** gender-neutral texts, pronouns built in, Pride decoration in June, made by a queer, non-binary person
 - **Open source:** all code is public under the GPL
-- **Free forever:** no ads, no subscription, no premium version, no in-app purchases
+- **Free forever:** no ads, no subscription, no premium version, no in-app purchases, [support](#support-the-project) is voluntary
 - **Private by design:** no account, no server, no tracking, everything stays on your phone
 
 ## Features
@@ -55,6 +55,10 @@ Since Us is made for couples, poly ones included. Friendship and family can be c
 ## Contributing
 
 Bug reports, ideas, translations and small fixes are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help, and please follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security problems should be reported privately, see the [security policy](.github/SECURITY.md).
+
+## Support the project
+
+Since Us is and stays free. If you want to help with the costs, you can support it on [Open Collective](https://opencollective.com/sinceus). The money is managed by the nonprofit Open Source Europe and only pays for project costs, for example the Apple developer fee for an iOS version. Every expense is public. Supporting is completely voluntary and never unlocks anything in the app.
 
 ## Third-party libraries
 

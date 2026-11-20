@@ -626,6 +626,8 @@
     <string name="help_translate_summary">Auf Weblate, ganz ohne Programmieren</string>
     <string name="about_scope">Was Since Us ist (und was nicht)</string>
     <string name="about_scope_summary">Warum manche Ideen nicht dazukommen</string>
+    <string name="support_project">Since Us unterstützen</string>
+    <string name="support_project_summary">Freiwillig, nur für Projektkosten, auf Open Collective</string>
     <!-- Großer Jahresrückblick zum Durchwischen -->
     <string name="recap_show">Jahresrückblick</string>
     <string name="recap_show_summary">Rund um euren Jahrestag ein Rückblick auf euer Jahr, frühere Jahre bei den Momenten</string>

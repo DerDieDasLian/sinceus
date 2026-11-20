@@ -634,6 +634,8 @@
     <string name="help_translate_summary">On Weblate, no programming needed</string>
     <string name="about_scope">What Since Us is (and isn\'t)</string>
     <string name="about_scope_summary">Why some ideas won\'t be added</string>
+    <string name="support_project">Support Since Us</string>
+    <string name="support_project_summary">Voluntary, only for project costs, on Open Collective</string>
     <!-- Großer Jahresrückblick zum Durchwischen -->
     <string name="recap_show">Year in review</string>
     <string name="recap_show_summary">A look back at your year around your anniversary, earlier years under Moments</string>

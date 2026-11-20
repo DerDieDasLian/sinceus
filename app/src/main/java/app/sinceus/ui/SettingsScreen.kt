@@ -90,6 +90,7 @@ import app.sinceus.BuildConfig
 import app.sinceus.R
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Translate
+import androidx.compose.material.icons.rounded.VolunteerActivism
 import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Timer
@@ -663,6 +664,16 @@ fun SettingsScreen(
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                 modifier = Modifier.clickable { Feedback.openWeb(context, Feedback.SCOPE) },
                             )
+                            if (BuildConfig.SUPPORT_LINK) {
+                                Divider()
+                                ListItem(
+                                    headlineContent = { Text(stringResource(R.string.support_project)) },
+                                    supportingContent = { Text(stringResource(R.string.support_project_summary)) },
+                                    leadingContent = { Icon(Icons.Rounded.VolunteerActivism, null) },
+                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                    modifier = Modifier.clickable { Feedback.openWeb(context, Feedback.SUPPORT) },
+                                )
+                            }
                         }
                     }
                     SettingsPage.Reset -> {
@@ -952,7 +963,7 @@ private val SEARCH = listOf(
     SearchEntry(R.string.imprint, SettingsPage.About),
     SearchEntry(R.string.licenses, SettingsPage.About),
     SearchEntry(R.string.version, SettingsPage.About),
-)
+) + if (BuildConfig.SUPPORT_LINK) listOf(SearchEntry(R.string.support_project, SettingsPage.Feedback)) else emptyList()
 
 /** Vergleich ohne Groß-/Kleinschreibung und ohne Akzente, damit „uber“ auch „Über“ findet */
 private fun fold(text: String): String =

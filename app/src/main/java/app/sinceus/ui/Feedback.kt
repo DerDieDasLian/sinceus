@@ -20,6 +20,9 @@ object Feedback {
     const val WEBLATE = "https://hosted.weblate.org/engage/since-us/"
     const val SCOPE = "$REPO/blob/main/SCOPE.md"
 
+    /** Freiwillige Unterstützung, nur in der GitHub- und F-Droid-Version sichtbar */
+    const val SUPPORT = "https://opencollective.com/sinceus"
+
     /** Bezugsquelle genau wie in der Auswahl der GitHub-Vorlage */
     private val source: String
         get() = when (BuildConfig.FLAVOR) {
