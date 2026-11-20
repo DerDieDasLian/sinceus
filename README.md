@@ -10,9 +10,10 @@ Counts how long you have been together and reminds you of every special day.
 [![F-Droid](https://img.shields.io/f-droid/v/app.sinceus?label=F-Droid)](https://f-droid.org/packages/app.sinceus/)
 [![GitHub release](https://img.shields.io/github/v/release/DerDieDasLian/sinceus?label=GitHub)](https://github.com/DerDieDasLian/sinceus/releases/latest)
 [![Translation status](https://hosted.weblate.org/widget/since-us/svg-badge.svg)](https://hosted.weblate.org/engage/since-us/)
+[![Open Collective](https://img.shields.io/opencollective/all/sinceus?label=Open%20Collective)](https://opencollective.com/sinceus)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 
-[Website](https://sinceus.de/) · [Download](#download) · [Help translate](#help-translate) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Scope](SCOPE.md)
+[Website](https://sinceus.de/) · [Download](#download) · [Help translate](#help-translate) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Scope](SCOPE.md) · [Support](https://opencollective.com/sinceus)
 
 <p>
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" width="200" alt="Overview">
@@ -58,7 +59,15 @@ Bug reports, ideas, translations and small fixes are welcome. See [CONTRIBUTING.
 
 ## Support the project
 
-Since Us is and stays free. If you want to help with the costs, you can support it on [Open Collective](https://opencollective.com/sinceus). The money is managed by the nonprofit Open Source Europe and only pays for project costs, for example the Apple developer fee for an iOS version. Every expense is public. Supporting is completely voluntary and never unlocks anything in the app.
+Since Us is and stays free. If you want to help with the costs, you can support it on **[Open Collective](https://opencollective.com/sinceus)**.
+
+The money only pays for what the project itself costs:
+
+- the Apple developer account for an iPhone version (99 euros a year)
+- web hosting for [sinceus.de](https://sinceus.de/)
+- a postal address for the legal notice, so no private address has to be public
+
+Working time is not paid from it. The money is managed by the nonprofit Open Source Europe, and every expense is public on Open Collective. Supporting is completely voluntary and never unlocks anything in the app.
 
 ## Third-party libraries
 
