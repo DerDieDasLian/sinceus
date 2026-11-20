@@ -1,0 +1,1 @@
+Modo en vivo: los otros valores ahora en verdad se difuminan en lugar de simplemente atenuarse.

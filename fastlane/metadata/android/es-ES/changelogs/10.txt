@@ -1,0 +1,1 @@
+La versión de F-Droid ahora está firmada con la misma llave que la versión de GitHub (compilación reproducible).

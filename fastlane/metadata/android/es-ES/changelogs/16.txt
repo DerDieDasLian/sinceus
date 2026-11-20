@@ -1,0 +1,3 @@
+• Presentación: añade más fotos y tu imagen de portada suavemente cambiará entre ellas.
+• Respaldar a un archivo: guarda todos tus datos y fotos y los restaura, por ej. en un nuevo teléfono. Funciona sin internet. También puedes restaurar una copia de seguridad en la configuración inicial.
+• Librerías actualizadas.

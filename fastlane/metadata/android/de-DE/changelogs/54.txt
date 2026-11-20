@@ -1,1 +1,5 @@
-• Neu in den Einstellungen unter Hilfe und Feedback: Since Us freiwillig über Open Collective unterstützen. Das Geld deckt nur Kosten des Projekts, alle Ausgaben sind öffentlich, und die App bleibt für alle kostenlos.
+• Verpasste Erinnerungen werden nachgeholt: War das Handy zur gewählten Uhrzeit aus, kommt die Mitteilung, sobald es wieder an ist.
+• Beim Bearbeiten eines Moments fragt die App nach, bevor Änderungen verloren gehen.
+• Sicherung einspielen klappt jetzt auch bei fast vollem Speicher sicher.
+• Besser mit Screenreader bedienbar, größere Knöpfe in der unteren Leiste.
+• Neu auf Niederländisch. Danke an alle, die übersetzen!

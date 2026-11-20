@@ -14,6 +14,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
@@ -224,8 +225,18 @@ private fun Preferences.model(): Pair<List<Person>, List<Relationship>> {
     return PeopleCodec.sanitize(people, relationships, start)
 }
 
-private fun MutablePreferences.writeModel(people: List<Person>, relationships: List<Relationship>) {
-    val (p, r) = PeopleCodec.sanitize(people, relationships, LocalDate.now())
+/**
+ * Schreibt Menschen und Beziehungen. Mit [stamp] bekommen geänderte Angaben einen neuen Zeitstempel
+ * für den Abgleich; beim Übernehmen von Abgleich oder Sicherung bleiben die mitgebrachten Zeitstempel.
+ */
+private fun MutablePreferences.writeModel(people: List<Person>, relationships: List<Relationship>, stamp: Boolean = true) {
+    val (cleanPeople, cleanRelationships) = PeopleCodec.sanitize(people, relationships, LocalDate.now())
+    val (p, r) = if (stamp) {
+        val (oldPeople, oldRelationships) = model()
+        PeopleCodec.stamp(oldPeople, oldRelationships, cleanPeople, cleanRelationships, System.currentTimeMillis())
+    } else {
+        cleanPeople to cleanRelationships
+    }
     this[Keys.people] = PeopleCodec.encodePeople(p)
     this[Keys.relationships] = PeopleCodec.encodeRelationships(r)
     // Die alten Einträge stehen jetzt in den neuen
@@ -464,12 +475,33 @@ class LoveRepository(private val context: Context) {
     }
 
     /**
+     * Fingerabdruck dessen, was [exportSync] gerade schreiben würde. Der Ordner-Abgleich schreibt
+     * seine Datei nur neu, wenn er sich geändert hat, damit die Ordner-App nicht ständig hochlädt.
+     */
+    suspend fun syncFingerprint(pairing: Pairing): String {
+        val s = current()
+        val deleted = decodeDeleted(context.dataStore.data.first()[Keys.deleted])
+        val json = SyncCodec.encode(SyncData(s.people, s.relationships, s.moments, deleted, pairing.me))
+        return java.security.MessageDigest.getInstance("SHA-256").digest(json.toByteArray(Charsets.UTF_8))
+            .joinToString("") { "%02x".format(it) }
+    }
+
+    /**
      * Übernimmt eine Abgleich-Datei vom gekoppelten Handy und führt sie mit den eigenen Daten
      * zusammen. Gehört die Datei zu keiner Kopplung mit diesem Handy oder ist sie beschädigt,
      * wird eine Exception geworfen und nichts verändert.
      */
     suspend fun importSync(input: InputStream, pairing: Pairing): MergeResult {
         val dir = File(context.cacheDir, "sync-in")
+        try {
+            return mergeSync(input, pairing, dir)
+        } finally {
+            // Auch nach einem Fehler nichts im Zwischenspeicher liegen lassen
+            withContext(NonCancellable + Dispatchers.IO) { dir.deleteRecursively() }
+        }
+    }
+
+    private suspend fun mergeSync(input: InputStream, pairing: Pairing, dir: File): MergeResult {
         val remote = withContext(Dispatchers.IO) {
             dir.deleteRecursively()
             dir.mkdirs()
@@ -506,12 +538,16 @@ class LoveRepository(private val context: Context) {
         // Fotos der übernommenen Momente in den App-Speicher holen, alte Fotos aufräumen
         val takenIds = result.taken.map { it.id }.toSet()
         val moments = withContext(Dispatchers.IO) {
+            val moved = mutableSetOf<String>()
             val merged = result.moments.map { m ->
                 if (m.id !in takenIds) return@map m
                 m.mapPhotos { name ->
+                    val target = File(momentDir(), name)
+                    // Dasselbe Foto in einem zweiten Moment: Es wurde schon verschoben
+                    if (name in moved) return@mapPhotos target.absolutePath
                     val source = File(File(dir, Backup.MOMENTS), name).takeIf { it.isFile } ?: return@mapPhotos null
-                    val target = File(momentDir(), source.name)
-                    source.copyTo(target, overwrite = true)
+                    Backup.move(source, target)
+                    moved += name
                     target.absolutePath
                 }
             }
@@ -521,7 +557,7 @@ class LoveRepository(private val context: Context) {
             merged
         }
         context.dataStore.edit { prefs ->
-            prefs.writeModel(result.people, result.relationships)
+            prefs.writeModel(result.people, result.relationships, stamp = false)
             prefs[Keys.moments] = MomentCodec.encode(moments)
             prefs[Keys.deleted] = encodeDeleted(result.deleted)
         }
@@ -599,6 +635,15 @@ class LoveRepository(private val context: Context) {
      */
     suspend fun importBackup(input: InputStream) {
         val restore = File(context.cacheDir, "restore")
+        try {
+            restoreBackup(input, restore)
+        } finally {
+            // Auch nach einem Fehler nichts im Zwischenspeicher liegen lassen
+            withContext(NonCancellable + Dispatchers.IO) { restore.deleteRecursively() }
+        }
+    }
+
+    private suspend fun restoreBackup(input: InputStream, restore: File) {
         val data = withContext(Dispatchers.IO) {
             restore.deleteRecursively()
             var json: String? = null
@@ -622,10 +667,17 @@ class LoveRepository(private val context: Context) {
 
         // Ab hier ist die Sicherung gültig: alte Dateien durch die aus der Sicherung ersetzen
         val restored = withContext(Dispatchers.IO) {
+            // Verschieben statt kopieren: Das braucht keinen zusätzlichen Platz und kann deshalb nicht
+            // mittendrin am vollen Speicher scheitern, nachdem die alten Fotos schon gelöscht sind
+            val moved = mutableSetOf<String>()
             fun move(folder: String, dir: File, name: String?): String? {
-                val source = name?.let { File(File(restore, folder), it) }?.takeIf { it.isFile } ?: return null
+                if (name == null) return null
                 val target = File(dir, name)
-                source.copyTo(target, overwrite = true)
+                // Dasselbe Foto ein zweites Mal: Es wurde schon verschoben
+                if ("$folder/$name" in moved) return target.absolutePath
+                val source = File(File(restore, folder), name).takeIf { it.isFile } ?: return null
+                Backup.move(source, target)
+                moved += "$folder/$name"
                 return target.absolutePath
             }
             deletePhotos()
@@ -645,7 +697,7 @@ class LoveRepository(private val context: Context) {
             val lastNotified = p[Keys.lastNotified]
             p.clear()
             lastNotified?.let { p[Keys.lastNotified] = it }
-            p.writeModel(restored.people, restored.relationships)
+            p.writeModel(restored.people, restored.relationships, stamp = false)
             p[Keys.selected] = restored.selected
             if (restored.widgetRelationship.isNotEmpty()) p[Keys.widgetRelationship] = restored.widgetRelationship
             p[Keys.discreet] = restored.discreet
@@ -689,6 +741,7 @@ class LoveRepository(private val context: Context) {
         }
         // Mit allen Daten verschwindet auch die Kopplung mit dem anderen Handy und die automatische Sicherung
         PairingStore.clear(context)
+        FolderSync.disable(context)
         AutoBackup.disable(context)
     }
 

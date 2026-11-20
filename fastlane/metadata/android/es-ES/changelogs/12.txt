@@ -1,0 +1,1 @@
+Presiona un valor en el modo en vivo para ver el total, los demás se difuminan por un momento. El modo en vivo ahora se puede ocultar en la configuración. Nuevo widget para una tarjeta de amor sin una foto. Actualizaciones en la versión de GitHub ahora siempre se instalan directamente.

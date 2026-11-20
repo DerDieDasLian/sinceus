@@ -1,0 +1,24 @@
+# Nur Sicherheits-Updates: Dependabot öffnet einen PR, wenn eine genutzte Bibliothek oder
+# ein Werkzeug der Build-Abläufe eine bekannte Sicherheitslücke hat.
+# Normale Versions-Updates sind aus (open-pull-requests-limit: 0). Dafür muss in den
+# Repo-Einstellungen unter "Advanced Security" die Option "Dependabot security updates" an sein.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
+    groups:
+      actions-security:
+        applies-to: security-updates
+        patterns: ["*"]
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
+    groups:
+      gradle-security:
+        applies-to: security-updates
+        patterns: ["*"]

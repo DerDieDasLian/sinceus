@@ -318,7 +318,7 @@
     </plurals>
     <string name="section_sync">Sync</string>
     <string name="sync_summary">Share moments between your phones</string>
-    <string name="sync_intro">Keep your moments the same on your phones, without a cloud or account. Pair both phones once with a QR code, then send a sync file, for example through a messenger. Only your paired phones can open it.</string>
+    <string name="sync_intro">Keep your moments the same on your phones, without a cloud or account. Pair both phones once with a QR code or a code you share, then send a sync file, for example through a messenger. Only your paired phones can open it.</string>
     <string name="sync_intro_paired">Send a sync file whenever you have added something. The other phone opens it directly in Since Us and adds what is new. Photos come along.</string>
     <string name="sync_who">Who uses this phone?</string>
     <string name="sync_show_qr">Show QR code</string>
@@ -327,6 +327,14 @@
     <string name="sync_scan_summary">Scan the code shown on the other phone</string>
     <string name="sync_scan_prompt">Scan the QR code from Since Us on the other phone</string>
     <string name="sync_qr_text">Open Sync on the other phone and tap "Scan QR code". Only show this code to the people you are pairing with.</string>
+    <string name="sync_paste_code">Paste code</string>
+    <string name="sync_paste_code_summary">If you are not together, for example in a long-distance relationship</string>
+    <string name="sync_paste_code_text">Paste the message with the pairing code that the other phone sent you. You can paste the whole message.</string>
+    <string name="sync_paste_code_field">Pairing code</string>
+    <string name="sync_pair">Pair</string>
+    <string name="sync_share_code">Share code</string>
+    <string name="sync_share_code_hint">Not together? Share the code instead, for example in a messenger. Anyone who has this code can open your sync files, so only send it in a private chat.</string>
+    <string name="sync_code_message">My pairing code for Since Us. Open Settings, Sync, Paste code in Since Us and paste this whole message:\n\n%1$s</string>
     <string name="sync_paired">Paired</string>
     <string name="sync_paired_since">Paired since %1$s</string>
     <string name="sync_last">Last synced on %1$s</string>
@@ -338,13 +346,27 @@
     <string name="sync_open">Open sync file</string>
     <string name="sync_open_summary">If tapping the file did not open Since Us</string>
     <string name="sync_show_qr_again">Pair another phone</string>
-    <string name="sync_show_qr_again_summary">Shows the QR code again, for example for a new phone</string>
+    <string name="sync_show_qr_again_summary">Shows the QR code again, for example for a new phone or a second device of yours</string>
     <string name="sync_unpair">Unpair</string>
     <string name="sync_unpair_question">Unpair?</string>
     <string name="sync_unpair_text">This phone can no longer open sync files from the other phones. Your data stays. You can pair again any time.</string>
     <string name="sync_not_paired">Pair your phones first: Settings, Sync.</string>
     <string name="sync_failed">The file could not be synced. It may belong to a different pairing or be damaged.</string>
     <string name="sync_done">Synced: %1$d new, %2$d changed, %3$d removed</string>
+    <string name="sync_folder">Sync through a folder</string>
+    <string name="sync_folder_summary">Pick a folder that another app keeps the same on your devices. Since Us itself stays offline.</string>
+    <string name="sync_folder_on">Sync folder: %1$s</string>
+    <string name="sync_folder_last">Last synced on %1$s at %2$s</string>
+    <string name="sync_folder_never">Not synced yet</string>
+    <string name="sync_folder_error">The folder could not be reached last time. Tap to pick it again.</string>
+    <string name="sync_folder_now">Sync now</string>
+    <string name="sync_folder_now_summary">Happens by itself when you open the app, after changes and once a day</string>
+    <string name="sync_folder_off">Turn off folder sync</string>
+    <string name="sync_folder_off_summary">The files in the folder stay</string>
+    <string name="sync_folder_hint">Each device keeps its own encrypted file in the folder and reads the files of the others. Start dates, birthdays and moments are shared. Names, the photos on the home screen, colors and notifications stay the way you set them on each device.</string>
+    <string name="sync_folder_failed">The sync folder could not be reached.</string>
+    <string name="sync_folder_nothing_new">Synced. Nothing new from the other devices.</string>
+    <string name="sync_folder_done">Synced. Moments added, changed or removed: %1$d</string>
     <string name="moment_added_by">Added by %1$s</string>
 
     <!-- Geburtstage -->
@@ -690,6 +712,8 @@
     <string name="unsaved_text">You changed something on this relationship.</string>
     <string name="unsaved_invalid">Your changes can\'t be saved yet: at least two people are needed and an earlier phase has to start before the start date.</string>
     <string name="discard">Discard</string>
+    <string name="moment_unsaved_text">You changed something on this moment.</string>
+    <string name="moment_unsaved_no_title">Your changes can\'t be saved yet: the moment needs a title.</string>
     <string name="ob_distance_title">Do you live far apart?</string>
     <string name="ob_distance_sub">For long distance, the home screen shows the time on the other side and counts down to your next meeting.</string>
     <string name="ob_distance_no">We live close by</string>

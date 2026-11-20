@@ -1,0 +1,4 @@
+• New: sync through a folder that another app keeps the same on your devices. Since Us stays offline, and several devices per person work too.
+• Changes to start dates, birthdays and pronouns now come along when syncing. Names and photos stay your own on each device.
+• Pair from afar: share the code, for example in a messenger, and paste it on the other phone.
+• Updated technical foundations.

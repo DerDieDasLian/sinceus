@@ -2,27 +2,30 @@
 
 What is planned for Since Us. This list is a plan, not a promise, and it changes when new ideas come in. Why some ideas won't be added is explained in [SCOPE.md](SCOPE.md).
 
-*Last updated: November 14, 2026*
+*Last updated: November 20, 2026*
 
 ## Next version
 
-- A preview when you swipe back inside the app (predictive back)
-- Choose which part of a moment's photo is shown, also in the photo book, and tap a photo to see it in full size ([#49](https://github.com/DerDieDasLian/sinceus/issues/49))
+- Sync through a folder that another app keeps the same on your devices, for example on your own server ([#46](https://github.com/DerDieDasLian/sinceus/issues/46)). Since Us itself stays offline, and several devices per person work too
+- Pair your phones from afar by sharing a code, for example in a long-distance relationship
 
 ## Soon
 
 - Launch on Google Play (the closed test is running, [testers wanted](README.md#help-test-on-google-play))
-- More languages once they are (almost) complete on [Weblate](https://hosted.weblate.org/engage/since-us/): Dutch, Spanish and French are in progress
+- More languages once they are (almost) complete on [Weblate](https://hosted.weblate.org/engage/since-us/): Spanish and French are in progress
 - More reliable home screen widgets
 - An iOS version ([#53](https://github.com/DerDieDasLian/sinceus/issues/53)), once voluntary support on [Open Collective](https://opencollective.com/sinceus) covers the Apple developer fee
 
 ## Maybe, one day
 
-- Sync over the internet, but only with storage you control yourself (for example your own Nextcloud), never with a Since Us cloud
+- Syncing with your own server right inside the app, only if the folder sync is not enough. Never with a Since Us cloud
 - A countdown in the status bar (Live Updates on Android 16) when you are on your way to each other or a planned moment is coming up today
 
 ## Recently done
 
+- 3.4.0: missed reminders are caught up, the moment editor asks before it throws away changes, safer restoring when storage is almost full, easier to use with a screen reader, and Dutch
+- 3.3.0: choose which part of a moment's photo is shown, also in the photo book, and tap a photo to see it in full size ([#49](https://github.com/DerDieDasLian/sinceus/issues/49))
+- 3.2.0: a preview when you swipe back inside the app (predictive back)
 - 3.1.1: colors: Ocean, Jade, Lavender or a color of your own besides Wine, or the colors of your wallpaper on Android 12 and newer, a color for each relationship ([#43](https://github.com/DerDieDasLian/sinceus/issues/43)) and fewer fonts that clearly differ from each other
 - 3.1.0: clearer settings with a search field, special days and each relationship on their own page, and setup also asks about long distance, birthdays and holidays
 - 3.0.0: a year in review around your anniversary, report a bug or suggest an idea right from the settings, new moments take their date from the first photo, easier on the battery and more reliable backups

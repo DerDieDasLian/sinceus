@@ -8,6 +8,7 @@ name: Release
 # 1. Version bestimmen (Art: auto, patch, minor oder major)
 # 2. Prüfen: Änderungsnotizen für die neue Version in Deutsch und Englisch vorhanden und kurz genug
 # 3. Tests und alle Varianten bauen, erst danach Version committen und Release mit Tag erstellen
+# 4. Bundle mit Versionshinweisen automatisch zu Google Play hochladen (eigener Job "play")
 on:
   workflow_dispatch:
     inputs:
@@ -20,6 +21,10 @@ on:
         description: "Auch ohne App-Änderung ein neues Release erstellen"
         type: boolean
         default: false
+      play:
+        description: "Neue Version auch automatisch zu Google Play hochladen"
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -32,8 +37,11 @@ jobs:
   release:
     if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.version.outputs.release }}
+      tag: ${{ steps.version.outputs.tag }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -54,12 +62,12 @@ jobs:
         if: steps.version.outputs.release == 'true'
         run: .github/scripts/check-release.sh "${{ steps.version.outputs.code }}"
 
-      - uses: actions/setup-java@v6
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6
         if: steps.version.outputs.release == 'true'
         with:
           distribution: temurin
           java-version: 17
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6
         if: steps.version.outputs.release == 'true'
 
       - name: Set up signing key
@@ -132,8 +140,23 @@ jobs:
           cp app/build/outputs/apk/fdroid/release/app-fdroid-release.apk "SinceUs-${{ steps.version.outputs.tag }}-fdroid.apk.bin"
           notes=fastlane/metadata/android/en-US/changelogs/${{ steps.version.outputs.code }}.txt
           if [ -f "$notes" ]; then cp "$notes" notes.md; else echo "" > notes.md; fi
+          # Prüfsummen, damit man den Download prüfen kann
+          sha256sum "SinceUs-${{ steps.version.outputs.tag }}.apk" SinceUs.apk > SHA256SUMS.txt
+          # Für Google Play: Bundle und fertige Versionshinweise (so wie die Play Console sie erwartet) in einem Ordner
+          mkdir play
+          cp app/build/outputs/bundle/playRelease/app-play-release.aab play/
+          for lang in de-DE en-US; do
+            echo "<$lang>"
+            cat "fastlane/metadata/android/$lang/changelogs/${{ steps.version.outputs.code }}.txt"
+            echo "</$lang>"
+          done > play/versionshinweise.txt
+          # Gleiche Hinweise als einzelne Dateien für den automatischen Upload (Job "play")
+          mkdir play/whatsnew
+          for lang in de-DE en-US; do
+            cp "fastlane/metadata/android/$lang/changelogs/${{ steps.version.outputs.code }}.txt" "play/whatsnew/whatsnew-$lang"
+          done
 
-      - uses: softprops/action-gh-release@v3
+      - uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         if: steps.version.outputs.release == 'true'
         with:
           tag_name: ${{ steps.version.outputs.tag }}
@@ -144,20 +167,63 @@ jobs:
           files: |
             SinceUs-${{ steps.version.outputs.tag }}.apk
             SinceUs.apk
+            SHA256SUMS.txt
 
       # F-Droid-Variante mit unserer Signatur: F-Droid baut sie nach, vergleicht sie (Reproducible Builds)
       # und liefert dann diese Signatur aus. Endung .apk.bin, damit ältere App-Versionen sie nicht als Update laden.
-      - uses: softprops/action-gh-release@v3
+      - uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         if: steps.version.outputs.release == 'true'
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           files: SinceUs-${{ steps.version.outputs.tag }}-fdroid.apk.bin
 
-      # Das Bundle für Google Play wird nicht öffentlich veröffentlicht, nur als Artefakt abgelegt
-      - uses: actions/upload-artifact@v7
+      # Das Bundle für Google Play wird nicht öffentlich veröffentlicht, nur als Artefakt abgelegt,
+      # zusammen mit den Versionshinweisen zum Einfügen in der Play Console
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: steps.version.outputs.release == 'true'
         with:
           name: play-bundle-${{ steps.version.outputs.tag }}
-          path: app/build/outputs/bundle/playRelease/app-play-release.aab
+          path: play/
           # Reicht zum Hochladen in die Play Console, spart Actions-Speicher
           retention-days: 30
+
+  # Lädt das Bundle automatisch in Google Play hoch, in die Testphase aus der Repo-Variable PLAY_TRACK
+  # (ohne Variable: "alpha", das ist der Standard-Track für geschlossene Tests).
+  # Eigener Job: Scheitert nur der Upload, reicht "Re-run failed jobs", das Release wird nicht wiederholt.
+  # Fehlt das Secret PLAY_SERVICE_ACCOUNT_JSON, wird nur ein Hinweis angezeigt und nichts hochgeladen.
+  play:
+    needs: release
+    if: needs.release.outputs.release == 'true' && inputs.play
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check Play access
+        id: access
+        env:
+          PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$PLAY_JSON" ]; then
+            echo "::warning::Secret PLAY_SERVICE_ACCOUNT_JSON fehlt, das Bundle bitte von Hand in der Play Console hochladen (Artefakt play-bundle-${{ needs.release.outputs.tag }})."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        if: steps.access.outputs.ok == 'true'
+        with:
+          name: play-bundle-${{ needs.release.outputs.tag }}
+          path: play
+
+      - name: Upload to Google Play
+        if: steps.access.outputs.ok == 'true'
+        uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: app.sinceus
+          releaseFiles: play/app-play-release.aab
+          releaseName: ${{ needs.release.outputs.tag }}
+          track: ${{ vars.PLAY_TRACK || 'alpha' }}
+          status: ${{ vars.PLAY_STATUS || 'completed' }}
+          whatsNewDirectory: play/whatsnew

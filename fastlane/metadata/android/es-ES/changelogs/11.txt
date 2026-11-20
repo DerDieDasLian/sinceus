@@ -1,0 +1,1 @@
+Interno: Archivo de compilación para F-Droid renombrado.

@@ -196,7 +196,7 @@ fun HomeScreen(
                 Modifier
                     .size(BarItemHeight)
                     .clip(CircleShape)
-                    .clickable(onClick = onOpenSettings),
+                    .clickable(role = Role.Button, onClick = onOpenSettings),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -238,7 +238,8 @@ private enum class HomePage(@androidx.annotation.StringRes val label: Int) {
     Moments(R.string.tab_moments),
 }
 
-private val BarItemHeight = 40.dp
+/** Mindestens 48 dp, damit jeder Knopf gut zu treffen ist */
+private val BarItemHeight = 48.dp
 private val BarPadding = 4.dp
 
 @Composable

@@ -12,11 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ContentPaste
 import androidx.compose.material.icons.rounded.FileOpen
+import androidx.compose.material.icons.rounded.FolderOff
+import androidx.compose.material.icons.rounded.FolderOpen
 import androidx.compose.material.icons.rounded.LinkOff
 import androidx.compose.material.icons.rounded.QrCode2
 import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Send
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -28,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -41,9 +46,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.sinceus.R
+import app.sinceus.data.FolderSync
 import app.sinceus.data.LoveSettings
 import app.sinceus.data.Pairing
 import app.sinceus.data.Texts
@@ -59,19 +66,28 @@ class SyncActions(
     val onCreate: (String?) -> Unit = {},
     /** QR-Code des anderen Handys scannen */
     val onScan: (String?) -> Unit = {},
+    /** Kopplungscode als Text verschicken, zum Beispiel per Messenger */
+    val onShareCode: () -> Unit = {},
+    /** Eingefügten Kopplungscode übernehmen; false, wenn kein Code von Since Us darin steht */
+    val onPasteCode: (String, String?) -> Boolean = { _, _ -> false },
     val onMe: (String?) -> Unit = {},
     val onUnpair: () -> Unit = {},
     val onSend: () -> Unit = {},
     val onOpen: () -> Unit = {},
+    /** Ordner für den Abgleich wählen (true) oder den Ordner-Abgleich ausschalten (false) */
+    val onFolder: (Boolean) -> Unit = {},
+    /** Jetzt über den Ordner abgleichen */
+    val onSyncNow: () -> Unit = {},
 )
 
-/** Abgleich mit dem Handy des anderen Menschen: koppeln per QR-Code, dann Dateien austauschen */
+/** Abgleich mit dem Handy des anderen Menschen: koppeln per QR-Code oder geteiltem Code, dann Dateien austauschen */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun SyncPage(settings: LoveSettings, pairing: Pairing?, actions: SyncActions) {
+internal fun SyncPage(settings: LoveSettings, pairing: Pairing?, actions: SyncActions, folder: FolderSync.State? = null) {
     var me by remember(pairing) { mutableStateOf(pairing?.me) }
     var showQr by remember { mutableStateOf(false) }
     var confirmUnpair by remember { mutableStateOf(false) }
+    var pasting by remember { mutableStateOf(false) }
 
     Text(
         stringResource(if (pairing == null) R.string.sync_intro else R.string.sync_intro_paired),
@@ -108,6 +124,10 @@ internal fun SyncPage(settings: LoveSettings, pairing: Pairing?, actions: SyncAc
             SyncRow(Icons.Rounded.QrCodeScanner, stringResource(R.string.sync_scan), stringResource(R.string.sync_scan_summary)) {
                 actions.onScan(me)
             }
+            Line()
+            SyncRow(Icons.Rounded.ContentPaste, stringResource(R.string.sync_paste_code), stringResource(R.string.sync_paste_code_summary)) {
+                pasting = true
+            }
         }
     } else {
         SyncCard {
@@ -126,6 +146,42 @@ internal fun SyncPage(settings: LoveSettings, pairing: Pairing?, actions: SyncAc
             Line()
             SyncRow(Icons.Rounded.FileOpen, stringResource(R.string.sync_open), stringResource(R.string.sync_open_summary), onClick = actions.onOpen)
         }
+        SyncCard {
+            if (folder == null) {
+                SyncRow(Icons.Rounded.FolderOpen, stringResource(R.string.sync_folder), stringResource(R.string.sync_folder_summary)) {
+                    actions.onFolder(true)
+                }
+            } else {
+                SyncRow(
+                    Icons.Rounded.FolderOpen,
+                    stringResource(R.string.sync_folder_on, folder.folderName.ifBlank { "?" }),
+                    when {
+                        folder.failed -> stringResource(R.string.sync_folder_error)
+                        folder.last > 0 -> {
+                            val at = Instant.ofEpochMilli(folder.last).atZone(ZoneId.systemDefault())
+                            stringResource(
+                                R.string.sync_folder_last,
+                                Texts.mediumDate(at.toLocalDate()),
+                                Texts.time(LocalContext.current, at.toLocalTime()),
+                            )
+                        }
+                        else -> stringResource(R.string.sync_folder_never)
+                    },
+                ) { actions.onFolder(true) }
+                Line()
+                SyncRow(Icons.Rounded.Sync, stringResource(R.string.sync_folder_now), stringResource(R.string.sync_folder_now_summary), onClick = actions.onSyncNow)
+                Line()
+                SyncRow(Icons.Rounded.FolderOff, stringResource(R.string.sync_folder_off), stringResource(R.string.sync_folder_off_summary)) {
+                    actions.onFolder(false)
+                }
+            }
+        }
+        Text(
+            stringResource(R.string.sync_folder_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        )
         SyncCard {
             SyncRow(Icons.Rounded.QrCode2, stringResource(R.string.sync_show_qr_again), stringResource(R.string.sync_show_qr_again_summary)) {
                 showQr = true
@@ -153,9 +209,59 @@ internal fun SyncPage(settings: LoveSettings, pairing: Pairing?, actions: SyncAc
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(16.dp)),
                     )
+                    Text(
+                        stringResource(R.string.sync_share_code_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             },
             confirmButton = { TextButton(onClick = { showQr = false }) { Text(stringResource(R.string.done)) } },
+            dismissButton = {
+                TextButton(onClick = actions.onShareCode) {
+                    Icon(Icons.Rounded.Share, null, Modifier.padding(end = 8.dp))
+                    Text(stringResource(R.string.sync_share_code))
+                }
+            },
+        )
+    }
+    if (pasting) {
+        var code by remember { mutableStateOf("") }
+        var wrong by remember { mutableStateOf(false) }
+        AlertDialog(
+            onDismissRequest = { pasting = false },
+            icon = { Icon(Icons.Rounded.ContentPaste, null) },
+            title = { Text(stringResource(R.string.sync_paste_code)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(stringResource(R.string.sync_paste_code_text))
+                    OutlinedTextField(
+                        value = code,
+                        onValueChange = {
+                            code = it
+                            wrong = false
+                        },
+                        label = { Text(stringResource(R.string.sync_paste_code_field)) },
+                        isError = wrong,
+                        supportingText = if (wrong) {
+                            { Text(stringResource(R.string.sync_bad_qr)) }
+                        } else {
+                            null
+                        },
+                        maxLines = 4,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = code.isNotBlank(),
+                    onClick = {
+                        if (actions.onPasteCode(code, me)) pasting = false else wrong = true
+                    },
+                ) { Text(stringResource(R.string.sync_pair)) }
+            },
+            dismissButton = { TextButton(onClick = { pasting = false }) { Text(stringResource(R.string.cancel)) } },
         )
     }
     if (confirmUnpair) {

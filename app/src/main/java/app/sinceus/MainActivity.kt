@@ -97,6 +97,7 @@ class MainActivity : ComponentActivity() {
                 val updateProgress by vm.updateProgress.collectAsStateWithLifecycle()
                 val pairing by vm.pairing.collectAsStateWithLifecycle()
                 val autoBackup by vm.autoBackup.collectAsStateWithLifecycle()
+                val folderSync by vm.folderSync.collectAsStateWithLifecycle()
                 val scope = rememberCoroutineScope()
                 var showSettings by rememberSaveable { mutableStateOf(false) }
                 var editingPhoto by rememberSaveable { mutableStateOf(false) }
@@ -228,6 +229,10 @@ class MainActivity : ComponentActivity() {
                 val folderPicker = rememberLauncherForActivityResult(
                     ActivityResultContracts.OpenDocumentTree(),
                 ) { uri -> if (uri != null) vm.enableAutoBackup(uri) }
+                // Ordner für den Abgleich mit den anderen Geräten
+                val syncFolderPicker = rememberLauncherForActivityResult(
+                    ActivityResultContracts.OpenDocumentTree(),
+                ) { uri -> if (uri != null) vm.enableFolderSync(uri) }
                 val syncOpener = rememberLauncherForActivityResult(
                     ActivityResultContracts.OpenDocument(),
                 ) { uri -> if (uri != null) vm.importSync(uri) }
@@ -398,11 +403,22 @@ class MainActivity : ComponentActivity() {
                                     sync = SyncActions(
                                         onCreate = vm::createPairing,
                                         onScan = ::scanPairing,
+                                        onShareCode = vm::shareCode,
+                                        onPasteCode = { text, me ->
+                                            vm.acceptPairing(text, me).also { ok ->
+                                                if (ok) {
+                                                    Toast.makeText(this@MainActivity, getString(R.string.sync_paired_now), Toast.LENGTH_LONG).show()
+                                                }
+                                            }
+                                        },
                                         onMe = vm::setMe,
                                         onUnpair = vm::unpair,
                                         onSend = { vm.shareSync() },
                                         onOpen = { syncOpener.launch(arrayOf("*/*")) },
+                                        onFolder = { on -> if (on) syncFolderPicker.launch(null) else vm.disableFolderSync() },
+                                        onSyncNow = { vm.syncFolderNow() },
                                     ),
+                                    folderSync = folderSync,
                                 )
                                 else -> HomeScreen(
                                     s,

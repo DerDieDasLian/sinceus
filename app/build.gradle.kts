@@ -14,7 +14,7 @@ val releaseKeystore = rootProject.file("keystore.properties").takeIf { it.exists
 // Sprachen, die in die App kommen. Übersetzungen aus Weblate liegen schon vorher im Repo,
 // eine neue Sprache wird hier erst eingetragen, wenn sie fast vollständig ist.
 // Die Sprachauswahl in der App und in den Android-Einstellungen richtet sich nach dieser Liste.
-val appLanguages = listOf("de", "en", "it", "zh-CN")
+val appLanguages = listOf("de", "en", "it", "nl", "zh-CN")
 
 android {
     namespace = "app.sinceus"
@@ -24,8 +24,8 @@ android {
         applicationId = "app.sinceus"
         minSdk = 26
         targetSdk = 36
-        versionCode = 53
-        versionName = "3.3.0"
+        versionCode = 55
+        versionName = "3.4.1"
         // Repository, in dem die GitHub-Version nach neuen Releases sucht
         val githubRepo = providers.gradleProperty("githubRepo").getOrElse("DerDieDasLian/sinceus")
         buildConfigField("String", "GITHUB_REPO", "\"$githubRepo\"")
@@ -174,16 +174,16 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.10.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
-    implementation("androidx.datastore:datastore-preferences:1.2.1")
+    implementation("androidx.datastore:datastore-preferences:1.3.0")
     implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.glance:glance-material3:1.1.1")
     implementation("io.coil-kt.coil3:coil-compose:3.4.0")
     // QR-Code für die Kopplung zum Abgleich (erzeugen und scannen, Apache 2.0)
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
-    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.google.zxing:core:3.5.4")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.robolectric:robolectric:4.16.1")
+    testImplementation("org.robolectric:robolectric:4.17")
     testImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

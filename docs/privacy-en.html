@@ -21,14 +21,15 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="doc-page">
+<a class="skip" href="#main">Skip to content</a>
 <header class="nav">
   <div class="wrap"><a class="brand" href="index.html"><img src="img/icon.png" alt="">Since Us</a></div>
 </header>
 <div class="doc-top"></div>
-<main class="doc">
+<main class="doc" id="main">
 <h1>Privacy policy for the app “Since Us”</h1>
 <p><a href="privacy-de.html">Deutsche Version</a></p>
-<p>Last updated: November 1, 2026</p>
+<p>Last updated: November 15, 2026</p>
 
 <h2>In short</h2>
 <p>Since Us stores all data only on your device. It sends no data to us or anyone else
@@ -71,10 +72,16 @@ The app does not upload the file anywhere. Keep it safe, because it contains you
 <h2>Sync between phones</h2>
 <p>Under <em>Settings → Sync</em> you can pair your phone with another phone. One phone shows a QR code, the other scans it with the camera.
 The app only asks for camera permission for this; camera images are not stored.
+Instead of scanning the QR code, you can also send the code as text through the share menu and paste it on the other phone. The app you send it with then sees the key, so only send it in a private chat.
 The QR code contains a random key that is only stored on the paired phones (not in backups).</p>
 <p>When you tap <em>Send sync</em>, the app creates a file encrypted with this key (AES-256-GCM) containing names, relationships and moments with photos,
 and hands it to the app you choose in the share menu. Only paired phones can open it.
 The app itself uploads nothing and uses no server for this.</p>
+<p>With <em>Sync through a folder</em> you pick a folder once. Each paired device keeps its own file there, encrypted the same way,
+and reads the files of the other devices when you open the app, after changes and once a day. How the folder gets to the other devices
+is up to you, using another app of your choice, for example a cloud or folder sync app. That app's terms apply, and it only sees encrypted files.
+Since Us itself needs no internet access for this. Names, home screen photos, colors and notifications are set on each device;
+start dates, birthdays, pronouns and moments are synced. You can turn this off at any time and delete the files in the folder yourself.</p>
 
 <h2>Deleting your data</h2>
 <p>In the app, <em>Settings → Start over → Delete all data</em> removes everything immediately.

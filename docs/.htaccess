@@ -6,4 +6,32 @@ RewriteCond %{HTTPS} off [OR]
 RewriteCond %{HTTP_HOST} ^www\. [NC]
 RewriteRule ^ https://sinceus.de%{REQUEST_URI} [L,R=301]
 
-ErrorDocument 404 /index.html
+ErrorDocument 404 /404.html
+
+# Sicherheits-Header: nur HTTPS, keine Einbettung in fremde Seiten, nur eigene Inhalte laden.
+# Die Seite hat kleine Skripte und Stile direkt im HTML, deshalb 'unsafe-inline'.
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=15552000"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'self'; form-action 'none'; frame-ancestors 'none'"
+</IfModule>
+
+# Zwischenspeichern im Browser: Schrift lange, Bilder eine Woche, Stil und Skript kurz,
+# die Seiten selbst gar nicht, damit Änderungen sofort ankommen
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 week"
+  ExpiresByType image/png "access plus 1 week"
+  ExpiresByType image/jpeg "access plus 1 week"
+</IfModule>
+
+# Texte komprimiert ausliefern
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript application/xml text/xml image/svg+xml
+</IfModule>

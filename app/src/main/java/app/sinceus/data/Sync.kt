@@ -50,10 +50,15 @@ data class Pairing(
         fun qrText(p: Pairing): String =
             PREFIX + Base64.encodeToString(p.key, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
 
-        /** Schlüssel aus einem gescannten QR-Code, null = kein Kopplungscode von Since Us */
+        private val CODE = Regex(Regex.escape(PREFIX) + "([A-Za-z0-9_-]+)")
+
+        /**
+         * Schlüssel aus einem gescannten QR-Code oder einem eingefügten Text, null = kein Kopplungscode
+         * von Since Us. Der Code darf mitten im Text stehen, zum Beispiel in einer weitergeleiteten Nachricht.
+         */
         fun keyFromQr(text: String?): ByteArray? {
-            if (text == null || !text.startsWith(PREFIX)) return null
-            val key = runCatching { Base64.decode(text.removePrefix(PREFIX), Base64.URL_SAFE) }.getOrNull()
+            val code = text?.let { CODE.find(it) }?.groupValues?.get(1) ?: return null
+            val key = runCatching { Base64.decode(code, Base64.URL_SAFE) }.getOrNull()
             return key?.takeIf { it.size == 32 }
         }
     }
@@ -288,13 +293,16 @@ object SyncMerge {
                 removed++
             }
         }
-        // Bekannte Menschen bleiben wie hier eingetragen, nur ein fehlender Geburtstag kommt vom anderen Handy
+        // Menschen und Beziehungen: die neuere Änderung der gemeinsamen Angaben gewinnt, eigene
+        // Einstellungen dieses Geräts (Namen, Bezeichnung, Farbe, Mitteilungen) bleiben
         val mergedPeople = (
-            people.map { p -> p.copy(birthday = p.birthday ?: remote.people.firstOrNull { it.id == p.id }?.birthday) } +
+            people.map { p -> mergePerson(p, remote.people.firstOrNull { it.id == p.id }) } +
                 remote.people.filter { r -> people.none { it.id == r.id } }
             ).take(MAX_PEOPLE)
-        val mergedRelationships = (relationships + remote.relationships.filter { r -> relationships.none { it.id == r.id } })
-            .take(MAX_RELATIONSHIPS)
+        val mergedRelationships = (
+            relationships.map { r -> mergeRelationship(r, remote.relationships.firstOrNull { it.id == r.id }) } +
+                remote.relationships.filter { r -> relationships.none { it.id == r.id } }
+            ).take(MAX_RELATIONSHIPS)
         return MergeResult(
             people = mergedPeople,
             relationships = mergedRelationships,
@@ -307,6 +315,18 @@ object SyncMerge {
             removed = removed,
         )
     }
+
+    internal fun mergePerson(local: Person, remote: Person?): Person = when {
+        remote == null -> local
+        remote.updatedAt > local.updatedAt ->
+            local.copy(pronouns = remote.pronouns, birthday = remote.birthday, updatedAt = remote.updatedAt)
+        // Ältere Abgleich-Dateien ohne Zeitstempel: nur ein fehlender Geburtstag kommt dazu
+        remote.updatedAt == 0L && local.updatedAt == 0L && local.birthday == null -> local.copy(birthday = remote.birthday)
+        else -> local
+    }
+
+    internal fun mergeRelationship(local: Relationship, remote: Relationship?): Relationship =
+        if (remote != null && remote.updatedAt > local.updatedAt) local.withSharedFrom(remote) else local
 
     private const val YEAR_MS = 365L * 24 * 3600 * 1000
 }
