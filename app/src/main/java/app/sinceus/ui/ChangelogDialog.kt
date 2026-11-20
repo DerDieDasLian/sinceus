@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.dp
 import app.sinceus.BuildConfig
 import app.sinceus.R
 
+/** Version, deren Neuigkeiten-Fenster oben den Unterstützen-Hinweis zeigt. */
+private const val SUPPORT_NOTICE_VERSION = 57
+
 /** Was ist neu: einmal nach einem Update, mit der Möglichkeit, es dauerhaft abzuschalten */
 @Composable
 fun ChangelogDialog(lines: List<String>, onClose: () -> Unit, onNeverAgain: (() -> Unit)?) {
@@ -31,6 +34,10 @@ fun ChangelogDialog(lines: List<String>, onClose: () -> Unit, onNeverAgain: (() 
                 Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
+                // Einmaliger Hinweis auf Open Collective (nicht im Play-Store-Build)
+                if (BuildConfig.SUPPORT_LINK && BuildConfig.VERSION_CODE == SUPPORT_NOTICE_VERSION) {
+                    SupportNotice()
+                }
                 lines.forEach { line ->
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text("•", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyMedium)

@@ -6,6 +6,8 @@ What is planned for Since Us. This list is a plan, not a promise, and it changes
 
 ## Next version
 
+- Supporting Since Us is easier to find in the app (right below "About the app") and explains exactly what the money pays for
+
 - Sync through a folder that another app keeps the same on your devices, for example on your own server ([#46](https://github.com/DerDieDasLian/sinceus/issues/46)). Since Us itself stays offline, and several devices per person work too
 - Pair your phones from afar by sharing a code, for example in a long-distance relationship
 

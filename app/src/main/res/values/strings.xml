@@ -635,7 +635,17 @@
     <string name="about_scope">What Since Us is (and isn\'t)</string>
     <string name="about_scope_summary">Why some ideas won\'t be added</string>
     <string name="support_project">Support Since Us</string>
-    <string name="support_project_summary">Voluntary, only for project costs, on Open Collective</string>
+    <string name="support_project_summary">Voluntary, for costs like the iPhone version and website</string>
+    <string name="support_search">donate, donation, open collective, money</string>
+    <string name="support_dialog_intro">Since Us is and stays free, nothing is ever locked behind a payment. If you like, you can help carry the project\'s costs on Open Collective:</string>
+    <string name="support_cost_apple">Apple developer account for an iPhone version (99 euros a year)</string>
+    <string name="support_cost_web">Web hosting for sinceus.de</string>
+    <string name="support_cost_address">A postal address for the legal notice, so no private address has to be public</string>
+    <string name="support_dialog_outro">Working time is not paid from it. The money is managed by the nonprofit Open Source Europe, and every expense is public. Supporting is voluntary and unlocks nothing in the app.</string>
+    <string name="support_open">Open Open Collective</string>
+    <string name="support_notice_title">Since Us can now be supported</string>
+    <string name="support_notice_text">The app stays free. If you want, you can help with the project costs on Open Collective:</string>
+    <string name="support_notice_where">Only project costs, no working time. Every expense is public. You can always find this in Settings, right below \"About the app\".</string>
     <!-- Großer Jahresrückblick zum Durchwischen -->
     <string name="recap_show">Year in review</string>
     <string name="recap_show_summary">A look back at your year around your anniversary, earlier years under Moments</string>

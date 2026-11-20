@@ -627,7 +627,17 @@
     <string name="about_scope">Was Since Us ist (und was nicht)</string>
     <string name="about_scope_summary">Warum manche Ideen nicht dazukommen</string>
     <string name="support_project">Since Us unterstützen</string>
-    <string name="support_project_summary">Freiwillig, nur für Projektkosten, auf Open Collective</string>
+    <string name="support_project_summary">Freiwillig, für Kosten wie iPhone-Version und Website</string>
+    <string name="support_search">spenden, spende, open collective, geld</string>
+    <string name="support_dialog_intro">Since Us ist und bleibt kostenlos, nichts wird je hinter einer Bezahlung versteckt. Wenn du magst, kannst du die Kosten des Projekts auf Open Collective mittragen:</string>
+    <string name="support_cost_apple">Apple-Entwicklerkonto für eine iPhone-Version (99 Euro im Jahr)</string>
+    <string name="support_cost_web">Webhosting für sinceus.de</string>
+    <string name="support_cost_address">Eine Postanschrift für das Impressum, damit keine Privatadresse öffentlich sein muss</string>
+    <string name="support_dialog_outro">Arbeitszeit wird davon nicht bezahlt. Das Geld verwaltet der gemeinnützige Verein Open Source Europe, und jede Ausgabe ist öffentlich einsehbar. Unterstützen ist freiwillig und schaltet in der App nichts frei.</string>
+    <string name="support_open">Zu Open Collective</string>
+    <string name="support_notice_title">Since Us kann jetzt unterstützt werden</string>
+    <string name="support_notice_text">Die App bleibt kostenlos. Wenn du magst, kannst du auf Open Collective bei den Kosten des Projekts helfen:</string>
+    <string name="support_notice_where">Nur Projektkosten, keine Arbeitszeit. Jede Ausgabe ist öffentlich. Du findest das jederzeit in den Einstellungen, direkt unter „Über die App“.</string>
     <!-- Großer Jahresrückblick zum Durchwischen -->
     <string name="recap_show">Jahresrückblick</string>
     <string name="recap_show_summary">Rund um euren Jahrestag ein Rückblick auf euer Jahr, frühere Jahre bei den Momenten</string>

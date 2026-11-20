@@ -664,16 +664,6 @@ fun SettingsScreen(
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                 modifier = Modifier.clickable { Feedback.openWeb(context, Feedback.SCOPE) },
                             )
-                            if (BuildConfig.SUPPORT_LINK) {
-                                Divider()
-                                ListItem(
-                                    headlineContent = { Text(stringResource(R.string.support_project)) },
-                                    supportingContent = { Text(stringResource(R.string.support_project_summary)) },
-                                    leadingContent = { Icon(Icons.Rounded.VolunteerActivism, null) },
-                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                    modifier = Modifier.clickable { Feedback.openWeb(context, Feedback.SUPPORT) },
-                                )
-                            }
                         }
                     }
                     SettingsPage.Reset -> {
@@ -833,6 +823,7 @@ fun SettingsScreen(
                 TextButton(onClick = { dialog = null; Feedback.mailBug(context) }) { Text(stringResource(R.string.report_email)) }
             },
         )
+        "support" -> SupportDialog(onDismiss = { dialog = null })
         "privacy" -> AlertDialog(
             onDismissRequest = { dialog = null },
             icon = { Icon(Icons.Rounded.Shield, null) },
@@ -963,7 +954,7 @@ private val SEARCH = listOf(
     SearchEntry(R.string.imprint, SettingsPage.About),
     SearchEntry(R.string.licenses, SettingsPage.About),
     SearchEntry(R.string.version, SettingsPage.About),
-) + if (BuildConfig.SUPPORT_LINK) listOf(SearchEntry(R.string.support_project, SettingsPage.Feedback)) else emptyList()
+) + if (BuildConfig.SUPPORT_LINK) listOf(SearchEntry(R.string.support_project, dialog = "support", words = listOf(R.string.support_search))) else emptyList()
 
 /** Vergleich ohne Groß-/Kleinschreibung und ohne Akzente, damit „uber“ auch „Über“ findet */
 private fun fold(text: String): String =
@@ -1026,7 +1017,7 @@ private fun Overview(
                         headlineContent = { Text(stringResource(e.title)) },
                         supportingContent = {
                             Text(
-                                stringResource(e.page?.title ?: R.string.section_photo),
+                                stringResource(e.page?.title ?: if (e.dialog == "support") R.string.settings_group_help else R.string.section_photo),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         },
@@ -1034,6 +1025,7 @@ private fun Overview(
                             val icon = e.page?.icon ?: when (e.dialog) {
                                 "font" -> Icons.Rounded.TextFields
                                 "colors" -> Icons.Rounded.Palette
+                                "support" -> Icons.Rounded.VolunteerActivism
                                 else -> Icons.Rounded.Language
                             }
                             Icon(icon, null)
@@ -1126,6 +1118,25 @@ private fun Overview(
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 modifier = Modifier.clickable { onOpen(p) },
             )
+            // Unterstützen direkt unter "Über die App": gut zu finden, aber nicht aufdringlich
+            if (p == SettingsPage.About && BuildConfig.SUPPORT_LINK) {
+                Divider()
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.support_project)) },
+                    supportingContent = {
+                        Text(
+                            stringResource(R.string.support_project_summary),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
+                    leadingContent = { Icon(Icons.Rounded.VolunteerActivism, null) },
+                    trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    modifier = Modifier.clickable { onDialog("support") },
+                )
+            }
             // Schrift, Farben und Sprache direkt hier, ohne eigene Unterseite
             if (p == SettingsPage.Photo) {
                 Divider()
