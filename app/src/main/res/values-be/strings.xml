@@ -5,7 +5,7 @@
     <string name="widget_photo_name">Картка кахання</string>
     <string name="widget_photo_description">Вашы імёны, вашы дні разам і наступны асаблівы дзень</string>
     <string name="channel_name">Асаблівыя дні</string>
-    <string name="channel_description">Круглыя даты (месяцы і гады)</string>
+    <string name="channel_description">Гадавіны і круглыя даты (месяцы і гады)</string>
     <string name="settings">Налады</string>
     <string name="back">Назад</string>
     <string name="names">Імёны</string>
@@ -359,7 +359,7 @@
     <string name="sync_scan_prompt">Адсканіруйце код Since Us на другім телефоне</string>
     <string name="sync_qr_text">Адкрыйце сінхранізацыю на другім тэлефоне і націсніце «Адсканіраваць QR-код». Паказвайце гэты код толькі людзям, з якімі вы спалучайцеся.</string>
     <string name="sync_paste_code">Уставіць код</string>
-    <string name="sync_paste_code_summary">Напрыклад, калі вы спадкаецеся адлегла</string>
+    <string name="sync_paste_code_summary">Напрыклад, калі вы спаткаецеся на адлегласці</string>
     <string name="sync_paste_code_text">Устаўце паведамленне з кодам спалучэння, якое вам адправілі з іншага тэлефона. Вы можаце ўставіць паведамленне поўнасцю.</string>
     <string name="sync_paste_code_field">Код спалучэння</string>
     <string name="sync_pair">Спалучыць</string>
@@ -789,4 +789,14 @@
     <string name="ob_days_sub">Дадайце дні нараджэння і выберыце, якія святы падлічваць. Усё неабавязкова.</string>
     <string name="ob_birthdays">Дні нараджэння</string>
     <string name="ob_birthday_add">Дадаць дзень нараджэння для %1$s</string>
+    <string name="support_search">ахвяраваць, ахвяраванне, грошы, падтрымаць, падтрымка, пажэртваваць, пажэртваванне, дзеньгі, дзенгі, данат, заданаціць, пожертвовать, пожертвование, деньги, поддержать, поддержка, open collective</string>
+    <string name="support_dialog_intro">Since Us бясплатная і такой застанецца, нічога не будзе патрабаваць аплаты. Калі вы жадаеце, вы можаце дапамагчы закрыць кошты праекта на Open Collective:</string>
+    <string name="support_cost_apple">Уліковы запіс распрацоўшчыка Apple для версіі на iPhone (99 еўра на год)</string>
+    <string name="support_cost_web">Вэб-хостынг для sinceus.de</string>
+    <string name="support_cost_address">Поштавы адрас для юрыдычнага папярэджання, таму ніякі прыватны адрас не будзе публічным</string>
+    <string name="support_dialog_outro">Гэта не зарплата. Грашыма кіруе некамерцыйная арганізацыя Open Source Europe і кожная трата публікуецца. Падтрымка добраахвотная і не адкрывае нічога ў праграме.</string>
+    <string name="support_open">Адкрыць Open Collective</string>
+    <string name="support_notice_title">Цяпер Since Us можна падтрымаць</string>
+    <string name="support_notice_text">Праграма застаецца бясплатнай. Па жаданні, вы можаце дапамагчы з коштамі на Open Collective:</string>
+    <string name="support_notice_where">Толькі траты па праекту, не за час працы. Кожная трата публічная. Вы заўсёды можаце знайсці гэта ў наладах, пад «Пра праграму».</string>
 </resources>
