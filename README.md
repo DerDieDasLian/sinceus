@@ -38,7 +38,8 @@ Counts how long you have been together and reminds you of every special day.
   </picture>
 </a>
 
-Since Us is and stays free, with no ads, no subscription and no premium version. Supporting it on **[Open Collective](https://opencollective.com/sinceus)** is completely voluntary. The money is held by the nonprofit Open Source Europe and only pays for what the project itself costs:
+<details>
+<summary><b>The costs as a table</b></summary>
 
 | What | Why | Cost |
 | --- | --- | --- |
@@ -46,7 +47,9 @@ Since Us is and stays free, with no ads, no subscription and no premium version.
 | Web hosting | Keeps [sinceus.de](https://sinceus.de/) online with help, privacy policy and downloads | a share of the hosting |
 | Postal address | For the legal notice, so no private home address has to be public | a share of the service |
 
-Working time is not paid from it, and every expense is public on [Open Collective](https://opencollective.com/sinceus).
+The money is held by the nonprofit Open Source Europe. Working time is not paid from it, and every expense is public on [Open Collective](https://opencollective.com/sinceus).
+
+</details>
 
 ## Features
 
