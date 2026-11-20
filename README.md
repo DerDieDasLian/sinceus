@@ -13,7 +13,9 @@ Counts how long you have been together and reminds you of every special day.
 [![Open Collective](https://img.shields.io/opencollective/all/sinceus?label=Open%20Collective)](https://opencollective.com/sinceus)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 
-[Website](https://sinceus.de/) · [Download](#download) · [Help translate](#help-translate) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Scope](SCOPE.md) · [Support](https://opencollective.com/sinceus)
+[Website](https://sinceus.de/) · [Download](#download) · [Help translate](#help-translate) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Scope](SCOPE.md) · [Support](#support-the-project)
+
+<a href="#download"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/btn-download-dark.png"><img src=".github/readme/btn-download-light.png" width="150" alt="Download"></picture></a>&nbsp;&nbsp;<a href="#support-the-project"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/btn-support-dark.png"><img src=".github/readme/btn-support-light.png" width="222" alt="Support the project"></picture></a>
 
 <p>
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" width="200" alt="Overview">
@@ -23,17 +25,38 @@ Counts how long you have been together and reminds you of every special day.
 
 </div>
 
-Available in English, German, Italian, Dutch and Chinese, more languages are [being translated](#help-translate).
-
 ## Why Since Us
 
-- **Poly friendly from day one:** as many people and relationships as you like, each with its own date, special days and reminders
-- **Queer and non-binary friendly at its core:** gender-neutral texts, pronouns built in, Pride decoration in June, made by a queer, non-binary person
-- **Open source:** all code is public under the GPL
-- **Free forever:** no ads, no subscription, no premium version, no in-app purchases, [support](#support-the-project) is voluntary
-- **Private by design:** no account, no server, no tracking, everything stays on your phone
+<picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/why-dark.png"><img src=".github/readme/why-light.png" width="880" alt="Why Since Us: poly friendly, queer at its core, private by design (no account, no server, no tracking), free forever (no ads, no subscription, no premium version), open source under the GPL, and available in English, German, Italian, Dutch and Chinese with more on the way."></picture>
+
+## Support the project
+
+<a href="https://opencollective.com/sinceus">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/readme/support-dark.png">
+    <img src=".github/readme/support-light.png" width="880" alt="Support Since Us on Open Collective. The money only pays for project costs: the Apple developer account for an iPhone version (99 euros a year), web hosting for sinceus.de and a postal address for the legal notice. No payment for working time, every expense is public, and supporting unlocks nothing.">
+  </picture>
+</a>
+
+<details>
+<summary><b>The costs as a table</b></summary>
+
+| What | Why | Cost |
+| --- | --- | --- |
+| Apple developer account | Needed to publish the iPhone version ([#53](https://github.com/DerDieDasLian/sinceus/issues/53)) | 99 euros a year |
+| Web hosting | Keeps [sinceus.de](https://sinceus.de/) online with help, privacy policy and downloads | a share of the hosting |
+| Postal address | For the legal notice, so no private home address has to be public | a share of the service |
+
+The money is held by the nonprofit Open Source Europe. Working time is not paid from it, and every expense is public on [Open Collective](https://opencollective.com/sinceus).
+
+</details>
 
 ## Features
+
+<picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/features-dark.png"><img src=".github/readme/features-light.png" width="880" alt="What Since Us can do: live counter, reminders, moments, your photos, widgets, poly mode, sync without a server, backup, and your style with light and dark mode, color themes, fonts and five languages."></picture>
+
+<details>
+<summary><b>All features in detail</b></summary>
 
 - Days, weeks, months and hours together, plus a live counter down to the second
 - Your own photo with adjustable framing, or one of several backgrounds, plus an optional slideshow with more photos
@@ -49,60 +72,35 @@ Available in English, German, Italian, Dutch and Chinese, more languages are [be
 - Poly mode: more than two people and several relationships, each with its own date, special days and reminders, plus a discreet mode with initials only
 - For every kind of love, no matter who you are, whom you love or how many of you there are, with a little rainbow decoration in Pride Month (June)
 
-## What Since Us is (and isn't)
-
-Since Us is made for couples, poly ones included. Friendship and family can be chosen per relationship in the settings, but the app stays built around couples. It will never have ads, accounts, tracking or anything that costs money. The details are in [SCOPE.md](SCOPE.md), please read it before suggesting an idea. What is planned next is on the [roadmap](ROADMAP.md).
-
-## Contributing
-
-Bug reports, ideas, translations and small fixes are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help, and please follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security problems should be reported privately, see the [security policy](.github/SECURITY.md).
-
-## Support the project
-
-<a href="https://opencollective.com/sinceus">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/readme/support-dark.png">
-    <img src=".github/readme/support-light.png" width="720" alt="Support Since Us on Open Collective. The money only pays for project costs: the Apple developer account for an iPhone version (99 euros a year), web hosting for sinceus.de and a postal address for the legal notice. No payment for working time, every expense is public, and supporting unlocks nothing.">
-  </picture>
-</a>
-
-Since Us is and stays free, with no ads, no subscription and no premium version. Supporting it on **[Open Collective](https://opencollective.com/sinceus)** is completely voluntary. The money is held by the nonprofit Open Source Europe and only pays for what the project itself costs:
-
-| What | Why | Cost |
-| --- | --- | --- |
-| Apple developer account | Needed to publish the iPhone version ([#53](https://github.com/DerDieDasLian/sinceus/issues/53)) | 99 euros a year |
-| Web hosting | Keeps [sinceus.de](https://sinceus.de/) online with help, privacy policy and downloads | a share of the hosting |
-| Postal address | For the legal notice, so no private home address has to be public | a share of the service |
-
-Working time is not paid from it, and every expense is public on [Open Collective](https://opencollective.com/sinceus).
-
-## Third-party libraries
-
-Since Us uses Android Jetpack (AndroidX, Jetpack Compose, Material 3, Glance, DataStore), Kotlin and kotlinx.coroutines, Coil, Okio, Guava ListenableFuture, Accompanist, JSpecify, Material Symbols, ZXing and ZXing Android Embedded (QR codes). All of them are licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). The app lists them under *Settings → Open source licenses*.
+</details>
 
 ## Download
 
-| Where | Updates |
-| --- | --- |
-| [GitHub Releases](https://github.com/DerDieDasLian/sinceus/releases) | The app checks GitHub once a day, notifies you and installs the update with one tap (can be turned off). Also works with [Obtainium](https://github.com/ImranR98/Obtainium). |
-| F-Droid | [Through F-Droid](https://f-droid.org/packages/app.sinceus/) |
-| Google Play | Through the Play Store (closed test, [testers wanted](#help-test-on-google-play)) |
+<p align="center">
+<a href="https://github.com/DerDieDasLian/sinceus/releases/latest"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/dl-github-dark.png"><img src=".github/readme/dl-github-light.png" width="270" alt="GitHub: updates right in the app, also works with Obtainium. Latest release"></picture></a>
+<a href="https://f-droid.org/packages/app.sinceus/"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/dl-fdroid-dark.png"><img src=".github/readme/dl-fdroid-light.png" width="270" alt="F-Droid: built from source by F-Droid, no internet access. Get it on F-Droid"></picture></a>
+<a href="#help-test-on-google-play"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/dl-play-dark.png"><img src=".github/readme/dl-play-light.png" width="270" alt="Google Play: closed test right now, testers are very welcome. Help test"></picture></a>
+</p>
 
-The three versions are signed differently, so switching between them requires uninstalling first.
+The GitHub version checks for a new release once a day, notifies you and installs it with one tap (can be turned off). It also works with [Obtainium](https://github.com/ImranR98/Obtainium). The three versions are signed differently, so switching between them requires uninstalling first.
 
 Tip: if notifications arrive late, set *Settings → Apps → Since Us → Battery* to "Unrestricted".
 
-## Help test on Google Play
+## Get involved
 
-Before Since Us can go live on Google Play, Google wants the app tested for 14 days by at least 12 people. Want to help? You need an Android phone and a Google account.
+<p align="center">
+<a href="#help-translate"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/in-translate-dark.png"><img src=".github/readme/in-translate-light.png" width="270" alt="Translate: bring Since Us to your language on Weblate, no coding needed"></picture></a>
+<a href="https://github.com/DerDieDasLian/sinceus/issues/new?template=feature_request.yml"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/in-idea-dark.png"><img src=".github/readme/in-idea-light.png" width="270" alt="Suggest an idea: made for couples, poly ones included. Please read the scope first"></picture></a>
+<a href="https://github.com/DerDieDasLian/sinceus/issues/new?template=bug_report.yml"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/in-bug-dark.png"><img src=".github/readme/in-bug-light.png" width="270" alt="Report a bug: quickest in the app under Settings, About the app, Report a bug"></picture></a>
+</p>
 
-1. Write to [contact@sinceus.de](mailto:contact@sinceus.de?subject=Since%20Us%20Google%20Play%20test) with the Google address (Gmail) you use on your phone.
-2. You get a link to join the test and install Since Us from Google Play.
-3. Keep the app installed for 14 days and open it now and then. Feedback is welcome, but not required.
+Bug reports, ideas, translations and small fixes are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to help, and please follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security problems should be reported privately, see the [security policy](.github/SECURITY.md).
 
-Your address is only used to add you to the test.
+### What Since Us is (and isn't)
 
-## Help translate
+Since Us is made for couples, poly ones included. Friendship and family can be chosen per relationship in the settings, but the app stays built around couples. It will never have ads, accounts, tracking or anything that costs money. The details are in [SCOPE.md](SCOPE.md), please read it before suggesting an idea. What is planned next is on the [roadmap](ROADMAP.md).
+
+### Help translate
 
 Since Us is translated on [Weblate](https://hosted.weblate.org/engage/since-us/), a free platform for open source translations. Everyone is welcome, no programming needed.
 
@@ -122,7 +120,22 @@ A few notes:
 - Found a wrong or awkward text in the app? Fix it right on Weblate, or open an [issue](https://github.com/DerDieDasLian/sinceus/issues/new/choose).
 - Something unclear in the English text? Leave a comment on Weblate or open an [issue](https://github.com/DerDieDasLian/sinceus/issues/new/choose).
 
-## Build variants
+### Help test on Google Play
+
+Before Since Us can go live on Google Play, Google wants the app tested for 14 days by at least 12 people. Want to help? You need an Android phone and a Google account.
+
+1. Write to [contact@sinceus.de](mailto:contact@sinceus.de?subject=Since%20Us%20Google%20Play%20test) with the Google address (Gmail) you use on your phone.
+2. You get a link to join the test and install Since Us from Google Play.
+3. Keep the app installed for 14 days and open it now and then. Feedback is welcome, but not required.
+
+Your address is only used to add you to the test.
+
+## For developers
+
+<details>
+<summary><b>Build variants, releasing and libraries</b></summary>
+
+### Build variants
 
 | Variant | Gradle task | Internet | Updates |
 | --- | --- | --- | --- |
@@ -132,20 +145,26 @@ A few notes:
 
 Tests, screenshots and store graphics: `./gradlew testGithubDebugUnitTest` (output in `app/build/screenshots` and `app/build/store`).
 
-## Releasing
+### Releasing
 
 - **Signing:** create `keystore.properties` (not committed) with `storeFile`, `storePassword`, `keyAlias`, `keyPassword`. Without it, release builds stay unsigned (this is what F-Droid expects). In GitHub Actions the secrets `UPLOAD_KEYSTORE_BASE64`, `UPLOAD_KEYSTORE_PASSWORD`, `UPLOAD_KEY_ALIAS` and `UPLOAD_KEY_PASSWORD` are used.
 - **Releases are made on purpose:** changes collect on the default branch until a release is started by hand (Actions > Release > Run workflow, type `auto`, `patch`, `minor` or `major`; `auto` honors `[minor]`/`[major]` in commit messages). The workflow bumps the version, checks that `fastlane/metadata/android/{de-DE,en-US}/changelogs/<versionCode>.txt` exist (at most 500 characters, shown in the app, on F-Droid and on GitHub), runs the tests, builds all variants, then commits the version, tags `v<versionName>` and publishes the signed APK. F-Droid builds every new tag. Every app change adds a line to the notes for the next versionCode; the Build workflow warns while they are missing. Pull before working, since the release workflow pushes version commits.
 - **F-Droid** builds the `fdroid` variant from source; store texts and images are in `fastlane/`, a metadata template is in `fdroid/`.
 - **Website:** `docs/` (landing page and privacy policy) is published via GitHub Pages and can be copied to any static web server.
 
-## Tech
+### Tech
 
 Kotlin, Jetpack Compose (Material 3), Glance widgets, DataStore, Coil. Minimum Android 8.0.
 
+### Third-party libraries
+
+Since Us uses Android Jetpack (AndroidX, Jetpack Compose, Material 3, Glance, DataStore), Kotlin and kotlinx.coroutines, Coil, Okio, Guava ListenableFuture, Accompanist, JSpecify, Material Symbols, ZXing and ZXing Android Embedded (QR codes). All of them are licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). The app lists them under *Settings → Open source licenses*.
+
+</details>
+
 ## Website
 
-https://sinceus.de/ (privacy policy: [English](docs/privacy-en.html), [Deutsch](docs/privacy-de.html))
+[sinceus.de](https://sinceus.de/), with the privacy policy in [English](docs/privacy-en.html) and [German](docs/privacy-de.html).
 
 ## How this app was made
 
