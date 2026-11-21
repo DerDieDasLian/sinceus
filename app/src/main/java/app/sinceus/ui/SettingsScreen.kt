@@ -561,6 +561,30 @@ fun SettingsScreen(
                             modifier = Modifier.toggleable(value = autoBackup != null, role = Role.Switch, onValueChange = onAutoBackup),
                         )
                     }
+                    SettingsPage.Tips -> {
+                        Section(null) {
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.tip_edit_moment)) },
+                                supportingContent = { Text(stringResource(R.string.tip_edit_moment_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.Edit, null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            )
+                            Divider()
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.tip_calendar_day)) },
+                                supportingContent = { Text(stringResource(R.string.tip_calendar_day_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.CalendarMonth, null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            )
+                            Divider()
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.tip_swipe_back)) },
+                                supportingContent = { Text(stringResource(R.string.tip_swipe_back_summary)) },
+                                leadingContent = { Icon(Icons.AutoMirrored.Rounded.ArrowBack, null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            )
+                        }
+                    }
                     SettingsPage.Updates -> {
                         if (BuildConfig.UPDATE_CHECK) {
                             Section(null) {
@@ -880,6 +904,7 @@ enum class SettingsPage(
     Backup(R.string.section_backup, Icons.Rounded.Backup, R.string.settings_group_privacy),
     Sync(R.string.section_sync, Icons.Rounded.Sync, R.string.settings_group_privacy),
     Reset(R.string.section_reset, Icons.Rounded.RestartAlt, R.string.settings_group_privacy),
+    Tips(R.string.settings_tips, Icons.Rounded.TipsAndUpdates, R.string.settings_group_help),
     Updates(R.string.section_updates, Icons.Rounded.SystemUpdate, R.string.settings_group_help),
     Feedback(R.string.section_feedback, Icons.Rounded.Forum, R.string.settings_group_help),
     About(R.string.settings_about, Icons.Rounded.Info, R.string.settings_group_help),
@@ -944,6 +969,7 @@ private val SEARCH = listOf(
     SearchEntry(R.string.delete_all, SettingsPage.Reset),
     SearchEntry(R.string.update_auto, SettingsPage.Updates),
     SearchEntry(R.string.update_check_now, SettingsPage.Updates),
+    SearchEntry(R.string.settings_tips, SettingsPage.Tips, words = listOf(R.string.calendar_select_day, R.string.calendar_add_on, R.string.calendar_whole_month)),
     SearchEntry(R.string.report_bug, SettingsPage.Feedback),
     SearchEntry(R.string.suggest_idea, SettingsPage.Feedback),
     SearchEntry(R.string.help_translate, SettingsPage.Feedback),
@@ -1095,6 +1121,7 @@ private fun Overview(
         } else {
             stringResource(if (settings.updateCheck) R.string.updates_auto_on else R.string.updates_auto_off)
         },
+        SettingsPage.Tips to stringResource(R.string.settings_tips_summary),
         SettingsPage.Feedback to stringResource(R.string.settings_feedback_summary),
         SettingsPage.About to stringResource(R.string.version_value, BuildConfig.VERSION_NAME, BuildConfig.FLAVOR),
     )

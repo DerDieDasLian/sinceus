@@ -1,1 +1,2 @@
 • Kalender bei den Momenten: Ein Tipp auf einen Tag wählt ihn aus. Darunter stehen dann nur die Momente dieses Tages und ein Knopf, um dort direkt einen neuen Moment anzulegen. So lassen sich ältere Momente viel schneller nachtragen. Zum Bearbeiten tippst du wie gewohnt auf den Moment in der Liste.
+• Neu in den Einstellungen unter „Hilfe & Info": „Tipps" listet die wichtigsten Aktionen auf – z. B. Tag im Kalender antippen und dort direkt einen Moment anlegen.

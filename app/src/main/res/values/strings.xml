@@ -716,6 +716,14 @@
     <string name="settings_days">Special days</string>
     <string name="settings_days_summary">Holidays, fun numbers, confetti, year in review</string>
     <string name="settings_feedback_summary">Report a bug, suggest an idea, help translate</string>
+    <string name="settings_tips">Tips</string>
+    <string name="settings_tips_summary">The most important actions at a glance</string>
+    <string name="tip_edit_moment">Edit a moment</string>
+    <string name="tip_edit_moment_summary">Tap a moment in the list or in the calendar</string>
+    <string name="tip_calendar_day">Select a day in the calendar</string>
+    <string name="tip_calendar_day_summary">Tap a day to see only its moments and add a new one right on that day</string>
+    <string name="tip_swipe_back">Swipe back</string>
+    <string name="tip_swipe_back_summary">Swipe from the edge of the screen to go back, with a preview of the previous screen</string>
     <string name="updates_auto_on">Checks automatically</string>
     <string name="updates_auto_off">Only when you check yourself</string>
     <string name="section_extras">Extras</string>
