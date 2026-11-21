@@ -495,6 +495,10 @@
     <string name="calendar_next">Nächster Monat</string>
     <string name="calendar_anniversaries">Jahrestage in diesem Monat</string>
     <string name="calendar_empty">In diesem Monat keine Momente</string>
+    <string name="calendar_empty_day">An diesem Tag keine Momente</string>
+    <string name="calendar_select_day">Tag auswählen</string>
+    <string name="calendar_add_on">Moment am %1$s hinzufügen</string>
+    <string name="calendar_whole_month">Ganzen Monat zeigen</string>
     <string name="widget_countdown_description">Tage bis zu eurem nächsten geplanten Moment</string>
     <string name="widget_countdown_empty">Noch nichts geplant</string>
     <string name="widget_countdown_empty_hint">Tragt einen Moment in der Zukunft ein</string>

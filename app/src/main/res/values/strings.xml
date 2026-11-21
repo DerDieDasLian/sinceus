@@ -500,6 +500,10 @@
     <string name="calendar_next">Next month</string>
     <string name="calendar_anniversaries">Anniversaries this month</string>
     <string name="calendar_empty">No moments this month</string>
+    <string name="calendar_empty_day">No moments on this day</string>
+    <string name="calendar_select_day">Select day</string>
+    <string name="calendar_add_on">Add a moment on %1$s</string>
+    <string name="calendar_whole_month">Show whole month</string>
     <string name="widget_countdown_description">Days until your next planned moment</string>
     <string name="widget_countdown_empty">Nothing planned yet</string>
     <string name="widget_countdown_empty_hint">Add a moment in the future</string>

@@ -117,6 +117,8 @@ fun HomeScreen(
     onOpenSettings: () -> Unit,
     onPageChange: (Int) -> Unit,
     onAddMoment: (String?) -> Unit = {},
+    /** Neuen Moment an einem bestimmten Tag anlegen (aus dem Kalender) */
+    onAddMomentOn: (LocalDate) -> Unit = {},
     onOpenMoment: (app.sinceus.data.Moment) -> Unit = {},
     /** Reihenfolge der Momente umdrehen (neueste oben) */
     onNewestFirst: (Boolean) -> Unit = {},
@@ -165,6 +167,7 @@ fun HomeScreen(
                     settings,
                     today,
                     onAdd = onAddMoment,
+                    onAddOn = onAddMomentOn,
                     onOpen = onOpenMoment,
                     onNewestFirst = onNewestFirst,
                     onPhotobook = onPhotobook,

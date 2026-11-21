@@ -2,10 +2,11 @@
 
 What is planned for Since Us. This list is a plan, not a promise, and it changes when new ideas come in. Why some ideas won't be added is explained in [SCOPE.md](SCOPE.md).
 
-*Last updated: November 20, 2026*
+*Last updated: November 21, 2026*
 
 ## Next version
 
+- Moments calendar: tap a day to see only its moments and add a new moment right on that day ([#69](https://github.com/DerDieDasLian/sinceus/issues/69))
 - Supporting Since Us is easier to find in the app (right below "About the app") and explains exactly what the money pays for
 
 - Sync through a folder that another app keeps the same on your devices, for example on your own server ([#46](https://github.com/DerDieDasLian/sinceus/issues/46)). Since Us itself stays offline, and several devices per person work too
