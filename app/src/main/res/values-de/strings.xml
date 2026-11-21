@@ -495,6 +495,10 @@
     <string name="calendar_next">Nächster Monat</string>
     <string name="calendar_anniversaries">Jahrestage in diesem Monat</string>
     <string name="calendar_empty">In diesem Monat keine Momente</string>
+    <string name="calendar_empty_day">An diesem Tag keine Momente</string>
+    <string name="calendar_select_day">Tag auswählen</string>
+    <string name="calendar_add_on">Moment am %1$s hinzufügen</string>
+    <string name="calendar_whole_month">Ganzen Monat zeigen</string>
     <string name="widget_countdown_description">Tage bis zu eurem nächsten geplanten Moment</string>
     <string name="widget_countdown_empty">Noch nichts geplant</string>
     <string name="widget_countdown_empty_hint">Tragt einen Moment in der Zukunft ein</string>
@@ -704,6 +708,14 @@
     <string name="settings_days">Besondere Tage</string>
     <string name="settings_days_summary">Feiertage, Zahlen, Konfetti, Jahresrückblick</string>
     <string name="settings_feedback_summary">Fehler melden, Idee vorschlagen, übersetzen</string>
+    <string name="settings_tips">Tipps</string>
+    <string name="settings_tips_summary">Die wichtigsten Aktionen auf einen Blick</string>
+    <string name="tip_edit_moment">Moment bearbeiten</string>
+    <string name="tip_edit_moment_summary">Tippe auf einen Moment in der Liste oder im Kalender</string>
+    <string name="tip_calendar_day">Tag im Kalender auswählen</string>
+    <string name="tip_calendar_day_summary">Tippe auf einen Tag, um nur seine Momente zu sehen, und lege direkt einen neuen an diesem Tag an</string>
+    <string name="tip_swipe_back">Zurückwischen</string>
+    <string name="tip_swipe_back_summary">Wische vom Rand des Bildschirms zurück, mit Vorschau der vorherigen Seite</string>
     <string name="updates_auto_on">Sucht automatisch</string>
     <string name="updates_auto_off">Nur wenn du selbst suchst</string>
     <string name="section_extras">Extras</string>

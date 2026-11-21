@@ -134,6 +134,8 @@ fun MomentsScreen(
     today: LocalDate,
     onAdd: (String?) -> Unit,
     onOpen: (Moment) -> Unit,
+    /** Neuen Moment an einem Tag aus dem Kalender anlegen */
+    onAddOn: (LocalDate) -> Unit = {},
     onNewestFirst: (Boolean) -> Unit = {},
     onPhotobook: (List<Moment>) -> Unit = {},
     /** Großen Jahresrückblick für dieses Jahr der Beziehung öffnen (ab 1) */
@@ -157,6 +159,8 @@ fun MomentsScreen(
     // Ansicht: Zeitleiste oder Kalender
     var calendar by rememberSaveable { mutableStateOf(false) }
     var monthIndex by rememberSaveable { mutableStateOf(today.year * 12 + today.monthValue - 1) }
+    // Im Kalender angetippter Tag (Epochentag), null = ganzer Monat
+    var selectedDay by rememberSaveable { mutableStateOf<Long?>(null) }
     val searching = searchable && (query.isNotBlank() || year != null || (filterRelationships && relationship != null))
     val filtering = searching || activeTag != null
     val shown = if (filtering) {
@@ -391,9 +395,18 @@ fun MomentsScreen(
                         today = today,
                         entries = entries,
                         anniversaries = MomentCalendar.anniversaries(shown, month),
-                        onMonth = { monthIndex += it },
-                        onToday = { monthIndex = today.year * 12 + today.monthValue - 1 },
+                        selected = selectedDay?.let(LocalDate::ofEpochDay)?.takeIf { YearMonth.from(it) == month },
+                        onSelect = { selectedDay = it?.toEpochDay() },
+                        onMonth = {
+                            monthIndex += it
+                            selectedDay = null
+                        },
+                        onToday = {
+                            monthIndex = today.year * 12 + today.monthValue - 1
+                            selectedDay = null
+                        },
                         onOpen = onOpen,
+                        onAddOn = onAddOn,
                     )
                 } else {
                     if (timeline.size > 1) {
@@ -459,22 +472,32 @@ fun MomentsScreen(
     }
 }
 
-/** Monatskalender: Tage mit Momenten sind gefüllt, Jahrestage haben einen Punkt, darunter die Einträge des Monats */
+/**
+ * Monatskalender: Tage mit Momenten sind gefüllt, Jahrestage haben einen Punkt, darunter die Einträge des Monats.
+ * Ein angetippter Tag wird ausgewählt: Dann stehen darunter nur seine Einträge und ein Knopf, um dort einen Moment anzulegen.
+ */
 @Composable
 private fun CalendarView(
     month: YearMonth,
     today: LocalDate,
     entries: List<TimelineEntry>,
     anniversaries: List<MomentCalendar.Anniversary>,
+    selected: LocalDate?,
+    onSelect: (LocalDate?) -> Unit,
     onMonth: (Int) -> Unit,
     onToday: () -> Unit,
     onOpen: (Moment) -> Unit,
+    onAddOn: (LocalDate) -> Unit,
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
     val inMonth = entries.filter { YearMonth.from(it.date) == month }
     val byDay = inMonth.groupBy { it.date }
     val anniversaryDays = anniversaries.map { it.date }.toSet()
+    // Mit ausgewähltem Tag zeigt die Liste nur diesen Tag
+    val listed = if (selected != null) byDay[selected].orEmpty() else inMonth
+    val listedAnniversaries = if (selected != null) anniversaries.filter { it.date == selected } else anniversaries
+    val selectLabel = stringResource(R.string.calendar_select_day)
     val colors = MaterialTheme.colorScheme
 
     Card(
@@ -529,7 +552,7 @@ private fun CalendarView(
                             if (day != null) {
                                 val saved = byDay[day].orEmpty()
                                 val filled = saved.isNotEmpty()
-                                val first = saved.firstNotNullOfOrNull { (it as? TimelineEntry.Saved)?.moment }
+                                val isSelected = day == selected
                                 Box(
                                     Modifier
                                         .size(40.dp)
@@ -542,15 +565,19 @@ private fun CalendarView(
                                             },
                                         )
                                         .then(
-                                            if (day == today) Modifier.border(2.dp, colors.primary, CircleShape) else Modifier,
+                                            when {
+                                                isSelected -> Modifier.border(3.dp, colors.onSurface, CircleShape)
+                                                day == today -> Modifier.border(2.dp, colors.primary, CircleShape)
+                                                else -> Modifier
+                                            },
                                         )
-                                        .then(if (first != null) Modifier.clickable { onOpen(first) } else Modifier),
+                                        .clickable(onClickLabel = selectLabel) { onSelect(if (isSelected) null else day) },
                                     contentAlignment = Alignment.Center,
                                 ) {
                                     Text(
                                         day.dayOfMonth.toString(),
                                         style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = if (filled || day == today) FontWeight.Bold else FontWeight.Normal,
+                                        fontWeight = if (filled || day == today || isSelected) FontWeight.Bold else FontWeight.Normal,
                                         color = when {
                                             saved.any { it is TimelineEntry.Start } -> colors.onPrimary
                                             filled -> colors.onPrimaryContainer
@@ -576,14 +603,37 @@ private fun CalendarView(
         }
     }
 
-    if (anniversaries.isNotEmpty()) {
+    if (selected != null) {
+        val dayText = selected.format(
+            DateTimeFormatter.ofPattern(android.text.format.DateFormat.getBestDateTimePattern(locale, "dMMMM"), locale),
+        )
+        FilledTonalButton(
+            onClick = { onAddOn(selected) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Icon(Icons.Rounded.Add, null)
+            Text(stringResource(R.string.calendar_add_on, dayText), Modifier.padding(start = 8.dp))
+        }
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            TextButton(onClick = { onSelect(null) }) {
+                Text(stringResource(R.string.calendar_whole_month))
+            }
+        }
+    }
+
+    if (listedAnniversaries.isNotEmpty()) {
         Text(
             stringResource(R.string.calendar_anniversaries).uppercase(),
             style = LabelCaps,
             color = colors.primary,
             modifier = Modifier.padding(start = 4.dp, bottom = 8.dp),
         )
-        anniversaries.forEach { a ->
+        listedAnniversaries.forEach { a ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -611,9 +661,9 @@ private fun CalendarView(
         Spacer(Modifier.height(8.dp))
     }
 
-    if (inMonth.isEmpty() && anniversaries.isEmpty()) {
+    if (listed.isEmpty() && listedAnniversaries.isEmpty()) {
         Text(
-            stringResource(R.string.calendar_empty),
+            stringResource(if (selected != null) R.string.calendar_empty_day else R.string.calendar_empty),
             style = MaterialTheme.typography.bodyLarge,
             color = colors.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -622,12 +672,12 @@ private fun CalendarView(
                 .padding(vertical = 16.dp),
         )
     }
-    inMonth.forEachIndexed { index, entry ->
+    listed.forEachIndexed { index, entry ->
         TimelineItem(
             entry = entry,
             today = today,
             isFirst = index == 0,
-            isLast = index == inMonth.lastIndex,
+            isLast = index == listed.lastIndex,
             onClick = (entry as? TimelineEntry.Saved)?.let { { onOpen(it.moment) } },
             relative = relativeText(context, entry.date, today),
         )

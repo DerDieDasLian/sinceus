@@ -105,6 +105,8 @@ class MainActivity : ComponentActivity() {
                 // Moment-Editor: null = zu, "" = neuer Moment, sonst ID; dazu optional ein vorgeschlagener Titel
                 var editingMoment by rememberSaveable { mutableStateOf<String?>(null) }
                 var momentSuggestion by rememberSaveable { mutableStateOf<String?>(null) }
+                // Datum für einen neuen Moment aus dem Kalender (Epochentag), null = heute
+                var momentDay by rememberSaveable { mutableStateOf<Long?>(null) }
                 var onboardingStep by rememberSaveable { mutableIntStateOf(0) }
                 // Ändert sich bei jedem Zurückkehren, damit der Berechtigungsstatus neu gelesen wird
                 var resumeCount by rememberSaveable { mutableIntStateOf(0) }
@@ -149,6 +151,7 @@ class MainActivity : ComponentActivity() {
                     editingPhoto = false
                     if (target == "moment") {
                         momentSuggestion = null
+                        momentDay = null
                         editingMoment = ""
                     } else {
                         editingMoment = null
@@ -291,7 +294,7 @@ class MainActivity : ComponentActivity() {
                                 "moment" -> MomentEditorScreen(
                                     existing = s.moments.firstOrNull { it.id == editingMoment },
                                     suggestedTitle = momentSuggestion,
-                                    defaultDate = today,
+                                    defaultDate = momentDay?.let(java.time.LocalDate::ofEpochDay) ?: today,
                                     onClose = { editingMoment = null },
                                     onSave = { moment, photos ->
                                         vm.saveMoment(moment, photos)
@@ -427,6 +430,12 @@ class MainActivity : ComponentActivity() {
                                     onPageChange = vm::setHomePage,
                                     onAddMoment = { title ->
                                         momentSuggestion = title
+                                        momentDay = null
+                                        editingMoment = ""
+                                    },
+                                    onAddMomentOn = { day ->
+                                        momentSuggestion = null
+                                        momentDay = day.toEpochDay()
                                         editingMoment = ""
                                     },
                                     onOpenMoment = {

@@ -1,0 +1,2 @@
+• Moments calendar: tapping a day selects it. Below it you then see only that day's moments and a button to add a new moment right on that day. This makes adding older moments much faster.
+• New in Settings under "Help & info": "Tips" shows the most important actions at a glance.
