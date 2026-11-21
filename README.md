@@ -27,7 +27,7 @@ Counts how long you have been together and reminds you of every special day.
 
 ## Why Since Us
 
-<picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/why-dark.png"><img src=".github/readme/why-light.png" width="880" alt="Why Since Us: poly friendly, queer at its core, private by design (no account, no server, no tracking), free forever (no ads, no subscription, no premium version), open source under the GPL, and available in English, German, Italian, Dutch and Chinese with more on the way."></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/why-dark.png"><img src=".github/readme/why-light.png" width="880" alt="Why Since Us: poly friendly, queer at its core, private by design (no account, no server, no tracking), free forever (no ads, no subscription, no premium version), open source under the GPL, and available in English, German, Spanish, Italian, Dutch, Belarusian and Chinese with more on the way."></picture>
 
 ## Support the project
 
@@ -53,7 +53,7 @@ The money is held by the nonprofit Open Source Europe. Working time is not paid 
 
 ## Features
 
-<picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/features-dark.png"><img src=".github/readme/features-light.png" width="880" alt="What Since Us can do: live counter, reminders, moments, your photos, widgets, poly mode, sync without a server, backup, and your style with light and dark mode, color themes, fonts and five languages."></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/features-dark.png"><img src=".github/readme/features-light.png" width="880" alt="What Since Us can do: live counter, reminders, moments, your photos, widgets, poly mode, sync without a server, backup, and your style with light and dark mode, color themes, fonts and seven languages."></picture>
 
 <details>
 <summary><b>All features in detail</b></summary>
@@ -67,7 +67,7 @@ The money is held by the nonprofit Open Source Europe. Working time is not paid 
 - Guided setup, optional start time, one-tap "delete all data"
 - Backup as a file (all data and photos) to move to a new phone, without internet
 - Sync between phones without a server: pair once with a QR code, then send each other an encrypted file (AES-256-GCM) that opens right in the app and only on your paired phones. Or let it happen by itself through a folder that another app keeps in sync, also with several devices per person, while Since Us itself stays offline
-- Light and dark mode, English, German, Italian, Dutch and Chinese (more on the way), language can be changed right in the app
+- Light and dark mode, English, German, Spanish, Italian, Dutch, Belarusian and Chinese (more on the way), language can be changed right in the app
 - No account, no ads, no tracking, all data stays on the device
 - Poly mode: more than two people and several relationships, each with its own date, special days and reminders, plus a discreet mode with initials only
 - For every kind of love, no matter who you are, whom you love or how many of you there are, with a little rainbow decoration in Pride Month (June)
