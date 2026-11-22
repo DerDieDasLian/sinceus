@@ -1,2 +1,3 @@
 • Kalender bei den Momenten: Ein Tipp auf einen Tag wählt ihn aus. Darunter stehen dann nur die Momente dieses Tages und ein Knopf, um dort direkt einen neuen Moment anzulegen. So lassen sich ältere Momente viel schneller nachtragen.
 • Neu in den Einstellungen unter „Hilfe & Info“: „Tipps“ zeigt die wichtigsten Aktionen auf einen Blick.
+• Since Us gibt es jetzt auch auf Spanisch und Belarussisch. Danke an alle, die auf Weblate mitübersetzen!
