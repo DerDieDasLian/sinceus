@@ -578,6 +578,9 @@
     <string name="website">Website</string>
     <string name="imprint">Impressum</string>
     <string name="privacy_full">Ganze Erklärung</string>
+    <string name="how_made">So entsteht die App</string>
+    <string name="how_made_summary">Mit KI-Unterstützung, von einem Menschen geprüft</string>
+    <string name="how_made_text">Ich bin Lian und entwickle Since Us mit Hilfe eines KI-Programmierassistenten. Ich entscheide, was gebaut wird, und schaue mir jede einzelne Änderung an, teste und korrigiere sie, bevor sie in die App kommt.\n\nTrotzdem ist das ein Ein-Personen-Projekt in meiner Freizeit, darum kann ab und zu ein Fehler durchrutschen. Wenn du einen findest, sag mir gern Bescheid.</string>
     <!-- Schlagwörter und Ort für Momente -->
     <string name="moment_field_place">Ort (optional)</string>
     <string name="moment_open_place">%1$s in Karten öffnen</string>
