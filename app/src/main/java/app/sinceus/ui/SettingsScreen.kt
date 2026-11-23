@@ -146,6 +146,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Gavel
@@ -649,6 +650,14 @@ fun SettingsScreen(
                             Divider()
                             Row(Icons.Rounded.Description, stringResource(R.string.licenses), null, onClick = onOpenLicenses)
                             Divider()
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.how_made)) },
+                                supportingContent = { Text(stringResource(R.string.how_made_summary)) },
+                                leadingContent = { Icon(Icons.Rounded.Code, null) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                modifier = Modifier.clickable { dialog = "howMade" },
+                            )
+                            Divider()
                             Row(
                                 Icons.Rounded.Info,
                                 stringResource(R.string.version),
@@ -862,6 +871,18 @@ fun SettingsScreen(
                 TextButton(onClick = { Feedback.openWeb(context, Web.page("privacy", context)) }) { Text(stringResource(R.string.privacy_full)) }
             },
         )
+        "howMade" -> AlertDialog(
+            onDismissRequest = { dialog = null },
+            icon = { Icon(Icons.Rounded.Code, null) },
+            title = { Text(stringResource(R.string.how_made)) },
+            text = {
+                Text(stringResource(R.string.how_made_text))
+            },
+            confirmButton = { TextButton(onClick = { dialog = null }) { Text(stringResource(R.string.ok)) } },
+            dismissButton = {
+                TextButton(onClick = { dialog = "bug" }) { Text(stringResource(R.string.report_bug)) }
+            },
+        )
     }
 }
 
@@ -981,6 +1002,7 @@ private val SEARCH = listOf(
     SearchEntry(R.string.privacy, SettingsPage.About),
     SearchEntry(R.string.imprint, SettingsPage.About),
     SearchEntry(R.string.licenses, SettingsPage.About),
+    SearchEntry(R.string.how_made, SettingsPage.About),
     SearchEntry(R.string.version, SettingsPage.About),
 ) + if (BuildConfig.SUPPORT_LINK) listOf(SearchEntry(R.string.support_project, dialog = "support", words = listOf(R.string.support_search))) else emptyList()
 

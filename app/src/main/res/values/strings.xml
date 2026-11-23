@@ -584,6 +584,9 @@
     <string name="website">Website</string>
     <string name="imprint">Legal notice</string>
     <string name="privacy_full">Full policy</string>
+    <string name="how_made">How this app is made</string>
+    <string name="how_made_summary">AI assistance, checked by a human</string>
+    <string name="how_made_text">I\'m Lian, and I develop Since Us with the help of an AI coding assistant. I decide what gets built, and I look over, test and correct every single change before it goes into the app.\n\nStill, this is a one-person project made in my free time, so now and then a bug can slip through. If you find one, please let me know.</string>
     <!-- Schlagwörter und Ort für Momente -->
     <string name="moment_field_place">Place (optional)</string>
     <string name="moment_open_place">Open %1$s in maps</string>
