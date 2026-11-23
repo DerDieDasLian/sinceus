@@ -27,7 +27,7 @@ Counts how long you have been together and reminds you of every special day.
 
 ## Hi, I'm Lian
 
-I'm 18 years old and from Germany, and I build Since Us all on my own in my free time, next to school, work, volunteering and everything else life brings. Every feature, fix and reply here comes from one person who really cares about this app. Thank you for being here.
+I'm nonbinary (they/them), 18 years old and from Germany, and I build Since Us all on my own in my free time, next to school, work, volunteering and everything else life brings. Every feature, fix and reply here comes from one person who really cares about this app. Thank you for being here.
 
 ## Why Since Us
 
