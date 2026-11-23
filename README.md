@@ -176,7 +176,9 @@ Since Us uses Android Jetpack (AndroidX, Jetpack Compose, Material 3, Glance, Da
 
 ## How this app was made
 
-This app was developed with AI assistance: the code was written with the help of an AI coding assistant and reviewed, tested and directed by the maintainer.
+Since Us is developed with the help of an AI coding assistant. I decide what gets built, and a human (me) looks over every single change, tests it and corrects it before it goes into the app. Nothing is released without that check.
+
+Still, I'm only one person doing all of this in my free time, so now and then a bug can slip through. If you find one, please [open an issue](https://github.com/DerDieDasLian/sinceus/issues/new/choose) or write to contact@sinceus.de, and I'll fix it as soon as I can.
 
 ## License
 
