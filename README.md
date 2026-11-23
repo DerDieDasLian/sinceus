@@ -29,7 +29,7 @@ Counts how long you have been together and reminds you of every special day.
 
 I'm nonbinary (they/them), 18 years old and from Germany, and I build Since Us all on my own in my free time, next to school, work, volunteering and everything else life brings.
 
-I started it because the app that I and everyone I know used was removed from Android. I needed a new one, and I wanted one that also works for poly people. The old app now only exists on Apple devices, where even things like widgets cost money. So I built the app I was missing: free, private and open to every kind of relationship.
+I started it because the app that I and everyone I know used no longer exists. I needed a new one, and I wanted one that also works for poly people. So I built the app I was missing: free, private and open to every kind of relationship.
 
 Every feature, fix and reply here comes from one person who really cares about this app. Because it is just me, answers and new features can sometimes take a little while, so thank you for your patience and for being here.
 
