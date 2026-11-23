@@ -25,6 +25,10 @@ Counts how long you have been together and reminds you of every special day.
 
 </div>
 
+## Hi, I'm Lian
+
+I'm 18 years old and from Germany, and I build Since Us all on my own in my free time, next to school, work, volunteering and everything else life brings. Every feature, fix and reply here comes from one person who really cares about this app. Thank you for being here.
+
 ## Why Since Us
 
 <picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/why-dark.png"><img src=".github/readme/why-light.png" width="880" alt="Why Since Us: poly friendly, queer at its core, private by design (no account, no server, no tracking), free forever (no ads, no subscription, no premium version), open source under the GPL, and available in English, German, Spanish, Italian, Dutch, Belarusian and Chinese with more on the way."></picture>
