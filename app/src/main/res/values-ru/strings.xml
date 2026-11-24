@@ -199,4 +199,49 @@
     </plurals>
     <string name="tab_moments">Моменты</string>
     <string name="moments_title">Ваши моменты</string>
+    <string name="moment_add">Добавить момент</string>
+    <string name="moments_empty_title">Сохраняйте ваши особенные моменты</string>
+    <string name="moments_empty_sub">Первое свидание, первый поцелуй, первая поездка: храните моменты, дорогие вам. Для начала работы нажмите на предложение.</string>
+    <string name="suggest_met">Встреча</string>
+    <string name="suggest_first_date">Первое свидание</string>
+    <string name="suggest_first_kiss">Первый поцелуй</string>
+    <string name="suggest_i_love_you">Первое «Я тебя люблю»</string>
+    <string name="suggest_first_trip">Первая совместная поездка</string>
+    <string name="suggest_moved_in">Переезд</string>
+    <string name="moment_together_start">Вы встретились</string>
+    <string name="moment_new">Новый момент</string>
+    <string name="moment_edit">Изменить момент</string>
+    <string name="moment_field_title">Что было?</string>
+    <string name="moment_field_date">Дата</string>
+    <string name="moment_date_from_photo">Дата будет взята с фото</string>
+    <string name="moment_field_note">Заметка (необязательно)</string>
+    <string name="moment_add_photo">Добавить фото</string>
+    <string name="moment_more_photos">Добавить ещё фото</string>
+    <string name="moment_cover_hint">Первое фото будет на обложке. Нажмите на другое фото, чтобы сделать его обложкой.</string>
+    <string name="moment_make_cover">Сделать обложкой</string>
+    <string name="moment_photo_position">Фото %1$d с %2$d</string>
+    <string name="moment_crop_pick">Нажмите на фото, чтобы выбрать часть для отображения. Оно будет использоваться везде, также в фотоальбоме.</string>
+    <string name="photo_show_full">Показать фото полностью</string>
+    <string name="moment_remove_photo">Убрать фото</string>
+    <string name="moment_remind">Ежегодное напоминание</string>
+    <string name="moment_remind_summary">Получите уведомление на годовщину</string>
+    <string name="moment_delete">Удалить момент</string>
+    <string name="moment_delete_question">Удалить этот момент?</string>
+    <string name="moment_delete_text">Момент и его фото будут удалены с этого устройства.</string>
+    <string name="delete">Удалить</string>
+    <string name="moment_next_anniversary">Следующая годовщина: %1$s</string>
+    <string name="moment_anniversary_title">%1$s (%2$s)</string>
+    <string name="notify_moment">Сегодня %1$s назад: %2$s</string>
+    <plurals name="moments_count">
+        <item quantity="one">%s момент</item>
+        <item quantity="few">%s момента</item>
+        <item quantity="many">%s моментов</item>
+        <item quantity="other">%s моментов</item>
+    </plurals>
+    <plurals name="days_ago">
+        <item quantity="one">%s день назад</item>
+        <item quantity="few">%s дня назад</item>
+        <item quantity="many">%s дня назад</item>
+        <item quantity="other">%s дня назад</item>
+    </plurals>
 </resources>
