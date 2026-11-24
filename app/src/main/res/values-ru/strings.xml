@@ -69,7 +69,7 @@
     <string name="welcome">Добро пожаловать</string>
     <string name="welcome_sub">Считает ваше время вместе и напоминает о каждом особом дне.</string>
     <string name="tab_overview">Обзор</string>
-    <string name="tab_live">В реальном времени</string>
+    <string name="tab_live">Счётчик</string>
     <string name="together_for">Вместе уже</string>
     <string name="starts_in">Начнётся через</string>
     <string name="today_word">сегодня</string>
@@ -332,7 +332,7 @@
     <string name="friends_since_long">Дружите с %1$s</string>
     <string name="family_since_long">Семья с %1$s</string>
     <string name="before_together_long">До этого вместе с %1$s</string>
-    <string name="before_friends_long">До этого дружите с %1$s</string>
+    <string name="before_friends_long">До этого дружили с %1$s</string>
     <string name="before_family_long">До этого семья с %1$s</string>
     <string name="relationship_before">До этого было что-то ещё?</string>
     <string name="relationship_before_summary">например: сначала друзья, потом пара</string>
@@ -534,7 +534,7 @@
     <string name="distance_meeting">Следующая встреча</string>
     <string name="distance_no_meeting">Добавьте дату следующей встречи в настройках в разделе «Люди и отношения»</string>
     <string name="distance_today">Вы встречаетесь сегодня</string>
-    <string name="distance_time">Сейчас в %1$s — %2$s</string>
+    <string name="distance_time">%1$s : сейчас — %2$s</string>
     <string name="distance_later">На %1$s позже, чем здесь</string>
     <string name="distance_earlier">На %1$s раньше, чем здесь</string>
     <string name="distance_same_time">То же время, что и здесь</string>
@@ -581,7 +581,7 @@
     <string name="backup_auto_folder">Папка: %1$s</string>
     <string name="backup_auto_last">Папка: %1$s, последняя копия %2$s</string>
     <string name="moment_share">Поделиться моментом</string>
-    <string name="year_review_title">Год %1$s вместе</string>
+    <string name="year_review_title">%1$s-й год вместе</string>
     <string name="year_review_range">с %1$s по %2$s</string>
     <string name="year_review_share">Поделиться итогами года</string>
     <plurals name="year_review_moments">
