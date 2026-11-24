@@ -244,4 +244,13 @@
         <item quantity="many">%s дня назад</item>
         <item quantity="other">%s дня назад</item>
     </plurals>
+    <string name="moments_show">Показать моменты</string>
+    <string name="live_show">Показать счётчик в реальном времени</string>
+    <string name="live_show_summary">Отсчитывает время вместе до секунды</string>
+    <string name="moments_show_summary">Хронология важных моментов. Если скрыть её, сохранённые моменты останутся.</string>
+    <string name="slideshow">Слайд-шоу</string>
+    <string name="slideshow_add">Добавить фото</string>
+    <string name="settings_tips">Чаевые</string>
+    <string name="slideshow_remove">Удалить фото</string>
+    <string name="report_github">Гитхаб</string>
 </resources>
