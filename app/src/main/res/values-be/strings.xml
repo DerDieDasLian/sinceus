@@ -278,7 +278,7 @@
     <string name="photo_show_full">Паказць фота поўнасцю</string>
     <string name="settings_backup_summary">Захоўвайце і аднаўляйце ўсе вашы даныя</string>
     <string name="settings_about">Пра праграму</string>
-    <string name="section_reset">Пвчаць спачатку</string>
+    <string name="section_reset">Пачаць спачатку</string>
     <string name="photo_own">Сваё фота</string>
     <string name="notify_off">Выключаныя</string>
     <string name="notify_daily_at">У асаблівыя дні а %1$s</string>
@@ -660,11 +660,11 @@
         <item quantity="many">%s месяцаў таму</item>
         <item quantity="other">%s месяцаў таму</item>
     </plurals>
-    <string name="photobook_save">Захаваць як кнігу фота (ў PDF)</string>
+    <string name="photobook_save">Захаваць як фотаальбом (ў PDF)</string>
     <string name="photobook_hint">Змяшчае моманты вышэй, падрыхтавана для друку або падарунку</string>
-    <string name="photobook_file">Кніга фота Since Us</string>
-    <string name="photobook_saved">Кніга фота захавана</string>
-    <string name="photobook_failed">Не ўдалося захаваць кнігу фота</string>
+    <string name="photobook_file">Фотаальбом Since Us</string>
+    <string name="photobook_saved">Фотаальбом захаваны</string>
+    <string name="photobook_failed">Не ўдалося захаваць фотаальбом</string>
     <string name="photobook_made_with">Зроблена ў Since Us</string>
     <string name="photobook_moments_title">Нашы моманты</string>
     <string name="section_feedback">Дапамога і зваротная сувязь</string>
@@ -799,4 +799,19 @@
     <string name="support_notice_title">Цяпер Since Us можна падтрымаць</string>
     <string name="support_notice_text">Праграма застаецца бясплатнай. Па жаданні, вы можаце дапамагчы з коштамі на Open Collective:</string>
     <string name="support_notice_where">Толькі траты па праекту, не за час працы. Кожная трата публічная. Вы заўсёды можаце знайсці гэта ў наладах, пад «Пра праграму».</string>
+    <string name="calendar_empty_day">На гэты дзень няма момантаў</string>
+    <string name="calendar_select_day">Выберыце дзень</string>
+    <string name="calendar_add_on">Дадаць момант на %1$s</string>
+    <string name="calendar_whole_month">Паказаць увесь месяц</string>
+    <string name="how_made">Як была зроблена гэта праграма</string>
+    <string name="how_made_summary">Дапамога ШІ, праверана чалавекам</string>
+    <string name="how_made_text">Я Ліян, і я распрацоўваю Since Us з дапамогай ШІ-асістэнта. Я рашаю, што ствараць і правяраю, тэсцірую і выпраўляю кожную змену перад тым, як яна трапіць у праграму.\n\nІ ўсё жа, гэта сола праект, які робіцца ў мой вольны час, таму час ад часу пад радарам можа праляцець хіба. Калі вы штосьці знойдзеце, паведаміце мяне.</string>
+    <string name="settings_tips">Парады</string>
+    <string name="settings_tips_summary">Найважнейшыя дзеянні на адной старонцы</string>
+    <string name="tip_edit_moment">Рэдагаванне моманту</string>
+    <string name="tip_edit_moment_summary">Націсніце на момант ў спісе або календары</string>
+    <string name="tip_calendar_day">Выбар дню ў календары</string>
+    <string name="tip_calendar_day_summary">Націсніце на дзень, каб пабачыць толькі яго моманты і дадаць новы прама на той дзень</string>
+    <string name="tip_swipe_back">Чырканне назад</string>
+    <string name="tip_swipe_back_summary">Правядзіце пальцам з краю экрана, каб вярнуцца. Вам будзе паказаны папярэдні экран</string>
 </resources>
