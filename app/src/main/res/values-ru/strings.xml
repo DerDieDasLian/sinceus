@@ -5,7 +5,7 @@
     <string name="widget_photo_name">Карточка любви</string>
     <string name="widget_photo_description">Ваши имена, дни вместе и следующий особый день</string>
     <string name="channel_name">Особые дни</string>
-    <string name="channel_description">Месячные и ежегодные годовщины и круглые даты</string>
+    <string name="channel_description">Месячные и ежегодные юбилеи и круглые даты</string>
     <string name="settings">Настройки</string>
     <string name="back">Назад</string>
     <string name="names">Имена</string>
@@ -20,7 +20,7 @@
     <string name="section_notifications">Уведомления</string>
     <string name="notify_special">Уведомлять в особые дни</string>
     <string name="notify_blocked">Уведомления заблокированы в настройках Android</string>
-    <string name="notify_summary">Месячные и ежегодные годовщины, каждые 100 дней и другие даты</string>
+    <string name="notify_summary">Месячные и ежегодные юбилеи, каждые 100 дней и другие даты</string>
     <string name="notify_time">Время</string>
     <string name="time_value">%1$s</string>
     <string name="send_test">Отправить тестовое уведомление</string>
@@ -63,7 +63,7 @@
     <string name="presets_short">Фоны</string>
     <string name="adjust">Настроить</string>
     <string name="ob_notify_title">Не пропускайте особые дни</string>
-    <string name="ob_notify_sub">Приложение напомнит о месячных и ежегодных годовщинах, круглых числах вроде 100, 200, 300 и красивых числах вроде 222.</string>
+    <string name="ob_notify_sub">Приложение напомнит о месячных и ежегодных юбилеях, круглых числах вроде 100, 200, 300 и красивых числах вроде 222.</string>
     <string name="notifications_on">Уведомления включены</string>
     <string name="allow_notifications">Разрешить уведомления</string>
     <string name="welcome">Добро пожаловать</string>
@@ -95,7 +95,7 @@
     <string name="test_notification">Так будут выглядеть уведомления об особых днях.</string>
     <string name="widget_days_until">дней осталось</string>
     <string name="widget_next">Далее: %1$s</string>
-    <string name="anniversary_title">%1$s-я годовщина</string>
+    <string name="anniversary_title">%1$s-й юбилей</string>
     <string name="msg_anniversary">Сегодня ваша %1$s! За %2$s вместе.</string>
     <string name="msg_exact">Сегодня вы вместе ровно %1$s.</string>
     <string name="msg_together">Сегодня вы вместе уже %1$s.</string>
@@ -221,15 +221,15 @@
     <string name="moment_make_cover">Сделать обложкой</string>
     <string name="moment_photo_position">Фото %1$d из %2$d</string>
     <string name="moment_crop_pick">Нажмите на фото, чтобы выбрать видимую область. Она будет использоваться везде, включая фотокнигу.</string>
-    <string name="photo_show_full">Показать фото полностью</string>
-    <string name="moment_remove_photo">Убрать фото</string>
+    <string name="photo_show_full">Показать фото в полном размере</string>
+    <string name="moment_remove_photo">Удалить фото</string>
     <string name="moment_remind">Ежегодное напоминание</string>
-    <string name="moment_remind_summary">Получать уведомление в годовщину</string>
+    <string name="moment_remind_summary">Получать уведомление о юбилее</string>
     <string name="moment_delete">Удалить момент</string>
     <string name="moment_delete_question">Удалить этот момент?</string>
-    <string name="moment_delete_text">Момент и его фото будут удалены с этого устройства.</string>
+    <string name="moment_delete_text">Этот момент и связанные с ним фотографии будут удалены с устройства.</string>
     <string name="delete">Удалить</string>
-    <string name="moment_next_anniversary">Следующая годовщина: %1$s</string>
+    <string name="moment_next_anniversary">Следующий юбилей: %1$s</string>
     <string name="moment_anniversary_title">%1$s (%2$s)</string>
     <string name="notify_moment">Сегодня %1$s назад: %2$s</string>
     <plurals name="moments_count">
@@ -270,7 +270,7 @@
     <string name="backup_import_question">Восстановить резервную копию?</string>
     <string name="backup_import_text">Все текущие данные на этом устройстве будут заменены данными из резервной копии.</string>
     <string name="backup_import_confirm">Восстановить</string>
-    <string name="backup_restore_onboarding">Восстановить из копии</string>
+    <string name="backup_restore_onboarding">Восстановление из копии</string>
     <string name="backup_saved">Резервная копия сохранена</string>
     <string name="backup_save_failed">Не удалось сохранить резервную копию</string>
     <string name="backup_restored">Резервная копия восстановлена</string>
@@ -344,10 +344,10 @@
     <string name="discreet_summary">В виджетах и уведомлениях показываются только инициалы</string>
     <string name="moment_for">Относится к</string>
     <plurals name="relationships_count">
-        <item quantity="one">Отношений: %1$s</item>
-        <item quantity="few">Отношений: %1$s</item>
-        <item quantity="many">Отношений: %1$s</item>
-        <item quantity="other">Отношений: %1$s</item>
+        <item quantity="one">%1$s отношения</item>
+        <item quantity="few">%1$s отношений</item>
+        <item quantity="many">%1$s отношений</item>
+        <item quantity="other">%1$s отношений</item>
     </plurals>
     <string name="section_sync">Синхронизация</string>
     <string name="sync_summary">Обмен моментами между телефонами</string>
@@ -418,7 +418,7 @@
     <string name="facts_show">Интересные числа</string>
     <string name="facts_show_summary">Выходные, полнолуния и другое на экране обзора</string>
     <string name="celebrate_show">Праздничный эффект</string>
-    <string name="celebrate_show_summary">Немного конфетти в годовщины и круглые даты</string>
+    <string name="celebrate_show_summary">Немного конфетти на юбилеи и круглые даты</string>
     <string name="facts_title">Знаете ли вы?</string>
     <string name="facts_next">Показать следующее число</string>
     <string name="facts_previous">Показать предыдущее число</string>
@@ -442,7 +442,7 @@
     <string name="fact_valentines_sub">вы провели вместе</string>
     <string name="fact_pride_months_sub">вы отпраздновали вместе</string>
     <string name="fact_halloweens_sub">вы провели вместе</string>
-    <string name="fact_friday_13th_sub">вы пережили вместе</string>
+    <string name="fact_friday_13th_sub">вы выжили вместе</string>
     <string name="fact_earth_km_sub">Земля пронесла вас вокруг Солнца</string>
     <string name="fact_breaths_sub">сделал каждый из вас с тех пор, как вы вместе</string>
     <plurals name="fact_weekends">
@@ -551,7 +551,7 @@
     <string name="moments_newest_first">Сначала новые</string>
     <string name="calendar_previous">Предыдущий месяц</string>
     <string name="calendar_next">Следующий месяц</string>
-    <string name="calendar_anniversaries">Годовщины в этом месяце</string>
+    <string name="calendar_anniversaries">Юбилеи в этом месяце</string>
     <string name="calendar_empty">В этом месяце нет моментов</string>
     <string name="calendar_empty_day">В этот день нет моментов</string>
     <string name="calendar_select_day">Выбрать день</string>
@@ -704,7 +704,7 @@
     <string name="support_notice_text">Приложение остаётся бесплатным. При желании вы можете помочь с расходами проекта на Open Collective:</string>
     <string name="support_notice_where">Только расходы проекта, не оплата работы. Каждый расход публичен. Этот раздел всегда доступен в «Настройках» сразу под «О приложении».</string>
     <string name="recap_show">Итоги года</string>
-    <string name="recap_show_summary">Обзор вашего года к годовщине, прошлые годы — в разделе «Моменты»</string>
+    <string name="recap_show_summary">Обзор вашего года к юбилею, прошлые годы — в разделе «Моменты»</string>
     <string name="recap_open">Вспомнить год</string>
     <string name="recap_close">Закрыть</string>
     <string name="recap_page">%1$d из %2$d</string>
