@@ -1,3 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    </resources>
+    <string name="widget_days_name">Stolki dzion my razam</string>
+    <string name="widget_days_description">Pakazvaje, kolki dzion vy ŭžo razam</string>
+    <string name="widget_photo_name">Kartka kachańnia</string>
+    <string name="widget_photo_description">Vašyja imi, vašyja dni razam i nastupny asablivy dzień</string>
+    <string name="channel_name">Asablivyja dni</string>
+    <string name="channel_description">Hadaviny i kruhłyja daty (miesiacy i hady)</string>
+    <string name="settings">Nałady</string>
+    <string name="back">Nazad</string>
+    <string name="names">Imi</string>
+    <string name="together_since_date">Razam z</string>
+    <string name="start_time_optional">Čas (nieabaviazkova)</string>
+    <string name="not_set">Nia zadana</string>
+    <string name="section_photo">Zniešni vyhlad</string>
+    <string name="pick_own_photo">Vybar svajho fota</string>
+    <string name="adjust_crop">Naładžvańnie abrezki</string>
+    <string name="pick_preset">Vybar fota</string>
+    <string name="reset_photo">Skinuć fota</string>
+    <string name="section_notifications">Apaviaščeńni</string>
+    <string name="notify_special">Apaviaščać u asablivyja dni</string>
+    <string name="notify_blocked">Apaviaščeńni blakujucca naładami Android</string>
+    <string name="notify_summary">Kruhłyja daty (miesacy i hady), kožnyja 100 dzion i bolš</string>
+    <string name="notify_time">Čas</string>
+    <string name="time_value">%1$s</string>
+    <string name="send_test">Adpravić testavaje apaviaščeńnie</string>
+    <string name="add_widget">Dadać widget na hałoŭny ekran</string>
+    <string name="restart_setup">Paŭtornaje naładžvańnie</string>
+    <string name="privacy">Pryvatnaść</string>
+    <string name="privacy_text">Vašyja imi, data, fota i momanty zachoŭvajucca na hetaj pryładzie. Pragrama nia maje dostupu da internetu i nie źmiaščaje adsočvańnia abo reklamy. Vašyja danyja vychodziać za ramki telefona tolki kali vy zachoŭvajecie rezervovuju kopiju, adpraulaecie fajł synchranizacyi na spałučany telefon, abo vykarystoŭvaecie rezervovaje kapijavańnie Android (Google).</string>
+    <string name="delete_all">Vydalić usie danyja</string>
+    <string name="delete_all_summary">Poŭnaściu skidvae pragramu</string>
+    <string name="delete_all_question">Vydalić usie danyja?</string>
+    <string name="delete_all_text">Imi, daty, fota, momanty i usie nałady buduć vydalenyja z hetaj pryłady i pačniecca paŭtornaje naładžvańnie. Heta nielha adrabić.</string>
+    <string name="ok">Ok</string>
+    <string name="your_names">Vašyja imi</string>
+    <string name="save">Zachavać</string>
+    <string name="cancel">Skasavać</string>
+    <string name="remove">Prybrać</string>
+    <string name="close">Zakryć</string>
+    <string name="done">Hatova</string>
+    <string name="next">Nastupny</string>
+    <string name="skip">Prapuścić</string>
+    <string name="lets_go">Pačniom</string>
+    <string name="together_since_title">Razam z</string>
+</resources>
