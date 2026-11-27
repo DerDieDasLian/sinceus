@@ -756,4 +756,19 @@
     <string name="support_notice_where">Solo costi di progetto, non di lavoro. Ogni spesa è pubblica. Puoi sempre supportarci dalle impostazioni, sotto \"Riguardo l\'app\".</string>
     <string name="moment_unsaved_text">Questo momento è stato modificato.</string>
     <string name="moment_unsaved_no_title">Le modifiche non possono ancora essere salvate: dai un titolo al momento.</string>
+    <string name="calendar_empty_day">Nessun momento in questo giorno</string>
+    <string name="calendar_select_day">Scegli giorno</string>
+    <string name="calendar_add_on">Aggiungi un momento al %1$s</string>
+    <string name="calendar_whole_month">Mostra mese intero</string>
+    <string name="how_made">Come è stata fatta quest\'app</string>
+    <string name="how_made_summary">Assistenza da IA, revisionata da un umano</string>
+    <string name="how_made_text">Sono Lian, e sviluppo Since Us con l\'aiuto di un assistente IA per la scrittura del codice. Decido io cosa sviluppare, quindi tengo d\'occhio, testo e correggo ogni singola modifica prima che questa venga integrata all\'interno dell\'app.\n\nCiò nonostante, questo progetto viene gestito interamente da me nel mio tempo libero, dunque ogni tanto potrebbe sfuggirmi qualche bug; se ne trovi uno, ti prego di segnalarmelo.</string>
+    <string name="settings_tips">Suggerimenti</string>
+    <string name="settings_tips_summary">Un\'occhiata alle funzioni più importanti</string>
+    <string name="tip_edit_moment">Modifica un momento</string>
+    <string name="tip_edit_moment_summary">Tocca un momento nella lista o nel calendario</string>
+    <string name="tip_calendar_day">Scegli un giorno nel calendario</string>
+    <string name="tip_calendar_day_summary">Tocca un giorno per vedere/aggiungere momenti in quel giorno</string>
+    <string name="tip_swipe_back">Torna indietro</string>
+    <string name="tip_swipe_back_summary">Trascina il dito da un bordo dello schermo per tornare indietro, visualizzando un\'anteprima della schermata precedente</string>
 </resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_days_name">Gün birlikte</string>
+    <string name="widget_days_description">Kaç gün birlikte olduğunuzu gösterir</string>
+    <string name="widget_photo_name">Aşk kardı</string>
+    <string name="widget_photo_description">İsimleriniz, birlikte olduğunuz günler ve bir sonraki özel gününüz</string>
+    <string name="channel_name">Özel günler</string>
+    <string name="channel_description">Aylık ve yıllık yıldönümleri ve dönüm noktası günleri</string>
+    <string name="settings">Ayarlar</string>
+    <string name="back">Geri dön</string>
+    <string name="names">İsimler</string>
+    <string name="together_since_date">Boyunca birlikte</string>
+    <string name="start_time_optional">Zaman (isteğe bağlı)</string>
+    <string name="not_set">Seçilmemiş</string>
+    <string name="section_photo">Görünüm</string>
+    <string name="pick_own_photo">Kendi fotoğrafınızı seçin</string>
+    <string name="adjust_crop">Çerçeveyi ayarlayın</string>
+    <string name="pick_preset">Arkaplan resmi seçin</string>
+    <string name="reset_photo">Arkaplan seçin</string>
+    <string name="section_notifications">Bildirimler</string>
+    <string name="notify_special">Özel günlerde bildir</string>
+    <string name="notify_blocked">Android ayarlarında bildirimlere izin verilmemiş</string>
+    <string name="notify_summary">Aylık ve yıllık yıldönümleri, her 100 gün ve fazlası</string>
+    <string name="notify_time">Zaman</string>
+    <string name="time_value">%1$s</string>
+    <string name="send_test">Test bildirimi gönder</string>
+    <string name="add_widget">Ana ekrana widget ekle</string>
+    <string name="restart_setup">Tekrar kurulum yap</string>
+    <string name="privacy">Gizlilik</string>
+    <string name="ob_date_sub">Uygulama bu günden itibaren sayar.</string>
+    <string name="add_time_optional">Zaman ekle (isteğe bağlı)</string>
+    <string name="time_label">Zaman: %1$s</string>
+    <string name="ob_photo_title">Senin fotoğrafın</string>
+    <string name="ob_photo_sub">Birlikte olduğunuz bir resim seçin. Sonradan resmin çerçevesini ayarlayabilirsiniz.</string>
+    <string name="pick_photo">Fotoğraf seçin</string>
+    <string name="presets_short">Arkaplanlar</string>
+    <string name="adjust">Ayarla</string>
+    <string name="ob_notify_title">Asla özel bir günü unutma</string>
+</resources>
