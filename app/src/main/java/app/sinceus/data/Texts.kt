@@ -79,6 +79,23 @@ object Texts {
 
     fun longDate(d: LocalDate): String = d.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
 
+    /**
+     * Datum eines Moments: ein Tag wie [longDate], ein Zeitraum als "12. Juli bis 19. Juli 2026"
+     * oder "July 12 to July 19, 2026". Im selben Jahr steht das Jahr nur einmal (Issue #77).
+     */
+    fun momentDate(context: Context, m: Moment): String = dateRange(context, m.date, m.lastDay)
+
+    fun dateRange(context: Context, from: LocalDate, to: LocalDate): String {
+        if (!to.isAfter(from)) return longDate(from)
+        val start = if (from.year == to.year) {
+            val locale = java.util.Locale.getDefault()
+            from.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(locale, "dMMMM"), locale))
+        } else {
+            longDate(from)
+        }
+        return context.getString(R.string.year_review_range, start, longDate(to))
+    }
+
     fun mediumDate(d: LocalDate): String = d.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
 
     /** Kurzes Datum mit Wochentag, z. B. "Fr., 30. Okt. 2026" oder "Fri, Oct 30, 2026". */

@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.AlertDialog
@@ -54,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -70,6 +72,7 @@ import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.ui.text.input.ImeAction
 import app.sinceus.data.Texts
+import app.sinceus.data.formatNumber
 import java.io.File
 import java.time.LocalDate
 import java.util.UUID
@@ -113,6 +116,8 @@ fun MomentEditorScreen(
 ) {
     var title by rememberSaveable { mutableStateOf(existing?.title ?: suggestedTitle.orEmpty()) }
     var epochDay by rememberSaveable { mutableStateOf((existing?.date ?: defaultDate).toEpochDay()) }
+    // Letzter Tag bei mehreren Tagen als Epochentag, null = nur ein Tag (Issue #77)
+    var endDay by rememberSaveable { mutableStateOf(existing?.endDate?.takeIf { existing.isRange }?.toEpochDay()) }
     var note by rememberSaveable { mutableStateOf(existing?.note.orEmpty()) }
     var remind by rememberSaveable { mutableStateOf(existing?.yearlyReminder ?: true) }
     var place by rememberSaveable { mutableStateOf(existing?.place.orEmpty()) }
@@ -132,6 +137,7 @@ fun MomentEditorScreen(
     val frames = remember(framesText) { PhotoFrame.decodeMap(framesText) }
     var framing by rememberSaveable { mutableStateOf<Int?>(null) }
     var dateDialog by rememberSaveable { mutableStateOf(false) }
+    var endDialog by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
     var askSave by rememberSaveable { mutableStateOf(false) }
 
@@ -149,6 +155,7 @@ fun MomentEditorScreen(
                 val taken = PhotoDate.read(context, uris.first()) ?: return@launch
                 if (dateChosen) return@launch
                 epochDay = taken.toEpochDay()
+                if ((endDay ?: Long.MAX_VALUE) <= epochDay) endDay = null
                 dateFromPhoto = true
             }
         }
@@ -158,6 +165,7 @@ fun MomentEditorScreen(
     // Hat sich gegenüber dem gespeicherten Moment (oder dem leeren neuen) etwas geändert?
     val changed = title != (existing?.title ?: suggestedTitle.orEmpty()) ||
         epochDay != (existing?.date ?: defaultDate).toEpochDay() ||
+        endDay != existing?.endDate?.takeIf { existing.isRange }?.toEpochDay() ||
         note != existing?.note.orEmpty() ||
         remind != (existing?.yearlyReminder ?: true) ||
         place != existing?.place.orEmpty() ||
@@ -172,6 +180,7 @@ fun MomentEditorScreen(
             id = existing?.id ?: UUID.randomUUID().toString(),
             title = title.trim(),
             date = LocalDate.ofEpochDay(epochDay),
+            endDate = endDay?.takeIf { it > epochDay }?.let(LocalDate::ofEpochDay),
             note = note.trim(),
             yearlyReminder = remind,
             relationshipId = relationship?.takeIf { id -> relationships.any { it.first == id } },
@@ -230,7 +239,9 @@ fun MomentEditorScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
             ListItem(
-                headlineContent = { Text(stringResource(R.string.moment_field_date)) },
+                headlineContent = {
+                    Text(stringResource(if (endDay != null) R.string.moment_field_from else R.string.moment_field_date))
+                },
                 supportingContent = {
                     Column {
                         Text(Texts.longDate(LocalDate.ofEpochDay(epochDay)), color = MaterialTheme.colorScheme.primary)
@@ -249,6 +260,39 @@ fun MomentEditorScreen(
                     .clip(RoundedCornerShape(16.dp))
                     .clickable { dateDialog = true },
             )
+            // Optional ein letzter Tag, z. B. für einen Urlaub (Issue #77)
+            val end = endDay
+            if (end == null) {
+                TextButton(onClick = { endDialog = true }) {
+                    Icon(Icons.Rounded.DateRange, null, modifier = Modifier.size(18.dp))
+                    Text(stringResource(R.string.moment_add_end), Modifier.padding(start = 8.dp))
+                }
+            } else {
+                val days = end - epochDay + 1
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.moment_field_end)) },
+                    supportingContent = {
+                        Column {
+                            Text(Texts.longDate(LocalDate.ofEpochDay(end)), color = MaterialTheme.colorScheme.primary)
+                            Text(
+                                pluralStringResource(R.plurals.days, days.toInt(), formatNumber(days)),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    },
+                    leadingContent = { Icon(Icons.Rounded.DateRange, null) },
+                    trailingContent = {
+                        IconButton(onClick = { endDay = null }) {
+                            Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.moment_remove_end))
+                        }
+                    },
+                    colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable { endDialog = true },
+                )
+            }
             OutlinedTextField(
                 value = note,
                 onValueChange = { note = it },
@@ -405,9 +449,24 @@ fun MomentEditorScreen(
             title = R.string.moment_field_date,
         ) {
             epochDay = it.toEpochDay()
+            // Liegt der erste Tag jetzt am oder nach dem letzten, bleibt nur ein Tag
+            if ((endDay ?: Long.MAX_VALUE) <= epochDay) endDay = null
             dateChosen = true
             dateFromPhoto = false
             dateDialog = false
+        }
+    }
+    if (endDialog) {
+        val first = LocalDate.ofEpochDay(epochDay)
+        DateDialog(
+            endDay?.let(LocalDate::ofEpochDay) ?: first.plusDays(1),
+            onDismiss = { endDialog = false },
+            title = R.string.moment_field_end,
+            after = first,
+        ) {
+            endDay = it.toEpochDay().takeIf { day -> day > epochDay }
+            dateChosen = true
+            endDialog = false
         }
     }
     if (askSave) {

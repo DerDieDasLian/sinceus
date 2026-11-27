@@ -29,7 +29,21 @@ data class Moment(
     val place: String = "",
     /** Gewählter Bildausschnitt je Foto (Schlüssel: Pfad aus [photos]); fehlt einer, ist das Foto mittig */
     val frames: Map<String, PhotoFrame> = emptyMap(),
+    /** Letzter Tag, wenn der Moment mehrere Tage dauert (z. B. ein Urlaub), null = nur ein Tag (Issue #77) */
+    val endDate: LocalDate? = null,
 ) {
+    /** Letzter Tag des Moments; ein Enddatum vor oder am ersten Tag zählt nicht */
+    val lastDay: LocalDate get() = endDate?.takeIf { it.isAfter(date) } ?: date
+
+    /** Dauert der Moment mehrere Tage? */
+    val isRange: Boolean get() = lastDay != date
+
+    /** Wie viele Tage der Moment dauert, mindestens 1 */
+    val dayCount: Long get() = ChronoUnit.DAYS.between(date, lastDay) + 1
+
+    /** Liegt [day] im Zeitraum des Moments (erster und letzter Tag eingeschlossen)? */
+    fun covers(day: LocalDate): Boolean = !day.isBefore(date) && !day.isAfter(lastDay)
+
     /** Titelbild für Zeitleiste, Teilen-Bild und Rückblick, null = kein Foto */
     val photoPath: String? get() = photos.firstOrNull()
 
@@ -68,6 +82,8 @@ object MomentCodec {
                     .put("by", m.addedBy ?: JSONObject.NULL)
                     .put("tags", JSONArray().apply { m.tags.forEach { put(it) } })
                     .put("place", m.place)
+                    // Nur bei mehreren Tagen; ältere Versionen kennen "end" nicht und zeigen den ersten Tag
+                    .apply { if (m.isRange) put("end", m.lastDay.toEpochDay()) }
                     .apply { PhotoFrame.encode(m.photos, m.frames)?.let { put("frames", it) } },
             )
         }
@@ -94,9 +110,17 @@ object MomentCodec {
                     tags = decodeTags(o),
                     place = o.optString("place", "").trim(),
                     frames = PhotoFrame.decode(photos, o.optJSONArray("frames")),
+                    endDate = decodeEnd(o),
                 )
             }.getOrNull()
         }
+    }
+
+    /** Enddatum, nur wenn es nach dem ersten Tag liegt; fehlt es (ältere Daten), ist es ein Tag */
+    private fun decodeEnd(o: JSONObject): LocalDate? {
+        if (!o.has("end") || o.isNull("end")) return null
+        val start = LocalDate.ofEpochDay(o.getLong("date"))
+        return runCatching { LocalDate.ofEpochDay(o.getLong("end")) }.getOrNull()?.takeIf { it.isAfter(start) }
     }
 
     private fun decodeTags(o: JSONObject): List<String> {
@@ -184,13 +208,15 @@ object MomentFilter {
             return false
         }
         if (tag != null && m.tags.none { it.equals(tag, ignoreCase = true) }) return false
-        if (year != null && m.date.year != year) return false
+        // Ein Zeitraum über Silvester gehört zu beiden Jahren
+        if (year != null && year !in m.date.year..m.lastDay.year) return false
         if (relationshipId != null && m.relationshipId != null && m.relationshipId != relationshipId) return false
         return true
     }
 
     /** Jahre mit Momenten, das neueste zuerst */
-    fun years(moments: List<Moment>): List<Int> = moments.map { it.date.year }.distinct().sortedDescending()
+    fun years(moments: List<Moment>): List<Int> =
+        moments.flatMap { it.date.year..it.lastDay.year }.distinct().sortedDescending()
 }
 
 object MomentTags {

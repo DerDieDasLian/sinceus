@@ -93,7 +93,7 @@ object Photobook {
         drawText(title, MARGIN, y, fit(paint(22f, heading, 0xFFFFFFFF.toInt(), 700), title))
         y += 18f
         val first = moments.minOfOrNull { it.date }
-        val last = moments.maxOfOrNull { it.date }
+        val last = moments.maxOfOrNull { it.lastDay }
         val range = when {
             first == null || last == null -> Names.join(s.memberNames())
             first == last -> Texts.longDate(first)
@@ -127,7 +127,7 @@ object Photobook {
             y += 12f
         }
 
-        val date = Texts.longDate(m.date).uppercase()
+        val date = Texts.momentDate(context, m).uppercase()
         drawText(date, MARGIN, y, paint(8.5f, body, ACCENT, 600).apply { letterSpacing = 0.12f })
         y += 8f
 

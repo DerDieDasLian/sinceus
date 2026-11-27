@@ -21,6 +21,18 @@ object MomentCalendar {
         return filled + List((7 - filled.size % 7) % 7) { null }
     }
 
+    /** Hat [moment] mindestens einen Tag in [month]? */
+    fun overlaps(moment: Moment, month: YearMonth): Boolean =
+        !moment.date.isAfter(month.atEndOfMonth()) && !moment.lastDay.isBefore(month.atDay(1))
+
+    /** Die Tage von [moment] in [month], bei einem Zeitraum alle, sonst nur der eine (Issue #77) */
+    fun daysIn(moment: Moment, month: YearMonth): List<LocalDate> {
+        if (!overlaps(moment, month)) return emptyList()
+        val from = maxOf(moment.date, month.atDay(1))
+        val to = minOf(moment.lastDay, month.atEndOfMonth())
+        return generateSequence(from) { it.plusDays(1) }.takeWhile { !it.isAfter(to) }.toList()
+    }
+
     /** Jahrestage der Momente mit Erinnerung in [month]; am 29. Februar fällt er sonst auf den 28. */
     fun anniversaries(moments: List<Moment>, month: YearMonth): List<Anniversary> =
         moments.filter { it.yearlyReminder && it.date.monthValue == month.monthValue && it.date.year < month.year }

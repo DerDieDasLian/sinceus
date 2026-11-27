@@ -358,7 +358,7 @@ private fun MomentLine(label: String, m: Moment) {
                 modifier = Modifier.padding(top = 6.dp),
             )
             Text(
-                listOfNotNull(Texts.longDate(m.date), m.place.trim().ifEmpty { null }).joinToString(" · "),
+                listOfNotNull(Texts.momentDate(LocalContext.current, m), m.place.trim().ifEmpty { null }).joinToString(" · "),
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White.copy(alpha = 0.8f),
             )

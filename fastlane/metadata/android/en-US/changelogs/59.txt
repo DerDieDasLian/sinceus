@@ -1,1 +1,2 @@
 • New in Settings under "About the app": "How this app is made" explains openly that Since Us is developed with AI assistance and that a human checks, tests and corrects every change.
+• Moments can now last several days, for example a vacation: optionally pick an end date. The calendar marks every day, anniversaries still count from the first day.

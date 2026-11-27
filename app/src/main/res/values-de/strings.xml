@@ -188,6 +188,11 @@
     <string name="moment_field_title">Was ist passiert?</string>
     <string name="moment_field_date">Datum</string>
     <string name="moment_date_from_photo">Datum vom Foto übernommen</string>
+    <string name="moment_field_from">Von</string>
+    <string name="moment_field_end">Bis</string>
+    <string name="moment_add_end">Mehrere Tage? Enddatum hinzufügen</string>
+    <string name="moment_remove_end">Enddatum entfernen</string>
+    <string name="moment_ongoing">gerade jetzt</string>
     <string name="moment_field_note">Notiz (optional)</string>
     <string name="moment_add_photo">Fotos hinzufügen</string>
     <string name="moment_more_photos">Weitere Fotos hinzufügen</string>

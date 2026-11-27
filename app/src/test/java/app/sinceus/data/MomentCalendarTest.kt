@@ -32,4 +32,21 @@ class MomentCalendarTest {
         assertEquals(LocalDate.of(2026, 2, 28), list[0].date)
         assertEquals(2, list[0].years)
     }
+
+    @Test
+    fun rangeIsMarkedOnEveryDayOfTheMonth() {
+        val trip = Moment("t", "Urlaub", LocalDate.of(2026, 7, 29), endDate = LocalDate.of(2026, 8, 3))
+        assertEquals(
+            (29..31).map { LocalDate.of(2026, 7, it) },
+            MomentCalendar.daysIn(trip, YearMonth.of(2026, 7)),
+        )
+        assertEquals((1..3).map { LocalDate.of(2026, 8, it) }, MomentCalendar.daysIn(trip, YearMonth.of(2026, 8)))
+        assertEquals(emptyList<LocalDate>(), MomentCalendar.daysIn(trip, YearMonth.of(2026, 9)))
+        // Ein Tag bleibt ein Tag
+        val single = Moment("s", "Date", LocalDate.of(2026, 7, 5))
+        assertEquals(listOf(single.date), MomentCalendar.daysIn(single, YearMonth.of(2026, 7)))
+        // Jahrestag zählt weiter vom ersten Tag
+        val list = MomentCalendar.anniversaries(listOf(trip), YearMonth.of(2027, 7))
+        assertEquals(LocalDate.of(2027, 7, 29), list.single().date)
+    }
 }

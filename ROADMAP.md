@@ -2,10 +2,11 @@
 
 What is planned for Since Us. This list is a plan, not a promise, and it changes when new ideas come in. Why some ideas won't be added is explained in [SCOPE.md](SCOPE.md).
 
-*Last updated: November 21, 2026*
+*Last updated: November 27, 2026*
 
 ## Next version
 
+- Moments over several days, for example a vacation: an optional end date, every day marked in the calendar, anniversaries still from the first day ([#77](https://github.com/DerDieDasLian/sinceus/issues/77))
 - Moments calendar: tap a day to see only its moments and add a new moment right on that day ([#69](https://github.com/DerDieDasLian/sinceus/issues/69))
 - New "Tips" page in the settings ("Help & info") explains the available actions, including the calendar ([#69](https://github.com/DerDieDasLian/sinceus/issues/69))
 - Supporting Since Us is easier to find in the app (right below "About the app") and explains exactly what the money pays for
