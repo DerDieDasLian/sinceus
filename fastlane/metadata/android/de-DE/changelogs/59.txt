@@ -1,1 +1,2 @@
 • Neu in den Einstellungen unter „Über die App“: „So entsteht die App“ erklärt offen, dass Since Us mit KI-Unterstützung entwickelt wird und ein Mensch jede Änderung prüft, testet und korrigiert.
+• Momente können jetzt mehrere Tage dauern, zum Beispiel ein Urlaub: Beim Moment optional ein Enddatum wählen. Der Kalender markiert alle Tage, Jahrestage zählen weiter ab dem ersten Tag.

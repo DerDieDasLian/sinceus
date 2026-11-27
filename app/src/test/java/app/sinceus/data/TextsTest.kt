@@ -34,6 +34,13 @@ class TextsTest {
         val moment = Milestone(MilestoneKind.MOMENT, 2, day, "Erstes Date")
         assertEquals("Erstes Date (2 Jahre)", Texts.milestoneTitle(context, moment))
         assertEquals("Heute vor 2 Jahren: Erstes Date", Texts.milestoneMessage(context, moment))
+        val trip = Moment("t", "Urlaub", LocalDate.of(2026, 7, 12), endDate = LocalDate.of(2026, 7, 19))
+        assertEquals("12. Juli bis 19. Juli 2026", Texts.momentDate(context, trip))
+        assertEquals(
+            "30. Dezember 2025 bis 2. Januar 2026",
+            Texts.dateRange(context, LocalDate.of(2025, 12, 30), LocalDate.of(2026, 1, 2)),
+        )
+        assertEquals("12. Juli 2026", Texts.momentDate(context, trip.copy(endDate = null)))
     }
 
     @Test
@@ -49,5 +56,7 @@ class TextsTest {
         assertEquals("1,000 days", Texts.milestoneTitle(context, Milestone(MilestoneKind.DAYS, 1000, day)))
         assertEquals("Today 1 year ago: First date", Texts.momentMessage(context, Moment("a", "First date", day), 1))
         assertEquals("First date (1 year)", Texts.milestoneTitle(context, Milestone(MilestoneKind.MOMENT, 1, day, "First date")))
+        val trip = Moment("t", "Vacation", LocalDate.of(2026, 7, 12), endDate = LocalDate.of(2026, 7, 19))
+        assertEquals("July 12 to July 19, 2026", Texts.momentDate(context, trip))
     }
 }

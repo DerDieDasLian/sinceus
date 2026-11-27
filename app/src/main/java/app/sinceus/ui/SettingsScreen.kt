@@ -52,6 +52,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -1433,11 +1435,23 @@ internal fun DateDialog(
     current: LocalDate,
     onDismiss: () -> Unit,
     @androidx.annotation.StringRes title: Int = R.string.together_since_title,
+    /** Nur Tage nach diesem wählbar, null = alle */
+    after: LocalDate? = null,
     onSave: (LocalDate) -> Unit,
 ) {
     // Der DatePicker rechnet in UTC-Millisekunden
+    val minYear = after?.year ?: Int.MIN_VALUE
+    val firstAllowed = after?.plusDays(1)?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
     val state = rememberDatePickerState(
         initialSelectedDateMillis = current.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
+        selectableDates = if (firstAllowed == null) {
+            DatePickerDefaults.AllDates
+        } else {
+            object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis >= firstAllowed
+                override fun isSelectableYear(year: Int) = year >= minYear
+            }
+        },
     )
     DatePickerDialog(
         onDismissRequest = onDismiss,

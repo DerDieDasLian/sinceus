@@ -243,4 +243,44 @@ class MomentTest {
             Changelog.parse(listOf("• Geburtstage", "", "  • Suche ab 8 Momenten  ")),
         )
     }
+
+    @Test
+    fun momentOverSeveralDays() {
+        val trip = Moment("t", "Urlaub", LocalDate.of(2026, 7, 12), endDate = LocalDate.of(2026, 7, 19))
+        assertTrue(trip.isRange)
+        assertEquals(8L, trip.dayCount)
+        assertTrue(trip.covers(LocalDate.of(2026, 7, 12)))
+        assertTrue(trip.covers(LocalDate.of(2026, 7, 19)))
+        assertTrue(!trip.covers(LocalDate.of(2026, 7, 20)))
+        // Enddatum am oder vor dem ersten Tag zählt nicht
+        val odd = trip.copy(endDate = LocalDate.of(2026, 7, 1))
+        assertTrue(!odd.isRange)
+        assertEquals(trip.date, odd.lastDay)
+        assertEquals(1L, odd.dayCount)
+    }
+
+    @Test
+    fun endDateSurvivesCodecAndOldDataStaysOneDay() {
+        val trip = Moment("t", "Urlaub", LocalDate.of(2026, 7, 12), endDate = LocalDate.of(2026, 7, 19))
+        val back = MomentCodec.decode(MomentCodec.encode(listOf(trip, quiet)))
+        assertEquals(LocalDate.of(2026, 7, 19), back[0].endDate)
+        assertNull(back[1].endDate)
+        // Ein Tag schreibt kein "end", ältere Versionen sehen also nichts Neues
+        assertTrue(!MomentCodec.encode(listOf(quiet)).contains("\"end\""))
+        // Daten ohne "end" (alte Backups) und ein ungültiges Ende ergeben einen Tag
+        val start = LocalDate.of(2026, 7, 12).toEpochDay()
+        val old = MomentCodec.decode("""[{"id":"o","title":"Alt","date":$start}]""")
+        assertNull(old.single().endDate)
+        val broken = MomentCodec.decode("""[{"id":"o","title":"Alt","date":$start,"end":${start - 3}}]""")
+        assertNull(broken.single().endDate)
+    }
+
+    @Test
+    fun rangeOverNewYearBelongsToBothYears() {
+        val newYear = Moment("n", "Silvester", LocalDate.of(2025, 12, 30), endDate = LocalDate.of(2026, 1, 2))
+        assertTrue(MomentFilter.matches(newYear, "", year = 2025))
+        assertTrue(MomentFilter.matches(newYear, "", year = 2026))
+        assertTrue(!MomentFilter.matches(newYear, "", year = 2027))
+        assertEquals(listOf(2026, 2025), MomentFilter.years(listOf(newYear)))
+    }
 }

@@ -290,7 +290,7 @@ object ShareCard {
             days > 0 -> context.resources.getQuantityString(R.plurals.days_ago, days.toInt(), formatNumber(days))
             else -> context.resources.getQuantityString(R.plurals.in_days, (-days).toInt(), formatNumber(-days))
         }
-        val dateLine = Texts.longDate(m.date) + " · " + relative
+        val dateLine = Texts.momentDate(context, m) + " · " + relative
         canvas.drawText(dateLine, MARGIN, y, fit(paint(38f, sans, SOFT), dateLine, maxWidth))
         y -= 90f
 

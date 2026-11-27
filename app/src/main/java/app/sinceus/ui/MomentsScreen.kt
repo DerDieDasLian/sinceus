@@ -435,7 +435,7 @@ fun MomentsScreen(
                     isFirst = index == 0,
                     isLast = index == timeline.lastIndex,
                     onClick = (entry as? TimelineEntry.Saved)?.let { { onOpen(it.moment) } },
-                    relative = relativeText(context, entry.date, today),
+                    relative = relativeText(context, entry, today),
                 )
             }
         }
@@ -491,8 +491,13 @@ private fun CalendarView(
 ) {
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
-    val inMonth = entries.filter { YearMonth.from(it.date) == month }
-    val byDay = inMonth.groupBy { it.date }
+    // Momente über mehrere Tage stehen an jedem ihrer Tage (Issue #77)
+    fun daysOf(e: TimelineEntry) = when (e) {
+        is TimelineEntry.Saved -> MomentCalendar.daysIn(e.moment, month)
+        is TimelineEntry.Start -> listOf(e.date).filter { YearMonth.from(it) == month }
+    }
+    val inMonth = entries.filter { daysOf(it).isNotEmpty() }
+    val byDay = inMonth.flatMap { e -> daysOf(e).map { it to e } }.groupBy({ it.first }, { it.second })
     val anniversaryDays = anniversaries.map { it.date }.toSet()
     // Mit ausgewähltem Tag zeigt die Liste nur diesen Tag
     val listed = if (selected != null) byDay[selected].orEmpty() else inMonth
@@ -679,13 +684,18 @@ private fun CalendarView(
             isFirst = index == 0,
             isLast = index == listed.lastIndex,
             onClick = (entry as? TimelineEntry.Saved)?.let { { onOpen(it.moment) } },
-            relative = relativeText(context, entry.date, today),
+            relative = relativeText(context, entry, today),
         )
     }
 }
 
-private fun relativeText(context: android.content.Context, date: LocalDate, today: LocalDate): String {
-    val days = ChronoUnit.DAYS.between(date, today)
+private fun relativeText(context: android.content.Context, entry: TimelineEntry, today: LocalDate): String {
+    // Ein Zeitraum, der schon begonnen hat und noch läuft (Issue #77)
+    val moment = (entry as? TimelineEntry.Saved)?.moment
+    if (moment != null && moment.isRange && moment.date.isBefore(today) && moment.covers(today)) {
+        return context.getString(R.string.moment_ongoing)
+    }
+    val days = ChronoUnit.DAYS.between(entry.date, today)
     return when {
         days == 0L -> context.getString(R.string.today_word)
         days > 0 -> context.resources.getQuantityString(R.plurals.days_ago, days.toInt(), formatNumber(days))
@@ -753,9 +763,11 @@ private fun TimelineItem(
         ) {
             val moment = (entry as? TimelineEntry.Saved)?.moment
             if (moment != null && moment.photos.isNotEmpty()) MomentPhotos(moment)
+            // Bei mehreren Tagen steht der ganze Zeitraum da (Issue #77)
+            val dateText = moment?.let { Texts.momentDate(LocalContext.current, it) } ?: Texts.longDate(entry.date)
             Column(Modifier.padding(horizontal = 18.dp, vertical = 14.dp)) {
                 Text(
-                    "${Texts.longDate(entry.date)} · $relative".uppercase(),
+                    "$dateText · $relative".uppercase(),
                     style = LabelCaps,
                     color = MaterialTheme.colorScheme.primary,
                 )
