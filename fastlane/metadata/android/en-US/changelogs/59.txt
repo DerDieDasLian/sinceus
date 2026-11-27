@@ -1,1 +1,3 @@
 • New in Settings under "About the app": "How this app is made" explains openly that Since Us is developed with AI assistance and that a human checks, tests and corrects every change.
+
+• Since Us is now available in Russian. Thanks to everyone who helped translate on Weblate!
